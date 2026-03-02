@@ -7,14 +7,14 @@
   x-data="checkoutCart({ initialItems: JSON.parse('{{ cart_items_json|escapejs }}'), initialSubtotal: {{ cart_subtotal }} })"
   class="container mx-auto px-4 py-10 sm:px-6 lg:px-8"
 >
-  <header class="mb-8" data-animate="fade-up">
+  <header class="mb-8" data-reveal>
     <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Checkout</h1>
     <p class="mt-2 text-slate-600">{{ restaurant.name }} · {{ restaurant.address }}</p>
   </header>
 
   <div class="grid gap-8 lg:grid-cols-3">
     <form class="space-y-6 lg:col-span-2">
-      <div class="card-soft" data-animate="fade-up" data-delay="50">
+      <div class="card-soft" data-reveal data-delay="50">
         <h2 class="text-lg font-semibold text-slate-900">Customer Info</h2>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
           {% include "partials/form_fields.html" with label="Full Name" name="full_name" placeholder="John Doe" %}
@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <div class="card-soft" data-animate="fade-up" data-delay="100">
+      <div class="card-soft" data-reveal data-delay="100">
         <h2 class="text-lg font-semibold text-slate-900">Address</h2>
         <div class="mt-4 space-y-4">
           {% include "partials/form_fields.html" with label="Street Address" name="street" placeholder="Street, building, unit" %}
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <div class="card-soft" data-animate="fade-up" data-delay="150">
+      <div class="card-soft" data-reveal data-delay="150">
         <h2 class="text-lg font-semibold text-slate-900">Payment Method</h2>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
           {% include "partials/form_fields.html" with label="Card Number" name="card_number" placeholder="4242 4242 4242 4242" %}
@@ -49,7 +49,7 @@
       <button class="btn-primary w-full sm:w-auto" type="button">Place Order</button>
     </form>
 
-    <aside class="card-soft h-fit lg:sticky lg:top-24" data-animate="fade-up" data-delay="200">
+    <aside class="card-soft h-fit lg:sticky lg:top-24" data-reveal data-delay="200">
       <h2 class="text-lg font-semibold text-slate-900">Order Summary</h2>
       <ul class="mt-4 space-y-3">
         <template x-for="item in items" :key="item.id">

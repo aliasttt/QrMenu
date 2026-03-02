@@ -16,12 +16,10 @@ def navigation_context(request):
     }
 
 
-def theme_tokens(request):
+def theme(request):
     return {
         "theme": {
             "brand_name": "QRMenu Pro",
-            "primary_hex": "#F97316",
-            "primary_600_hex": "#EA580C",
-            "surface": "#FFFFFF",
         }
     }
+

@@ -1,4 +1,3 @@
-{% load active_link %}
 <header x-data="{ mobileOpen: false }" class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur-md">
   <nav class="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Panel">
     <a href="{% url 'panel_dashboard' %}" class="flex items-center gap-2 font-bold text-slate-900 transition hover:opacity-90">
@@ -6,16 +5,46 @@
       <span class="hidden sm:inline">Restaurant Panel</span>
     </a>
     <ul class="hidden items-center gap-1 md:flex">
-      {% for link in panel_nav_links %}
-        <li>
-          <a
-            href="{% url link.url_name %}"
-            class="rounded-full px-3 py-2 text-sm font-medium transition {% active_link link.url_name %}"
-          >
-            {{ link.label }}
-          </a>
-        </li>
-      {% endfor %}
+      <li>
+        <a
+          href="{% url 'panel_dashboard' %}"
+          class="rounded-full px-3 py-2 text-sm font-medium transition {% if request.path == '/panel/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}"
+        >
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a
+          href="{% url 'panel_menu_items' %}"
+          class="rounded-full px-3 py-2 text-sm font-medium transition {% if request.path == '/panel/menu-items/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}"
+        >
+          Menu Items
+        </a>
+      </li>
+      <li>
+        <a
+          href="{% url 'panel_categories' %}"
+          class="rounded-full px-3 py-2 text-sm font-medium transition {% if request.path == '/panel/categories/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}"
+        >
+          Categories
+        </a>
+      </li>
+      <li>
+        <a
+          href="{% url 'panel_campaigns' %}"
+          class="rounded-full px-3 py-2 text-sm font-medium transition {% if request.path == '/panel/campaigns/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}"
+        >
+          Campaigns
+        </a>
+      </li>
+      <li>
+        <a
+          href="{% url 'panel_settings' %}"
+          class="rounded-full px-3 py-2 text-sm font-medium transition {% if request.path == '/panel/settings/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}"
+        >
+          Settings
+        </a>
+      </li>
     </ul>
     <div class="flex items-center gap-2">
       <a href="{% url 'landing' %}" class="btn-tertiary hidden sm:inline-flex">Public Site</a>
@@ -26,9 +55,11 @@
   </nav>
   <div x-cloak x-show="mobileOpen" x-transition class="border-t border-slate-100 bg-white p-4 md:hidden">
     <div class="space-y-1">
-      {% for link in panel_nav_links %}
-        <a href="{% url link.url_name %}" class="block rounded-xl px-3 py-2.5 text-sm font-medium {% active_link link.url_name 'text-primary-600 bg-primary-50' 'text-slate-700 hover:bg-slate-50' %}">{{ link.label }}</a>
-      {% endfor %}
+      <a href="{% url 'panel_dashboard' %}" class="block rounded-xl px-3 py-2.5 text-sm font-medium {% if request.path == '/panel/' %}text-primary-600 bg-primary-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}">Dashboard</a>
+      <a href="{% url 'panel_menu_items' %}" class="block rounded-xl px-3 py-2.5 text-sm font-medium {% if request.path == '/panel/menu-items/' %}text-primary-600 bg-primary-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}">Menu Items</a>
+      <a href="{% url 'panel_categories' %}" class="block rounded-xl px-3 py-2.5 text-sm font-medium {% if request.path == '/panel/categories/' %}text-primary-600 bg-primary-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}">Categories</a>
+      <a href="{% url 'panel_campaigns' %}" class="block rounded-xl px-3 py-2.5 text-sm font-medium {% if request.path == '/panel/campaigns/' %}text-primary-600 bg-primary-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}">Campaigns</a>
+      <a href="{% url 'panel_settings' %}" class="block rounded-xl px-3 py-2.5 text-sm font-medium {% if request.path == '/panel/settings/' %}text-primary-600 bg-primary-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}">Settings</a>
       <a href="{% url 'landing' %}" class="block rounded-xl px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50">Public Site</a>
     </div>
   </div>

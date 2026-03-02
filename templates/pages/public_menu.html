@@ -7,7 +7,7 @@
   x-data="menuCart({ initialItems: JSON.parse('{{ cart_items_json|escapejs }}'), checkoutUrl: '{{ checkout_url }}' })"
   class="container mx-auto px-4 py-8 sm:px-6 lg:px-8"
 >
-  <header class="card-soft mb-8" data-animate="fade-up">
+  <header class="card-soft mb-8" data-reveal>
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">{{ restaurant.name }}</h1>
@@ -35,7 +35,7 @@
 
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {% for item in menu_items %}
-      <article x-show="activeCategory === '{{ item.category_slug }}'" class="card-soft group" data-animate="fade-up">
+      <article x-show="activeCategory === '{{ item.category_slug }}'" class="card-soft group" data-reveal>
         <div class="overflow-hidden rounded-xl">
           <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-44 w-full object-cover transition group-hover:scale-105">
         </div>

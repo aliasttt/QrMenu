@@ -13,10 +13,11 @@
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
   <meta property="og:image" content="{% static 'img/og-placeholder.svg' %}">
   {% endblock %}
+  <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'dist/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
   {% block styles %}{% endblock %}
 </head>
 <body class="h-full font-sans">
@@ -24,12 +25,19 @@
     Skip to main content
   </a>
 
+  <!-- Background layers -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10">
+    <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-slate-100"></div>
+    <div class="blob-orange -top-40 -left-24 h-80 w-80 opacity-70"></div>
+    <div class="blob-orange bottom-[-6rem] right-[-4rem] h-72 w-72 opacity-60"></div>
+  </div>
+
   {% block navbar %}
     {% include "partials/navbar.html" %}
   {% endblock %}
 
   <main id="main-content" class="min-h-[70vh]">
-    <div class="container mx-auto px-4 pt-4 sm:px-6 lg:px-8">
+    <div class="container pt-4">
       {% include "partials/alerts.html" %}
     </div>
     {% block content %}{% endblock %}
@@ -60,7 +68,7 @@
   </div>
 
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="{% static 'js/animate.js' %}"></script>
+  <script src="{% static 'js/reveal.js' %}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

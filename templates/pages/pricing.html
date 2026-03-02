@@ -12,7 +12,7 @@
 
     <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {% for plan in plans %}
-        <article class="card-soft flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover {% if plan.highlight %}ring-2 ring-primary-200 border-primary-100 bg-primary-50/30{% endif %}" data-animate="fade-up">
+        <article class="card-soft flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover {% if plan.highlight %}ring-2 ring-primary-200 border-primary-100 bg-primary-50/30{% endif %}" data-reveal>
           {% if plan.badge %}
             <span class="badge-primary mb-4 self-start">{{ plan.badge }}</span>
           {% endif %}
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Comparison table -->
-    <div class="mt-20 overflow-hidden rounded-2xl border border-slate-200" data-animate="fade-up">
+    <div class="mt-20 overflow-hidden rounded-2xl border border-slate-200" data-reveal>
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead class="bg-slate-50">
@@ -63,7 +63,7 @@
       <h2 class="section-title text-center">Pricing FAQ</h2>
       <ul class="mt-8 space-y-4">
         {% for faq in faqs %}
-          <li class="card-soft" data-animate="fade-up">
+          <li class="card-soft" data-reveal>
             <h3 class="font-semibold text-slate-900">{{ faq.q }}</h3>
             <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ faq.a }}</p>
           </li>
