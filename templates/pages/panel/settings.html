@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Settings | Panel{% endblock %}
+{% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+  {% include "partials/breadcrumbs.html" with crumbs=settings_crumbs %}
+  <h1 class="text-3xl font-bold text-slate-900">Restaurant Settings</h1>
+
+  <form class="mt-6 card-soft space-y-5">
+    {% include "partials/form_fields.html" with label="Restaurant Name" name="name" value=restaurant.name %}
+    {% include "partials/form_fields.html" with label="Address" name="address" value=restaurant.address %}
+    {% include "partials/form_fields.html" with label="Phone" name="phone" value=restaurant.phone %}
+    {% include "partials/form_fields.html" with label="Opening Hours" name="hours" value=restaurant.hours %}
+    <div>
+      <label for="logo" class="label-field">Logo Upload (placeholder)</label>
+      <input id="logo" type="file" class="input-field">
+    </div>
+    <button class="btn-primary" type="button">Save changes</button>
+  </form>
+</section>
+{% endblock %}

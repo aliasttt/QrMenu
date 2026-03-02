@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ theme.brand_name }} | QR Menu + Ordering{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-4 pb-16 pt-16 sm:px-6 lg:px-8">
+  <div class="grid items-center gap-10 lg:grid-cols-2">
+    <div>
+      <p class="inline-flex rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-600">Built for modern restaurants</p>
+      <h1 class="mt-5 text-4xl font-black tracking-tight text-slate-900 md:text-6xl">
+        QR Menu + Online Ordering,
+        <span class="text-primary-600">without friction</span>
+      </h1>
+      <p class="mt-5 max-w-xl text-lg text-slate-600">
+        Launch your branded menu, run campaigns, and receive online orders from one polished dashboard.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'register' %}" class="btn-primary">Start Free Trial</a>
+        <a href="#pricing" class="btn-secondary">View Pricing</a>
+      </div>
+    </div>
+    <div class="card-soft p-3">
+      <img src="https://picsum.photos/seed/saasdashboard/1200/860" alt="Dashboard preview" class="w-full rounded-xl object-cover">
+    </div>
+  </div>
+</section>
+
+<section id="features" class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+  <h2 class="section-title">Everything you need to run digital dining</h2>
+  <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    {% for feature in features %}
+      <article class="card-soft">
+        <h3 class="font-semibold text-slate-900">{{ feature }}</h3>
+        <p class="mt-2 text-sm text-slate-600">Production-ready workflows designed for speed and conversion.</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="how-it-works" class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+  <h2 class="section-title">How it works</h2>
+  <div class="mt-8 grid gap-5 md:grid-cols-3">
+    <article class="card-soft"><p class="text-sm font-semibold text-primary-600">Step 1</p><h3 class="mt-2 font-semibold">Set up your menu</h3><p class="mt-2 text-sm text-slate-600">Create categories, dishes, and rich details.</p></article>
+    <article class="card-soft"><p class="text-sm font-semibold text-primary-600">Step 2</p><h3 class="mt-2 font-semibold">Generate your QR</h3><p class="mt-2 text-sm text-slate-600">Print and place QR codes across your tables.</p></article>
+    <article class="card-soft"><p class="text-sm font-semibold text-primary-600">Step 3</p><h3 class="mt-2 font-semibold">Get online orders</h3><p class="mt-2 text-sm text-slate-600">Customers browse, add to cart, and checkout.</p></article>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+  <h2 class="section-title">Loved by restaurant teams</h2>
+  <div class="mt-8 grid gap-5 md:grid-cols-3">
+    {% for item in testimonials %}
+      <blockquote class="card-soft">
+        <p class="text-slate-700">"{{ item.quote }}"</p>
+        <footer class="mt-4 text-sm text-slate-500">{{ item.name }} · {{ item.role }}</footer>
+      </blockquote>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="pricing" class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+  <h2 class="section-title">Simple pricing</h2>
+  <div class="mt-8 grid gap-5 lg:grid-cols-3">
+    <article class="card-soft"><h3 class="font-semibold">Starter</h3><p class="mt-2 text-3xl font-bold">$19</p><p class="mt-1 text-sm text-slate-500">per month</p></article>
+    <article class="card-soft border-primary-200 ring-1 ring-primary-100"><h3 class="font-semibold">Growth</h3><p class="mt-2 text-3xl font-bold">$49</p><p class="mt-1 text-sm text-slate-500">per month</p></article>
+    <article class="card-soft"><h3 class="font-semibold">Scale</h3><p class="mt-2 text-3xl font-bold">$99</p><p class="mt-1 text-sm text-slate-500">per month</p></article>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
+  <div class="rounded-3xl bg-primary p-10 text-white">
+    <h2 class="text-3xl font-bold">Ready to modernize your restaurant?</h2>
+    <p class="mt-2 text-orange-50">Create your digital menu and launch ordering in minutes.</p>
+    <a href="{% url 'register' %}" class="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-primary-600">Get Started</a>
+  </div>
+</section>
+{% endblock %}

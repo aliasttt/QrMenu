@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Categories | Panel{% endblock %}
+{% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section x-data="{ showModal: false }" class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+  {% include "partials/breadcrumbs.html" with crumbs=categories_crumbs %}
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-3xl font-bold text-slate-900">Categories</h1>
+    <button @click="showModal = true" class="btn-primary" type="button">New category</button>
+  </div>
+
+  {% if categories %}
+    <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-4 py-3 text-left">Name</th>
+            <th class="px-4 py-3 text-left">Slug</th>
+            <th class="px-4 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for category in categories %}
+            <tr>
+              <td class="px-4 py-3">{{ category.name }}</td>
+              <td class="px-4 py-3 text-slate-500">{{ category.slug }}</td>
+              <td class="px-4 py-3 text-right"><button class="btn-tertiary" type="button">Delete</button></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% include "partials/empty_state.html" with title="No categories yet" description="Create your first category to organize menu items." cta_label="Create category" cta_url="#" %}
+  {% endif %}
+
+  {% include "partials/modal.html" with modal_title="Create category" modal_content="Use this Alpine-powered modal to add category creation form later." %}
+</section>
+{% endblock %}

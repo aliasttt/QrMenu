@@ -1,0 +1,7 @@
+<div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+  <h3 class="text-lg font-semibold text-slate-900">{{ title }}</h3>
+  <p class="mt-2 text-sm text-slate-600">{{ description }}</p>
+  {% if cta_label and cta_url %}
+    <a href="{{ cta_url }}" class="btn-primary mt-5">{{ cta_label }}</a>
+  {% endif %}
+</div>

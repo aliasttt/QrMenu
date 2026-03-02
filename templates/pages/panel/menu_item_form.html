@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{% if item %}Edit Menu Item{% else %}Create Menu Item{% endif %} | Panel{% endblock %}
+{% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+  {% include "partials/breadcrumbs.html" with crumbs=menu_item_form_crumbs %}
+  <h1 class="text-3xl font-bold text-slate-900">{% if item %}Edit Menu Item{% else %}Create Menu Item{% endif %}</h1>
+
+  <form class="mt-6 card-soft space-y-5">
+    {% include "partials/form_fields.html" with label="Name" name="name" value=item.name %}
+    {% include "partials/form_fields.html" with label="Price" name="price" field_type="number" value=item.price %}
+    {% include "partials/form_fields.html" with label="Image URL" name="image_url" value=item.image_url %}
+
+    <div>
+      <label class="label-field" for="category">Category</label>
+      <select id="category" class="input-field">
+        {% for category in categories %}
+          <option {% if item and item.category_slug == category.slug %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% include "partials/form_fields.html" with label="Tags (comma separated)" name="tags" placeholder="Popular, Spicy" %}
+
+    <div class="flex gap-3">
+      <button class="btn-primary" type="button">Save item</button>
+      <a href="{% url 'panel_menu_items' %}" class="btn-secondary">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

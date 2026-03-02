@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Checkout | {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<section
+  x-data="checkoutCart({ initialItems: JSON.parse('{{ cart_items_json|escapejs }}'), initialSubtotal: {{ cart_subtotal }} })"
+  class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
+>
+  <h1 class="text-3xl font-bold text-slate-900">Checkout</h1>
+  <p class="mt-2 text-sm text-slate-600">{{ restaurant.name }} · {{ restaurant.address }}</p>
+
+  <div class="mt-8 grid gap-8 lg:grid-cols-3">
+    <form class="space-y-6 lg:col-span-2">
+      <div class="card-soft">
+        <h2 class="text-lg font-semibold">Customer Info</h2>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+          {% include "partials/form_fields.html" with label="Full Name" name="full_name" placeholder="John Doe" %}
+          {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+1 555 000 1122" %}
+          <div class="md:col-span-2">{% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="john@example.com" %}</div>
+        </div>
+      </div>
+
+      <div class="card-soft">
+        <h2 class="text-lg font-semibold">Address</h2>
+        <div class="mt-4 space-y-4">
+          {% include "partials/form_fields.html" with label="Street Address" name="street" placeholder="Street, building, unit" %}
+          <div class="grid gap-4 md:grid-cols-3">
+            {% include "partials/form_fields.html" with label="City" name="city" %}
+            {% include "partials/form_fields.html" with label="ZIP" name="zip" %}
+            {% include "partials/form_fields.html" with label="Country" name="country" value="USA" %}
+          </div>
+          {% include "partials/form_fields.html" with label="Delivery Notes" name="notes" field_type="textarea" placeholder="Optional note for delivery driver" %}
+        </div>
+      </div>
+
+      <div class="card-soft">
+        <h2 class="text-lg font-semibold">Payment Method</h2>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+          {% include "partials/form_fields.html" with label="Card Number" name="card_number" placeholder="4242 4242 4242 4242" %}
+          {% include "partials/form_fields.html" with label="Card Holder" name="card_holder" placeholder="Name on card" %}
+          {% include "partials/form_fields.html" with label="Expiry" name="expiry" placeholder="MM / YY" %}
+          {% include "partials/form_fields.html" with label="CVC" name="cvc" placeholder="123" %}
+        </div>
+      </div>
+
+      <button class="btn-primary w-full sm:w-auto" type="button">Place Order</button>
+    </form>
+
+    <aside class="card-soft h-fit">
+      <h2 class="text-lg font-semibold">Order Summary</h2>
+      <ul class="mt-4 space-y-3">
+        <template x-for="item in items" :key="item.id">
+          <li class="flex items-center justify-between text-sm">
+            <span x-text="`${item.name} × ${item.qty}`"></span>
+            <span x-text="`$${(item.qty * item.price).toFixed(2)}`"></span>
+          </li>
+        </template>
+      </ul>
+      <hr class="my-4 border-slate-200">
+      <div class="flex items-center justify-between text-sm font-semibold">
+        <span>Subtotal</span>
+        <span>$<span x-text="subtotal.toFixed(2)"></span></span>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function checkoutCart({ initialItems, initialSubtotal }) {
+    return {
+      items: [],
+      subtotal: initialSubtotal,
+      init() {
+        const saved = localStorage.getItem("qrmenu_cart");
+        this.items = saved ? JSON.parse(saved) : initialItems;
+        this.subtotal = this.items.reduce((acc, item) => acc + (item.qty * item.price), 0);
+      }
+    };
+  }
+</script>
+{% endblock %}

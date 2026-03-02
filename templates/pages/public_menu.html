@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ restaurant.name }} | Menu{% endblock %}
+
+{% block content %}
+<section
+  x-data="menuCart({ initialItems: JSON.parse('{{ cart_items_json|escapejs }}'), checkoutUrl: '{{ checkout_url }}' })"
+  class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
+>
+  <header class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+    <h1 class="text-3xl font-bold text-slate-900">{{ restaurant.name }}</h1>
+    <p class="mt-2 text-sm text-slate-600">{{ restaurant.address }} · {{ restaurant.hours }} · ★ {{ restaurant.rating }}</p>
+  </header>
+
+  <nav class="mb-6 overflow-x-auto" aria-label="Menu categories">
+    <ul class="flex gap-2">
+      {% for category in categories %}
+        <li>
+          <button
+            @click="activeCategory = '{{ category.slug }}'"
+            :class="activeCategory === '{{ category.slug }}' ? 'bg-primary text-white border-primary' : 'bg-white text-slate-700 border-slate-200'"
+            class="whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium"
+            aria-label="Filter by {{ category.name }}"
+          >
+            {{ category.name }}
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    {% for item in menu_items %}
+      <article x-show="activeCategory === '{{ item.category_slug }}'" class="card-soft">
+        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-44 w-full rounded-xl object-cover">
+        <div class="mt-4 flex items-start justify-between gap-4">
+          <div>
+            <h2 class="font-semibold text-slate-900">{{ item.name }}</h2>
+            <p class="mt-1 text-sm text-slate-500">${{ item.price }}</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              {% for tag in item.tags %}
+                <span class="rounded-full bg-primary-100 px-2 py-1 text-xs font-medium text-primary-600">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          <button
+            @click="addItem({ id: {{ item.id }}, name: '{{ item.name }}', price: {{ item.price }} })"
+            class="btn-primary !px-4 !py-2"
+            aria-label="Add {{ item.name }} to cart"
+          >
+            Add
+          </button>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  <button @click="cartOpen = true" class="fixed bottom-5 right-5 z-40 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-xl md:hidden">
+    Cart (<span x-text="totalItems"></span>)
+  </button>
+
+  {% include "partials/cart_drawer.html" %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function menuCart({ initialItems, checkoutUrl }) {
+    return {
+      activeCategory: "{{ categories.0.slug }}",
+      cartOpen: false,
+      checkoutUrl: checkoutUrl,
+      items: [],
+      init() {
+        const saved = localStorage.getItem("qrmenu_cart");
+        this.items = saved ? JSON.parse(saved) : initialItems;
+        this.persist();
+      },
+      persist() {
+        localStorage.setItem("qrmenu_cart", JSON.stringify(this.items));
+      },
+      get subtotal() {
+        return this.items.reduce((acc, item) => acc + (item.qty * item.price), 0);
+      },
+      get totalItems() {
+        return this.items.reduce((acc, item) => acc + item.qty, 0);
+      },
+      addItem(item) {
+        const existing = this.items.find((x) => x.id === item.id);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          this.items.push({ ...item, qty: 1 });
+        }
+        this.persist();
+        this.cartOpen = true;
+      },
+      increaseQty(id) {
+        const item = this.items.find((x) => x.id === id);
+        if (!item) return;
+        item.qty += 1;
+        this.persist();
+      },
+      decreaseQty(id) {
+        const item = this.items.find((x) => x.id === id);
+        if (!item) return;
+        item.qty -= 1;
+        if (item.qty <= 0) {
+          this.removeItem(id);
+          return;
+        }
+        this.persist();
+      },
+      removeItem(id) {
+        this.items = this.items.filter((x) => x.id !== id);
+        this.persist();
+      }
+    };
+  }
+</script>
+{% endblock %}

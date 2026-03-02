@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Panel{% endblock %}
+{% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+  {% include "partials/breadcrumbs.html" with crumbs=dashboard_crumbs %}
+  <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+
+  <div class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+    {% for stat in stats %}
+      <article class="card-soft">
+        <p class="text-sm text-slate-500">{{ stat.label }}</p>
+        <p class="mt-2 text-2xl font-bold text-slate-900">{{ stat.value }}</p>
+        <p class="mt-1 text-xs text-primary-600">{{ stat.delta }}</p>
+      </article>
+    {% endfor %}
+  </div>
+
+  <div class="mt-8 grid gap-8 lg:grid-cols-3">
+    <section class="card-soft lg:col-span-2">
+      <h2 class="text-lg font-semibold">Recent Orders</h2>
+      <div class="mt-4 overflow-hidden rounded-xl border border-slate-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-3 text-left">Order</th>
+              <th class="px-4 py-3 text-left">Customer</th>
+              <th class="px-4 py-3 text-left">Amount</th>
+              <th class="px-4 py-3 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            {% for order in recent_orders %}
+              <tr>
+                <td class="px-4 py-3">{{ order.id }}</td>
+                <td class="px-4 py-3">{{ order.customer }}</td>
+                <td class="px-4 py-3">{{ order.amount }}</td>
+                <td class="px-4 py-3">{{ order.status }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card-soft">
+      <h2 class="text-lg font-semibold">Quick Actions</h2>
+      <div class="mt-4 flex flex-col gap-3">
+        <a href="{% url 'panel_menu_item_new' %}" class="btn-primary">Add menu item</a>
+        <a href="{% url 'panel_campaigns' %}" class="btn-secondary">Create campaign</a>
+        <button class="btn-secondary" type="button">Generate QR</button>
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}

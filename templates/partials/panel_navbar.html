@@ -1,0 +1,22 @@
+{% load active_link %}
+<header class="sticky top-0 z-40 border-b border-slate-100 bg-white">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Panel">
+    <a href="{% url 'panel_dashboard' %}" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-white">P</span>
+      Restaurant Panel
+    </a>
+    <ul class="hidden items-center gap-2 md:flex">
+      {% for link in panel_nav_links %}
+        <li>
+          <a
+            href="{% url link.url_name %}"
+            class="rounded-full px-3 py-2 text-sm font-medium {% active_link link.url_name %}"
+          >
+            {{ link.label }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'landing' %}" class="btn-secondary">Public Site</a>
+  </nav>
+</header>

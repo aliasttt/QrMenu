@@ -1,0 +1,20 @@
+<div>
+  <label for="{{ name }}" class="label-field">{{ label }}</label>
+  {% if field_type == "textarea" %}
+    <textarea
+      id="{{ name }}"
+      name="{{ name }}"
+      rows="{{ rows|default:'4' }}"
+      placeholder="{{ placeholder|default:'' }}"
+      class="input-field">{{ value|default:'' }}</textarea>
+  {% else %}
+    <input
+      id="{{ name }}"
+      name="{{ name }}"
+      type="{{ field_type|default:'text' }}"
+      value="{{ value|default:'' }}"
+      placeholder="{{ placeholder|default:'' }}"
+      class="input-field"
+    >
+  {% endif %}
+</div>
