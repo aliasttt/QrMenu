@@ -53,4 +53,12 @@
   .section-title {
     @apply text-2xl font-bold tracking-tight text-slate-900 md:text-3xl;
   }
+
+  .hero-gradient {
+    background: linear-gradient(180deg, #ffffff 0%, rgb(var(--color-primary-50)) 50%, rgb(var(--color-primary-100)) 100%);
+  }
+
+  .hero-gradient-cta {
+    background: linear-gradient(135deg, rgb(var(--color-primary)) 0%, rgb(var(--color-primary-600)) 100%);
+  }
 }
