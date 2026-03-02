@@ -1,9 +1,9 @@
 <nav aria-label="Breadcrumb" class="mb-6">
   <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
     {% for crumb in crumbs %}
-      {% if not forloop.first %}<li>/</li>{% endif %}
+      {% if not forloop.first %}<li class="text-slate-300" aria-hidden="true">/</li>{% endif %}
       {% if crumb.url %}
-        <li><a href="{{ crumb.url }}" class="hover:text-primary-600">{{ crumb.label }}</a></li>
+        <li><a href="{{ crumb.url }}" class="transition hover:text-primary-600">{{ crumb.label }}</a></li>
       {% else %}
         <li class="font-medium text-slate-700">{{ crumb.label }}</li>
       {% endif %}

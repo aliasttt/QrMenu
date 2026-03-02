@@ -4,52 +4,68 @@
 {% block footer %}{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<section class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=dashboard_crumbs %}
-  <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+  <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Dashboard</h1>
 
-  <div class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+  <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
     {% for stat in stats %}
-      <article class="card-soft">
-        <p class="text-sm text-slate-500">{{ stat.label }}</p>
-        <p class="mt-2 text-2xl font-bold text-slate-900">{{ stat.value }}</p>
-        <p class="mt-1 text-xs text-primary-600">{{ stat.delta }}</p>
+      <article class="card-panel flex items-start gap-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-500">{{ stat.label }}</p>
+          <p class="mt-1 text-2xl font-bold text-slate-900">{{ stat.value }}</p>
+          <p class="mt-0.5 text-xs font-medium text-primary-600">{{ stat.delta }}</p>
+        </div>
       </article>
     {% endfor %}
   </div>
 
-  <div class="mt-8 grid gap-8 lg:grid-cols-3">
-    <section class="card-soft lg:col-span-2">
-      <h2 class="text-lg font-semibold">Recent Orders</h2>
+  <div class="mt-10 grid gap-8 lg:grid-cols-3">
+    <section class="card-panel lg:col-span-2">
+      <h2 class="text-lg font-semibold text-slate-900">Recent Orders</h2>
       <div class="mt-4 overflow-hidden rounded-xl border border-slate-200">
         <table class="min-w-full text-sm">
           <thead class="bg-slate-50">
             <tr>
-              <th class="px-4 py-3 text-left">Order</th>
-              <th class="px-4 py-3 text-left">Customer</th>
-              <th class="px-4 py-3 text-left">Amount</th>
-              <th class="px-4 py-3 text-left">Status</th>
+              <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Order</th>
+              <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Customer</th>
+              <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Amount</th>
+              <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Status</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
             {% for order in recent_orders %}
-              <tr>
-                <td class="px-4 py-3">{{ order.id }}</td>
-                <td class="px-4 py-3">{{ order.customer }}</td>
-                <td class="px-4 py-3">{{ order.amount }}</td>
-                <td class="px-4 py-3">{{ order.status }}</td>
+              <tr class="transition hover:bg-slate-50/80">
+                <td class="px-4 py-3.5 font-medium text-slate-900">{{ order.id }}</td>
+                <td class="px-4 py-3.5 text-slate-600">{{ order.customer }}</td>
+                <td class="px-4 py-3.5 text-slate-600">{{ order.amount }}</td>
+                <td class="px-4 py-3.5">
+                  <span class="badge {% if order.status == 'Completed' %}badge-success{% elif order.status == 'Preparing' %}badge-warning{% else %}badge-neutral{% endif %}">{{ order.status }}</span>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
-    <section class="card-soft">
-      <h2 class="text-lg font-semibold">Quick Actions</h2>
+    <section class="card-panel">
+      <h2 class="text-lg font-semibold text-slate-900">Quick Actions</h2>
       <div class="mt-4 flex flex-col gap-3">
-        <a href="{% url 'panel_menu_item_new' %}" class="btn-primary">Add menu item</a>
-        <a href="{% url 'panel_campaigns' %}" class="btn-secondary">Create campaign</a>
-        <button class="btn-secondary" type="button">Generate QR</button>
+        <a href="{% url 'panel_menu_item_new' %}" class="btn-primary flex items-center justify-center gap-2">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Add menu item
+        </a>
+        <a href="{% url 'panel_campaigns' %}" class="btn-secondary flex items-center justify-center gap-2">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+          Create campaign
+        </a>
+        <button type="button" class="btn-tertiary flex items-center justify-center gap-2">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+          Generate QR
+        </button>
       </div>
     </section>
   </div>

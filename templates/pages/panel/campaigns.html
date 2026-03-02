@@ -4,13 +4,15 @@
 {% block footer %}{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<section class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=campaigns_crumbs %}
-  <h1 class="text-3xl font-bold text-slate-900">Campaigns</h1>
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Campaigns</h1>
+  </div>
 
-  <div class="mt-6 grid gap-8 lg:grid-cols-3">
-    <form class="card-soft space-y-4 lg:col-span-1">
-      <h2 class="text-lg font-semibold">Create Campaign</h2>
+  <div class="mt-8 grid gap-8 lg:grid-cols-3">
+    <form class="card-panel space-y-4 lg:col-span-1">
+      <h2 class="text-lg font-semibold text-slate-900">Create Campaign</h2>
       {% include "partials/form_fields.html" with label="Campaign Name" name="campaign_name" placeholder="Lunch Combo 20% Off" %}
       {% include "partials/form_fields.html" with label="Discount (%)" name="discount" field_type="number" placeholder="20" %}
       {% include "partials/form_fields.html" with label="Date Range" name="date_range" placeholder="Mar 1 - Mar 20" %}
@@ -20,13 +22,10 @@
 
     <div class="space-y-4 lg:col-span-2">
       {% for campaign in campaigns %}
-        <article class="card-soft">
-          <div class="flex flex-wrap items-center justify-between gap-2">
+        <article class="card-panel">
+          <div class="flex flex-wrap items-center justify-between gap-3">
             <h3 class="font-semibold text-slate-900">{{ campaign.name }}</h3>
-            <span class="rounded-full px-3 py-1 text-xs font-semibold
-              {% if campaign.status == 'Active' %}bg-emerald-100 text-emerald-700
-              {% elif campaign.status == 'Scheduled' %}bg-sky-100 text-sky-700
-              {% else %}bg-slate-100 text-slate-600{% endif %}">
+            <span class="badge {% if campaign.status == 'Active' %}badge-success{% elif campaign.status == 'Scheduled' %}badge-warning{% else %}badge-neutral{% endif %}">
               {{ campaign.status }}
             </span>
           </div>

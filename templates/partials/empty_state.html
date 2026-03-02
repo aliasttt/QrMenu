@@ -1,7 +1,10 @@
-<div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
-  <h3 class="text-lg font-semibold text-slate-900">{{ title }}</h3>
-  <p class="mt-2 text-sm text-slate-600">{{ description }}</p>
+<div class="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-12 text-center">
+  <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-200/80 text-slate-400">
+    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+  </div>
+  <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ title }}</h3>
+  <p class="mt-2 max-w-sm mx-auto text-sm text-slate-600">{{ description }}</p>
   {% if cta_label and cta_url %}
-    <a href="{{ cta_url }}" class="btn-primary mt-5">{{ cta_label }}</a>
+    <a href="{{ cta_url }}" class="btn-primary mt-6 inline-flex">{{ cta_label }}</a>
   {% endif %}
 </div>

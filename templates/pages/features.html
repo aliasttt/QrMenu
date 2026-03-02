@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Features | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}Explore all features: QR menu, online ordering, campaigns, analytics, multi-language support, and more.{% endblock %}
+
+{% block content %}
+<section class="py-16 md:py-20 lg:py-24">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="mx-auto max-w-3xl text-center">
+      <h1 class="section-title">Full feature set for modern restaurants</h1>
+      <p class="section-subtitle mt-3">Everything you need to digitize your menu, run promotions, and grow orders.</p>
+    </header>
+
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {% for item in feature_list %}
+        <article class="card-soft group transition-all duration-300 hover:-translate-y-0.5" data-animate="fade-up">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 transition duration-300 group-hover:scale-110">
+            {{ item.icon | safe }}
+          </div>
+          <h2 class="mt-4 font-semibold text-slate-900">{{ item.title }}</h2>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ item.desc }}</p>
+        </article>
+      {% endfor %}
+    </div>
+
+    <!-- Screenshot/mockup strip با عکس واقعی -->
+    <div class="mt-20 overflow-hidden rounded-3xl border border-slate-200 shadow-soft-lg" data-animate="fade-up">
+      <img
+        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=85"
+        alt="Dashboard and analytics view"
+        class="h-auto w-full object-cover"
+        width="1200"
+        height="600"
+      />
+      <div class="bg-slate-50/80 p-6 text-center sm:p-8">
+        <p class="text-slate-600">One dashboard for menu, orders, and campaigns.</p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="mt-20 mx-auto max-w-3xl">
+      <h2 class="section-title text-center">Frequently asked questions</h2>
+      <ul class="mt-10 space-y-4">
+        {% for faq in faqs %}
+          <li class="card-soft" data-animate="fade-up">
+            <h3 class="font-semibold text-slate-900">{{ faq.q }}</h3>
+            <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ faq.a }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <p class="mt-14 text-center">
+      <a href="{% url 'pricing' %}" class="btn-primary">See pricing</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

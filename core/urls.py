@@ -4,6 +4,10 @@ from . import views
 
 urlpatterns = [
     path("", views.landing, name="landing"),
+    path("features/", views.features, name="features"),
+    path("how-it-works/", views.how_it_works, name="how_it_works"),
+    path("pricing/", views.pricing, name="pricing"),
+    path("contact/", views.contact, name="contact"),
     path("m/<slug:restaurant_slug>/", views.public_menu, name="public_menu"),
     path("m/<slug:restaurant_slug>/checkout/", views.checkout, name="checkout"),
     path("auth/login/", views.login_view, name="login"),

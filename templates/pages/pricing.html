@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Pricing | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}Simple pricing: Starter, Growth, and Scale. Start free, upgrade when you grow.{% endblock %}
+
+{% block content %}
+<section class="py-16 md:py-20 lg:py-24">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="mx-auto max-w-3xl text-center">
+      <h1 class="section-title">Simple pricing</h1>
+      <p class="section-subtitle mt-3">Start free, upgrade when you need more. No hidden fees.</p>
+    </header>
+
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for plan in plans %}
+        <article class="card-soft flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover {% if plan.highlight %}ring-2 ring-primary-200 border-primary-100 bg-primary-50/30{% endif %}" data-animate="fade-up">
+          {% if plan.badge %}
+            <span class="badge-primary mb-4 self-start">{{ plan.badge }}</span>
+          {% endif %}
+          <h2 class="text-xl font-semibold text-slate-900">{{ plan.name }}</h2>
+          <p class="mt-2 text-3xl font-bold text-slate-900">${{ plan.price }}<span class="text-base font-normal text-slate-500">/mo</span></p>
+          <p class="mt-1 text-sm text-slate-600">{{ plan.summary }}</p>
+          <ul class="mt-6 flex-1 space-y-3 text-sm text-slate-600">
+            {% for f in plan.features %}
+              <li class="flex items-center gap-2">
+                <svg class="h-5 w-5 shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {{ f }}
+              </li>
+            {% endfor %}
+          </ul>
+          <a href="{% url 'register' %}" class="mt-8 {% if plan.highlight %}btn-primary{% else %}btn-secondary{% endif %} w-full text-center">Get started</a>
+        </article>
+      {% endfor %}
+    </div>
+
+    <!-- Comparison table -->
+    <div class="mt-20 overflow-hidden rounded-2xl border border-slate-200" data-animate="fade-up">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold text-slate-900">Feature</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-900">Starter</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-900">Growth</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-900">Scale</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            {% for row in comparison %}
+              <tr class="hover:bg-slate-50/50">
+                <td class="px-4 py-3 text-slate-700">{{ row.name }}</td>
+                <td class="px-4 py-3 text-center">{{ row.starter }}</td>
+                <td class="px-4 py-3 text-center">{{ row.growth }}</td>
+                <td class="px-4 py-3 text-center">{{ row.scale }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pricing FAQ -->
+    <div class="mt-20 mx-auto max-w-2xl">
+      <h2 class="section-title text-center">Pricing FAQ</h2>
+      <ul class="mt-8 space-y-4">
+        {% for faq in faqs %}
+          <li class="card-soft" data-animate="fade-up">
+            <h3 class="font-semibold text-slate-900">{{ faq.q }}</h3>
+            <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ faq.a }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <p class="mt-14 text-center">
+      <a href="{% url 'contact' %}" class="btn-tertiary">Contact sales</a>
+    </p>
+  </div>
+</section>
+
+<!-- Sticky mobile CTA -->
+<div class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-100 bg-white/95 p-4 backdrop-blur-md md:hidden">
+  <a href="{% url 'register' %}" class="btn-primary block w-full text-center">Start Free Trial</a>
+</div>
+<div class="h-20 md:hidden" aria-hidden="true"></div>
+{% endblock %}

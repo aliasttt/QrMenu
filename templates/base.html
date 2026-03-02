@@ -5,20 +5,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ theme.brand_name }}{% endblock %}</title>
+  {% block meta %}
   <meta name="description" content="{% block meta_description %}QR Menu SaaS for restaurants: menu management, campaigns, and online ordering.{% endblock %}">
   <meta property="og:title" content="{% block og_title %}{{ theme.brand_name }}{% endblock %}">
   <meta property="og:description" content="{% block og_description %}Grow restaurant revenue with a modern QR menu and ordering flow.{% endblock %}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
   <meta property="og:image" content="{% static 'img/og-placeholder.svg' %}">
+  {% endblock %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'dist/app.css' %}">
-  {% block head %}{% endblock %}
+  {% block styles %}{% endblock %}
 </head>
-<body class="h-full">
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-soft">
+<body class="h-full font-sans">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-soft focus:outline-none">
     Skip to main content
   </a>
 
@@ -27,9 +29,9 @@
   {% endblock %}
 
   <main id="main-content" class="min-h-[70vh]">
-    <section class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto px-4 pt-4 sm:px-6 lg:px-8">
       {% include "partials/alerts.html" %}
-    </section>
+    </div>
     {% block content %}{% endblock %}
   </main>
 
@@ -37,7 +39,28 @@
     {% include "partials/footer.html" %}
   {% endblock %}
 
+  <!-- Scroll to top (Alpine); show on long pages -->
+  <div
+    x-data="{ show: false }"
+    x-init="window.addEventListener('scroll', () => { show = window.scrollY > 600 })"
+    x-show="show"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 scale-90"
+    x-transition:enter-end="opacity-100 scale-100"
+    x-cloak
+    class="fixed bottom-6 right-6 z-40 md:bottom-8 md:right-8"
+  >
+    <button
+      @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+      class="flex h-12 w-12 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 shadow-soft-lg transition hover:bg-primary hover:text-white hover:border-primary hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      aria-label="Scroll to top"
+    >
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+    </button>
+  </div>
+
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="{% static 'js/animate.js' %}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

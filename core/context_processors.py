@@ -1,9 +1,10 @@
 def navigation_context(request):
     return {
         "public_nav_links": [
-            {"label": "Features", "href": "/#features"},
-            {"label": "How it works", "href": "/#how-it-works"},
-            {"label": "Pricing", "href": "/#pricing"},
+            {"label": "Features", "href": "/features/", "path_prefix": "/features"},
+            {"label": "How it works", "href": "/how-it-works/", "path_prefix": "/how-it-works"},
+            {"label": "Pricing", "href": "/pricing/", "path_prefix": "/pricing"},
+            {"label": "Contact", "href": "/contact/", "path_prefix": "/contact"},
         ],
         "panel_nav_links": [
             {"label": "Dashboard", "url_name": "panel_dashboard"},

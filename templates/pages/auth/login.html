@@ -2,16 +2,18 @@
 {% block title %}Login | {{ theme.brand_name }}{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-md px-4 py-16 sm:px-6">
-  <div class="card-soft">
-    <h1 class="text-2xl font-bold text-slate-900">Welcome back</h1>
-    <p class="mt-2 text-sm text-slate-600">Sign in to manage your restaurant panel.</p>
-    <form class="mt-6 space-y-4">
-      {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
-      {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
-      <button type="button" class="btn-primary w-full">Login</button>
-    </form>
-    <p class="mt-4 text-sm text-slate-600">No account? <a href="{% url 'register' %}" class="font-medium text-primary-600">Register</a></p>
+<section class="container mx-auto px-4 py-16 sm:px-6">
+  <div class="mx-auto max-w-md">
+    <div class="card-soft" data-animate="fade-up">
+      <h1 class="text-2xl font-bold text-slate-900">Welcome back</h1>
+      <p class="mt-2 text-slate-600">Sign in to manage your restaurant panel.</p>
+      <form class="mt-6 space-y-4">
+        {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
+        {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
+        <button type="button" class="btn-primary w-full">Login</button>
+      </form>
+      <p class="mt-5 text-center text-sm text-slate-600">No account? <a href="{% url 'register' %}" class="font-semibold text-primary-600 hover:underline">Register</a></p>
+    </div>
   </div>
 </section>
 {% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}How it works | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}Set up your menu, generate QR codes, and start receiving orders in three simple steps.{% endblock %}
+
+{% block content %}
+<section class="py-16 md:py-20 lg:py-24">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="mx-auto max-w-3xl text-center">
+      <h1 class="section-title">How it works</h1>
+      <p class="section-subtitle mt-3">Get your digital menu live and start taking orders in minutes.</p>
+    </header>
+
+    <div class="mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
+      {% for step in steps %}
+        <article class="card-soft relative transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover" data-animate="fade-up">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-sm transition duration-300 hover:scale-110">{{ step.num }}</span>
+          <h2 class="mt-5 text-xl font-semibold text-slate-900">{{ step.title }}</h2>
+          <p class="mt-3 text-slate-600 leading-relaxed">{{ step.desc }}</p>
+          {% if step.detail %}
+            <p class="mt-2 text-sm text-slate-500">{{ step.detail }}</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+
+    <!-- تصویر مرتبط: QR یا تکنولوژی رستوران -->
+    <div class="mt-20 overflow-hidden rounded-3xl border border-slate-200 shadow-soft-lg" data-animate="fade-up">
+      <img
+        src="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200&q=85"
+        alt="QR code and digital ordering"
+        class="h-72 w-full object-cover sm:h-80"
+        width="1200"
+        height="400"
+      />
+      <div class="bg-slate-50/80 p-6 text-center sm:p-8">
+        <p class="text-slate-600">Scan, browse, order — no app download required.</p>
+      </div>
+    </div>
+
+    <p class="mt-12 text-center">
+      <a href="{% url 'register' %}" class="btn-primary">Get started free</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

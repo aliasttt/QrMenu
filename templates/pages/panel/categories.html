@@ -4,29 +4,29 @@
 {% block footer %}{% endblock %}
 
 {% block content %}
-<section x-data="{ showModal: false }" class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+<section x-data="{ showModal: false }" class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=categories_crumbs %}
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="text-3xl font-bold text-slate-900">Categories</h1>
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Categories</h1>
     <button @click="showModal = true" class="btn-primary" type="button">New category</button>
   </div>
 
   {% if categories %}
-    <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+    <div class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft">
       <table class="min-w-full text-sm">
         <thead class="bg-slate-50">
           <tr>
-            <th class="px-4 py-3 text-left">Name</th>
-            <th class="px-4 py-3 text-left">Slug</th>
-            <th class="px-4 py-3 text-right">Actions</th>
+            <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Name</th>
+            <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Slug</th>
+            <th class="px-4 py-3.5 text-right font-semibold text-slate-700">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
           {% for category in categories %}
-            <tr>
-              <td class="px-4 py-3">{{ category.name }}</td>
-              <td class="px-4 py-3 text-slate-500">{{ category.slug }}</td>
-              <td class="px-4 py-3 text-right"><button class="btn-tertiary" type="button">Delete</button></td>
+            <tr class="transition hover:bg-slate-50/80">
+              <td class="px-4 py-3.5 font-medium text-slate-900">{{ category.name }}</td>
+              <td class="px-4 py-3.5 text-slate-500">{{ category.slug }}</td>
+              <td class="px-4 py-3.5 text-right"><button class="btn-tertiary" type="button">Delete</button></td>
             </tr>
           {% endfor %}
         </tbody>
