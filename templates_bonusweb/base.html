@@ -1,0 +1,578 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Bonus - {% block title %}{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}" />
+    <link rel="apple-touch-icon" href="{% static 'favicon.png' %}" />
+    <!-- Fallback favicon.ico for older browsers -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.png' %}" />
+    <!-- Tailwind: pre-built CSS (works on tablets where the JS Play CDN fails) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" onerror="this.onerror=null;(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js';document.head.appendChild(s);})()"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
+    {{ FIREBASE_PUBLIC_CONFIG|json_script:"firebase-config" }}
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+      
+      // Your web app's Firebase configuration
+      const firebaseConfigEl = document.getElementById("firebase-config");
+      const firebaseConfig = firebaseConfigEl ? JSON.parse(firebaseConfigEl.textContent) : {};
+      
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      
+      // Make Firebase available globally
+      window.firebaseApp = app;
+      window.firebaseAnalytics = analytics;
+    </script>
+    <style>
+      .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+      .fade-up.show { opacity: 1; transform: translateY(0); }
+      .fade-left { opacity: 0; transform: translateX(30px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+      .fade-left.show { opacity: 1; transform: translateX(0); }
+      .fade-right { opacity: 0; transform: translateX(-30px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+      .fade-right.show { opacity: 1; transform: translateX(0); }
+      
+      .gradient-bg {
+        background: linear-gradient(-45deg, #0f0f23, #1a1a2e, #16213e, #8b5cf6);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+      }
+      
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .text-gradient {
+        background: linear-gradient(135deg, #8b5cf6, #06b6d4, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+      
+      .parallax-bg {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      
+      .scroll-smooth {
+        scroll-behavior: smooth;
+      }
+
+      /* Same look on all devices: tell the browser we use a dark theme
+         so it won't apply extra "Force dark" / "Dark mode for web" on tablets (e.g. Samsung, Chrome Android). */
+      html {
+        color-scheme: dark;
+        color: #ffffff;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        color: #ffffff;
+      }
+
+      /* Critical fallback when Tailwind CDN fails or renders wrong on tablets */
+      header a, header nav a { color: inherit; text-decoration: none; }
+      .text-white { color: #ffffff !important; }
+      .text-gray-200 { color: #e5e7eb !important; }
+      .text-gray-300 { color: #d1d5db !important; }
+      .text-gray-400 { color: #9ca3af !important; }
+      .text-gray-500 { color: #6b7280 !important; }
+      .bg-dark { background-color: #0f0f23; }
+      .bg-dark-light { background-color: #1a1a2e; }
+      .bg-dark-lighter { background-color: #16213e; }
+      input, button, select { font-family: inherit; font-size: 1rem; }
+      input, select { padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 0.5rem; }
+      button { padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; }
+      
+      /* Navigation menu fixes */
+      header nav a {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+      
+      header nav a span {
+        display: inline-block;
+      }
+      
+      /* Prevent navigation from overflowing */
+      header nav {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+      
+      header nav::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+      
+      /* Ensure header doesn't overflow */
+      header > div {
+        min-width: 0;
+      }
+      
+      @media (max-width: 1280px) {
+        header nav {
+          gap: 0.75rem !important;
+        }
+      }
+      
+      @media (max-width: 1024px) {
+        header nav {
+          gap: 0.5rem !important;
+        }
+      }
+
+      /* Mobile header spacing */
+      @media (max-width: 640px) {
+        #header-container {
+          flex-wrap: wrap;
+          gap: 0.75rem;
+        }
+        #header-actions {
+          width: 100%;
+          justify-content: space-between;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        #header-actions form,
+        #header-actions select,
+        #header-actions a {
+          flex: 1 1 0;
+          min-width: 0;
+          width: auto;
+          max-width: none;
+        }
+        #header-actions a {
+          justify-content: center;
+          text-align: center;
+        }
+        #mobile-menu-btn {
+          margin-left: auto;
+          flex-shrink: 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-dark text-white scroll-smooth">
+    {% if request.resolver_match.namespace != 'service_agreement' and request.resolver_match.namespace != 'service_agreement_bonus' %}
+    <header class="sticky top-0 z-50 glass-effect border-b border-white/10">
+      <div id="header-container" class="max-w-7xl mx-auto px-4 py-4 flex items-center gap-6">
+        <a href="/" class="text-3xl font-black text-gradient flex items-center gap-2 flex-shrink-0">
+          <img src="{% static 'bonus_logo_magenta.png' %}" alt="Bonus Logo" class="h-8 w-auto" />
+          Bonus
+        </a>
+        <nav class="hidden lg:flex items-center gap-3 xl:gap-4 text-sm font-medium flex-1 min-w-0 overflow-x-auto">
+          <a href="/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="home" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "Home" %}</span>
+          </a>
+          <a href="/use-cases/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="briefcase" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "Use Cases" %}</span>
+          </a>
+          <a href="/features/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="star" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "Features" %}</span>
+          </a>
+          <a href="/businesses/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="building" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "Businesses" %}</span>
+          </a>
+          <a href="/how-it-works/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="play-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "How It Works" %}</span>
+          </a>
+          <a href="/pricing/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="dollar-sign" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "Pricing" %}</span>
+          </a>
+          <a href="/download/" class="hover:text-primary transition-colors duration-300 flex items-center gap-1.5 whitespace-nowrap px-1 py-1">
+            <i data-lucide="download" class="w-3.5 h-3.5 flex-shrink-0"></i>
+            <span>{% trans "Download" %}</span>
+          </a>
+        </nav>
+        <div id="header-actions" class="flex items-center gap-3 flex-shrink-0 ml-auto">
+          <!-- Language Switcher -->
+          <form action="{% url 'set_language' %}" method="post" class="flex items-center gap-2 flex-shrink-0">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <select name="language" onchange="this.form.submit()" class="bg-dark-lighter text-white border border-white/20 rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer whitespace-nowrap">
+              {% get_current_language as CURRENT_LANGUAGE %}
+              {% get_available_languages as LANGUAGES %}
+              {% for lang_code, lang_name in LANGUAGES %}
+              <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>
+                {% if lang_code == 'en' %}English{% elif lang_code == 'de' %}Deutsch{% else %}{{ lang_name }}{% endif %}
+              </option>
+              {% endfor %}
+            </select>
+          </form>
+          {% if user.is_authenticated %}
+            <div class="relative group" style="overflow: visible;">
+              <button type="button" class="px-3 py-2 sm:px-4 min-h-[44px] rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 flex items-center gap-1 sm:gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onclick="toggleUserDropdown(event)" id="user-dropdown-btn" aria-haspopup="true" aria-expanded="false">
+                <i data-lucide="user" class="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0"></i>
+                <span class="hidden sm:inline">Hello {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}</span>
+                <span class="sm:hidden">{% if user.get_full_name %}{{ user.get_full_name|truncatewords:1 }}{% else %}{{ user.username|truncatewords:1 }}{% endif %}</span>
+                <i data-lucide="chevron-down" class="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 transition-transform duration-200" id="user-dropdown-arrow"></i>
+              </button>
+              <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-40 sm:w-48 bg-dark-lighter border border-white/20 rounded-lg shadow-lg overflow-hidden" style="z-index: 9999;">
+                <a href="/partners/dashboard/" class="block px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                  <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                  <span>{% trans "Dashboard" %}</span>
+                </a>
+                <a href="/partners/logout/" class="block px-4 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors flex items-center gap-2">
+                  <i data-lucide="log-out" class="w-4 h-4"></i>
+                  <span>{% trans "Logout" %}</span>
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <a href="/partners/login/" class="px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0">
+              <i data-lucide="log-in" class="w-3.5 h-3.5 flex-shrink-0"></i>
+              <span>{% trans "Admin Login" %}</span>
+            </a>
+          {% endif %}
+          <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="lg:hidden hidden border-t border-white/10 bg-dark-lighter">
+        <nav class="flex flex-col p-4 space-y-3">
+          <a href="/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            {% trans "Home" %}
+          </a>
+          <a href="/use-cases/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="briefcase" class="w-4 h-4"></i>
+            {% trans "Use Cases" %}
+          </a>
+          <a href="/features/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="star" class="w-4 h-4"></i>
+            {% trans "Features" %}
+          </a>
+          <a href="/businesses/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="building" class="w-4 h-4"></i>
+            {% trans "Businesses" %}
+          </a>
+          <a href="/how-it-works/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="play-circle" class="w-4 h-4"></i>
+            {% trans "How It Works" %}
+          </a>
+          <a href="/pricing/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+            {% trans "Pricing" %}
+          </a>
+          <a href="/download/" class="hover:text-primary transition-colors duration-300 flex items-center gap-2 py-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            {% trans "Download" %}
+          </a>
+        </nav>
+      </div>
+    </header>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    {% block footer %}
+    <footer class="border-t border-white/10 mt-20 py-16">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <img src="{% static 'bonus_logo_magenta.png' %}" alt="Bonus Logo" class="h-12 w-auto" />
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              {% trans "Bonus helps local businesses run QR menus, loyalty points, rewards, and customer reviews — all in one place." %}
+            </p>
+            <div class="flex gap-4">
+              <a href="https://angraweb.com" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-white/5 hover:bg-primary/20 transition-colors" aria-label="{% trans 'Website' %}">
+                <i data-lucide="globe" class="w-5 h-5"></i>
+              </a>
+              <a href="#" class="p-2 rounded-lg bg-white/5 hover:bg-primary/20 transition-colors" aria-label="{% trans 'Instagram' %}">
+                <i data-lucide="instagram" class="w-5 h-5"></i>
+              </a>
+              <a href="#" class="p-2 rounded-lg bg-white/5 hover:bg-primary/20 transition-colors" aria-label="{% trans 'X (Twitter)' %}">
+                <i data-lucide="twitter" class="w-5 h-5"></i>
+              </a>
+              <a href="#" class="p-2 rounded-lg bg-white/5 hover:bg-primary/20 transition-colors" aria-label="{% trans 'LinkedIn' %}">
+                <i data-lucide="linkedin" class="w-5 h-5"></i>
+              </a>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <h3 class="font-semibold text-white">{% trans "Platform" %}</h3>
+            <div class="space-y-2 text-sm text-gray-400">
+              <a href="/" class="block hover:text-primary transition-colors">{% trans "Home" %}</a>
+              <a href="/use-cases/" class="block hover:text-primary transition-colors">{% trans "Use Cases" %}</a>
+              <a href="/features/" class="block hover:text-primary transition-colors">{% trans "Features" %}</a>
+              <a href="/businesses/" class="block hover:text-primary transition-colors">{% trans "Businesses" %}</a>
+              <a href="/how-it-works/" class="block hover:text-primary transition-colors">{% trans "How It Works" %}</a>
+              <a href="/integrations/" class="block hover:text-primary transition-colors">{% trans "Integrations" %}</a>
+              <a href="/pricing/" class="block hover:text-primary transition-colors">{% trans "Pricing" %}</a>
+              <a href="/download/" class="block hover:text-primary transition-colors">{% trans "Download" %}</a>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <h3 class="font-semibold text-white">{% trans "For Businesses" %}</h3>
+            <div class="space-y-2 text-sm text-gray-400">
+              <a href="/partners/login/" class="block hover:text-primary transition-colors">{% trans "Business Admin Panel" %}</a>
+              <a href="/service-agreement/" class="block hover:text-primary transition-colors">{% trans "Service Agreement" %}</a>
+              <a href="/service-agreement-bonus/" class="block hover:text-primary transition-colors">{% trans "Bonus Registration" %}</a>
+              {% if user.is_authenticated %}
+                <a href="/partners/qr/" class="block hover:text-primary transition-colors">{% trans "QR Code Generator" %}</a>
+                <a href="/partners/products/" class="block hover:text-primary transition-colors">{% trans "Manage Products" %}</a>
+                <a href="/partners/reviews/" class="block hover:text-primary transition-colors">{% trans "Customer Reviews" %}</a>
+                <a href="/partners/notifications/" class="block hover:text-primary transition-colors">{% trans "Send Notification" %}</a>
+              {% else %}
+                <a href="/partners/login/?next=/partners/qr/" class="block hover:text-primary transition-colors">{% trans "QR Code Generator" %}</a>
+                <a href="/partners/login/?next=/partners/products/" class="block hover:text-primary transition-colors">{% trans "Manage Products" %}</a>
+                <a href="/partners/login/?next=/partners/reviews/" class="block hover:text-primary transition-colors">{% trans "Customer Reviews" %}</a>
+                <a href="/partners/login/?next=/partners/notifications/" class="block hover:text-primary transition-colors">{% trans "Send Notification" %}</a>
+              {% endif %}
+            </div>
+          </div>
+          <div class="space-y-4">
+            <h3 class="font-semibold text-white">{% trans "Legal" %}</h3>
+            <div class="space-y-2 text-sm text-gray-400">
+              <a href="/menuterms/" class="block hover:text-primary transition-colors">{% trans "Terms & Conditions" %}</a>
+              <a href="/agb/" class="block hover:text-primary transition-colors">AGB</a>
+              <a href="/agb-b2b/" class="block hover:text-primary transition-colors">AGB B2B (Kurzfassung)</a>
+              <a href="/impressum/" class="block hover:text-primary transition-colors">Impressum</a>
+              <a href="/privacy/" class="block hover:text-primary transition-colors">{% trans "Privacy Policy" %}</a>
+              <a href="/account-deletion/" class="block hover:text-primary transition-colors">{% trans "Account & Data Deletion" %}</a>
+              {% if user.is_authenticated and user.is_superuser %}
+              <a href="/api/v1/docs/" class="block hover:text-primary transition-colors">{% trans "API Docs" %}</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
+          <div>© {% now "Y" %} Bonus. {% trans "All rights reserved" %}.</div>
+          <div class="mt-2">
+            {% trans "This website was designed by" %} <a href="https://angraweb.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">angraweb.com</a>.
+          </div>
+        </div>
+      </div>
+    </footer>
+    {% endblock %}
+
+    <script>
+      // Initialize Lucide icons (safe when Lucide loads from fallback CDN)
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      
+      // Enhanced intersection observer with different animation types
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('show');
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      // Observe all animation elements
+      document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach((el) => {
+        observer.observe(el);
+      });
+      
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+      
+      // Add parallax effect to elements with parallax-bg class
+      window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll('.parallax-bg');
+        parallaxElements.forEach(element => {
+          const speed = element.dataset.speed || 0.5;
+          element.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+      });
+
+      // Mobile menu toggle function
+      function toggleMobileMenu() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const menuIcon = menuBtn.querySelector('i');
+        
+        if (mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.remove('hidden');
+          menuIcon.setAttribute('data-lucide', 'x');
+        } else {
+          mobileMenu.classList.add('hidden');
+          menuIcon.setAttribute('data-lucide', 'menu');
+        }
+        lucide.createIcons();
+      }
+
+      // User dropdown toggle function (works on mobile/touch and desktop)
+      function toggleUserDropdown(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        const dropdown = document.getElementById('user-dropdown');
+        const btn = document.getElementById('user-dropdown-btn');
+        const arrow = document.getElementById('user-dropdown-arrow');
+        if (dropdown && arrow && btn) {
+          const isOpen = !dropdown.classList.contains('hidden');
+          if (isOpen) {
+            dropdown.classList.add('hidden');
+            arrow.style.transform = 'rotate(0deg)';
+            btn.setAttribute('aria-expanded', 'false');
+          } else {
+            dropdown.classList.remove('hidden');
+            arrow.style.transform = 'rotate(180deg)';
+            btn.setAttribute('aria-expanded', 'true');
+            dropdown.dataset.justOpened = '1';
+            setTimeout(function() { if (dropdown) delete dropdown.dataset.justOpened; }, 400);
+          }
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+      }
+
+      // Close dropdown when clicking/touching outside
+      document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('user-dropdown');
+        const btn = document.getElementById('user-dropdown-btn');
+        if (!dropdown || !btn) return;
+        if (dropdown.contains(event.target) || btn.contains(event.target)) return;
+        if (dropdown.dataset.justOpened === '1') return;
+        dropdown.classList.add('hidden');
+        const arrow = document.getElementById('user-dropdown-arrow');
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+        btn.setAttribute('aria-expanded', 'false');
+      }, true);
+    </script>
+    {% if request.user.is_authenticated %}
+    <script type="module">
+      import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging.js";
+
+      const VAPID_PUBLIC_KEY = "{{ VAPID_PUBLIC_KEY|default:'' }}";
+      const SERVICE_WORKER_PATH = "/firebase-messaging-sw.js";
+
+      const getCsrfToken = () => {
+        const name = "csrftoken=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i].trim();
+          if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      };
+
+      const showInAppNotification = (title, body) => {
+        const toast = document.createElement("div");
+        toast.className = "fixed bottom-6 right-6 bg-dark-lighter text-white px-5 py-4 rounded-2xl shadow-2xl border border-white/10 max-w-sm z-50";
+        toast.innerHTML = `
+          <div class="font-semibold text-primary mb-1">${title}</div>
+          <div class="text-sm text-gray-200">${body}</div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.add("opacity-0", "translate-y-2");
+          setTimeout(() => toast.remove(), 400);
+        }, 4000);
+      };
+
+      async function registerWebPush() {
+        if (!("serviceWorker" in navigator) || !("Notification" in window)) {
+          console.warn("Web push not supported in this browser.");
+          return;
+        }
+
+        if (!(await isSupported())) {
+          console.warn("Firebase Messaging not supported in this browser.");
+          return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          console.info("Notification permission was not granted.");
+          return;
+        }
+
+        const registration = await navigator.serviceWorker.register(SERVICE_WORKER_PATH);
+        const messaging = getMessaging(window.firebaseApp);
+
+        try {
+          const token = await getToken(messaging, {
+            vapidKey: VAPID_PUBLIC_KEY,
+            serviceWorkerRegistration: registration,
+          });
+
+          if (!token) {
+            console.warn("Unable to obtain FCM token.");
+            return;
+          }
+
+          await fetch("/api/notifications/register-device/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCsrfToken(),
+            },
+            body: JSON.stringify({
+              token,
+              platform: "web",
+            }),
+          });
+
+          onMessage(messaging, (payload) => {
+            const notification = payload.notification;
+            if (notification) {
+              showInAppNotification(notification.title || "Bonus", notification.body || "You have a new message.");
+            }
+          });
+        } catch (error) {
+          console.error("Error initializing web push:", error);
+        }
+      }
+
+      window.addEventListener("load", () => {
+        registerWebPush();
+      });
+    </script>
+    {% endif %}
+  </body>
+  </html>
+
+

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %}{% trans "Complete Registration - Payment" %}{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-16">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-extrabold mb-2">{% trans "Complete Registration" %}</h1>
+    <p class="text-slate-400">{% trans "Please complete the payment to finish your registration" %}</p>
+  </div>
+  
+  <div class="mt-8 p-8 rounded-2xl border bg-white/70 backdrop-blur">
+    <!-- QR Code PDF Display -->
+    <div class="mb-8 text-center">
+      <h2 class="text-2xl font-bold mb-6 text-slate-800">{% trans "Scan QR Code to Pay" %}</h2>
+      <div class="flex justify-center items-center">
+        <div class="w-full max-w-3xl">
+          <!-- PDF Display Container -->
+          <div id="pdf-container" class="w-full border-2 border-slate-300 rounded-lg shadow-lg overflow-hidden bg-white">
+            <canvas id="pdf-canvas" class="w-full"></canvas>
+          </div>
+          <!-- Fallback iframe -->
+          <iframe 
+            id="pdf-fallback"
+            src="{% static 'qrcode.pdf' %}#toolbar=0&navpanes=0&scrollbar=0" 
+            type="application/pdf"
+            class="w-full h-[700px] border-2 border-slate-300 rounded-lg shadow-lg hidden"
+            style="min-height: 700px;"
+          >
+            <p class="text-slate-600 p-4">
+              {% trans "Your browser does not support PDFs. " %}
+              <a href="{% static 'qrcode.pdf' %}" class="text-primary underline" download>
+                {% trans "Download the PDF" %}
+              </a>
+            </p>
+          </iframe>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Instructions Text -->
+    <div class="mt-8 text-center">
+      <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <p class="text-slate-700">
+          {% trans "To complete the registration process, please scan this QR code. After payment, contact support." %}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Support Contact Info -->
+    <div class="mt-8 text-center">
+      <p class="text-sm text-slate-600">
+        {% trans "Need help? " %}
+        <a href="#" class="text-primary hover:underline font-semibold">{% trans "Contact Support" %}</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- PDF.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+  // Set PDF.js worker
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  
+  // Load and display PDF
+  const pdfUrl = "{% static 'qrcode.pdf' %}";
+  const container = document.getElementById('pdf-container');
+  const canvas = document.getElementById('pdf-canvas');
+  const fallback = document.getElementById('pdf-fallback');
+  
+  pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+    // Get first page
+    return pdf.getPage(1);
+  }).then(function(page) {
+    const viewport = page.getViewport({ scale: 2.5 }); // Higher scale for better quality
+    const context = canvas.getContext('2d');
+    
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    
+    const renderContext = {
+      canvasContext: context,
+      viewport: viewport
+    };
+    
+    return page.render(renderContext).promise;
+  }).then(function() {
+    // PDF rendered successfully
+    console.log('PDF rendered successfully');
+  }).catch(function(error) {
+    // Fallback to iframe if PDF.js fails
+    console.error('Error rendering PDF:', error);
+    container.style.display = 'none';
+    fallback.classList.remove('hidden');
+  });
+</script>
+
+<style>
+  /* Ensure PDF displays properly */
+  #pdf-container {
+    background: white;
+    min-height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #pdf-canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  iframe[type="application/pdf"] {
+    background: white;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #pdf-container {
+      min-height: 500px;
+    }
+    
+    iframe[type="application/pdf"] {
+      height: 500px !important;
+      min-height: 500px !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    #pdf-container {
+      min-height: 400px;
+    }
+    
+    iframe[type="application/pdf"] {
+      height: 400px !important;
+      min-height: 400px !important;
+    }
+  }
+</style>
+{% endblock %}

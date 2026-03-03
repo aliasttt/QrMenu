@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %}{{ restaurant.name }} - {% trans "Menu" %}{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Hide navigation header for menu page */
+  header {
+    display: none !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'business_menu/themes/menu_themes.css' %}">
+<link rel="stylesheet" href="{% static 'business_menu/menu_v2.css' %}">
+
+<div class="menu-root {{ theme_slug|default:'theme--classic' }}">
+  <div class="menu-v2">
+    <div class="menu-v2-hero">
+      <div class="menu-v2-shell" style="padding-bottom: 0;">
+        <div class="menu-v2-heroCard">
+          <div class="menu-v2-heroTop">
+            <div class="menu-v2-brandRow">
+              <div class="menu-v2-badge">
+                <i data-lucide="qr-code" style="width:16px;height:16px;"></i>
+                <span>QR Menü</span>
+              </div>
+              {% if settings.show_prices %}
+              <div class="menu-v2-badge">
+                <i data-lucide="tag" style="width:16px;height:16px;"></i>
+                <span>{% trans "Prices" %}</span>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="menu-v2-title">{{ restaurant.name }}</div>
+
+            {% if settings.show_descriptions and restaurant.description %}
+            <div class="menu-v2-desc">{{ restaurant.description }}</div>
+            {% endif %}
+
+            <div class="menu-v2-heroMeta">
+              {% if restaurant.address %}
+              <div class="menu-v2-metaItem">
+                <span class="menu-v2-metaIcon"><i data-lucide="map-pin" style="width:18px;height:18px;"></i></span>
+                <span>{{ restaurant.address }}</span>
+              </div>
+              {% endif %}
+              {% if restaurant.phone %}
+              <div class="menu-v2-metaItem">
+                <span class="menu-v2-metaIcon"><i data-lucide="phone" style="width:18px;height:18px;"></i></span>
+                <span>{{ restaurant_phone_display|default:restaurant.phone }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {% if categories %}
+        <div class="catbar" aria-label="{% trans 'Categories' %}">
+          <div class="catbar-inner">
+            <button type="button" class="catnav catnav--prev" data-cat-prev aria-label="{% trans 'Previous' %}">
+              <span class="catnav-arrow">‹</span>
+            </button>
+            <div class="catbar-scroll" data-cat-scroll>
+              <button type="button" class="catchip is-active" data-category-btn="all" aria-selected="true">
+                {% trans "All" %}
+              </button>
+              {% for category in categories %}
+              <button type="button" class="catchip" data-category-btn="{{ category.id }}" aria-selected="false">
+                {{ category.name }}
+              </button>
+              {% endfor %}
+            </div>
+            <button type="button" class="catnav catnav--next" data-cat-next aria-label="{% trans 'Next' %}">
+              <span class="catnav-arrow">›</span>
+            </button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="menu-v2-shell" data-menu-anchor>
+      {% if packages %}
+      <div class="menu-v2-section" data-only-all>
+        <div class="menu-v2-sectionTitle">
+          <h2>{% trans "Packages" %}</h2>
+          <span class="menu-v2-subtle">{% trans "Special offers" %}</span>
+        </div>
+        <div class="mi-list">
+          {% for p in packages %}
+          <div class="pkg-card">
+            {% if settings.show_images %}
+            <div class="pkg-media">
+              {% if p.image %}
+              <img src="{{ p.image }}" alt="{{ p.name }}">
+              {% else %}
+              <div class="mi-placeholder" style="width:100%;height:100%;">
+                <i data-lucide="image" style="width:26px;height:26px;"></i>
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+            <div class="pkg-body">
+              <div class="pkg-name">{{ p.name }}</div>
+              {% if settings.show_descriptions and p.description %}
+              <div class="pkg-desc">{{ p.description }}</div>
+              {% endif %}
+              {% if settings.show_prices %}
+              <div class="pkg-row">
+                <span class="pkg-price">{{ p.package_price }} €</span>
+                {% if p.original_price %}
+                <span class="pkg-old">{{ p.original_price }} €</span>
+                {% endif %}
+                {% if p.discount_percent %}
+                <span class="mi-chip">{{ p.discount_percent }}%</span>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if menu_items_grouped %}
+        {% for group in menu_items_grouped %}
+        <section class="menu-v2-section" data-category-section="{{ group.category_id }}">
+          <div class="menu-v2-sectionTitle">
+            <h3>{{ group.category_name }}</h3>
+            {% if categories %}
+            {% for c in categories %}
+              {% if c.id == group.category_id %}
+              <span class="menu-v2-subtle">{{ c.item_count }} {% trans "items" %}</span>
+              {% endif %}
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          {% if group.items %}
+          <div class="mi-list">
+            {% for item in group.items %}
+            <article class="mi-card" data-carousel-card data-images-script="mi-images-{{ item.id }}">
+              <div class="mi-media">
+                {% if settings.show_images %}
+                  {% if item.images %}
+                  <div class="mi-carousel">
+                    <img class="mi-img" data-carousel-img src="{{ item.images.0 }}" alt="{{ item.name }}">
+                    <button type="button" class="mi-nav mi-nav--prev" data-carousel-prev aria-label="{% trans 'Previous image' %}">
+                      <span class="mi-arrow">‹</span>
+                    </button>
+                    <button type="button" class="mi-nav mi-nav--next" data-carousel-next aria-label="{% trans 'Next image' %}">
+                      <span class="mi-arrow">›</span>
+                    </button>
+                  </div>
+                  {% else %}
+                  <div class="mi-carousel">
+                    <div class="mi-placeholder" style="width:100%;height:100%;">
+                      <i data-lucide="image" style="width:26px;height:26px;"></i>
+                    </div>
+                  </div>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              <div class="mi-body">
+                <div class="mi-top">
+                  <div class="mi-name">
+                    {% if settings.show_serial and item.serial %}
+                      {{ item.serial }} —
+                    {% endif %}
+                    {{ item.name }}
+                  </div>
+                  {% if settings.show_prices and item.price %}
+                  <div class="mi-price">{{ item.price }} €</div>
+                  {% endif %}
+                </div>
+
+                {% if settings.show_descriptions and item.description %}
+                <div class="mi-desc">{{ item.description }}</div>
+                {% endif %}
+
+                <div class="mi-meta">
+                  {% if item.stock %}
+                  <span class="mi-chip">{{ item.stock }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% with item_id=item.id|stringformat:"s" %}
+                {% with script_id="mi-images-"|add:item_id %}
+                  {% if item.images is not None %}{{ item.images|json_script:script_id }}{% else %}<script id="{{ script_id }}" type="application/json">[]</script>{% endif %}
+                {% endwith %}
+              {% endwith %}
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="menu-v2-empty">
+            <div style="margin-bottom:10px;">
+              <i data-lucide="folder-x" style="width:34px;height:34px;"></i>
+            </div>
+            <div>{% trans "No items in this category yet." %}</div>
+          </div>
+          {% endif %}
+        </section>
+        {% endfor %}
+      {% endif %}
+
+      {% if not menu_items %}
+      <div class="menu-v2-empty">
+        <div style="margin-bottom:10px;">
+          <i data-lucide="utensils" style="width:40px;height:40px;"></i>
+        </div>
+        <div style="font-weight:900; color: var(--menu-text); margin-bottom:4px;">{% trans "No menu items available" %}</div>
+        <div>{% trans "This restaurant hasn't added any menu items yet." %}</div>
+      </div>
+      {% endif %}
+
+      <div class="menu-v2-section" style="text-align:center; padding: 1.5rem 0 2rem;">
+        <p style="color: var(--menu-text-muted, #888); margin-bottom: 0.75rem;">{% trans "Download our apps for a better experience." %}</p>
+        <a href="/download/" class="menu-download-link" style="display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; padding: 0.75rem 1.5rem; border-radius: 12px; background: linear-gradient(135deg, var(--menu-primary, #a855f7), var(--menu-secondary, #ec4899)); color: #fff; font-weight: 600; text-decoration: none; transition: opacity 0.2s;">
+          <i data-lucide="download" style="width:20px;height:20px;"></i>
+          <span>{% trans "Download Apps" %}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ارسال URL منو به اپ (در صورت نیاز)
+  if (window.parent !== window) {
+    window.parent.postMessage({
+      type: 'menu_url',
+      url: "{{ menu_url|escapejs }}",
+      restaurant_id: "{{ restaurant.id }}",
+      token: "{{ token|escapejs }}"
+    }, '*');
+  }
+</script>
+
+<script src="{% static 'business_menu/menu_v2.js' %}"></script>
+<script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
