@@ -16,7 +16,8 @@ stripe==8.9.0
 dj-database-url==2.1.0
 gunicorn==21.2.0
 whitenoise==6.6.0
-psycopg2-binary==2.9.9  # PostgreSQL adapter for Django
+psycopg2-binary==2.9.9  # PostgreSQL adapter (fallback for older Python)
+psycopg[binary]>=3.1.0  # PostgreSQL adapter for Python 3.13+ on Scalingo
 
 # Media storage (for production - prevents file loss on Scalingo)
 django-storages==1.14.2
