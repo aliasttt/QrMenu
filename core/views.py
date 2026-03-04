@@ -218,6 +218,11 @@ def contact(request):
     return render(request, "pages/contact.html")
 
 
+def services(request):
+    """Single services page with all service sections and anchor links from the Services dropdown."""
+    return render(request, "pages/services.html")
+
+
 def restaurants_list(request):
     """صفحهٔ لیست رستوران‌ها / کافه‌ها به صورت کارت."""
     restaurants = Restaurant.objects.filter(is_active=True).order_by("name")

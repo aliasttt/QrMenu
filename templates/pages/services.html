@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Services | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}QR Menu Pro services: AI menu import, customizable themes, online ordering, multilingual support, secure payments, and more.{% endblock %}
+
+{% block content %}
+<section class="py-12 md:py-16 lg:py-20">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+    <header class="text-center mb-14" data-reveal>
+      <h1 class="section-title text-slate-900 dark:text-white">Our Services</h1>
+      <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">Everything you need to run a modern digital menu and ordering experience.</p>
+    </header>
+
+    <nav class="mb-12 rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 p-4" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Jump to</p>
+      <div class="flex flex-wrap gap-2">
+        <a href="#ai-menu-import" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">AI Menu Import</a>
+        <a href="#customizable-themes" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Customizable Themes</a>
+        <a href="#dedicated-support" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Dedicated Support</a>
+        <a href="#menu-creation" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Menu Creation</a>
+        <a href="#multi-service-management" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Multi-Service</a>
+        <a href="#multilingual-support" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Multilingual</a>
+        <a href="#online-ordering" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Online Ordering</a>
+        <a href="#pdf-export" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">PDF Export</a>
+        <a href="#real-time-updates" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Real-Time Updates</a>
+        <a href="#secure-payment-processing" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Secure Payments</a>
+        <a href="#smart-order-management" class="rounded-full bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-orange-900/30 hover:text-primary-600 dark:hover:text-orange-400">Smart Order Management</a>
+      </div>
+    </nav>
+
+    <div class="space-y-16">
+      <article id="ai-menu-import" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">AI Menu Import</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Upload a photo or PDF of your existing menu and our AI extracts dishes, descriptions, and prices automatically. Save hours of manual data entry and get your digital menu live in minutes. Perfect for restaurants migrating from paper or legacy systems.</p>
+      </article>
+
+      <article id="customizable-themes" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Customizable Themes</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Choose from a range of professional menu themes that match your brand. Adjust colors, fonts, and layout so your QR menu looks consistent with your restaurant’s identity. No design skills required—switch themes anytime from your dashboard.</p>
+      </article>
+
+      <article id="dedicated-support" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Dedicated Support</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Get help when you need it. Our support team is available to assist with setup, menu updates, and technical questions. Higher-tier plans include priority support and a dedicated success manager so you can focus on running your venue.</p>
+      </article>
+
+      <article id="menu-creation" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Menu Creation</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Build and manage your menu with an intuitive editor. Add categories, items, descriptions, prices, and images. Drag-and-drop reordering, bulk edit, and duplicate items across locations. Your menu stays organized and easy for guests to browse on any device.</p>
+      </article>
+
+      <article id="multi-service-management" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Multi-Service Management</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Run dine-in, takeaway, and delivery from one place. Set different availability and pricing per service type, manage table and delivery zones, and keep orders flowing without switching between multiple tools.</p>
+      </article>
+
+      <article id="multilingual-support" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Multilingual Support</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Serve international guests in their language. Add multiple languages to your menu and let customers switch with one tap. Ideal for tourist areas, airports, and diverse neighborhoods. Translations are easy to manage from your panel.</p>
+      </article>
+
+      <article id="online-ordering" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Online Ordering</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Customers browse your menu, add items to the cart, and checkout directly from their phone. Orders land in your dashboard and can be sent to the kitchen or POS. Reduce wait times and capture more orders with a smooth, mobile-first ordering flow.</p>
+      </article>
+
+      <article id="pdf-export" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">PDF Export</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Download your menu as a PDF for printing, sharing, or backup. Use the same layout and content as your digital menu so printed table cards and flyers stay in sync with your online version. One-click export from the dashboard.</p>
+      </article>
+
+      <article id="real-time-updates" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Real-Time Updates</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Change prices, mark items out of stock, or add daily specials—updates go live immediately for anyone scanning your QR code. No app update or cache delay. Keep your menu accurate and avoid disappointed guests.</p>
+      </article>
+
+      <article id="secure-payment-processing" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Secure Payment Processing</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">Accept payments safely with PCI-compliant processing. Integrate with leading payment providers so customers can pay by card or digital wallet at checkout. Transactions are encrypted and your business stays protected.</p>
+      </article>
+
+      <article id="smart-order-management" class="scroll-mt-24" data-reveal>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Smart Order Management</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">See all orders in one queue, filter by status or time, and update preparation state. Notifications keep your team in sync. Optional integrations send orders to your POS or kitchen display so nothing gets lost between front and back of house.</p>
+      </article>
+    </div>
+
+    <p class="mt-14 text-center">
+      <a href="{% url 'pricing' %}" class="btn-primary">View pricing</a>
+      <a href="{% url 'contact' %}" class="btn-secondary ml-3">Contact us</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

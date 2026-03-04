@@ -1,7 +1,7 @@
 <header
   data-nav-sticky
   class="sticky top-0 z-40 border-b border-slate-100 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-shadow"
-  x-data="{ mobileOpen: false, dark: document.documentElement.classList.contains('dark') }"
+  x-data="{ mobileOpen: false, servicesOpen: false, dark: document.documentElement.classList.contains('dark') }"
   x-init="
     $watch('dark', function(v) {
       if (v) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
@@ -28,6 +28,27 @@
            class="rounded-full px-3 py-2 {% if request.path == '/features/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Features
         </a>
+      </li>
+      <li class="relative" x-data @click.outside="servicesOpen = false">
+        <button type="button" @click="servicesOpen = !servicesOpen" class="rounded-full px-3 py-2 flex items-center gap-1 {% if request.path == '/services/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+          Services
+          <svg class="h-4 w-4 transition-transform" :class="{ 'rotate-180': servicesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+        </button>
+        <div x-show="servicesOpen" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded-b-xl rounded-t border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-2 shadow-lg">
+          <a href="{% url 'services' %}" class="block px-4 py-2.5 text-sm font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700">All Services</a>
+          <div class="my-1 border-t border-slate-100 dark:border-slate-600"></div>
+          <a href="{% url 'services' %}#ai-menu-import" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">AI Menu Import</a>
+          <a href="{% url 'services' %}#customizable-themes" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Customizable Themes</a>
+          <a href="{% url 'services' %}#dedicated-support" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Dedicated Support</a>
+          <a href="{% url 'services' %}#menu-creation" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Menu Creation</a>
+          <a href="{% url 'services' %}#multi-service-management" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Multi-Service Management</a>
+          <a href="{% url 'services' %}#multilingual-support" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Multilingual Support</a>
+          <a href="{% url 'services' %}#online-ordering" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Online Ordering</a>
+          <a href="{% url 'services' %}#pdf-export" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">PDF Export</a>
+          <a href="{% url 'services' %}#real-time-updates" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Real-Time Updates</a>
+          <a href="{% url 'services' %}#secure-payment-processing" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Secure Payment Processing</a>
+          <a href="{% url 'services' %}#smart-order-management" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Smart Order Management</a>
+        </div>
       </li>
       <li>
         <a href="{% url 'how_it_works' %}"
@@ -81,6 +102,7 @@
     <div class="space-y-1 text-sm">
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'landing' %}">Home</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/features/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'features' %}">Features</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/services/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'services' %}">Services</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'how_it_works' %}">How it works</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'pricing' %}">Pricing</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'restaurants_list' %}">Restaurants &amp; Cafes</a>
