@@ -35,6 +35,12 @@
         </a>
       </li>
       <li>
+        <a href="{% url 'restaurants_list' %}"
+           class="rounded-full px-3 py-2 {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
+          رستوران‌ها و کافه‌ها
+        </a>
+      </li>
+      <li>
         <a href="{% url 'contact' %}"
            class="rounded-full px-3 py-2 {% if request.path == '/contact/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
           Contact
@@ -60,6 +66,7 @@
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/features/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'features' %}">Features</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'how_it_works' %}">How it works</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'pricing' %}">Pricing</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'restaurants_list' %}">رستوران‌ها و کافه‌ها</a>
       <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/contact/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'contact' %}">Contact</a>
       <hr class="my-2 border-slate-100">
       <a class="block rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-50" href="{% url 'login' %}">Login</a>

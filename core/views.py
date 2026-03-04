@@ -1,6 +1,9 @@
 import json
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.http import Http404
+
+from business_menu.models import Restaurant, MenuItem
 
 
 def _restaurant_payload(restaurant_slug="orange-bistro"):
@@ -169,6 +172,43 @@ def pricing(request):
 
 def contact(request):
     return render(request, "pages/contact.html")
+
+
+def restaurants_list(request):
+    """صفحهٔ لیست رستوران‌ها / کافه‌ها به صورت کارت."""
+    restaurants = Restaurant.objects.filter(is_active=True).order_by("name")
+    return render(request, "pages/restaurants_list.html", {"restaurants": restaurants})
+
+
+def restaurant_menu(request, restaurant_id):
+    """صفحهٔ منوی یک رستوران: آیتم‌های منو به صورت کارت (عکس، نام، توضیح، قیمت)."""
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_id, is_active=True)
+    items = (
+        MenuItem.objects.filter(restaurant=restaurant, is_available=True)
+        .select_related("category")
+        .prefetch_related("images", "images__cloudinary_image")
+        .order_by("order", "name")
+    )
+    menu_cards = []
+    for item in items:
+        img_url = None
+        first_img = item.images.first()
+        if first_img:
+            img_url = first_img.get_image_url(request=request)
+        if not img_url:
+            img_url = f"https://picsum.photos/seed/menu-{item.id}/640/400"
+        menu_cards.append({
+            "id": item.id,
+            "name": item.name,
+            "description": item.description or "",
+            "price": item.price,
+            "image_url": img_url,
+        })
+    return render(
+        request,
+        "pages/restaurant_menu.html",
+        {"restaurant": restaurant, "menu_cards": menu_cards},
+    )
 
 
 def public_menu(request, restaurant_slug):
