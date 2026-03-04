@@ -6,23 +6,25 @@
 <section class="py-16 md:py-20 lg:py-24">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <header class="mx-auto max-w-3xl text-center">
-      <h1 class="section-title">Simple pricing</h1>
-      <p class="section-subtitle mt-3">Start free, upgrade when you need more. No hidden fees.</p>
+      <h1 class="section-title text-slate-900 dark:text-white">Simple pricing</h1>
+      <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">Annual billing. Start free, upgrade when you need more. No hidden fees.</p>
+      <p class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">All prices per year, plus 19% VAT (tax) where applicable.</p>
     </header>
 
     <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {% for plan in plans %}
-        <article class="card-soft flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover {% if plan.highlight %}ring-2 ring-primary-200 border-primary-100 bg-primary-50/30{% endif %}" data-reveal>
+        <article class="card-soft flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover dark:bg-slate-800 dark:border-slate-600 {% if plan.highlight %}ring-2 ring-primary-200 dark:ring-orange-500/50 border-primary-100 dark:border-orange-500/30 bg-primary-50/30 dark:bg-orange-900/20{% endif %}" data-reveal>
           {% if plan.badge %}
             <span class="badge-primary mb-4 self-start">{{ plan.badge }}</span>
           {% endif %}
-          <h2 class="text-xl font-semibold text-slate-900">{{ plan.name }}</h2>
-          <p class="mt-2 text-3xl font-bold text-slate-900">${{ plan.price }}<span class="text-base font-normal text-slate-500">/mo</span></p>
-          <p class="mt-1 text-sm text-slate-600">{{ plan.summary }}</p>
-          <ul class="mt-6 flex-1 space-y-3 text-sm text-slate-600">
+          <h2 class="text-xl font-semibold text-slate-900 dark:text-white">{{ plan.name }}</h2>
+          <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">${{ plan.price }}<span class="text-base font-normal text-slate-500 dark:text-slate-400">/year</span></p>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">plus 19% VAT</p>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ plan.summary }}</p>
+          <ul class="mt-6 flex-1 space-y-3 text-sm text-slate-600 dark:text-slate-400">
             {% for f in plan.features %}
               <li class="flex items-center gap-2">
-                <svg class="h-5 w-5 shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <svg class="h-5 w-5 shrink-0 text-primary-500 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 {{ f }}
               </li>
             {% endfor %}
@@ -33,24 +35,24 @@
     </div>
 
     <!-- Comparison table -->
-    <div class="mt-20 overflow-hidden rounded-2xl border border-slate-200" data-reveal>
+    <div class="mt-20 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-600" data-reveal>
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
-          <thead class="bg-slate-50">
+          <thead class="bg-slate-50 dark:bg-slate-800">
             <tr>
-              <th class="px-4 py-3 text-left font-semibold text-slate-900">Feature</th>
-              <th class="px-4 py-3 text-center font-semibold text-slate-900">Starter</th>
-              <th class="px-4 py-3 text-center font-semibold text-slate-900">Growth</th>
-              <th class="px-4 py-3 text-center font-semibold text-slate-900">Scale</th>
+              <th class="px-4 py-3 text-left font-semibold text-slate-900 dark:text-white">Feature</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-900 dark:text-white">Starter</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-900 dark:text-white">Growth</th>
+              <th class="px-4 py-3 text-center font-semibold text-slate-900 dark:text-white">Scale</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-600">
             {% for row in comparison %}
-              <tr class="hover:bg-slate-50/50">
-                <td class="px-4 py-3 text-slate-700">{{ row.name }}</td>
-                <td class="px-4 py-3 text-center">{{ row.starter }}</td>
-                <td class="px-4 py-3 text-center">{{ row.growth }}</td>
-                <td class="px-4 py-3 text-center">{{ row.scale }}</td>
+              <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50">
+                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ row.name }}</td>
+                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{{ row.starter }}</td>
+                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{{ row.growth }}</td>
+                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{{ row.scale }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -60,12 +62,12 @@
 
     <!-- Pricing FAQ -->
     <div class="mt-20 mx-auto max-w-2xl">
-      <h2 class="section-title text-center">Pricing FAQ</h2>
+      <h2 class="section-title text-center text-slate-900 dark:text-white">Pricing FAQ</h2>
       <ul class="mt-8 space-y-4">
         {% for faq in faqs %}
-          <li class="card-soft" data-reveal>
-            <h3 class="font-semibold text-slate-900">{{ faq.q }}</h3>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ faq.a }}</p>
+          <li class="card-soft dark:bg-slate-800 dark:border-slate-600" data-reveal>
+            <h3 class="font-semibold text-slate-900 dark:text-white">{{ faq.q }}</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{{ faq.a }}</p>
           </li>
         {% endfor %}
       </ul>
@@ -78,7 +80,7 @@
 </section>
 
 <!-- Sticky mobile CTA -->
-<div class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-100 bg-white/95 p-4 backdrop-blur-md md:hidden">
+<div class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-100 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 p-4 backdrop-blur-md md:hidden">
   <a href="{% url 'register' %}" class="btn-primary block w-full text-center">Start Free Trial</a>
 </div>
 <div class="h-20 md:hidden" aria-hidden="true"></div>
