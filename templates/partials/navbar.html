@@ -1,10 +1,17 @@
 <header
   data-nav-sticky
-  class="sticky top-0 z-40 border-b border-slate-100 bg-white/90 backdrop-blur-md transition-shadow"
-  x-data="{ mobileOpen: false }"
+  class="sticky top-0 z-40 border-b border-slate-100 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-shadow"
+  x-data="{ mobileOpen: false, dark: document.documentElement.classList.contains('dark') }"
+  x-init="
+    $watch('dark', function(v) {
+      if (v) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
+      else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
+    });
+    dark = document.documentElement.classList.contains('dark');
+  "
 >
   <nav class="qr-container flex items-center justify-between py-3" aria-label="Primary">
-    <a href="{% url 'landing' %}" class="flex items-center gap-2 font-bold text-slate-900 transition hover:opacity-90" aria-label="Go to home">
+    <a href="{% url 'landing' %}" class="flex items-center gap-2 font-bold text-slate-900 dark:text-white transition hover:opacity-90" aria-label="Go to home">
       <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">Q</span>
       <span>{{ theme.brand_name }}</span>
     </a>
@@ -12,64 +19,74 @@
     <ul class="hidden items-center gap-1 md:flex text-sm font-medium">
       <li>
         <a href="{% url 'landing' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
+           class="rounded-full px-3 py-2 {% if request.path == '/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Home
         </a>
       </li>
       <li>
         <a href="{% url 'features' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/features/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
+           class="rounded-full px-3 py-2 {% if request.path == '/features/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Features
         </a>
       </li>
       <li>
         <a href="{% url 'how_it_works' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
+           class="rounded-full px-3 py-2 {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           How it works
         </a>
       </li>
       <li>
         <a href="{% url 'pricing' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
+           class="rounded-full px-3 py-2 {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Pricing
         </a>
       </li>
       <li>
         <a href="{% url 'restaurants_list' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
-          رستوران‌ها و کافه‌ها
+           class="rounded-full px-3 py-2 {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+          Restaurants &amp; Cafes
         </a>
       </li>
       <li>
         <a href="{% url 'contact' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/contact/' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600{% endif %}">
+           class="rounded-full px-3 py-2 {% if request.path == '/contact/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Contact
         </a>
       </li>
     </ul>
 
     <div class="hidden items-center gap-2 md:flex">
+      <button @click="dark = !dark" type="button" class="rounded-xl p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" aria-label="Toggle dark mode">
+        <svg x-show="!dark" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg x-show="dark" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
       <a href="{% url 'login' %}" class="qr-btn qr-btn-ghost text-sm">Login</a>
       <a href="{% url 'register' %}" class="qr-btn qr-btn-primary text-sm">Get Started</a>
     </div>
 
-    <button @click="mobileOpen = !mobileOpen" class="inline-flex rounded-xl border border-slate-200 p-2.5 text-slate-700 transition hover:bg-slate-50 md:hidden" aria-label="Toggle menu">
+    <div class="flex items-center gap-2 md:hidden">
+      <button @click="dark = !dark" type="button" class="rounded-xl p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" aria-label="Toggle dark mode">
+        <svg x-show="!dark" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg x-show="dark" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
+    <button @click="mobileOpen = !mobileOpen" class="inline-flex rounded-xl border border-slate-200 dark:border-slate-600 p-2.5 text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-700" aria-label="Toggle menu">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
+    </div>
   </nav>
 
-  <div x-cloak x-show="mobileOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="border-t border-slate-100 bg-white/95 backdrop-blur p-4 md:hidden">
+  <div x-cloak x-show="mobileOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="border-t border-slate-100 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur p-4 md:hidden">
     <div class="space-y-1 text-sm">
-      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'landing' %}">Home</a>
-      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/features/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'features' %}">Features</a>
-      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'how_it_works' %}">How it works</a>
-      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'pricing' %}">Pricing</a>
-      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'restaurants_list' %}">رستوران‌ها و کافه‌ها</a>
-      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/contact/' %}text-orange-600 bg-orange-50{% else %}text-slate-700 hover:bg-slate-50{% endif %}" href="{% url 'contact' %}">Contact</a>
-      <hr class="my-2 border-slate-100">
-      <a class="block rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-50" href="{% url 'login' %}">Login</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'landing' %}">Home</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/features/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'features' %}">Features</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'how_it_works' %}">How it works</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'pricing' %}">Pricing</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'restaurants_list' %}">Restaurants &amp; Cafes</a>
+      <a class="block rounded-xl px-3 py-2.5 font-medium {% if request.path == '/contact/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700{% endif %}" href="{% url 'contact' %}">Contact</a>
+      <hr class="my-2 border-slate-100 dark:border-slate-700">
+      <a class="block rounded-xl px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" href="{% url 'login' %}">Login</a>
       <a class="mt-2 block rounded-xl bg-primary px-3 py-2.5 font-semibold text-white text-center hover:bg-primary-600" href="{% url 'register' %}">Get Started</a>
     </div>
   </div>

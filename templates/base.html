@@ -1,6 +1,6 @@
 {% load static %}
 <!doctype html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full" id="html-theme">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,23 +13,34 @@
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
   <meta property="og:image" content="{% static 'img/og-placeholder.svg' %}">
   {% endblock %}
+  <script>
+    (function() {
+      var theme = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (theme === 'dark' || (!theme && prefersDark)) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   {% block styles %}{% endblock %}
 </head>
-<body class="h-full font-sans">
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-soft focus:outline-none">
+<body class="h-full font-sans bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-soft focus:outline-none dark:focus:bg-slate-800">
     Skip to main content
   </a>
 
   <!-- Background layers -->
   <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10">
-    <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-slate-100"></div>
-    <div class="blob-orange -top-40 -left-24 h-80 w-80 opacity-70"></div>
-    <div class="blob-orange bottom-[-6rem] right-[-4rem] h-72 w-72 opacity-60"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800"></div>
+    <div class="blob-orange -top-40 -left-24 h-80 w-80 opacity-70 dark:opacity-20"></div>
+    <div class="blob-orange bottom-[-6rem] right-[-4rem] h-72 w-72 opacity-60 dark:opacity-15"></div>
   </div>
 
   {% block navbar %}
@@ -60,7 +71,7 @@
   >
     <button
       @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-      class="flex h-12 w-12 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 shadow-soft-lg transition hover:bg-primary hover:text-white hover:border-primary hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      class="flex h-12 w-12 items-center justify-center rounded-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 shadow-soft-lg transition hover:bg-primary hover:text-white hover:border-primary hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
       aria-label="Scroll to top"
     >
       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>

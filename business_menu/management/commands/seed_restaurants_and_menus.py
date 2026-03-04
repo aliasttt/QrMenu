@@ -13,18 +13,18 @@ from business_menu.models import BusinessAdmin, Restaurant, Category, MenuItem
 RESTAURANTS = [
     (
         "Café Moka",
-        "کافه‌ای دنج با قهوه‌های تخصصی و دسرهای خانگی. فضای آرام برای کار و دورهمی.",
-        "خیابان ولیعصر، پلاک ۱۲۳۴",
+        "A cozy café with specialty coffees and homemade desserts. Quiet space for work and meetups.",
+        "123 Main Street, Downtown",
     ),
     (
-        "رستوران باغ سبز",
-        "رستوران ایرانی با فضای سبز و منوی گسترده از غذاهای اصیل و کباب‌های تازه.",
-        "جردن، خیابان ناهید، کوچه دوم",
+        "Sabz Garden Restaurant",
+        "Iranian restaurant with a green setting and a wide menu of authentic dishes and fresh kebabs.",
+        "Jordan, Nahid Street, Alley 2",
     ),
     (
         "Pizza Napoli",
-        "پیتزا و پاستای ایتالیایی با مواد اولیه وارداتی و تنور سنتی.",
-        "زعفرانیه، خیابان فلان",
+        "Italian pizza and pasta with imported ingredients and a traditional wood-fired oven.",
+        "Zaferanieh, Oak Avenue",
     ),
 ]
 
@@ -32,63 +32,63 @@ RESTAURANTS = [
 MENU_DATA = [
     # Café Moka
     [
-        ("قهوه و نوشیدنی‌ها", [
-            ("اسپرسو", "اسپرسو تک شات ایتالیایی", Decimal("4.50")),
-            ("لاته", "لاته با شیر تازه و آرت لتی", Decimal("6.00")),
-            ("کاپوچینو", "کاپوچینو با پودر کاکائو", Decimal("5.50")),
-            ("چای ماسالا", "چای هندی با ادویه و شیر", Decimal("5.00")),
-            ("آیس لاته", "لاته سرد با یخ", Decimal("6.50")),
+        ("Coffee & Drinks", [
+            ("Espresso", "Single shot Italian espresso", Decimal("4.50")),
+            ("Latte", "Latte with fresh milk and latte art", Decimal("6.00")),
+            ("Cappuccino", "Cappuccino with cocoa powder", Decimal("5.50")),
+            ("Chai Masala", "Indian tea with spices and milk", Decimal("5.00")),
+            ("Iced Latte", "Cold latte over ice", Decimal("6.50")),
         ]),
-        ("دسر و شیرینی", [
-            ("چیزکیک", "چیزکیک نیویورکی با توت فرنگی", Decimal("8.00")),
-            ("براونی", "براونی شکلاتی با گردو", Decimal("6.50")),
-            ("کیک هویج", "کیک هویج با خامه پنیر", Decimal("7.00")),
-            ("مافین بلوبری", "مافین تازه با بلوبری", Decimal("4.50")),
+        ("Desserts & Pastries", [
+            ("Cheesecake", "New York cheesecake with strawberry", Decimal("8.00")),
+            ("Brownie", "Chocolate brownie with walnuts", Decimal("6.50")),
+            ("Carrot Cake", "Carrot cake with cream cheese frosting", Decimal("7.00")),
+            ("Blueberry Muffin", "Fresh muffin with blueberries", Decimal("4.50")),
         ]),
-        ("صبحانه", [
-            ("صبحانه انگلیسی", "تخم مرغ، بیکن، لوبیا، نان تست", Decimal("12.00")),
-            ("پنکیک با میوه", "پنکیک با عسل و میوه‌های فصل", Decimal("10.00")),
-            ("اوتمیل", "جو دوسر با موز و عسل", Decimal("7.50")),
+        ("Breakfast", [
+            ("English Breakfast", "Eggs, bacon, beans, toast", Decimal("12.00")),
+            ("Pancakes with Fruit", "Pancakes with honey and seasonal fruit", Decimal("10.00")),
+            ("Oatmeal", "Oats with banana and honey", Decimal("7.50")),
         ]),
     ],
-    # رستوران باغ سبز
+    # Sabz Garden Restaurant
     [
-        ("کباب‌ها", [
-            ("کباب کوبیده", "کباب کوبیده مخلوط با برنج و گوجه", Decimal("18.00")),
-            ("جوجه کباب", "جوجه کباب با برنج زعفرانی و کره", Decimal("16.00")),
-            ("بختیاری", "نیم‌روز کوبیده و نیم‌روز جوجه", Decimal("20.00")),
-            ("کباب برگ", "گوشت گوسفندی با برنج و سماق", Decimal("22.00")),
+        ("Kebabs", [
+            ("Koobideh Kebab", "Mixed kebab with rice and tomato", Decimal("18.00")),
+            ("Chicken Kebab", "Chicken kebab with saffron rice and butter", Decimal("16.00")),
+            ("Bakhtiari", "Half koobideh, half chicken kebab", Decimal("20.00")),
+            ("Barg Kebab", "Lamb kebab with rice and sumac", Decimal("22.00")),
         ]),
-        ("خوراک‌ها", [
-            ("قورمه سبزی", "قورمه سبزی با لوبیا و برنج", Decimal("14.00")),
-            ("زرشک پلو با مرغ", "مرغ زعفرانی با زرشک و برنج", Decimal("15.00")),
-            ("فسنجان", "فسنجان با مرغ و گردو", Decimal("17.00")),
-            ("باقالی پلو با مرغ", "مرغ با باقالی و برنج", Decimal("15.50")),
+        ("Stews & Rice", [
+            ("Ghormeh Sabzi", "Herb stew with kidney beans and rice", Decimal("14.00")),
+            ("Zereshk Polo ba Morgh", "Saffron chicken with barberry rice", Decimal("15.00")),
+            ("Fesenjan", "Pomegranate walnut stew with chicken", Decimal("17.00")),
+            ("Baghali Polo ba Morgh", "Chicken with fava bean rice", Decimal("15.50")),
         ]),
-        ("پیش‌غذا و سالاد", [
-            ("ماست و خیار", "ماست با خیار و نعناع", Decimal("3.50")),
-            ("سالاد شیرازی", "خیار، گوجه، پیاز با آبلیمو", Decimal("4.00")),
-            ("سیرابی", "سیرابی با ادویه", Decimal("8.00")),
+        ("Starters & Salad", [
+            ("Mast-o-Khiar", "Yogurt with cucumber and mint", Decimal("3.50")),
+            ("Salad Shirazi", "Cucumber, tomato, onion with lime", Decimal("4.00")),
+            ("Tripe", "Seasoned tripe", Decimal("8.00")),
         ]),
     ],
     # Pizza Napoli
     [
-        ("پیتزا", [
-            ("مارگاریتا", "گوجه، موتزارلا، ریحان تازه", Decimal("12.00")),
-            ("پپرونی", "پپرونی تند با پنیر اضافه", Decimal("14.00")),
-            ("کواترو فورماژی", "چهار نوع پنیر ایتالیایی", Decimal("15.00")),
-            ("سبزیجات گریل", "فلفل، قارچ، زیتون، گوجه", Decimal("13.00")),
-            ("مارینارا", "سس گوجه با سیر و ریحان", Decimal("11.00")),
+        ("Pizza", [
+            ("Margherita", "Tomato, mozzarella, fresh basil", Decimal("12.00")),
+            ("Pepperoni", "Spicy pepperoni with extra cheese", Decimal("14.00")),
+            ("Quattro Formaggi", "Four Italian cheeses", Decimal("15.00")),
+            ("Grilled Vegetables", "Pepper, mushroom, olive, tomato", Decimal("13.00")),
+            ("Marinara", "Tomato sauce with garlic and basil", Decimal("11.00")),
         ]),
-        ("پاستا", [
-            ("اسپاگتی کاربونارا", "بیکن، زرده تخم مرغ، پنیر پکورینو", Decimal("13.00")),
-            ("پنه آلفردو", "سس آلفردو با مرغ و قارچ", Decimal("14.00")),
-            ("لازانیا", "لایه‌های پاستا با رگه و پنیر", Decimal("14.50")),
+        ("Pasta", [
+            ("Spaghetti Carbonara", "Bacon, egg yolk, pecorino", Decimal("13.00")),
+            ("Penne Alfredo", "Alfredo sauce with chicken and mushroom", Decimal("14.00")),
+            ("Lasagna", "Layers of pasta with ragù and cheese", Decimal("14.50")),
         ]),
-        ("نوشیدنی", [
-            ("لیموناد", "لیموناد تازه با نعناع", Decimal("4.00")),
-            ("آب پرتقال", "آب پرتقال تازه", Decimal("4.50")),
-            ("سودا ایتالیانا", "سودا با طعم لیمو یا پرتقال", Decimal("3.50")),
+        ("Drinks", [
+            ("Lemonade", "Fresh lemonade with mint", Decimal("4.00")),
+            ("Orange Juice", "Fresh orange juice", Decimal("4.50")),
+            ("Italian Soda", "Soda with lemon or orange flavor", Decimal("3.50")),
         ]),
     ],
 ]
