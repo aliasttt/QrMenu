@@ -186,9 +186,157 @@ def contact(request):
     return render(request, "pages/contact.html")
 
 
+SERVICE_PAGES = [
+    {
+        "slug": "ai-menu-import",
+        "title": "AI Menu Import",
+        "tagline": "Turn paper menus into digital menus in minutes.",
+        "summary": "Upload a photo or PDF and let AI extract dish names, descriptions, and prices automatically.",
+        "hero_image": "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=1400&q=80",
+        "benefits": [
+            "Save hours of manual typing",
+            "Launch your QR menu faster",
+            "Reduce human data-entry errors",
+        ],
+    },
+    {
+        "slug": "customizable-themes",
+        "title": "Customizable Themes",
+        "tagline": "Match your menu design to your restaurant brand.",
+        "summary": "Choose from modern themes and customize colors, typography, and layout in a few clicks.",
+        "hero_image": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1400&q=80",
+        "benefits": [
+            "Consistent brand identity",
+            "Better visual experience for guests",
+            "Faster edits with pre-built styles",
+        ],
+    },
+    {
+        "slug": "dedicated-support",
+        "title": "Dedicated Support",
+        "tagline": "Real help when you need it most.",
+        "summary": "Our team helps with setup, menu updates, and optimization so your staff can focus on service.",
+        "hero_image": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=80",
+        "benefits": [
+            "Priority support for urgent issues",
+            "Faster onboarding for new branches",
+            "Better uptime and smoother operations",
+        ],
+    },
+    {
+        "slug": "menu-creation",
+        "title": "Menu Creation",
+        "tagline": "Build clean, organized menus your guests love.",
+        "summary": "Create categories, add dish photos, set prices, and reorder items with a simple dashboard.",
+        "hero_image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=80",
+        "benefits": [
+            "Unlimited menu items",
+            "Quick editing for daily changes",
+            "Clear structure for better ordering",
+        ],
+    },
+    {
+        "slug": "multi-service-management",
+        "title": "Multi-Service Management",
+        "tagline": "Run dine-in, takeaway, and delivery from one panel.",
+        "summary": "Manage service types, availability, and order flow in one place without switching tools.",
+        "hero_image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&q=80",
+        "benefits": [
+            "One dashboard for all channels",
+            "Less staff confusion",
+            "Higher operational speed",
+        ],
+    },
+    {
+        "slug": "multilingual-support",
+        "title": "Multilingual Support",
+        "tagline": "Serve local and international guests better.",
+        "summary": "Offer your menu in multiple languages and let customers switch language instantly.",
+        "hero_image": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1400&q=80",
+        "benefits": [
+            "Better guest experience for tourists",
+            "Fewer ordering mistakes",
+            "Higher conversion on the menu page",
+        ],
+    },
+    {
+        "slug": "online-ordering",
+        "title": "Online Ordering",
+        "tagline": "Take orders directly from the QR menu.",
+        "summary": "Guests browse, add to cart, and checkout from their phone with a smooth mobile-first flow.",
+        "hero_image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1400&q=80",
+        "benefits": [
+            "Increase average order value",
+            "Reduce table waiting time",
+            "Capture more takeaway orders",
+        ],
+    },
+    {
+        "slug": "pdf-export",
+        "title": "PDF Export",
+        "tagline": "Keep digital and printed menus in sync.",
+        "summary": "Export your latest menu as PDF for table cards, flyers, and offline sharing.",
+        "hero_image": "https://images.unsplash.com/photo-1517842645767-c639042777db?w=1400&q=80",
+        "benefits": [
+            "Ready-to-print output",
+            "Consistent branding across channels",
+            "Simple backup of menu data",
+        ],
+    },
+    {
+        "slug": "real-time-updates",
+        "title": "Real-Time Updates",
+        "tagline": "Update prices and stock instantly.",
+        "summary": "Publish menu changes live in seconds so guests always see accurate information.",
+        "hero_image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1400&q=80",
+        "benefits": [
+            "No stale menu data",
+            "Fewer customer complaints",
+            "Faster reaction to peak-hour demand",
+        ],
+    },
+    {
+        "slug": "secure-payment-processing",
+        "title": "Secure Payment Processing",
+        "tagline": "Accept payments safely and confidently.",
+        "summary": "Support secure online checkout with trusted gateways and encrypted transaction flow.",
+        "hero_image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1400&q=80",
+        "benefits": [
+            "Safer transactions",
+            "More trust from customers",
+            "Higher checkout completion",
+        ],
+    },
+    {
+        "slug": "smart-order-management",
+        "title": "Smart Order Management",
+        "tagline": "Track every order in one clean queue.",
+        "summary": "Filter by status, prioritize prep, and keep front-of-house and kitchen fully synchronized.",
+        "hero_image": "https://images.unsplash.com/photo-1461344577544-4e5dc9487184?w=1400&q=80",
+        "benefits": [
+            "Clear workflow for staff",
+            "Faster fulfillment",
+            "Improved customer satisfaction",
+        ],
+    },
+]
+
+
 def services(request):
-    """Single services page with all service sections and anchor links from the Services dropdown."""
-    return render(request, "pages/services.html")
+    """Services hub page with cards linking to each dedicated service page."""
+    return render(request, "pages/services.html", {"service_pages": SERVICE_PAGES})
+
+
+def service_detail(request, service_slug):
+    """Dedicated marketing page for a single service."""
+    service = next((item for item in SERVICE_PAGES if item["slug"] == service_slug), None)
+    if not service:
+        raise Http404("Service not found")
+    return render(
+        request,
+        "pages/service_detail.html",
+        {"service": service, "service_pages": SERVICE_PAGES},
+    )
 
 
 def restaurants_list(request):
