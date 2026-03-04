@@ -151,67 +151,35 @@ def how_it_works(request):
 
 
 def pricing(request):
-    plans = [
-        {
-            "name": "Starter",
-            "price": "228",
-            "summary": "For small venues",
-            "badge": None,
-            "highlight": False,
-            "features": [
-                "Up to 50 menu items",
-                "1 QR code",
-                "Basic analytics",
-                "Email support",
-            ],
-        },
-        {
-            "name": "Growth",
-            "price": "588",
-            "summary": "Most popular",
-            "badge": "Popular",
-            "highlight": True,
-            "features": [
-                "Unlimited menu items",
-                "Unlimited QR codes",
-                "Campaigns & discounts",
-                "Priority support",
-                "Custom domain",
-            ],
-        },
-        {
-            "name": "Scale",
-            "price": "1,188",
-            "summary": "For chains",
-            "badge": None,
-            "highlight": False,
-            "features": [
-                "Unlimited menu items",
-                "Unlimited QR codes",
-                "Campaigns & discounts",
-                "Priority support",
-                "Custom domain",
-                "Multi-location",
-                "API & webhooks",
-                "Dedicated success manager",
-            ],
-        },
-    ]
-    comparison = [
-        {"name": "Menu items", "starter": "50", "growth": "Unlimited", "scale": "Unlimited"},
-        {"name": "QR codes", "starter": "1", "growth": "Unlimited", "scale": "Unlimited"},
-        {"name": "Campaigns", "starter": "—", "growth": "✓", "scale": "✓"},
-        {"name": "Custom domain", "starter": "—", "growth": "✓", "scale": "✓"},
-        {"name": "Multi-location", "starter": "—", "growth": "—", "scale": "✓"},
-        {"name": "API / Webhooks", "starter": "—", "growth": "—", "scale": "✓"},
-        {"name": "Dedicated success manager", "starter": "—", "growth": "—", "scale": "✓"},
+    """Single annual plan: €200 + 19% VAT = €238 total. Motivating benefits for restaurant owners."""
+    plan = {
+        "price_eur": "200",
+        "price_with_vat_eur": "238",
+        "features": [
+            "QR menu — customers scan and browse your menu on their phone",
+            "Unlimited menu items and categories",
+            "Unlimited QR codes for tables and takeaway",
+            "Online ordering — guests order and pay from the same link",
+            "Customizable themes to match your brand",
+            "Campaigns & discounts (happy hour, daily specials)",
+            "Multilingual menu support",
+            "Real-time updates — change prices and availability instantly",
+            "Basic analytics — see what sells",
+            "Email & WhatsApp support",
+        ],
+    }
+    benefits = [
+        {"title": "Win more orders", "text": "Guests order directly from the QR menu. No waiting for staff—faster turnover and higher revenue."},
+        {"title": "Look professional", "text": "A clean digital menu and your own domain build trust. Stand out from competitors still using paper."},
+        {"title": "One subscription, everything included", "text": "No per-order fees or hidden costs. One annual fee covers menu, ordering, and support."},
+        {"title": "Launch in minutes", "text": "Add your dishes, print a QR code, and go live. No IT or design skills needed."},
     ]
     faqs = [
-        {"q": "Can I change plans later?", "a": "Yes. Upgrade or downgrade anytime. We prorate the difference."},
-        {"q": "Is there a free trial?", "a": "Yes. Start with a 14-day free trial on any plan. No card required."},
-        {"q": "What does 'plus 19% VAT' mean?", "a": "Prices are quoted excluding VAT. If you are in the EU and liable for VAT, 19% will be added at checkout as required by law."},
+        {"q": "What is included in the price?", "a": "Everything: QR menu, online ordering, unlimited items and QR codes, campaigns, custom domain option, themes, and support. One annual subscription, no per-order fees."},
+        {"q": "Is there a free trial?", "a": "Yes. Start with a free trial to build your menu and test ordering. No card required until you go live."},
+        {"q": "Why 19% VAT?", "a": "We are VAT-registered in the EU. If you are in the EU and liable for VAT, 19% is added at checkout (total €238/year). If you are outside the EU or VAT-exempt, the amount may differ."},
     ]
-    return render(request, "pages/pricing.html", {"plans": plans, "comparison": comparison, "faqs": faqs})
+    return render(request, "pages/pricing.html", {"plan": plan, "benefits": benefits, "faqs": faqs})
 
 
 def contact(request):

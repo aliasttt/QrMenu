@@ -1,66 +1,52 @@
 {% extends "base.html" %}
 {% block title %}Pricing | {{ theme.brand_name }}{% endblock %}
-{% block meta_description %}Simple pricing: Starter, Growth, and Scale. Start free, upgrade when you grow.{% endblock %}
+{% block meta_description %}One simple annual plan: QR menu and online ordering for €200/year + 19% VAT (€238 total). Everything included.{% endblock %}
 
 {% block content %}
 <section class="py-16 md:py-20 lg:py-24">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <header class="mx-auto max-w-3xl text-center">
-      <h1 class="section-title text-slate-900 dark:text-white">Simple pricing</h1>
-      <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">Annual billing. Start free, upgrade when you need more. No hidden fees.</p>
-      <p class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">All prices per year, plus 19% VAT (tax) where applicable.</p>
+    <header class="mx-auto max-w-2xl text-center" data-reveal>
+      <h1 class="section-title text-slate-900 dark:text-white">Simple annual pricing</h1>
+      <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">One plan. QR menu + online ordering. Everything you need to run digital dining—no per-order fees, no hidden costs.</p>
     </header>
 
-    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {% for plan in plans %}
-        <article class="card-soft flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover dark:bg-slate-800 dark:border-slate-600 {% if plan.highlight %}ring-2 ring-primary-200 dark:ring-orange-500/50 border-primary-100 dark:border-orange-500/30 bg-primary-50/30 dark:bg-orange-900/20{% endif %}" data-reveal>
-          {% if plan.badge %}
-            <span class="badge-primary mb-4 self-start">{{ plan.badge }}</span>
-          {% endif %}
-          <h2 class="text-xl font-semibold text-slate-900 dark:text-white">{{ plan.name }}</h2>
-          <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">${{ plan.price }}<span class="text-base font-normal text-slate-500 dark:text-slate-400">/year</span></p>
+    <!-- Single plan card -->
+    <div class="mx-auto mt-14 max-w-lg" data-reveal>
+      <article class="rounded-2xl border-2 border-primary-200 dark:border-orange-500/40 bg-white dark:bg-slate-800 p-8 shadow-soft-lg transition hover:shadow-glow">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Annual subscription</h2>
+          <p class="mt-1 text-slate-600 dark:text-slate-400">QR menu &amp; online ordering</p>
+          <p class="mt-6 text-4xl font-bold text-slate-900 dark:text-white">€{{ plan.price_eur }}<span class="text-lg font-normal text-slate-500 dark:text-slate-400">/year</span></p>
           <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">plus 19% VAT</p>
-          <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ plan.summary }}</p>
-          <ul class="mt-6 flex-1 space-y-3 text-sm text-slate-600 dark:text-slate-400">
-            {% for f in plan.features %}
-              <li class="flex items-center gap-2">
-                <svg class="h-5 w-5 shrink-0 text-primary-500 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                {{ f }}
-              </li>
-            {% endfor %}
-          </ul>
-          <a href="{% url 'register' %}" class="mt-8 {% if plan.highlight %}btn-primary{% else %}btn-secondary{% endif %} w-full text-center">Get started</a>
-        </article>
-      {% endfor %}
+          <p class="mt-3 rounded-xl bg-primary-50 dark:bg-orange-900/30 px-4 py-2 text-lg font-semibold text-primary-700 dark:text-orange-300">€{{ plan.price_with_vat_eur }} total per year</p>
+          <a href="{% url 'register' %}" class="btn-primary mt-8 w-full text-center">Get started</a>
+        </div>
+        <ul class="mt-8 space-y-3 text-sm text-slate-600 dark:text-slate-400">
+          {% for f in plan.features %}
+            <li class="flex items-start gap-2">
+              <svg class="h-5 w-5 shrink-0 text-primary-500 dark:text-orange-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              {{ f }}
+            </li>
+          {% endfor %}
+        </ul>
+      </article>
     </div>
 
-    <!-- Comparison table -->
-    <div class="mt-20 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-600" data-reveal>
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-slate-50 dark:bg-slate-800">
-            <tr>
-              <th class="px-4 py-3 text-left font-semibold text-slate-900 dark:text-white">Feature</th>
-              <th class="px-4 py-3 text-center font-semibold text-slate-900 dark:text-white">Starter</th>
-              <th class="px-4 py-3 text-center font-semibold text-slate-900 dark:text-white">Growth</th>
-              <th class="px-4 py-3 text-center font-semibold text-slate-900 dark:text-white">Scale</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 dark:divide-slate-600">
-            {% for row in comparison %}
-              <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50">
-                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ row.name }}</td>
-                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{{ row.starter }}</td>
-                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{{ row.growth }}</td>
-                <td class="px-4 py-3 text-center text-slate-600 dark:text-slate-400">{{ row.scale }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <!-- Why restaurant owners choose us -->
+    <div class="mt-20 mx-auto max-w-4xl" data-reveal>
+      <h2 class="section-title text-center text-slate-900 dark:text-white">Why restaurant owners choose us</h2>
+      <p class="section-subtitle mx-auto mt-2 text-center text-slate-600 dark:text-slate-400">One annual fee. No surprises. Built for real venues.</p>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        {% for b in benefits %}
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 shadow-soft">
+            <h3 class="font-semibold text-slate-900 dark:text-white">{{ b.title }}</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{{ b.text }}</p>
+          </div>
+        {% endfor %}
       </div>
     </div>
 
-    <!-- Pricing FAQ -->
+    <!-- FAQ -->
     <div class="mt-20 mx-auto max-w-2xl">
       <h2 class="section-title text-center text-slate-900 dark:text-white">Pricing FAQ</h2>
       <ul class="mt-8 space-y-4">
@@ -74,14 +60,14 @@
     </div>
 
     <p class="mt-14 text-center">
-      <a href="{% url 'contact' %}" class="btn-tertiary">Contact sales</a>
+      <a href="{% url 'contact' %}" class="btn-tertiary">Contact us</a>
     </p>
   </div>
 </section>
 
 <!-- Sticky mobile CTA -->
 <div class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-100 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 p-4 backdrop-blur-md md:hidden">
-  <a href="{% url 'register' %}" class="btn-primary block w-full text-center">Start Free Trial</a>
+  <a href="{% url 'register' %}" class="btn-primary block w-full text-center">Get started — €200/year</a>
 </div>
 <div class="h-20 md:hidden" aria-hidden="true"></div>
 {% endblock %}
