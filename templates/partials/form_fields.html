@@ -1,12 +1,12 @@
 <div>
-  <label for="{{ name }}" class="label-field">{{ label }}</label>
+  <label for="{{ name }}" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ label }}</label>
   {% if field_type == "textarea" %}
     <textarea
       id="{{ name }}"
       name="{{ name }}"
       rows="{{ rows|default:'4' }}"
       placeholder="{{ placeholder|default:'' }}"
-      class="input-field">{{ value|default:'' }}</textarea>
+      class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-orange-500 dark:focus:ring-orange-500">{{ value|default:'' }}</textarea>
   {% else %}
     <input
       id="{{ name }}"
@@ -14,7 +14,7 @@
       type="{{ field_type|default:'text' }}"
       value="{{ value|default:'' }}"
       placeholder="{{ placeholder|default:'' }}"
-      class="input-field"
+      class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:focus:border-orange-500 dark:focus:ring-orange-500"
     >
   {% endif %}
 </div>
