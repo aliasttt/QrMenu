@@ -4,157 +4,204 @@
 {% block meta_description %}Launch your branded QR menu, run campaigns, and receive online orders from one dashboard. Built for modern restaurants.{% endblock %}
 
 {% block content %}
-<!-- Hero: white + warm gradient, UI mocks, trust row, metrics -->
-<section class="hero-gradient relative overflow-hidden rounded-b-[2rem] pb-16 pt-10 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16 lg:rounded-b-[4rem] lg:pb-32 lg:pt-20 dark:bg-slate-900 dark:bg-none" id="hero">
-  <!-- Decorative blobs -->
-  <div class="blob-orange -right-32 -top-32 h-64 w-64 md:h-96 md:w-96 dark:opacity-20" aria-hidden="true"></div>
-  <div class="blob-orange bottom-0 left-1/4 h-48 w-48 opacity-50 md:h-72 md:w-72 dark:opacity-10" aria-hidden="true"></div>
+<section
+  class="relative overflow-hidden bg-gradient-to-br from-[#fff4ec] via-[#fffaf6] to-[#ffe9d6] pb-20 pt-10 md:pb-28 lg:pt-14"
+  x-data="{ activeDevice: 0, slides: [0,1,2], init(){ setInterval(() => { this.activeDevice = (this.activeDevice + 1) % this.slides.length }, 2600) } }"
+>
+  <div class="pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full bg-orange-300/35 blur-3xl"></div>
+  <div class="pointer-events-none absolute -left-24 bottom-10 h-72 w-72 rounded-full bg-orange-200/40 blur-3xl"></div>
 
-  <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mb-8 flex justify-center" data-reveal>
-      <img
-        src="{% static 'img/qrmenulogo.jpg' %}"
-        alt="{{ theme.brand_name }}"
-        class="h-24 w-auto sm:h-28 md:h-32 drop-shadow-xl"
-        loading="eager"
-      />
-    </div>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-      <div class="order-2 text-center lg:order-1 lg:text-left" data-reveal>
-        <p class="inline-flex rounded-full bg-white/90 dark:bg-slate-700/90 px-3.5 py-1.5 text-xs font-semibold text-primary-600 dark:text-orange-400 shadow-soft">Built for modern restaurants</p>
-        <h1 class="mt-5 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
-          QR Menu + Online Ordering,
-          <span class="text-primary-600 dark:text-orange-400">without friction</span>
+      <div data-reveal>
+        <div class="mb-6 inline-flex items-center gap-3">
+          <img src="{% static 'img/qrmenulogo.jpg' %}" alt="{{ theme.brand_name }}" class="h-16 w-auto rounded-xl shadow-lg sm:h-20">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">My Bonus QR Menu</p>
+            <p class="text-sm text-slate-500">Smart menu experience</p>
+          </div>
+        </div>
+
+        <h1 class="text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+          Einfacher QR-Code,
+          <span class="bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 bg-clip-text text-transparent">Mehr Umsatz.</span>
         </h1>
-        <p class="mt-5 max-w-xl text-base text-slate-600 dark:text-slate-400 sm:text-lg leading-relaxed">
-          Launch your branded menu, run campaigns, and receive online orders from one polished dashboard.
+        <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          Steigere deinen Umsatz mit einer professionellen QR-Speisekarte, Online-Bestellung und einem beeindruckenden mobilen Erlebnis.
         </p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 lg:justify-start">
-          <a href="{% url 'register' %}" class="btn-primary w-full sm:w-auto">Start Free Trial</a>
-          <a href="{% url 'pricing' %}" class="btn-secondary w-full sm:w-auto">View Pricing</a>
-        </div>
-        <!-- Mini metrics -->
-        <div class="mt-10 flex flex-wrap justify-center gap-6 lg:justify-start" data-reveal data-delay="150">
-          <div class="text-center lg:text-left">
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">+38%</p>
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Online orders</p>
-          </div>
-          <div class="text-center lg:text-left">
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">2 min</p>
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Setup time</p>
-          </div>
-          <div class="text-center lg:text-left">
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">24/7</p>
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Menu live</p>
-          </div>
-        </div>
-      </div>
-      <div class="order-1 lg:order-2" data-reveal data-delay="100">
-        <div class="relative">
-          <!-- Tablet/Dashboard mock با عکس واقعی -->
-          <div class="hero-device-frame p-1.5 sm:p-2 transition-all duration-500 hover:scale-[1.02] hover:shadow-card-hover">
-            <div class="aspect-video rounded-xl overflow-hidden bg-slate-200">
-              <img
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=85"
-                alt="Dashboard preview - analytics and orders"
-                class="h-full w-full object-cover object-top"
-                width="900"
-                height="506"
-                fetchpriority="high"
-              />
-            </div>
-          </div>
-          <!-- Phone mock با عکس منو/اپ -->
-          <div class="absolute -bottom-4 -right-2 hidden w-32 animate-float overflow-hidden sm:block lg:-right-4 lg:w-40 xl:w-44" data-reveal data-delay="250">
-            <div class="hero-phone-frame aspect-[9/19] w-full">
-              <img
-                src="https://images.unsplash.com/photo-1561758033-d89a9ad64330?w=400&q=85"
-                alt="Mobile menu on phone"
-                class="h-full w-full object-cover object-top"
-                width="400"
-                height="844"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Trust row -->
-    <div class="mt-16 pt-12 border-t border-slate-200/60 dark:border-slate-600" data-reveal data-delay="200">
-      <p class="text-center text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Trusted by teams at</p>
-      <div class="mt-6 flex flex-wrap justify-center gap-8 md:gap-12">
-        {% for i in "12345" %}
-          <div class="h-8 w-24 rounded-lg bg-slate-200/80 dark:bg-slate-600/60 grayscale opacity-70"></div>
-        {% endfor %}
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="{% url 'register' %}" class="btn-primary">Jetzt starten</a>
+          <a href="{% url 'restaurants_list' %}" class="btn-secondary">Beispiel ansehen</a>
+        </div>
+
+        <div class="mt-8 grid max-w-xl grid-cols-3 gap-3">
+          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft">
+            <p class="text-xl font-extrabold text-slate-900">+42%</p>
+            <p class="text-xs text-slate-500">Orders</p>
+          </div>
+          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft">
+            <p class="text-xl font-extrabold text-slate-900">24/7</p>
+            <p class="text-xs text-slate-500">Live Menu</p>
+          </div>
+          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft">
+            <p class="text-xl font-extrabold text-slate-900">2 min</p>
+            <p class="text-xs text-slate-500">Setup</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative" data-reveal data-delay="100">
+        <div class="hero-device-frame p-2">
+          <div class="aspect-video overflow-hidden rounded-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85"
+              alt="Tablet menu preview"
+              class="h-full w-full object-cover"
+            >
+          </div>
+        </div>
+
+        <div class="absolute -bottom-8 -left-1 hidden w-36 sm:block lg:w-40">
+          <button @click="activeDevice = 0" class="hero-phone-frame w-full transition hover:scale-105">
+            <img
+              x-show="activeDevice === 0"
+              x-transition
+              src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85"
+              alt="Phone menu 1"
+              class="h-[240px] w-full rounded-xl object-cover"
+            >
+            <img
+              x-show="activeDevice !== 0"
+              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=480&q=85"
+              alt="Phone placeholder"
+              class="h-[240px] w-full rounded-xl object-cover opacity-60"
+            >
+          </button>
+        </div>
+        <div class="absolute -bottom-5 right-0 hidden w-40 sm:block lg:w-44">
+          <button @click="activeDevice = 1" class="hero-phone-frame w-full transition hover:scale-105">
+            <img
+              x-show="activeDevice === 1"
+              x-transition
+              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85"
+              alt="Phone menu 2"
+              class="h-[270px] w-full rounded-xl object-cover"
+            >
+            <img
+              x-show="activeDevice !== 1"
+              src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=480&q=85"
+              alt="Phone placeholder"
+              class="h-[270px] w-full rounded-xl object-cover opacity-60"
+            >
+          </button>
+        </div>
+
+        <div class="mt-6 flex gap-2 sm:hidden">
+          <button @click="activeDevice = 0" class="h-2.5 w-8 rounded-full bg-orange-300" :class="activeDevice === 0 ? 'bg-orange-500' : ''"></button>
+          <button @click="activeDevice = 1" class="h-2.5 w-8 rounded-full bg-orange-300" :class="activeDevice === 1 ? 'bg-orange-500' : ''"></button>
+          <button @click="activeDevice = 2" class="h-2.5 w-8 rounded-full bg-orange-300" :class="activeDevice === 2 ? 'bg-orange-500' : ''"></button>
+        </div>
+
+        <a href="{% url 'restaurants_list' %}" class="absolute -bottom-14 right-0 hidden rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-black sm:inline-flex">
+          Open Live Menu
+        </a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Features: 6 top features -->
-<section class="section-warm py-16 md:py-20 lg:py-24 dark:bg-slate-800/50">
+<section class="py-16 md:py-20">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="section-title text-center text-slate-900 dark:text-white">Everything you need to run digital dining</h2>
-    <p class="section-subtitle mx-auto text-center text-slate-600 dark:text-slate-400">Production-ready workflows designed for speed and conversion.</p>
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {% for feature in features|slice:":6" %}
-        <article class="card-soft group transition-all duration-300 hover:-translate-y-1 dark:bg-slate-800 dark:border-slate-600 dark:hover:border-slate-500" data-reveal>
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 dark:bg-orange-900/40 text-primary-600 dark:text-orange-400 transition duration-300 group-hover:scale-110">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-          </div>
-          <h3 class="mt-4 font-semibold text-slate-900 dark:text-white">{{ feature }}</h3>
-          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Streamline operations and boost revenue with tools built for restaurants.</p>
-        </article>
-      {% endfor %}
+    <div class="mb-10 text-center" data-reveal>
+      <h2 class="section-title">Premium Experiences for Every Guest</h2>
+      <p class="section-subtitle mx-auto mt-2 max-w-3xl">Modern UI components, strong visual hierarchy, and smooth animations for a luxury digital dining brand.</p>
     </div>
-    <div class="mt-16 overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-soft-lg" data-reveal>
-      <img
-        src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85"
-        alt="Restaurant dining - modern setup"
-        class="h-64 w-full object-cover sm:h-80"
-        width="1200"
-        height="400"
-      />
-      <div class="p-6 text-center sm:p-8">
-        <p class="text-slate-600 dark:text-slate-400">From your kitchen to your guests' table — one seamless flow.</p>
-      </div>
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <article class="card-soft bg-gradient-to-br from-orange-50 to-white" data-reveal>
+        <h3 class="text-lg font-bold text-slate-900">Live Menu Sync</h3>
+        <p class="mt-2 text-sm text-slate-600">Change prices, stock, and offers instantly.</p>
+      </article>
+      <article class="card-soft bg-gradient-to-br from-amber-50 to-white" data-reveal data-delay="80">
+        <h3 class="text-lg font-bold text-slate-900">Multilingual Menus</h3>
+        <p class="mt-2 text-sm text-slate-600">One tap language switch for tourists.</p>
+      </article>
+      <article class="card-soft bg-gradient-to-br from-orange-100/50 to-white" data-reveal data-delay="120">
+        <h3 class="text-lg font-bold text-slate-900">Campaign Engine</h3>
+        <p class="mt-2 text-sm text-slate-600">Upsell combos and seasonal promos.</p>
+      </article>
+      <article class="card-soft bg-gradient-to-br from-slate-50 to-white" data-reveal data-delay="160">
+        <h3 class="text-lg font-bold text-slate-900">Realtime Insights</h3>
+        <p class="mt-2 text-sm text-slate-600">See hot items and conversion trends.</p>
+      </article>
     </div>
-    <p class="mt-10 text-center">
-      <a href="{% url 'features' %}" class="btn-secondary">View all features</a>
-    </p>
   </div>
 </section>
 
-<!-- Testimonials -->
-<section class="py-16 md:py-20 lg:py-24 dark:bg-slate-900/50">
+<section class="py-16 md:py-24">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="section-title text-center text-slate-900 dark:text-white">Loved by restaurant teams</h2>
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft-lg" data-reveal>
+        <h3 class="text-2xl font-bold text-slate-900">Interactive Visual Showcase</h3>
+        <p class="mt-3 text-slate-600">Beautiful sections that feel alive and premium, built for conversion and wow effect.</p>
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-orange-50 p-4">
+            <p class="text-2xl font-extrabold text-orange-600">99.9%</p>
+            <p class="text-xs text-slate-500">Uptime</p>
+          </div>
+          <div class="rounded-2xl bg-slate-100 p-4">
+            <p class="text-2xl font-extrabold text-slate-900">+12K</p>
+            <p class="text-xs text-slate-500">Menus Served</p>
+          </div>
+          <div class="rounded-2xl bg-amber-50 p-4">
+            <p class="text-2xl font-extrabold text-amber-600">4.9</p>
+            <p class="text-xs text-slate-500">Guest Rating</p>
+          </div>
+          <div class="rounded-2xl bg-orange-50 p-4">
+            <p class="text-2xl font-extrabold text-orange-600">+38%</p>
+            <p class="text-xs text-slate-500">Avg. Basket</p>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-3xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-500 p-6 text-white shadow-soft-lg" data-reveal data-delay="100">
+        <h3 class="text-2xl font-bold">Why teams switch to us</h3>
+        <ul class="mt-5 space-y-3 text-sm">
+          <li class="rounded-xl bg-white/15 px-4 py-3">No app install needed for guests.</li>
+          <li class="rounded-xl bg-white/15 px-4 py-3">Manage all branches in one place.</li>
+          <li class="rounded-xl bg-white/15 px-4 py-3">Fast mobile experience with elegant UI.</li>
+          <li class="rounded-xl bg-white/15 px-4 py-3">Promotions, QR, and ordering fully integrated.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 md:py-20">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-10 text-center" data-reveal>
+      <h2 class="section-title">Loved by Restaurant Teams</h2>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {% for item in testimonials %}
-        <blockquote class="card-soft dark:bg-slate-800 dark:border-slate-600" data-reveal>
-          <p class="text-slate-700 dark:text-slate-300 leading-relaxed">"{{ item.quote }}"</p>
-          <footer class="mt-4 text-sm text-slate-500 dark:text-slate-400">{{ item.name }} · {{ item.role }}</footer>
-        </blockquote>
+      <blockquote class="card-soft" data-reveal>
+        <p class="text-slate-700">"{{ item.quote }}"</p>
+        <footer class="mt-4 text-sm text-slate-500">{{ item.name }} · {{ item.role }}</footer>
+      </blockquote>
       {% endfor %}
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="py-16 md:py-20 lg:py-24">
+<section class="pb-20 pt-10 md:pb-24">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="hero-gradient-cta rounded-3xl px-6 py-12 text-white shadow-xl sm:p-12 md:rounded-[2rem]" data-reveal>
-      <h2 class="text-2xl font-bold sm:text-3xl md:text-4xl">Ready to modernize your restaurant?</h2>
-      <p class="mt-3 text-white/90 text-lg">Create your digital menu and launch ordering in minutes.</p>
-      <a href="{% url 'register' %}" class="mt-8 inline-flex rounded-full bg-white px-6 py-3.5 font-semibold text-primary-600 shadow-lg transition hover:bg-white/95 hover:shadow-glow">Get Started</a>
+    <div class="hero-gradient-cta rounded-[2rem] px-6 py-12 text-white shadow-xl sm:p-12" data-reveal>
+      <h2 class="text-3xl font-extrabold sm:text-4xl">Make visitors say “wow” from first second.</h2>
+      <p class="mt-3 max-w-2xl text-white/90">A long, professional landing experience with beautiful sections, fluid animation, and premium orange branding.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'register' %}" class="inline-flex rounded-full bg-white px-6 py-3.5 font-semibold text-orange-600 shadow-lg transition hover:bg-white/95">Get Started</a>
+        <a href="{% url 'restaurants_list' %}" class="inline-flex rounded-full border border-white/40 px-6 py-3.5 font-semibold text-white transition hover:bg-white/10">See Menus</a>
+      </div>
     </div>
   </div>
 </section>
-
-<!-- Sticky mobile CTA -->
-<div class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-100 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 p-4 backdrop-blur-md md:hidden">
-  <a href="{% url 'register' %}" class="btn-primary block w-full text-center">Start Free Trial</a>
-</div>
-<div class="h-20 md:hidden" aria-hidden="true"></div>
 {% endblock %}
