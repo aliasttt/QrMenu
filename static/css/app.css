@@ -330,14 +330,54 @@ body {
 }
 
 .hero-phone-frame {
-  border-radius: 1.3rem;
-  padding: 0.35rem;
-  background-color: #020617;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.5);
+  position: relative;
+  display: block;
+  border-radius: 2rem;
+  padding: 0.38rem;
+  background:
+    linear-gradient(160deg, #0f172a 0%, #020617 60%, #111827 100%);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
-.hero-phone-frame img {
-  border-radius: 0.95rem;
+.hero-phone-frame::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.52rem;
+  transform: translateX(-50%);
+  width: 32%;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.92);
+  z-index: 3;
+  box-shadow: inset 0 -1px 0 rgba(148, 163, 184, 0.3);
+}
+
+.hero-phone-frame::after {
+  content: "";
+  position: absolute;
+  right: 0.34rem;
+  top: 22%;
+  width: 0.13rem;
+  height: 16%;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.65);
+}
+
+.iphone-screen {
+  overflow: hidden;
+  border-radius: 1.65rem;
+  background: #020617;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.iphone-screen img {
+  display: block;
+  border-radius: 1.45rem;
+  transform: scale(1.01);
 }
 
 .animate-float {
@@ -444,6 +484,14 @@ body {
   font-size: 0.95rem;
   line-height: 1.7;
   color: #64748b;
+}
+
+.dark .section-title {
+  color: #f8fafc;
+}
+
+.dark .section-subtitle {
+  color: #94a3b8;
 }
 
 /* Badges */

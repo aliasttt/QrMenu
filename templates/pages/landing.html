@@ -17,7 +17,7 @@
 
 {% block content %}
 <section
-  class="landing-snap-section relative overflow-hidden bg-gradient-to-br from-[#fff4ec] via-[#fffaf6] to-[#ffe9d6] pb-20 pt-10 md:pb-28 lg:pt-14"
+  class="landing-snap-section relative overflow-hidden bg-gradient-to-br from-[#fff4ec] via-[#fffaf6] to-[#ffe9d6] pb-20 pt-10 md:pb-28 lg:pt-14 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900"
 >
   <div data-parallax data-parallax-speed="-0.06" class="pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full bg-orange-300/35 blur-3xl"></div>
   <div data-parallax data-parallax-speed="0.04" class="pointer-events-none absolute -left-24 bottom-10 h-72 w-72 rounded-full bg-orange-200/40 blur-3xl"></div>
@@ -28,16 +28,16 @@
         <div class="mb-6 inline-flex items-center gap-3">
           <img src="{% static 'img/qrmenulogo.jpg' %}" alt="{{ theme.brand_name }}" class="h-16 w-auto rounded-xl shadow-lg sm:h-20">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">My Bonus QR Menu</p>
-            <p class="text-sm text-slate-500">Smart menu experience</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">My Bonus QR Menu</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Smart menu experience</p>
           </div>
         </div>
 
-        <h1 class="text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+        <h1 class="text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-white">
           Einfacher QR-Code,
           <span class="bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 bg-clip-text text-transparent">Mehr Umsatz.</span>
         </h1>
-        <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+        <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-300">
           Steigere deinen Umsatz mit einer professionellen QR-Speisekarte, Online-Bestellung und einem beeindruckenden mobilen Erlebnis.
         </p>
 
@@ -47,17 +47,17 @@
         </div>
 
         <div class="mt-8 grid max-w-xl grid-cols-3 gap-3">
-          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft">
-            <p class="text-xl font-extrabold text-slate-900">+42%</p>
-            <p class="text-xs text-slate-500">Orders</p>
+          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft dark:border-slate-700 dark:bg-slate-800/80">
+            <p class="text-xl font-extrabold text-slate-900 dark:text-white">+42%</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Orders</p>
           </div>
-          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft">
-            <p class="text-xl font-extrabold text-slate-900">24/7</p>
-            <p class="text-xs text-slate-500">Live Menu</p>
+          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft dark:border-slate-700 dark:bg-slate-800/80">
+            <p class="text-xl font-extrabold text-slate-900 dark:text-white">24/7</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Live Menu</p>
           </div>
-          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft">
-            <p class="text-xl font-extrabold text-slate-900">2 min</p>
-            <p class="text-xs text-slate-500">Setup</p>
+          <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft dark:border-slate-700 dark:bg-slate-800/80">
+            <p class="text-xl font-extrabold text-slate-900 dark:text-white">2 min</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Setup</p>
           </div>
         </div>
       </div>
@@ -75,29 +75,37 @@
 
         <div class="absolute -bottom-8 -left-1 hidden w-36 sm:block lg:w-40">
           <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float block w-full transition hover:scale-105">
-            <img
-              src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85"
-              alt="Phone menu"
-              class="h-[240px] w-full rounded-xl object-cover"
-            >
+            <div class="iphone-screen">
+              <img
+                src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85"
+                alt="Phone menu"
+                class="h-[240px] w-full object-cover object-center"
+              >
+            </div>
           </a>
         </div>
         <div class="absolute -bottom-5 right-0 hidden w-40 sm:block lg:w-44">
           <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float-delayed block w-full transition hover:scale-105">
-            <img
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85"
-              alt="Phone menu analytics"
-              class="h-[270px] w-full rounded-xl object-cover"
-            >
+            <div class="iphone-screen">
+              <img
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85"
+                alt="Phone menu analytics"
+                class="h-[270px] w-full object-cover object-center"
+              >
+            </div>
           </a>
         </div>
 
         <div class="mt-6 grid grid-cols-2 gap-3 sm:hidden">
           <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float block w-full">
-            <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85" alt="Phone menu" class="h-[190px] w-full rounded-xl object-cover">
+            <div class="iphone-screen">
+              <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85" alt="Phone menu" class="h-[190px] w-full object-cover object-center">
+            </div>
           </a>
           <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float-delayed block w-full">
-            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85" alt="Phone analytics" class="h-[190px] w-full rounded-xl object-cover">
+            <div class="iphone-screen">
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85" alt="Phone analytics" class="h-[190px] w-full object-cover object-center">
+            </div>
           </a>
         </div>
 
@@ -109,55 +117,55 @@
   </div>
 </section>
 
-<section class="landing-snap-section py-16 md:py-20">
+<section class="landing-snap-section py-16 md:py-20 dark:bg-slate-950">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mb-10 text-center" data-reveal>
       <h2 class="section-title">Premium Experiences for Every Guest</h2>
       <p class="section-subtitle mx-auto mt-2 max-w-3xl">Modern UI components, strong visual hierarchy, and smooth animations for a luxury digital dining brand.</p>
     </div>
     <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-      <article class="card-soft bg-gradient-to-br from-orange-50 to-white" data-reveal>
-        <h3 class="text-lg font-bold text-slate-900">Live Menu Sync</h3>
-        <p class="mt-2 text-sm text-slate-600">Change prices, stock, and offers instantly.</p>
+      <article class="card-soft bg-gradient-to-br from-orange-50 to-white dark:from-slate-800 dark:to-slate-900 dark:border-slate-700" data-reveal>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Live Menu Sync</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Change prices, stock, and offers instantly.</p>
       </article>
-      <article class="card-soft bg-gradient-to-br from-amber-50 to-white" data-reveal data-delay="80">
-        <h3 class="text-lg font-bold text-slate-900">Multilingual Menus</h3>
-        <p class="mt-2 text-sm text-slate-600">One tap language switch for tourists.</p>
+      <article class="card-soft bg-gradient-to-br from-amber-50 to-white dark:from-slate-800 dark:to-slate-900 dark:border-slate-700" data-reveal data-delay="80">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Multilingual Menus</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">One tap language switch for tourists.</p>
       </article>
-      <article class="card-soft bg-gradient-to-br from-orange-100/50 to-white" data-reveal data-delay="120">
-        <h3 class="text-lg font-bold text-slate-900">Campaign Engine</h3>
-        <p class="mt-2 text-sm text-slate-600">Upsell combos and seasonal promos.</p>
+      <article class="card-soft bg-gradient-to-br from-orange-100/50 to-white dark:from-slate-800 dark:to-slate-900 dark:border-slate-700" data-reveal data-delay="120">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Campaign Engine</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Upsell combos and seasonal promos.</p>
       </article>
-      <article class="card-soft bg-gradient-to-br from-slate-50 to-white" data-reveal data-delay="160">
-        <h3 class="text-lg font-bold text-slate-900">Realtime Insights</h3>
-        <p class="mt-2 text-sm text-slate-600">See hot items and conversion trends.</p>
+      <article class="card-soft bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 dark:border-slate-700" data-reveal data-delay="160">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Realtime Insights</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">See hot items and conversion trends.</p>
       </article>
     </div>
   </div>
 </section>
 
-<section class="landing-snap-section py-16 md:py-24">
+<section class="landing-snap-section py-16 md:py-24 dark:bg-slate-950">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid gap-8 lg:grid-cols-2 lg:gap-12">
-      <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft-lg" data-reveal>
-        <h3 class="text-2xl font-bold text-slate-900">Interactive Visual Showcase</h3>
-        <p class="mt-3 text-slate-600">Beautiful sections that feel alive and premium, built for conversion and wow effect.</p>
+      <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft-lg dark:border-slate-700 dark:bg-slate-900" data-reveal>
+        <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Interactive Visual Showcase</h3>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">Beautiful sections that feel alive and premium, built for conversion and wow effect.</p>
         <div class="mt-6 grid grid-cols-2 gap-3">
-          <div class="rounded-2xl bg-orange-50 p-4">
-            <p class="text-2xl font-extrabold text-orange-600">99.9%</p>
-            <p class="text-xs text-slate-500">Uptime</p>
+          <div class="rounded-2xl bg-orange-50 p-4 dark:bg-slate-800">
+            <p class="text-2xl font-extrabold text-orange-600 dark:text-orange-400">99.9%</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Uptime</p>
           </div>
-          <div class="rounded-2xl bg-slate-100 p-4">
-            <p class="text-2xl font-extrabold text-slate-900">+12K</p>
-            <p class="text-xs text-slate-500">Menus Served</p>
+          <div class="rounded-2xl bg-slate-100 p-4 dark:bg-slate-800">
+            <p class="text-2xl font-extrabold text-slate-900 dark:text-white">+12K</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Menus Served</p>
           </div>
-          <div class="rounded-2xl bg-amber-50 p-4">
-            <p class="text-2xl font-extrabold text-amber-600">4.9</p>
-            <p class="text-xs text-slate-500">Guest Rating</p>
+          <div class="rounded-2xl bg-amber-50 p-4 dark:bg-slate-800">
+            <p class="text-2xl font-extrabold text-amber-600 dark:text-amber-400">4.9</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Guest Rating</p>
           </div>
-          <div class="rounded-2xl bg-orange-50 p-4">
-            <p class="text-2xl font-extrabold text-orange-600">+38%</p>
-            <p class="text-xs text-slate-500">Avg. Basket</p>
+          <div class="rounded-2xl bg-orange-50 p-4 dark:bg-slate-800">
+            <p class="text-2xl font-extrabold text-orange-600 dark:text-orange-400">+38%</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Avg. Basket</p>
           </div>
         </div>
       </div>
@@ -189,7 +197,9 @@
           <span class="h-2 w-2 rounded-full bg-amber-300"></span> Menu Action
         </div>
         <div class="hero-phone-frame qr-ambient-drift">
-          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=700&q=85" alt="Premium phone mockup" class="h-[460px] w-full rounded-2xl object-cover sm:h-[520px]">
+          <div class="iphone-screen">
+            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=700&q=85" alt="Premium phone mockup" class="h-[460px] w-full object-cover object-center sm:h-[520px]">
+          </div>
         </div>
       </div>
       <div data-reveal data-delay="120">
@@ -204,26 +214,26 @@
   </div>
 </section>
 
-<section class="landing-snap-section relative overflow-hidden bg-[#ece8dc] py-16 md:py-24">
+<section class="landing-snap-section relative overflow-hidden bg-[#ece8dc] py-16 md:py-24 dark:bg-slate-900">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="max-w-3xl text-5xl font-extrabold leading-[0.95] tracking-tight text-slate-900 sm:text-7xl" data-reveal>
+    <h2 class="max-w-3xl text-5xl font-extrabold leading-[0.95] tracking-tight text-slate-900 sm:text-7xl dark:text-white" data-reveal>
       Menu Over Matter<br>Energy in Motion
     </h2>
 
     <div class="mt-8 grid gap-4 lg:grid-cols-[1fr_1.2fr]">
-      <div class="rounded-3xl border border-slate-300/70 bg-white/70 p-4 backdrop-blur-sm" data-reveal data-delay="70">
+      <div class="rounded-3xl border border-slate-300/70 bg-white/70 p-4 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/70" data-reveal data-delay="70">
         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=85" alt="Restaurant lifestyle" class="h-56 w-full rounded-2xl object-cover sm:h-72">
       </div>
       <div class="grid gap-4">
-        <div class="rounded-3xl border border-slate-300/70 bg-white/70 p-6 backdrop-blur-sm" data-reveal data-delay="130">
-          <div class="space-y-4 text-sm leading-relaxed text-slate-700 sm:text-base">
-            <p><span class="mr-3 font-semibold text-slate-500">01</span>Smart QR cards guide guests naturally from discovery to checkout.</p>
-            <p><span class="mr-3 font-semibold text-slate-500">02</span>Motion and hierarchy improve readability and increase item conversion.</p>
-            <p><span class="mr-3 font-semibold text-slate-500">03</span>Every section is built to feel premium while staying lightweight.</p>
+        <div class="rounded-3xl border border-slate-300/70 bg-white/70 p-6 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/70" data-reveal data-delay="130">
+          <div class="space-y-4 text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-300">
+            <p><span class="mr-3 font-semibold text-slate-500 dark:text-slate-400">01</span>Smart QR cards guide guests naturally from discovery to checkout.</p>
+            <p><span class="mr-3 font-semibold text-slate-500 dark:text-slate-400">02</span>Motion and hierarchy improve readability and increase item conversion.</p>
+            <p><span class="mr-3 font-semibold text-slate-500 dark:text-slate-400">03</span>Every section is built to feel premium while staying lightweight.</p>
           </div>
-          <a href="{% url 'features' %}" class="mt-5 inline-flex rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-900 hover:text-white">More About QR Menu</a>
+          <a href="{% url 'features' %}" class="mt-5 inline-flex rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-900 hover:text-white dark:border-slate-400 dark:text-slate-100 dark:hover:bg-slate-100 dark:hover:text-slate-900">More About QR Menu</a>
         </div>
-        <div class="rounded-3xl border border-slate-300/70 bg-white/70 p-4 backdrop-blur-sm" data-reveal data-delay="180">
+        <div class="rounded-3xl border border-slate-300/70 bg-white/70 p-4 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/70" data-reveal data-delay="180">
           <img src="https://images.unsplash.com/photo-1525373698358-041e3a460346?w=900&q=85" alt="Color portrait style" class="h-44 w-full rounded-2xl object-cover sm:h-56">
         </div>
       </div>
@@ -253,16 +263,16 @@
   </div>
 </section>
 
-<section class="landing-snap-section py-16 md:py-20">
+<section class="landing-snap-section py-16 md:py-20 dark:bg-slate-950">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mb-10 text-center" data-reveal>
       <h2 class="section-title">Loved by Restaurant Teams</h2>
     </div>
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {% for item in testimonials %}
-      <blockquote class="card-soft" data-reveal>
-        <p class="text-slate-700">"{{ item.quote }}"</p>
-        <footer class="mt-4 text-sm text-slate-500">{{ item.name }} · {{ item.role }}</footer>
+      <blockquote class="card-soft dark:border-slate-700 dark:bg-slate-900" data-reveal>
+        <p class="text-slate-700 dark:text-slate-200">"{{ item.quote }}"</p>
+        <footer class="mt-4 text-sm text-slate-500 dark:text-slate-400">{{ item.name }} · {{ item.role }}</footer>
       </blockquote>
       {% endfor %}
     </div>
