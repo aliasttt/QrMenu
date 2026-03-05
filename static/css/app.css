@@ -374,6 +374,48 @@ body {
   66% { transform: translateY(4px) translateX(-2px) scale(0.995); }
 }
 
+.qr-orbit-chip {
+  position: absolute;
+  z-index: 20;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(17, 24, 39, 0.55);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(8px);
+  align-items: center;
+  gap: 0.4rem;
+  animation: qr-chip-drift 7s ease-in-out infinite;
+}
+
+@keyframes qr-chip-drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.qr-spin-slow {
+  animation: qr-spin-slow 18s linear infinite;
+}
+
+@keyframes qr-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qr-ambient-float,
+  .qr-ambient-float-delayed,
+  .qr-ambient-drift,
+  .qr-ambient-drift-delayed,
+  .qr-orbit-chip,
+  .qr-spin-slow {
+    animation: none !important;
+  }
+}
+
 /* Shadows */
 .shadow-soft {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
