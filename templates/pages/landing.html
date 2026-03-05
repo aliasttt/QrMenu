@@ -6,7 +6,6 @@
 {% block content %}
 <section
   class="relative overflow-hidden bg-gradient-to-br from-[#fff4ec] via-[#fffaf6] to-[#ffe9d6] pb-20 pt-10 md:pb-28 lg:pt-14"
-  x-data="{ activeDevice: 0, slides: [0,1,2], init(){ setInterval(() => { this.activeDevice = (this.activeDevice + 1) % this.slides.length }, 2600) } }"
 >
   <div class="pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full bg-orange-300/35 blur-3xl"></div>
   <div class="pointer-events-none absolute -left-24 bottom-10 h-72 w-72 rounded-full bg-orange-200/40 blur-3xl"></div>
@@ -63,44 +62,31 @@
         </div>
 
         <div class="absolute -bottom-8 -left-1 hidden w-36 sm:block lg:w-40">
-          <button @click="activeDevice = 0" class="hero-phone-frame w-full transition hover:scale-105">
+          <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float block w-full transition hover:scale-105">
             <img
-              x-show="activeDevice === 0"
-              x-transition
               src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85"
-              alt="Phone menu 1"
+              alt="Phone menu"
               class="h-[240px] w-full rounded-xl object-cover"
             >
-            <img
-              x-show="activeDevice !== 0"
-              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=480&q=85"
-              alt="Phone placeholder"
-              class="h-[240px] w-full rounded-xl object-cover opacity-60"
-            >
-          </button>
+          </a>
         </div>
         <div class="absolute -bottom-5 right-0 hidden w-40 sm:block lg:w-44">
-          <button @click="activeDevice = 1" class="hero-phone-frame w-full transition hover:scale-105">
+          <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float-delayed block w-full transition hover:scale-105">
             <img
-              x-show="activeDevice === 1"
-              x-transition
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85"
-              alt="Phone menu 2"
+              alt="Phone menu analytics"
               class="h-[270px] w-full rounded-xl object-cover"
             >
-            <img
-              x-show="activeDevice !== 1"
-              src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=480&q=85"
-              alt="Phone placeholder"
-              class="h-[270px] w-full rounded-xl object-cover opacity-60"
-            >
-          </button>
+          </a>
         </div>
 
-        <div class="mt-6 flex gap-2 sm:hidden">
-          <button @click="activeDevice = 0" class="h-2.5 w-8 rounded-full bg-orange-300" :class="activeDevice === 0 ? 'bg-orange-500' : ''"></button>
-          <button @click="activeDevice = 1" class="h-2.5 w-8 rounded-full bg-orange-300" :class="activeDevice === 1 ? 'bg-orange-500' : ''"></button>
-          <button @click="activeDevice = 2" class="h-2.5 w-8 rounded-full bg-orange-300" :class="activeDevice === 2 ? 'bg-orange-500' : ''"></button>
+        <div class="mt-6 grid grid-cols-2 gap-3 sm:hidden">
+          <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float block w-full">
+            <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=480&q=85" alt="Phone menu" class="h-[190px] w-full rounded-xl object-cover">
+          </a>
+          <a href="{% url 'restaurants_list' %}" class="hero-phone-frame qr-ambient-float-delayed block w-full">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=85" alt="Phone analytics" class="h-[190px] w-full rounded-xl object-cover">
+          </a>
         </div>
 
         <a href="{% url 'restaurants_list' %}" class="absolute -bottom-14 right-0 hidden rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-black sm:inline-flex">
@@ -172,6 +158,41 @@
           <li class="rounded-xl bg-white/15 px-4 py-3">Promotions, QR, and ordering fully integrated.</li>
         </ul>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="relative overflow-hidden py-16 md:py-24">
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#1b1208] via-[#2f1c09] to-[#120f0a]"></div>
+  <div class="pointer-events-none absolute -left-20 top-10 h-80 w-80 rounded-full bg-orange-400/20 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-16 bottom-0 h-96 w-96 rounded-full bg-amber-300/15 blur-3xl"></div>
+
+  <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-10 text-center" data-reveal>
+      <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">Mind Over Menu. Experience in Motion.</h2>
+      <p class="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-orange-100/90 sm:text-base">
+        QR Menu reimagines dining with visual storytelling, immersive design, and dynamic content that keeps guests engaged.
+      </p>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      <article class="qr-ambient-drift rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-md" data-reveal>
+        <img src="https://images.unsplash.com/photo-1464802686167-b939a6910659?w=900&q=85" alt="Cosmic visual" class="h-64 w-full rounded-2xl object-cover sm:h-80">
+        <h3 class="mt-4 text-xl font-bold text-white">There is more to this world</h3>
+        <p class="mt-2 text-sm text-orange-100/85">Layered visuals for campaigns, seasonal themes, and premium storytelling.</p>
+      </article>
+
+      <article class="qr-ambient-drift-delayed rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-md lg:mt-10" data-reveal data-delay="100">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=85" alt="Mobile concept" class="h-64 w-full rounded-2xl object-cover sm:h-96">
+        <h3 class="mt-4 text-xl font-bold text-white">Digital Menu Intelligence</h3>
+        <p class="mt-2 text-sm text-orange-100/85">Smart highlights, eye-catching cards, and conversion-focused menu interactions.</p>
+      </article>
+
+      <article class="qr-ambient-drift rounded-3xl border border-white/20 bg-white/10 p-4 backdrop-blur-md" data-reveal data-delay="170">
+        <img src="https://images.unsplash.com/photo-1525373698358-041e3a460346?w=900&q=85" alt="Abstract human profile" class="h-64 w-full rounded-2xl object-cover sm:h-80">
+        <h3 class="mt-4 text-xl font-bold text-white">Designed to Surprise</h3>
+        <p class="mt-2 text-sm text-orange-100/85">Elegant animations and high-end section flow to make every visit unforgettable.</p>
+      </article>
     </div>
   </div>
 </section>

@@ -344,6 +344,36 @@ body {
   animation: qr-float 6s ease-in-out infinite;
 }
 
+/* Ambient premium motion for hero/devices/feature art */
+.qr-ambient-float {
+  animation: qr-ambient-float 5.8s ease-in-out infinite;
+}
+
+.qr-ambient-float-delayed {
+  animation: qr-ambient-float 7.2s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
+.qr-ambient-drift {
+  animation: qr-ambient-drift 8.5s ease-in-out infinite;
+}
+
+.qr-ambient-drift-delayed {
+  animation: qr-ambient-drift 10s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+@keyframes qr-ambient-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-0.8deg); }
+}
+
+@keyframes qr-ambient-drift {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+  33% { transform: translateY(-6px) translateX(2px) scale(1.01); }
+  66% { transform: translateY(4px) translateX(-2px) scale(0.995); }
+}
+
 /* Shadows */
 .shadow-soft {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
