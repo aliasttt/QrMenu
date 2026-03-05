@@ -1,3 +1,4 @@
+{% load static %}
 <header
   data-nav-sticky
   class="sticky top-0 z-40 border-b border-slate-100 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-shadow"
@@ -12,8 +13,7 @@
 >
   <nav class="qr-container flex items-center justify-between py-3" aria-label="Primary">
     <a href="{% url 'landing' %}" class="flex items-center gap-2 font-bold text-slate-900 dark:text-white transition hover:opacity-90" aria-label="Go to home">
-      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">Q</span>
-      <span>{{ theme.brand_name }}</span>
+      <img src="{% static 'img/qrmenulogo.jpg' %}" alt="{{ theme.brand_name }}" class="h-9 w-auto rounded-xl shadow-sm" loading="lazy">
     </a>
 
     <ul class="hidden items-center gap-1 md:flex text-sm font-medium">

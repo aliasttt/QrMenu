@@ -1,9 +1,9 @@
+{% load static %}
 <footer class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/70">
   <div class="container mx-auto grid gap-10 px-4 py-16 sm:px-6 lg:grid-cols-4 lg:px-8">
     <div>
       <a href="{% url 'landing' %}" class="inline-flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white text-sm">Q</span>
-        {{ theme.brand_name }}
+        <img src="{% static 'img/qrmenulogo.jpg' %}" alt="{{ theme.brand_name }}" class="h-8 w-auto rounded-lg" loading="lazy">
       </a>
       <p class="mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">SaaS platform for QR menus, online ordering, campaigns, and analytics.</p>
     </div>
