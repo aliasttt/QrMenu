@@ -384,10 +384,15 @@ def restaurant_menu(request, restaurant_id):
         sections_map[category_key]["items"].append(menu_cards[-1])
 
     menu_sections = list(sections_map.values())
-    category_list = [
-        {"id": sec["id"], "name": sec["name"], "count": len(sec["items"])}
-        for sec in menu_sections
-    ]
+    category_list = []
+    for sec in menu_sections:
+        thumb = sec["items"][0]["image_url"] if sec["items"] else ""
+        category_list.append({
+            "id": sec["id"],
+            "name": sec["name"],
+            "count": len(sec["items"]),
+            "thumb": thumb,
+        })
 
     return render(
         request,

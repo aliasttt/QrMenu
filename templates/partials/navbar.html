@@ -1,7 +1,7 @@
 {% load static %}
 <header
   data-nav-sticky
-  class="sticky top-0 z-40 border-b border-slate-100 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-shadow"
+  class="fixed inset-x-0 top-0 z-40 border-b border-slate-100 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-shadow"
   x-data="{ mobileOpen: false, servicesOpen: false, dark: document.documentElement.classList.contains('dark') }"
   x-init="
     $watch('dark', function(v) {
@@ -114,3 +114,4 @@
     </div>
   </div>
 </header>
+<div aria-hidden="true" class="h-[70px]"></div>
