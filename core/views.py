@@ -346,7 +346,7 @@ def restaurants_list(request):
 
 
 def restaurant_menu(request, restaurant_id):
-    """صفحهٔ منوی یک رستوران: آیتم‌های منو به صورت کارت (عکس، نام، توضیح، قیمت)."""
+    """صفحهٔ منوی یک رستوران با سکشن‌بندی دسته‌ها و کارت‌های استایل‌دار."""
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id, is_active=True)
     items = (
         MenuItem.objects.filter(restaurant=restaurant, is_available=True)
@@ -355,6 +355,7 @@ def restaurant_menu(request, restaurant_id):
         .order_by("order", "name")
     )
     menu_cards = []
+    sections_map = {}
     for item in items:
         img_url = None
         first_img = item.images.first()
@@ -362,17 +363,41 @@ def restaurant_menu(request, restaurant_id):
             img_url = first_img.get_image_url(request=request)
         if not img_url:
             img_url = f"https://picsum.photos/seed/menu-{item.id}/640/400"
+        category_key = str(item.category.id) if item.category else "other"
+        category_name = item.category.name if item.category else "Other"
         menu_cards.append({
             "id": item.id,
             "name": item.name,
             "description": item.description or "",
             "price": item.price,
             "image_url": img_url,
+            "category_id": category_key,
+            "category_name": category_name,
         })
+
+        if category_key not in sections_map:
+            sections_map[category_key] = {
+                "id": category_key,
+                "name": category_name,
+                "items": [],
+            }
+        sections_map[category_key]["items"].append(menu_cards[-1])
+
+    menu_sections = list(sections_map.values())
+    category_list = [
+        {"id": sec["id"], "name": sec["name"], "count": len(sec["items"])}
+        for sec in menu_sections
+    ]
+
     return render(
         request,
         "pages/restaurant_menu.html",
-        {"restaurant": restaurant, "menu_cards": menu_cards},
+        {
+            "restaurant": restaurant,
+            "menu_cards": menu_cards,
+            "menu_sections": menu_sections,
+            "category_list": category_list,
+        },
     )
 
 
