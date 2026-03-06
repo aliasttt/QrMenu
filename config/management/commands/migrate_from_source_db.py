@@ -128,9 +128,13 @@ class Command(BaseCommand):
                     )
                 new_conn.commit()
             for table in to_copy:
-                n = copy_table_data(old_conn, new_conn, table)
-                new_conn.commit()
-                self.stdout.write(self.style.SUCCESS(f"  {table}: {n} rows"))
+                try:
+                    n = copy_table_data(old_conn, new_conn, table)
+                    new_conn.commit()
+                    self.stdout.write(self.style.SUCCESS(f"  {table}: {n} rows"))
+                except Exception as e:
+                    new_conn.rollback()
+                    self.stdout.write(self.style.WARNING(f"  {table}: SKIP ({e})"))
             reset_sequences(new_conn)
             new_conn.commit()
             self.stdout.write(self.style.SUCCESS("Done."))
