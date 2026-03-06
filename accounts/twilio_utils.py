@@ -20,6 +20,7 @@ _mock_otp_cache = {}
 # List of phone numbers that should have unlimited OTP (for testing/admin purposes)
 # OTP codes for these numbers will not be deleted after verification
 UNLIMITED_OTP_PHONES = [
+    '+495540225177',  # Test user (DE) – OTP 123456 only for this number
     '+905540225177',  # Admin test number
     '+905540225180',  # Business menu test number
     '+90905540225177',  # Alternative format for test number
@@ -38,6 +39,7 @@ UNLIMITED_OTP_PHONES = [
 # Hardcoded OTP codes for unlimited phones (fallback if cache is cleared)
 # Format: {phone: code}
 UNLIMITED_OTP_CODES = {
+    '+495540225177': '123456',  # Test user (DE) – OTP 123456 only for this number
     '+905540225177': '123456',  # Admin test number
     '+905540225180': '123456',  # Business menu test number
     '+90905540225177': '123456',  # Alternative format for test number
