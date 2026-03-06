@@ -62,8 +62,7 @@ def copy_table_data(old_conn, new_conn, table, batch=500):
         return 0
     col_list = ", ".join(f'"{c}"' for c in cols)
     insert_sql = f'INSERT INTO "{table}" ({col_list}) VALUES %s'
-    with old_conn.cursor(name="read_" + table) as rcur:
-        rcur.itersize = batch
+    with old_conn.cursor() as rcur:
         rcur.execute(f'SELECT {col_list} FROM "{table}"')
         count = 0
         with new_conn.cursor() as wcur:
