@@ -111,10 +111,15 @@ class Command(BaseCommand):
                     self.stdout.write(f"  Skip {table} (no common columns)")
                     continue
                 to_copy.append(table)
+            # Order so FKs are satisfied: auth/django first, then accounts, then business_menu
+            order_prefix = ("auth_user", "auth_permission", "django_content_type", "auth_group",
+                           "auth_group_permissions", "auth_user_groups", "auth_user_user_permissions",
+                           "django_migrations", "django_admin_log", "django_session")
+            ordered = [t for t in order_prefix if t in to_copy]
+            ordered += [t for t in to_copy if t not in ordered]
+            to_copy = ordered
             self.stdout.write(f"Tables to copy: {to_copy}")
-            with new_conn.cursor() as cur:
-                cur.execute("SET session_replication_role = 'replica';")
-            new_conn.commit()
+            # Note: session_replication_role requires superuser on Scalingo; skip and rely on TRUNCATE CASCADE + insert order
             if to_copy:
                 with new_conn.cursor() as cur:
                     cur.execute(
@@ -127,9 +132,6 @@ class Command(BaseCommand):
                 n = copy_table_data(old_conn, new_conn, table)
                 new_conn.commit()
                 self.stdout.write(self.style.SUCCESS(f"  {table}: {n} rows"))
-            with new_conn.cursor() as cur:
-                cur.execute("SET session_replication_role = 'origin';")
-            new_conn.commit()
             reset_sequences(new_conn)
             new_conn.commit()
             self.stdout.write(self.style.SUCCESS("Done."))
