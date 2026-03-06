@@ -347,7 +347,11 @@ def restaurants_list(request):
 
 def restaurant_menu(request, restaurant_id):
     """صفحهٔ منوی یک رستوران با سکشن‌بندی دسته‌ها و کارت‌های استایل‌دار."""
-    restaurant = get_object_or_404(Restaurant, pk=restaurant_id, is_active=True)
+    restaurant = get_object_or_404(
+        Restaurant.objects.select_related("admin", "settings", "settings__menu_theme"),
+        pk=restaurant_id,
+        is_active=True,
+    )
     items = (
         MenuItem.objects.filter(restaurant=restaurant, is_available=True)
         .select_related("category")
