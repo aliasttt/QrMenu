@@ -25,7 +25,8 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return default
 
 
-DEBUG = _env_bool("DJANGO_DEBUG", default=False)
+# فعلاً True برای دیدن خطای 500 — بعد از رفع مشکل حتماً روی سرور DJANGO_DEBUG=0 بگذار
+DEBUG = _env_bool("DJANGO_DEBUG", default=True)
 _allowed = os.environ.get("ALLOWED_HOSTS") or os.getenv("DJANGO_ALLOWED_HOSTS")
 _env_hosts = [h.strip() for h in _allowed.split(",") if h.strip()] if _allowed else []
 _extra_hosts = [
