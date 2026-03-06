@@ -1627,11 +1627,8 @@ class GetMenuURLView(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
     
     def _get_admin_from_user(self, user):
-        """پیدا کردن BusinessAdmin از روی User"""
-        phone = _business_admin_phone_from_username(getattr(user, "username", "") or "")
-        if not phone:
-            return None
-        return BusinessAdmin.objects.filter(phone=phone, is_active=True).first()
+        """Find BusinessAdmin from authenticated user."""
+        return _get_business_admin_for_user(user)
 
 
 class GetQRCodeForAppView(APIView):
