@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#FFFFFF"/>
+  <rect x="90" y="90" width="1020" height="450" rx="28" fill="#FFFFFF" stroke="#FDBA74" stroke-width="4"/>
+  <rect x="130" y="140" width="420" height="38" rx="10" fill="#EA580C" opacity="0.12"/>
+  <rect x="130" y="198" width="520" height="20" rx="8" fill="#9A3412" opacity="0.12"/>
+  <rect x="130" y="250" width="940" height="2" fill="#FED7AA"/>
+  <circle cx="190" cy="320" r="44" fill="#F97316" opacity="0.25"/>
+  <rect x="260" y="292" width="350" height="18" rx="8" fill="#EA580C" opacity="0.28"/>
+  <rect x="260" y="322" width="250" height="14" rx="7" fill="#9A3412" opacity="0.2"/>
+  <rect x="260" y="355" width="120" height="28" rx="8" fill="#EA580C"/>
+  <text x="130" y="476" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#9A3412">White Orange Theme</text>
+</svg>
