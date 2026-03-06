@@ -4,15 +4,31 @@ Usage: python manage.py create_admin_with_otp --phone +905540225177 --code 12345
 """
 from django.core.management.base import BaseCommand
 from django.core.cache import cache
-from django.db import connection, IntegrityError
+from django.db import connection
 from business_menu.models import BusinessAdmin, Restaurant
 from accounts.twilio_utils import format_phone_number, UNLIMITED_OTP_PHONES
 
 
+# All business_menu tables that have id sequence (reset after data migration to avoid duplicate key)
+_BUSINESS_MENU_TABLES = (
+    'business_menu_businessadmin',
+    'business_menu_restaurant',
+    'business_menu_restaurantsettings',
+    'business_menu_menuitem',
+    'business_menu_cloudinaryimage',
+    'business_menu_menuitemimage',
+    'business_menu_category',
+    'business_menu_menuset',
+    'business_menu_package',
+    'business_menu_packageitem',
+    'business_menu_menutheme',
+    'business_menu_menuqrcode',
+)
+
+
 def reset_sequence_for_table(table_name: str) -> None:
     """Reset PostgreSQL sequence for table id column (fixes duplicate key after data migration)."""
-    allowed = ('business_menu_businessadmin', 'business_menu_restaurant')
-    if table_name not in allowed:
+    if table_name not in _BUSINESS_MENU_TABLES:
         return
     with connection.cursor() as cur:
         cur.execute(
@@ -21,6 +37,21 @@ def reset_sequence_for_table(table_name: str) -> None:
             + "), 1))",
             [table_name],
         )
+
+
+def reset_all_business_menu_sequences() -> None:
+    """Reset all business_menu table sequences (call once after data migration)."""
+    with connection.cursor() as cur:
+        for table_name in _BUSINESS_MENU_TABLES:
+            try:
+                cur.execute(
+                    "SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE((SELECT MAX(id) FROM "
+                    + table_name
+                    + "), 1))",
+                    [table_name],
+                )
+            except Exception:
+                pass  # Table might not exist or have no sequence
 
 
 class Command(BaseCommand):
@@ -57,6 +88,9 @@ class Command(BaseCommand):
         code = options['code']
         name = options['name']
         email = options['email']
+
+        # Fix sequences once (after data migration they can be out of sync; prevents duplicate key on create)
+        reset_all_business_menu_sequences()
         
         # Format phone number
         try:
@@ -69,32 +103,16 @@ class Command(BaseCommand):
         is_test_number = formatted_phone in UNLIMITED_OTP_PHONES
         payment_status = 'paid' if is_test_number else 'unpaid'
         
-        # Create or get BusinessAdmin (retry after fixing sequence if needed after data migration)
-        try:
-            admin, created = BusinessAdmin.objects.get_or_create(
-                phone=formatted_phone,
-                defaults={
-                    'name': name,
-                    'email': email if email else '',
-                    'is_active': True,
-                    'payment_status': payment_status,
-                }
-            )
-        except IntegrityError as e:
-            if 'duplicate key' in str(e).lower() and 'business_menu_businessadmin' in str(e):
-                self.stdout.write(self.style.WARNING('Sequence out of sync (e.g. after migration). Resetting...'))
-                reset_sequence_for_table('business_menu_businessadmin')
-                admin, created = BusinessAdmin.objects.get_or_create(
-                    phone=formatted_phone,
-                    defaults={
-                        'name': name,
-                        'email': email if email else '',
-                        'is_active': True,
-                        'payment_status': payment_status,
-                    }
-                )
-            else:
-                raise
+        # Create or get BusinessAdmin
+        admin, created = BusinessAdmin.objects.get_or_create(
+            phone=formatted_phone,
+            defaults={
+                'name': name,
+                'email': email if email else '',
+                'is_active': True,
+                'payment_status': payment_status,
+            }
+        )
 
         if created:
             self.stdout.write(self.style.SUCCESS(f'BusinessAdmin created: {admin.name} ({admin.phone})'))
@@ -125,25 +143,12 @@ class Command(BaseCommand):
                 restaurant.save()
                 self.stdout.write(self.style.SUCCESS(f'Restaurant activated: {restaurant.name}'))
         except Restaurant.DoesNotExist:
-            try:
-                restaurant = Restaurant.objects.create(
-                    admin=admin,
-                    name='Restaurant',
-                    description='Default restaurant',
-                    is_active=True
-                )
-            except IntegrityError as e:
-                if 'duplicate key' in str(e).lower() and 'business_menu_restaurant' in str(e):
-                    self.stdout.write(self.style.WARNING('Restaurant sequence out of sync. Resetting...'))
-                    reset_sequence_for_table('business_menu_restaurant')
-                    restaurant = Restaurant.objects.create(
-                        admin=admin,
-                        name='Restaurant',
-                        description='Default restaurant',
-                        is_active=True
-                    )
-                else:
-                    raise
+            restaurant = Restaurant.objects.create(
+                admin=admin,
+                name='Restaurant',
+                description='Default restaurant',
+                is_active=True
+            )
             self.stdout.write(self.style.SUCCESS(f'Default Restaurant created: {restaurant.name}'))
         
         # Set up OTP code in cache (for DEBUG mode)
