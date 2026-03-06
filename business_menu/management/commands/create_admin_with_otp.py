@@ -4,9 +4,23 @@ Usage: python manage.py create_admin_with_otp --phone +905540225177 --code 12345
 """
 from django.core.management.base import BaseCommand
 from django.core.cache import cache
-from django.conf import settings
+from django.db import connection, IntegrityError
 from business_menu.models import BusinessAdmin, Restaurant
 from accounts.twilio_utils import format_phone_number, UNLIMITED_OTP_PHONES
+
+
+def reset_sequence_for_table(table_name: str) -> None:
+    """Reset PostgreSQL sequence for table id column (fixes duplicate key after data migration)."""
+    allowed = ('business_menu_businessadmin', 'business_menu_restaurant')
+    if table_name not in allowed:
+        return
+    with connection.cursor() as cur:
+        cur.execute(
+            "SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE((SELECT MAX(id) FROM "
+            + table_name
+            + "), 1))",
+            [table_name],
+        )
 
 
 class Command(BaseCommand):
@@ -55,17 +69,33 @@ class Command(BaseCommand):
         is_test_number = formatted_phone in UNLIMITED_OTP_PHONES
         payment_status = 'paid' if is_test_number else 'unpaid'
         
-        # Create or get BusinessAdmin
-        admin, created = BusinessAdmin.objects.get_or_create(
-            phone=formatted_phone,
-            defaults={
-                'name': name,
-                'email': email if email else '',
-                'is_active': True,
-                'payment_status': payment_status,
-            }
-        )
-        
+        # Create or get BusinessAdmin (retry after fixing sequence if needed after data migration)
+        try:
+            admin, created = BusinessAdmin.objects.get_or_create(
+                phone=formatted_phone,
+                defaults={
+                    'name': name,
+                    'email': email if email else '',
+                    'is_active': True,
+                    'payment_status': payment_status,
+                }
+            )
+        except IntegrityError as e:
+            if 'duplicate key' in str(e).lower() and 'business_menu_businessadmin' in str(e):
+                self.stdout.write(self.style.WARNING('Sequence out of sync (e.g. after migration). Resetting...'))
+                reset_sequence_for_table('business_menu_businessadmin')
+                admin, created = BusinessAdmin.objects.get_or_create(
+                    phone=formatted_phone,
+                    defaults={
+                        'name': name,
+                        'email': email if email else '',
+                        'is_active': True,
+                        'payment_status': payment_status,
+                    }
+                )
+            else:
+                raise
+
         if created:
             self.stdout.write(self.style.SUCCESS(f'BusinessAdmin created: {admin.name} ({admin.phone})'))
             if is_test_number:
@@ -95,12 +125,25 @@ class Command(BaseCommand):
                 restaurant.save()
                 self.stdout.write(self.style.SUCCESS(f'Restaurant activated: {restaurant.name}'))
         except Restaurant.DoesNotExist:
-            restaurant = Restaurant.objects.create(
-                admin=admin,
-                name='Restaurant',
-                description='Default restaurant',
-                is_active=True
-            )
+            try:
+                restaurant = Restaurant.objects.create(
+                    admin=admin,
+                    name='Restaurant',
+                    description='Default restaurant',
+                    is_active=True
+                )
+            except IntegrityError as e:
+                if 'duplicate key' in str(e).lower() and 'business_menu_restaurant' in str(e):
+                    self.stdout.write(self.style.WARNING('Restaurant sequence out of sync. Resetting...'))
+                    reset_sequence_for_table('business_menu_restaurant')
+                    restaurant = Restaurant.objects.create(
+                        admin=admin,
+                        name='Restaurant',
+                        description='Default restaurant',
+                        is_active=True
+                    )
+                else:
+                    raise
             self.stdout.write(self.style.SUCCESS(f'Default Restaurant created: {restaurant.name}'))
         
         # Set up OTP code in cache (for DEBUG mode)
