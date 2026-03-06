@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "core",
     "accounts",
     "business_menu.apps.BusinessMenuConfig",
+    "config",  # for management commands (e.g. migrate_from_source_db)
 ]
 
 SIMPLE_JWT_ENABLE_BLACKLIST_APP = _env_bool("SIMPLE_JWT_ENABLE_BLACKLIST_APP", default=False)
