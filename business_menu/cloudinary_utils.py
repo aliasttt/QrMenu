@@ -28,7 +28,7 @@ def upload_image_to_cloudinary(image_file, folder="business_menu"):
     if not use_cloudinary:
         return {
             'success': False,
-            'error': 'Cloudinary فعال نیست. لطفاً USE_CLOUDINARY=1 را تنظیم کنید.'
+            'error': 'Cloudinary is not enabled. Please set USE_CLOUDINARY=1.'
         }
     
     try:
@@ -95,7 +95,7 @@ def upload_image_to_cloudinary(image_file, folder="business_menu"):
     except Exception as e:
         return {
             'success': False,
-            'error': f'خطا در آپلود به Cloudinary: {str(e)}'
+            'error': f'Error uploading to Cloudinary: {str(e)}'
         }
 
 
@@ -153,7 +153,7 @@ def delete_image_from_cloudinary(uuid_str):
     if not cloudinary_image:
         return {
             'success': False,
-            'message': 'تصویر یافت نشد'
+            'message': 'Image not found'
         }
     
     try:
@@ -171,18 +171,18 @@ def delete_image_from_cloudinary(uuid_str):
         
         return {
             'success': True,
-            'message': 'تصویر با موفقیت حذف شد'
+            'message': 'Image deleted successfully'
         }
         
     except ImportError:
         return {
             'success': False,
-            'message': 'کتابخانه Cloudinary نصب نشده است.'
+            'message': 'Cloudinary library is not installed.'
         }
     except Exception as e:
         return {
             'success': False,
-            'message': f'خطا در حذف تصویر: {str(e)}'
+            'message': f'Error deleting image: {str(e)}'
         }
 
 

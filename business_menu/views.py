@@ -155,17 +155,18 @@ def _request_data_to_plain_dict(data):
 
 class SendOTPView(APIView):
     """
-    ارسال OTP به شماره تلفن ادمین و کد تأیید به ایمیل
+    Send OTP to admin phone and optional email verification code.
     POST /api/business-menu/send-otp/
     Body: {"phone": "+491234567890"}
-    
-    Flow:
-    1. بررسی اینکه آیا این شماره تلفن به عنوان BusinessAdmin ثبت شده است
-    2. ارسال OTP به شماره تلفن از طریق Twilio SMS
-    3. اگر BusinessAdmin دارای ایمیل است، ارسال کد تأیید به ایمیل
     """
     permission_classes = [permissions.AllowAny]
-    
+
+    def get(self, request):
+        return Response({
+            "success": False,
+            "message": "Method not allowed. Use POST with JSON body: {\"phone\": \"+49...\"}",
+        }, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     def post(self, request):
         serializer = SendOTPSerializer(data=request.data)
         
@@ -183,7 +184,7 @@ class SendOTPView(APIView):
         except Exception as e:
             return Response({
                 "success": False,
-                "message": f"فرمت شماره تلفن نامعتبر: {str(e)}"
+                "message": f"Invalid phone number format: {str(e)}"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Only admins registered manually by superuser can receive OTP.
@@ -192,7 +193,7 @@ class SendOTPView(APIView):
         except BusinessAdmin.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "این شماره تلفن به عنوان ادمین ثبت نشده است. لطفاً با مدیر سیستم تماس بگیرید."
+                "message": "This phone number is not registered as an admin. Please contact the system administrator."
             }, status=status.HTTP_404_NOT_FOUND)
         except BusinessAdmin.MultipleObjectsReturned:
             # Handle duplicate admins (shouldn't happen due to unique constraint, but just in case)
@@ -200,14 +201,14 @@ class SendOTPView(APIView):
             if not admin:
                 return Response({
                     "success": False,
-                    "message": "این شماره تلفن به عنوان ادمین ثبت نشده است. لطفاً با مدیر سیستم تماس بگیرید."
+                    "message": "This phone number is not registered as an admin. Please contact the system administrator."
                 }, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             # Log the actual error for debugging
             logger.error(f"Error checking admin for phone {formatted_phone}: {str(e)}", exc_info=True)
             return Response({
                 "success": False,
-                "message": f"خطا در بررسی ادمین: {str(e)}"
+                "message": f"Error checking admin: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         # ارسال OTP به شماره تلفن از طریق Twilio SMS
@@ -216,7 +217,7 @@ class SendOTPView(APIView):
         except Exception as e:
             return Response({
                 "success": False,
-                "message": f"خطا در ارسال OTP: {str(e)}"
+                "message": f"Error sending OTP: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         # بررسی اینکه آیا BusinessAdmin دارای ایمیل است
@@ -282,7 +283,7 @@ class SendOTPView(APIView):
         else:
             return Response({
                 "success": False,
-                "message": otp_result.get('message', 'خطا در ارسال OTP'),
+                "message": otp_result.get('message', 'Error sending OTP'),
                 "status": otp_result.get('status', 'error'),
                 "error_code": otp_result.get('error_code')
             }, status=status.HTTP_400_BAD_REQUEST)
@@ -316,7 +317,7 @@ class LoginView(APIView):
         except Exception as e:
             return Response({
                 "success": False,
-                "message": f"فرمت شماره تلفن نامعتبر: {str(e)}"
+                "message": f"Invalid phone number format: {str(e)}"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Only admins registered manually by superuser can login.
@@ -325,7 +326,7 @@ class LoginView(APIView):
         except BusinessAdmin.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "این شماره تلفن به عنوان ادمین ثبت نشده است."
+                "message": "This phone number is not registered as an admin."
             }, status=status.HTTP_404_NOT_FOUND)
         
         # Resolve auth user for this admin (prefer linked to avoid duplicates)
@@ -428,7 +429,7 @@ class LoginView(APIView):
         # آماده‌سازی response
         response_data = {
             "success": True,
-            "message": "ورود موفقیت‌آمیز بود",
+            "message": "Login successful",
             "access": str(refresh.access_token),
             "refresh": str(refresh),
             "user": {
@@ -466,7 +467,7 @@ class RestaurantListCreateView(APIView):
         if not admin:
             return Response({
                 "success": False,
-                "message": "ادمین یافت نشد"
+                "message": "Admin not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         # Get restaurant for this admin (OneToOne relationship)
@@ -491,7 +492,7 @@ class RestaurantListCreateView(APIView):
         if not admin:
             return Response({
                 "success": False,
-                "message": "ادمین یافت نشد"
+                "message": "Admin not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         serializer = RestaurantSerializer(data=request.data)
@@ -499,7 +500,7 @@ class RestaurantListCreateView(APIView):
             serializer.save(admin=admin)
             return Response({
                 "success": True,
-                "message": "رستوران با موفقیت ایجاد شد",
+                "message": "Restaurant created successfully",
                 "restaurant": serializer.data
             }, status=status.HTTP_201_CREATED)
         
@@ -771,7 +772,7 @@ class MenuItemCreateFromAppView(APIView):
             if not restaurant_id:
                 return Response({
                     "success": False,
-                    "message": "restaurant الزامی است"
+                    "message": "restaurant is required"
                 }, status=status.HTTP_400_BAD_REQUEST)
             
             try:
@@ -779,7 +780,7 @@ class MenuItemCreateFromAppView(APIView):
             except Restaurant.DoesNotExist:
                 return Response({
                     "success": False,
-                    "message": "رستوران یافت نشد"
+                    "message": "Restaurant not found"
                 }, status=status.HTTP_404_NOT_FOUND)
             
             # normalize کردن قیمت: تبدیل ویرگول به نقطه برای پشتیبانی از کیبورد iPhone
@@ -827,7 +828,7 @@ class MenuItemCreateFromAppView(APIView):
                     logger.error(traceback.format_exc())
                     return Response({
                         "success": False,
-                        "message": f"خطا در ذخیره آیتم منو: {str(save_error)}",
+                        "message": f"Error saving menu item: {str(save_error)}",
                         "error": traceback.format_exc() if settings.DEBUG else None
                     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
@@ -860,7 +861,7 @@ class MenuItemCreateFromAppView(APIView):
             logger.error(traceback.format_exc())
             return Response({
                 "success": False,
-                "message": f"خطا در ایجاد آیتم منو: {str(e)}",
+                "message": f"Error creating menu item: {str(e)}",
                 "error": traceback.format_exc() if settings.DEBUG else None
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -893,7 +894,7 @@ class MenuItemCreateFromAppView(APIView):
         if not admin:
             return Response({
                 "success": False,
-                "message": "ادمین یافت نشد"
+                "message": "Admin not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         restaurant_id = request.data.get('restaurant')
@@ -902,7 +903,7 @@ class MenuItemCreateFromAppView(APIView):
         except Restaurant.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "رستوران یافت نشد یا شما دسترسی ندارید"
+                "message": "Restaurant not found or you do not have access"
             }, status=status.HTTP_404_NOT_FOUND)
         
         serializer = MenuItemCreateSerializer(data=request.data)
@@ -912,7 +913,7 @@ class MenuItemCreateFromAppView(APIView):
             
             return Response({
                 "success": True,
-                "message": "آیتم منو با موفقیت ایجاد شد",
+                "message": "Menu item created successfully",
                 "menu_item": response_serializer.data
             }, status=status.HTTP_201_CREATED)
         
@@ -1371,7 +1372,7 @@ class SaveMenuFromAppView(APIView):
         if not admin:
             return Response({
                 "success": False,
-                "message": "ادمین یافت نشد"
+                "message": "Admin not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         restaurant_id = request.data.get('restaurant_id')
@@ -1380,7 +1381,7 @@ class SaveMenuFromAppView(APIView):
         if not restaurant_id:
             return Response({
                 "success": False,
-                "message": "restaurant_id الزامی است"
+                "message": "restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
@@ -1388,7 +1389,7 @@ class SaveMenuFromAppView(APIView):
         except Restaurant.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "رستوران یافت نشد یا شما دسترسی ندارید"
+                "message": "Restaurant not found or you do not have access"
             }, status=status.HTTP_404_NOT_FOUND)
         
         # حذف آیتم‌های قبلی (اختیاری - می‌توانید این را حذف کنید)
@@ -1444,7 +1445,7 @@ class SaveMenuFromAppView(APIView):
         
         return Response({
             "success": True,
-            "message": f"{len(saved_items)} آیتم منو با موفقیت ذخیره شد",
+            "message": f"{len(saved_items)} menu item(s) saved successfully",
             "saved_items": saved_items
         }, status=status.HTTP_201_CREATED)
     
@@ -1467,7 +1468,7 @@ class GetMenuAPIView(APIView):
         if not restaurant_id:
             return Response({
                 "success": False,
-                "message": "restaurant_id الزامی است"
+                "message": "restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
@@ -1475,7 +1476,7 @@ class GetMenuAPIView(APIView):
         except Restaurant.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "رستوران یافت نشد"
+                "message": "Restaurant not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         menu_items = MenuItem.objects.filter(restaurant=restaurant, is_available=True).order_by('order', 'name')
@@ -1534,14 +1535,14 @@ class GenerateQRCodeView(APIView):
         if not restaurant_id:
             return Response({
                 "success": False,
-                "message": "restaurant_id الزامی است"
+                "message": "restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         admin = self._get_admin_from_user(request.user)
         if not admin:
             return Response({
                 "success": False,
-                "message": "ادمین یافت نشد"
+                "message": "Admin not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         try:
@@ -1549,7 +1550,7 @@ class GenerateQRCodeView(APIView):
         except Restaurant.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "رستوران یافت نشد یا شما دسترسی ندارید"
+                "message": "Restaurant not found or you do not have access"
             }, status=status.HTTP_404_NOT_FOUND)
         
         # دریافت یا ایجاد QR کد
@@ -1568,7 +1569,7 @@ class GenerateQRCodeView(APIView):
         
         return Response({
             "success": True,
-            "message": "QR کد با موفقیت ایجاد شد" if created else "QR کد موجود است",
+            "message": "QR code created successfully" if created else "QR code already exists",
             "qr_code": serializer.data,
             "menu_url": menu_url  # URL برای اپ
         }, status=status.HTTP_200_OK)
@@ -1592,14 +1593,14 @@ class GetMenuURLView(APIView):
         if not restaurant_id:
             return Response({
                 "success": False,
-                "message": "restaurant_id الزامی است"
+                "message": "restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         admin = self._get_admin_from_user(request.user)
         if not admin:
             return Response({
                 "success": False,
-                "message": "ادمین یافت نشد"
+                "message": "Admin not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         try:
@@ -1607,7 +1608,7 @@ class GetMenuURLView(APIView):
         except Restaurant.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "رستوران یافت نشد یا شما دسترسی ندارید"
+                "message": "Restaurant not found or you do not have access"
             }, status=status.HTTP_404_NOT_FOUND)
         
         try:
@@ -1622,7 +1623,7 @@ class GetMenuURLView(APIView):
         except MenuQRCode.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "QR کد برای این رستوران ایجاد نشده است. لطفاً ابتدا QR کد را تولید کنید."
+                "message": "QR code has not been created for this restaurant. Please generate the QR code first."
             }, status=status.HTTP_404_NOT_FOUND)
     
     def _get_admin_from_user(self, user):
@@ -1990,7 +1991,7 @@ def menu_qr_image_view(request, token):
         
         return HttpResponse(buffer.getvalue(), content_type="image/png")
     except MenuQRCode.DoesNotExist:
-        return HttpResponse("QR کد یافت نشد", status=404)
+        return HttpResponse("QR code not found", status=404)
 
 
 class ImageUploadView(APIView):
@@ -2005,7 +2006,7 @@ class ImageUploadView(APIView):
         "success": true,
         "uuid": "uuid-string",
         "url": "https://...",
-        "message": "تصویر با موفقیت آپلود شد"
+        "message": "Image uploaded successfully"
     }
     """
     permission_classes = [permissions.AllowAny]
@@ -2015,7 +2016,7 @@ class ImageUploadView(APIView):
         if 'image' not in request.FILES:
             return Response({
                 "success": False,
-                "message": "فایل تصویر ارسال نشده است"
+                "message": "No image file provided"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         image_file = request.FILES['image']
@@ -2024,7 +2025,7 @@ class ImageUploadView(APIView):
         if not image_file.content_type.startswith('image/'):
             return Response({
                 "success": False,
-                "message": "فایل باید یک تصویر باشد"
+                "message": "File must be an image"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # آپلود به Cloudinary
@@ -2036,12 +2037,12 @@ class ImageUploadView(APIView):
                 "uuid": upload_result['uuid'],
                 "url": upload_result['url'],
                 "public_id": upload_result.get('public_id'),
-                "message": "تصویر با موفقیت آپلود شد و در Cloudinary کش شد"
+                "message": "Image uploaded successfully and cached on Cloudinary"
             }, status=status.HTTP_201_CREATED)
         else:
             return Response({
                 "success": False,
-                "message": upload_result.get('error', 'خطا در آپلود تصویر')
+                "message": upload_result.get('error', 'Error uploading image')
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -2059,7 +2060,7 @@ class GetImageByUUIDView(APIView):
         if not cloudinary_image:
             return Response({
                 "success": False,
-                "message": "تصویر یافت نشد"
+                "message": "Image not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         return Response({
@@ -2283,7 +2284,7 @@ class MenuSetListCreateView(APIView):
         if not restaurant_id:
             return Response({
                 "success": False,
-                "message": "restaurant یا restaurant_id الزامی است"
+                "message": "restaurant or restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # بررسی وجود رستوران
@@ -2292,7 +2293,7 @@ class MenuSetListCreateView(APIView):
         except Restaurant.DoesNotExist:
             return Response({
                 "success": False,
-                "message": "رستوران یافت نشد"
+                "message": "Restaurant not found"
             }, status=status.HTTP_404_NOT_FOUND)
         
         data['restaurant'] = restaurant.id
@@ -2409,7 +2410,7 @@ class PackageListCreateView(APIView):
         if not restaurant_id:
             return Response({
                 "success": False,
-                "message": "restaurant یا restaurant_id الزامی است"
+                "message": "restaurant or restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
         data['restaurant'] = restaurant_id

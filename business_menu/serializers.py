@@ -148,7 +148,7 @@ class CommaDecimalField(serializers.DecimalField):
             logger.error(f"CommaDecimalField error: {str(e)}, original: {data}, normalized: {normalized_data}, type: {type(data)}")
             # اگر خطای validation است، پیام بهتری بده
             if 'valid number' in str(e).lower() or 'invalid' in str(e).lower():
-                raise serializers.ValidationError(f"قیمت نامعتبر است. لطفاً یک عدد معتبر وارد کنید (مثال: 12.50 یا 12,50)")
+                raise serializers.ValidationError("Invalid price. Please enter a valid number (e.g. 12.50 or 12,50)")
             raise
 
 
@@ -815,9 +815,9 @@ class PackageCreateSerializer(serializers.ModelSerializer):
             try:
                 restaurant = Restaurant.objects.get(id=restaurant_id, is_active=True)
             except Restaurant.DoesNotExist:
-                raise serializers.ValidationError({"restaurant": "رستوران یافت نشد"})
+                raise serializers.ValidationError({"restaurant": "Restaurant not found"})
         else:
-            raise serializers.ValidationError({"restaurant": "restaurant الزامی است"})
+            raise serializers.ValidationError({"restaurant": "restaurant is required"})
         
         # ایجاد پکیج
         package = Package.objects.create(restaurant=restaurant, **validated_data)
