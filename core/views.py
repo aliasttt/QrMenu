@@ -398,6 +398,15 @@ def restaurant_menu(request, restaurant_id):
             "thumb": thumb,
         })
 
+    # Use first menu images as top banner gallery (if available).
+    banner_images = []
+    for card in menu_cards:
+        img = card.get("image_url")
+        if img and img not in banner_images:
+            banner_images.append(img)
+        if len(banner_images) >= 3:
+            break
+
     return render(
         request,
         "pages/restaurant_menu.html",
@@ -406,6 +415,7 @@ def restaurant_menu(request, restaurant_id):
             "menu_cards": menu_cards,
             "menu_sections": menu_sections,
             "category_list": category_list,
+            "banner_images": banner_images,
         },
     )
 
