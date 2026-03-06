@@ -110,8 +110,8 @@ class Command(BaseCommand):
                     self.stdout.write(f"  Skip {table} (no common columns)")
                     continue
                 to_copy.append(table)
-            # Order so FKs are satisfied: auth/django first, then accounts, then business_menu
-            order_prefix = ("auth_user", "auth_permission", "django_content_type", "auth_group",
+            # Order so FKs are satisfied: django_content_type first (referenced by auth_permission), then auth_*, django_*, accounts, business_menu
+            order_prefix = ("django_content_type", "auth_permission", "auth_user", "auth_group",
                            "auth_group_permissions", "auth_user_groups", "auth_user_user_permissions",
                            "django_migrations", "django_admin_log", "django_session")
             ordered = [t for t in order_prefix if t in to_copy]
