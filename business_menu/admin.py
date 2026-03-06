@@ -8,6 +8,8 @@ from accounts.models import Profile
 from .models import (
     BusinessAdmin,
     Restaurant,
+    Category,
+    MenuSet,
     MenuItem,
     MenuItemImage,
     MenuQRCode,
@@ -16,6 +18,9 @@ from .models import (
     PackageItem,
     MenuTheme,
     RestaurantSettings,
+    Customer,
+    Order,
+    Payment,
 )
 
 
@@ -303,6 +308,27 @@ class RestaurantAdmin(admin.ModelAdmin):
     admin_email.short_description = "Admin email"
 
 
+# ——— منوها: دسته‌بندی و مجموعه‌ها ———
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    """دسته‌بندی‌های منو"""
+    list_display = ("name", "restaurant", "order", "is_active", "created_at")
+    list_filter = ("is_active", "restaurant", "created_at")
+    search_fields = ("name", "restaurant__name")
+    ordering = ("restaurant", "order", "name")
+    list_editable = ("order", "is_active")
+
+
+@admin.register(MenuSet)
+class MenuSetAdmin(admin.ModelAdmin):
+    """مجموعه‌های منو"""
+    list_display = ("name", "restaurant", "order", "is_active", "created_at")
+    list_filter = ("is_active", "restaurant", "created_at")
+    search_fields = ("name", "description", "restaurant__name")
+    ordering = ("restaurant", "order", "name")
+    list_editable = ("order", "is_active")
+
+
 @admin.register(MenuQRCode)
 class MenuQRCodeAdmin(admin.ModelAdmin):
     """Menu QR Code management"""
@@ -337,6 +363,68 @@ class MenuQRCodeAdmin(admin.ModelAdmin):
             return format_html('<a href="{}" target="_blank">{}</a>', menu_url, menu_url)
         return '-'
     menu_url_display.short_description = 'Menu URL'
+
+
+# ——— سفارشات ———
+class PaymentInline(admin.TabularInline):
+    model = Payment
+    extra = 0
+    readonly_fields = ("stripe_payment_intent_id", "stripe_charge_id", "amount", "currency", "status", "created_at")
+    can_delete = True
+    show_change_link = True
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    """سفارشات هر رستوران"""
+    list_display = ("id", "restaurant", "customer_short", "status", "total_amount", "currency", "created_at")
+    list_filter = ("status", "restaurant", "created_at")
+    search_fields = ("restaurant__name", "customer__email", "customer__phone", "customer__name", "stripe_order_id")
+    readonly_fields = ("created_at", "updated_at")
+    list_editable = ("status",)
+    inlines = [PaymentInline]
+    raw_id_fields = ("customer",)
+
+    def customer_short(self, obj):
+        if not obj.customer:
+            return "—"
+        return obj.customer.name or obj.customer.email or obj.customer.phone or "—"
+    customer_short.short_description = "مشتری"
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    """پرداخت‌ها (وضعیت از Stripe)"""
+    list_display = ("id", "restaurant", "order", "amount", "currency", "status", "created_at")
+    list_filter = ("status", "restaurant", "created_at")
+    search_fields = ("restaurant__name", "stripe_payment_intent_id", "stripe_charge_id")
+    readonly_fields = ("created_at", "updated_at")
+    raw_id_fields = ("order",)
+
+
+# ——— مشتریان (CRM) ———
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    """مشتریان — داده از Stripe/سفارشات"""
+    list_display = ("name", "email", "phone", "restaurant", "stripe_customer_id", "created_at")
+    list_filter = ("restaurant", "created_at")
+    search_fields = ("name", "email", "phone", "restaurant__name", "stripe_customer_id")
+    readonly_fields = ("created_at", "updated_at")
+    raw_id_fields = ("restaurant",)
+
+
+@admin.register(MenuItemImage)
+class MenuItemImageAdmin(admin.ModelAdmin):
+    """لیست تصاویر آیتم‌های منو"""
+    list_display = ("id", "menu_item", "menu_item_restaurant", "order", "created_at")
+    list_filter = ("menu_item__restaurant", "created_at")
+    search_fields = ("menu_item__name",)
+    raw_id_fields = ("menu_item", "cloudinary_image")
+    readonly_fields = ("created_at",)
+
+    def menu_item_restaurant(self, obj):
+        return obj.menu_item.restaurant.name if obj.menu_item_id else "—"
+    menu_item_restaurant.short_description = "رستوران"
 
 
 @admin.register(CloudinaryImage)
@@ -441,10 +529,6 @@ class PackageAdmin(admin.ModelAdmin):
         return '-'
     discount_percent_display.short_description = 'تخفیف'
 
-    # Hide from index; manage via Restaurant -> Packages inline
-    def get_model_perms(self, request):
-        return {}
-
 
 @admin.register(MenuTheme)
 class MenuThemeAdmin(admin.ModelAdmin):
@@ -455,10 +539,7 @@ class MenuThemeAdmin(admin.ModelAdmin):
 
 @admin.register(RestaurantSettings)
 class RestaurantSettingsAdmin(admin.ModelAdmin):
+    """تنظیمات نمایش منو هر رستوران"""
     list_display = ("restaurant", "menu_theme", "show_prices", "show_images", "show_descriptions", "show_serial", "updated_at")
     list_filter = ("menu_theme", "show_prices", "show_images", "show_descriptions", "show_serial")
     search_fields = ("restaurant__name", "restaurant__phone")
-
-    # Hide from index; manage via Restaurant inline
-    def get_model_perms(self, request):
-        return {}

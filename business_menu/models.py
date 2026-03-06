@@ -478,3 +478,133 @@ class MenuQRCode(models.Model):
     
     def __str__(self) -> str:
         return f"Menu QR {self.restaurant.name} - {self.token[:8]}"
+
+
+class Customer(models.Model):
+    """
+    مشتریان (از Stripe / سفارش‌ها) - برای CRM
+    بعداً با Stripe پر می‌شود
+    """
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="customers",
+        help_text="رستوران مرتبط",
+    )
+    email = models.EmailField(blank=True, db_index=True)
+    phone = models.CharField(max_length=32, blank=True, db_index=True)
+    name = models.CharField(max_length=200, blank=True)
+    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Customer"
+        verbose_name_plural = "Customers"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name or self.email or self.phone or '—'} ({self.restaurant.name})"
+
+
+class Order(models.Model):
+    """
+    سفارش هر رستوران/کافه — بعداً از Stripe یا اپ پر می‌شود
+    """
+    class Status(models.TextChoices):
+        PENDING = "pending", "در انتظار"
+        PAID = "paid", "پرداخت شده"
+        PREPARING = "preparing", "در حال آماده‌سازی"
+        COMPLETED = "completed", "تکمیل شده"
+        CANCELLED = "cancelled", "لغو شده"
+        REFUNDED = "refunded", "مسترد شده"
+
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="orders",
+        help_text="رستوران",
+    )
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders",
+        help_text="مشتری (اختیاری)",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        db_index=True,
+    )
+    total_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        help_text="مبلغ کل",
+    )
+    currency = models.CharField(max_length=3, default="EUR")
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    stripe_order_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    items_json = models.JSONField(default=dict, blank=True, help_text="آیتم‌های سفارش (JSON)")
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Order #{self.id} — {self.restaurant.name} — {self.get_status_display()}"
+
+
+class Payment(models.Model):
+    """
+    پرداخت‌ها — وضعیت از Stripe
+    """
+    class Status(models.TextChoices):
+        PENDING = "pending", "در انتظار"
+        SUCCEEDED = "succeeded", "موفق"
+        FAILED = "failed", "ناموفق"
+        CANCELLED = "cancelled", "لغو شده"
+        REFUNDED = "refunded", "مسترد شده"
+
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="payments",
+        null=True,
+        blank=True,
+        help_text="سفارش مرتبط (اختیاری)",
+    )
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="payments",
+        help_text="رستوران",
+    )
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    stripe_charge_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    currency = models.CharField(max_length=3, default="EUR")
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        db_index=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Payment"
+        verbose_name_plural = "Payments"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Payment #{self.id} — {self.restaurant.name} — {self.get_status_display()}"

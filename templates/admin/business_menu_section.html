@@ -1,0 +1,50 @@
+{% load i18n %}
+<div class="app-list">
+  {% for section in sections %}
+  <div class="app-business_menu module">
+    <table>
+      <caption>
+        <span class="section" style="font-weight: 600;">{{ section.title }}</span>
+      </caption>
+      <thead class="visually-hidden">
+        <tr>
+          <th scope="col">{% translate 'Model name' %}</th>
+          <th scope="col">{% translate 'Add link' %}</th>
+          <th scope="col">{% translate 'Change or view list link' %}</th>
+        </tr>
+      </thead>
+      {% for model in section.models %}
+      {% with model_name=model.object_name|lower %}
+      <tr class="model-{{ model_name }}{% if model.admin_url in request.path %} current-model{% endif %}">
+        <th scope="row" id="business_menu-{{ model_name }}">
+          {% if model.admin_url %}
+          <a href="{{ model.admin_url }}"{% if model.admin_url in request.path %} aria-current="page"{% endif %}>{{ model.name }}</a>
+          {% else %}
+          {{ model.name }}
+          {% endif %}
+        </th>
+        {% if model.add_url %}
+        <td><a href="{{ model.add_url }}" class="addlink" aria-describedby="business_menu-{{ model_name }}">{% translate 'Add' %}</a></td>
+        {% else %}
+        <td></td>
+        {% endif %}
+        {% if model.admin_url and show_changelinks %}
+        {% if model.view_only %}
+        <td><a href="{{ model.admin_url }}" class="viewlink" aria-describedby="business_menu-{{ model_name }}">{% translate 'View' %}</a></td>
+        {% else %}
+        <td><a href="{{ model.admin_url }}" class="changelink" aria-describedby="business_menu-{{ model_name }}">{% translate 'Change' %}</a></td>
+        {% endif %}
+        {% else %}
+        <td></td>
+        {% endif %}
+      </tr>
+      {% endwith %}
+      {% endfor %}
+    </table>
+  </div>
+  {% endfor %}
+
+  {% if other_apps %}
+  {% include "admin/app_list.html" with app_list=other_apps show_changelinks=show_changelinks %}
+  {% endif %}
+</div>
