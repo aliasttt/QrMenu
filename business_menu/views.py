@@ -1688,17 +1688,62 @@ class GetQRCodeForAppView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+def _build_menu_cards_and_sections(request, restaurant, menu_items, settings_obj):
+    """Build menu_cards, menu_sections, category_list, banner_images (same format as core restaurant_menu)."""
+    show_images = settings_obj.show_images if settings_obj else True
+    menu_cards = []
+    sections_map = {}
+
+    for item in menu_items:
+        img_url = None
+        if show_images:
+            first_img = item.images.first()
+            if first_img:
+                img_url = first_img.get_image_url(request=request)
+        if not img_url:
+            img_url = f"https://picsum.photos/seed/menu-{item.id}/640/400"
+        category_key = str(item.category.id) if item.category else "other"
+        category_name = item.category.name if item.category else "Other"
+        menu_cards.append({
+            "id": item.id,
+            "name": item.name,
+            "description": item.description or "",
+            "price": item.price,
+            "image_url": img_url,
+            "category_id": category_key,
+            "category_name": category_name,
+            "serial": (item.serial or "") if item.serial else "",
+            "stock": (item.stock or "").strip() or "Available",
+        })
+        if category_key not in sections_map:
+            sections_map[category_key] = {"id": category_key, "name": category_name, "items": []}
+        sections_map[category_key]["items"].append(menu_cards[-1])
+
+    menu_sections = list(sections_map.values())
+    category_list = []
+    for sec in menu_sections:
+        thumb = sec["items"][0]["image_url"] if sec["items"] else ""
+        category_list.append({"id": sec["id"], "name": sec["name"], "count": len(sec["items"]), "thumb": thumb})
+
+    banner_images = []
+    for card in menu_cards:
+        img = card.get("image_url")
+        if img and img not in banner_images:
+            banner_images.append(img)
+        if len(banner_images) >= 3:
+            break
+    return menu_cards, menu_sections, category_list, banner_images
+
+
 def menu_qr_display_view(request, token):
     """
-    نمایش منو هنگام اسکن QR کد
+    نمایش منو هنگام اسکن QR — از همان قالب و استایل صفحه رستوران‌ها و کافه‌ها استفاده می‌کند.
     GET /business-menu/qr/{token}/
-    فقط آیتم‌های available و پکیج‌های active نمایش داده می‌شوند
     """
     try:
-        menu_qr = MenuQRCode.objects.select_related('restaurant').get(token=token)
+        menu_qr = MenuQRCode.objects.select_related("restaurant", "restaurant__admin").get(token=token)
         restaurant = menu_qr.restaurant
-        
-        # Settings (theme + toggles)
+
         settings_obj, _ = RestaurantSettings.objects.get_or_create(
             restaurant=restaurant,
             defaults={
@@ -1708,180 +1753,69 @@ def menu_qr_display_view(request, token):
                 "show_serial": False,
             },
         )
-        theme_slug = "theme--classic"
-        if settings_obj.menu_theme and settings_obj.menu_theme.slug:
+        theme_slug = None
+        if settings_obj.menu_theme and getattr(settings_obj.menu_theme, "slug", None):
             theme_slug = f"theme--{settings_obj.menu_theme.slug}"
 
-        # دریافت دسته‌بندی‌های فعال رستوران
-        categories = Category.objects.filter(
-            restaurant=restaurant,
-            is_active=True
-        ).order_by('order', 'name')
+        categories = Category.objects.filter(restaurant=restaurant, is_active=True).order_by("order", "name")
+        menu_items = MenuItem.objects.filter(restaurant=restaurant, is_available=True).select_related("category").prefetch_related("images", "images__cloudinary_image")
         
-        # دریافت آیتم‌های منو (فقط available)
-        menu_items = MenuItem.objects.filter(
-            restaurant=restaurant, 
-            is_available=True
-        ).select_related('category')
-        
-        # اگر show_serial فعال است و serial وجود دارد، بر اساس serial مرتب کن
         if settings_obj.show_serial:
-            # بررسی اینکه آیا آیتم‌هایی با serial وجود دارند
             items_with_serial = menu_items.exclude(serial__isnull=True).exclude(serial='')
             if items_with_serial.exists():
-                # مرتب‌سازی بر اساس serial (به صورت طبیعی)
                 menu_items = menu_items.order_by('serial', 'order', 'name')
             else:
                 menu_items = menu_items.order_by('order', 'name')
         else:
             menu_items = menu_items.order_by('order', 'name')
-        
-        # آماده‌سازی داده‌ها برای نمایش و گروه‌بندی بر اساس category
-        menu_items_by_category = {}
-        menu_items_list = []
-        
-        for item in menu_items:
-            images = []
-            for img in item.images.all().order_by('order'):
-                try:
-                    if img.cloudinary_image:
-                        images.append(img.cloudinary_image.get_url(secure=True))
-                    elif img.image:
-                        images.append(request.build_absolute_uri(img.image.url))
-                except Exception:
-                    pass
-            
-            item_data = {
-                'id': item.id,
-                'name': item.name,
-                'description': item.description,
-                'price': str(item.price),
-                'stock': item.stock,
-                'serial': item.serial if item.serial else None,
-                'images': images,
-                'category_id': item.category.id if item.category else None,
-                'category_name': item.category.name if item.category else None,
-            }
-            
-            menu_items_list.append(item_data)
-            
-            # گروه‌بندی بر اساس category
-            category_key = item.category.id if item.category else 'no_category'
-            if category_key not in menu_items_by_category:
-                menu_items_by_category[category_key] = {
-                    'category': item.category,
-                    'items': []
-                }
-            menu_items_by_category[category_key]['items'].append(item_data)
-        
-        # آماده‌سازی لیست categories با تعداد آیتم‌ها
-        # نمایش همه کتگوری‌های فعال رستوران، حتی اگر آیتم نداشته باشند
-        categories_list = []
-        for category in categories:
-            category_key = category.id
-            item_count = len(menu_items_by_category.get(category_key, {}).get('items', []))
-            # نمایش همه کتگوری‌های فعال، حتی اگر آیتم نداشته باشند
-            categories_list.append({
-                'id': category.id,
-                'name': category.name,
-                'order': category.order,
-                'item_count': item_count,
-            })
-        
-        # اگر آیتم‌هایی بدون category وجود دارند، آن‌ها را هم اضافه کن
-        if 'no_category' in menu_items_by_category and menu_items_by_category['no_category']['items']:
-            categories_list.append({
-                'id': 'no_category',
-                'name': 'Other',
-                'order': 9999,
-                'item_count': len(menu_items_by_category['no_category']['items']),
-            })
-        
-        # ساخت لیست گروه‌بندی شده برای template (راحت‌تر برای iterate)
-        # نمایش همه کتگوری‌ها، حتی اگر آیتم نداشته باشند
-        menu_items_grouped = []
-        for category in categories:
-            category_key = category.id
-            # اگر کتگوری آیتم دارد، آیتم‌ها را اضافه کن، وگرنه لیست خالی
-            items = menu_items_by_category.get(category_key, {}).get('items', [])
-            menu_items_grouped.append({
-                'category_id': category.id,
-                'category_name': category.name,
-                'items': items
-            })
-        
-        # اضافه کردن آیتم‌های بدون category
-        if 'no_category' in menu_items_by_category and menu_items_by_category['no_category']['items']:
-            menu_items_grouped.append({
-                'category_id': 'no_category',
-                'category_name': 'Other',
-                'items': menu_items_by_category['no_category']['items']
-            })
-        
-        # دریافت پکیج‌ها (فقط active)
-        packages = Package.objects.filter(
-            restaurant=restaurant,
-            is_active=True
-        ).order_by('-created_at')
-        
-        # آماده‌سازی داده‌های پکیج‌ها
+
+        menu_cards, menu_sections, category_list, banner_images = _build_menu_cards_and_sections(
+            request, restaurant, list(menu_items), settings_obj
+        )
+
+        packages = Package.objects.filter(restaurant=restaurant, is_active=True).order_by('-created_at')
         packages_list = []
         for package in packages:
-            # بررسی اینکه آیا همه آیتم‌های پکیج available هستند
-            all_items_available = True
-            package_items_list = []
-            
-            for package_item in package.package_items.all():
-                if not package_item.menu_item.is_available:
-                    all_items_available = False
-                    break
-                
-                package_items_list.append({
-                    'menu_item': package_item.menu_item.id,
-                    'quantity': package_item.quantity
-                })
-            
-            # فقط اگر همه آیتم‌های پکیج available باشند، پکیج را نمایش بده
-            if all_items_available:
-                package_image = None
-                if package.image:
-                    try:
-                        package_image = request.build_absolute_uri(package.image.url)
-                    except Exception:
-                        pass
-                
-                packages_list.append({
-                    'id': package.id,
-                    'name': package.name,
-                    'description': package.description,
-                    'items': package_items_list,
-                    'original_price': str(package.original_price),
-                    'package_price': str(package.package_price),
-                    'discount_percent': package.discount_percent,
-                    'image': package_image,
-                })
-        
-        # ساخت URL کامل منو
-        menu_url = request.build_absolute_uri(request.path)
-        # نمایش شماره تلفن بدون پیش‌شماره +49
-        restaurant_phone_display = ""
-        if getattr(restaurant, "phone", None):
-            ph = str(restaurant.phone).strip()
-            restaurant_phone_display = re.sub(r"^(\+49|0049|49)\s*", "", ph).strip() or ph
+            all_available = all(
+                pmi.menu_item.is_available for pmi in package.package_items.select_related("menu_item").all()
+            )
+            if not all_available:
+                continue
+            package_image = None
+            if package.image:
+                try:
+                    package_image = request.build_absolute_uri(package.image.url)
+                except Exception:
+                    pass
+            packages_list.append({
+                'id': package.id,
+                'name': package.name,
+                'description': package.description or '',
+                'original_price': str(package.original_price),
+                'package_price': str(package.package_price),
+                'discount_percent': getattr(package, 'discount_percent', None) or package.calculate_discount_percent(),
+                'image': package_image,
+            })
 
-        return render(request, 'business_menu/menu_display.html', {
-            'restaurant': restaurant,
-            'restaurant_phone_display': restaurant_phone_display,
-            'menu_items': menu_items_list,
-            'menu_items_by_category': menu_items_by_category,
-            'menu_items_grouped': menu_items_grouped,
-            'categories': categories_list,
-            'packages': packages_list,
-            'theme_slug': theme_slug,
-            'settings': settings_obj,
-            'token': token,
-            'menu_url': menu_url,  # URL برای ارسال به اپ
-        })
+        restaurant_hours = getattr(restaurant, "hours", None) or ""
+        return render(
+            request,
+            'pages/restaurant_menu.html',
+            {
+                'restaurant': restaurant,
+                'restaurant_hours': restaurant_hours,
+                'menu_cards': menu_cards,
+                'menu_sections': menu_sections,
+                'category_list': category_list,
+                'banner_images': banner_images,
+                'theme_slug': theme_slug,
+                'settings': settings_obj,
+                'packages': packages_list,
+                'is_qr_menu': True,
+                'token': token,
+                'menu_url': request.build_absolute_uri(request.path),
+            },
+        )
     except MenuQRCode.DoesNotExist:
         return render(request, 'business_menu/menu_not_found.html', status=404)
 

@@ -377,6 +377,8 @@ def restaurant_menu(request, restaurant_id):
             "image_url": img_url,
             "category_id": category_key,
             "category_name": category_name,
+            "serial": getattr(item, "serial", None) or "",
+            "stock": getattr(item, "stock", None) or "",
         })
 
         if category_key not in sections_map:
@@ -407,15 +409,26 @@ def restaurant_menu(request, restaurant_id):
         if len(banner_images) >= 3:
             break
 
+    # Theme/settings from business_menu (when restaurant has settings)
+    settings_obj = getattr(restaurant, "settings", None)
+    theme_slug = None
+    if settings_obj and getattr(settings_obj, "menu_theme", None) and settings_obj.menu_theme.slug:
+        theme_slug = f"theme--{settings_obj.menu_theme.slug}"
+
+    restaurant_hours = getattr(restaurant, "hours", None) or ""
     return render(
         request,
         "pages/restaurant_menu.html",
         {
             "restaurant": restaurant,
+            "restaurant_hours": restaurant_hours,
             "menu_cards": menu_cards,
             "menu_sections": menu_sections,
             "category_list": category_list,
             "banner_images": banner_images,
+            "theme_slug": theme_slug,
+            "settings": settings_obj,
+            "packages": [],
         },
     )
 

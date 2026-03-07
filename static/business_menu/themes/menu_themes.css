@@ -81,3 +81,43 @@
   --menu-secondary: #be123c;
   --menu-accent: #f43f5e;
 }
+
+/* Dark mode variants (when night toggle is on) */
+html.dark .menu-root.theme--classic,
+html.dark .menu-root.theme--minimal-white {
+  --menu-bg: #0f172a;
+  --menu-surface: #1e293b;
+  --menu-surface-2: #334155;
+  --menu-text: #e2e8f0;
+  --menu-text-muted: #94a3b8;
+  --menu-border: #475569;
+  --menu-primary: #38bdf8;
+  --menu-secondary: #64748b;
+  --menu-accent: #22d3ee;
+}
+
+html.dark .menu-root.theme--modern-midnight,
+html.dark .menu-root.theme--warm-sunset {
+  --menu-bg: #020617;
+  --menu-surface: #0f172a;
+  --menu-surface-2: #1e293b;
+  --menu-text: #e2e8f0;
+  --menu-text-muted: #94a3b8;
+  --menu-border: #334155;
+  --menu-primary: #93c5fd;
+  --menu-secondary: #64748b;
+  --menu-accent: #38bdf8;
+}
+
+html.dark .menu-root.theme--white-orange,
+html.dark .menu-root.theme--white-red {
+  --menu-bg: #1c1917;
+  --menu-surface: #292524;
+  --menu-surface-2: #44403c;
+  --menu-text: #fafaf9;
+  --menu-text-muted: #a8a29e;
+  --menu-border: #57534e;
+  --menu-primary: #fb923c;
+  --menu-secondary: #ea580c;
+  --menu-accent: #f97316;
+}
