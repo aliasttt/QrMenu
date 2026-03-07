@@ -198,8 +198,22 @@ class CloudinaryImage(models.Model):
         return f"Image {str(self.uuid)[:8]}"
     
     def get_url(self, secure=True):
-        """بازگرداندن URL تصویر"""
-        return self.secure_url if secure and self.secure_url else self.cloudinary_url
+        """Return image URL: prefer stored secure_url/cloudinary_url (always HTTPS), else build from public_id."""
+        from django.conf import settings
+        raw = (self.secure_url or self.cloudinary_url or "").strip()
+        if raw and (raw.startswith("http://") or raw.startswith("https://")):
+            if secure and raw.startswith("http://"):
+                return raw.replace("http://", "https://", 1)
+            return raw
+        cloud_name = getattr(settings, "CLOUDINARY_CLOUD_NAME", None) or ""
+        if cloud_name and self.cloudinary_public_id:
+            ext = (self.format or "jpg").strip().lower() or "jpg"
+            if not self.cloudinary_public_id.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")):
+                public_part = f"{self.cloudinary_public_id}.{ext}"
+            else:
+                public_part = self.cloudinary_public_id
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_part}"
+        return self.secure_url or self.cloudinary_url or ""
 
 
 class MenuItemImage(models.Model):

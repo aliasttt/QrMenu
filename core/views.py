@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 
-from business_menu.models import Restaurant, MenuItem
+from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme
 
 
 def _restaurant_payload(restaurant_slug="orange-bistro"):
@@ -346,25 +346,51 @@ def restaurants_list(request):
 
 
 def restaurant_menu(request, restaurant_id):
-    """صفحهٔ منوی یک رستوران با سکشن‌بندی دسته‌ها و کارت‌های استایل‌دار."""
+    """صفحهٔ منوی یک رستوران — تنظیمات و تم از اپ اعمال می‌شود."""
     restaurant = get_object_or_404(
         Restaurant.objects.select_related("admin", "settings", "settings__menu_theme"),
         pk=restaurant_id,
         is_active=True,
     )
+    settings_obj, _ = RestaurantSettings.objects.get_or_create(
+        restaurant=restaurant,
+        defaults={
+            "show_prices": True,
+            "show_images": True,
+            "show_descriptions": True,
+            "show_serial": False,
+        },
+    )
+    if settings_obj.menu_theme_id is None:
+        classic = MenuTheme.objects.filter(slug="classic", is_active=True).first()
+        if classic:
+            settings_obj.menu_theme = classic
+            settings_obj.save(update_fields=["menu_theme"])
+    theme_slug = "theme--classic"
+    if settings_obj.menu_theme and getattr(settings_obj.menu_theme, "slug", None):
+        theme_slug = f"theme--{settings_obj.menu_theme.slug}"
+
     items = (
         MenuItem.objects.filter(restaurant=restaurant, is_available=True)
         .select_related("category")
         .prefetch_related("images", "images__cloudinary_image")
-        .order_by("order", "name")
     )
+    if getattr(settings_obj, "show_serial", False):
+        if items.exclude(serial__isnull=True).exclude(serial="").exists():
+            items = items.order_by("serial", "order", "name")
+        else:
+            items = items.order_by("order", "name")
+    else:
+        items = items.order_by("order", "name")
     menu_cards = []
     sections_map = {}
+    show_images = getattr(settings_obj, "show_images", True)
     for item in items:
         img_url = None
-        first_img = item.images.first()
-        if first_img:
-            img_url = first_img.get_image_url(request=request)
+        if show_images:
+            first_img = item.images.first()
+            if first_img:
+                img_url = first_img.get_image_url(request=request)
         if not img_url:
             img_url = f"https://picsum.photos/seed/menu-{item.id}/640/400"
         category_key = str(item.category.id) if item.category else "other"
@@ -408,12 +434,6 @@ def restaurant_menu(request, restaurant_id):
             banner_images.append(img)
         if len(banner_images) >= 3:
             break
-
-    # Theme/settings from business_menu (when restaurant has settings)
-    settings_obj = getattr(restaurant, "settings", None)
-    theme_slug = None
-    if settings_obj and getattr(settings_obj, "menu_theme", None) and settings_obj.menu_theme.slug:
-        theme_slug = f"theme--{settings_obj.menu_theme.slug}"
 
     restaurant_hours = getattr(restaurant, "hours", None) or ""
     return render(

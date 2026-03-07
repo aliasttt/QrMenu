@@ -1753,7 +1753,12 @@ def menu_qr_display_view(request, token):
                 "show_serial": False,
             },
         )
-        theme_slug = None
+        if settings_obj.menu_theme_id is None:
+            classic = MenuTheme.objects.filter(slug="classic", is_active=True).first()
+            if classic:
+                settings_obj.menu_theme = classic
+                settings_obj.save(update_fields=["menu_theme"])
+        theme_slug = "theme--classic"
         if settings_obj.menu_theme and getattr(settings_obj.menu_theme, "slug", None):
             theme_slug = f"theme--{settings_obj.menu_theme.slug}"
 
