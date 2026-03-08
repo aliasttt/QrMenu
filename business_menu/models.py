@@ -451,6 +451,13 @@ class RestaurantSettings(models.Model):
     show_images = models.BooleanField(default=True)
     show_descriptions = models.BooleanField(default=True)
     show_serial = models.BooleanField(default=False, help_text="Show serial numbers in menu display")
+    # سرویس و پرداخت — بعداً از اپ ادمین/API پر می‌شود
+    has_delivery = models.BooleanField(
+        default=False,
+        help_text="آیا سفارش آنلاین با دلیوری فعال است؟ تا ادمین از اپ فعال نکرده باشد به کاربر نمایش داده نمی‌شود.",
+    )
+    allow_payment_cash = models.BooleanField(default=True, help_text="پرداخت نقدی مجاز")
+    allow_payment_online = models.BooleanField(default=True, help_text="پرداخت آنلاین (کارت/استریپ) مجاز")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -534,6 +541,15 @@ class Order(models.Model):
         CANCELLED = "cancelled", "لغو شده"
         REFUNDED = "refunded", "مسترد شده"
 
+    class ServiceType(models.TextChoices):
+        DINE_IN = "dine_in", "در رستوران"
+        PICKUP = "pickup", "پیک‌آپ"
+        DELIVERY = "delivery", "سفارش آنلاین با دلیوری"
+
+    class PaymentMethod(models.TextChoices):
+        CASH = "cash", "نقد"
+        ONLINE = "online", "آنلاین (کارت/استریپ)"
+
     restaurant = models.ForeignKey(
         Restaurant,
         on_delete=models.CASCADE,
@@ -565,6 +581,32 @@ class Order(models.Model):
     stripe_order_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     items_json = models.JSONField(default=dict, blank=True, help_text="آیتم‌های سفارش (JSON)")
     notes = models.TextField(blank=True)
+    # نوع سرویس و پرداخت
+    service_type = models.CharField(
+        max_length=20,
+        choices=ServiceType.choices,
+        default=ServiceType.DINE_IN,
+        db_index=True,
+        help_text="نوع سفارش: در رستوران، پیک‌آپ، یا دلیوری",
+    )
+    table_number = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="شماره میز (فقط برای Dine In)",
+    )
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PaymentMethod.choices,
+        default=PaymentMethod.CASH,
+        db_index=True,
+        help_text="نقد یا آنلاین",
+    )
+    session_key = models.CharField(
+        max_length=40,
+        blank=True,
+        db_index=True,
+        help_text="کلید سشن مرورگر برای لیست سفارشات همین کاربر",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

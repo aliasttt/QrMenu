@@ -938,7 +938,11 @@ class RestaurantSettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RestaurantSettings
-        fields = ("menu_theme", "show_prices", "show_images", "show_descriptions", "show_serial", "email")
+        fields = (
+            "menu_theme", "show_prices", "show_images", "show_descriptions", "show_serial",
+            "has_delivery", "allow_payment_cash", "allow_payment_online",
+            "email",
+        )
     
     def get_email(self, obj):
         """برگرداندن ایمیل صاحب بیزینس همان رستوران"""

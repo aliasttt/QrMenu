@@ -42,6 +42,7 @@ from .models import (
     PackageItem,
     MenuTheme,
     RestaurantSettings,
+    Order,
 )
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, MenuItemSerializer,
@@ -1870,6 +1871,9 @@ class RestaurantSettingsDetailView(APIView):
                 "show_images": True,
                 "show_descriptions": True,
                 "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
             },
         )
 
@@ -1895,6 +1899,9 @@ class RestaurantSettingsDetailView(APIView):
                 "show_images": True,
                 "show_descriptions": True,
                 "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
             },
         )
 
@@ -1904,6 +1911,371 @@ class RestaurantSettingsDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def _get_restaurant_for_public(request):
+    """
+    رستوران را از token (QR منو) یا restaurant_id برمی‌گرداند.
+    برای APIهای عمومی (سبد، سفارش، گزینه‌های سفارش) بدون احراز هویت.
+    Returns: (restaurant, None) or (None, Response)
+    """
+    token = request.data.get("token") if request.data else None
+    if not token:
+        token = request.query_params.get("token")
+    rid = request.data.get("restaurant_id") if request.data else None
+    if rid is None:
+        rid = request.query_params.get("restaurant_id")
+    if token:
+        try:
+            menu_qr = MenuQRCode.objects.select_related("restaurant").get(token=token)
+            restaurant = menu_qr.restaurant
+            if not restaurant.is_active:
+                return None, Response(
+                    {"detail": "Restaurant is not active."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            return restaurant, None
+        except MenuQRCode.DoesNotExist:
+            return None, Response(
+                {"detail": "Invalid menu token."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+    if rid is not None:
+        try:
+            restaurant = Restaurant.objects.get(id=int(rid), is_active=True)
+            return restaurant, None
+        except (Restaurant.DoesNotExist, ValueError, TypeError):
+            return None, Response(
+                {"detail": "Restaurant not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+    return None, Response(
+        {"detail": "Provide 'token' or 'restaurant_id'."},
+        status=status.HTTP_400_BAD_REQUEST,
+    )
+
+
+def _cart_key(restaurant_id):
+    return f"cart_restaurant_{restaurant_id}"
+
+
+def _get_cart(request, restaurant_id):
+    """سبد خرید از سشن را برمی‌گرداند (لیست آیتم‌ها)."""
+    key = _cart_key(restaurant_id)
+    return request.session.get(key, [])
+
+
+def _set_cart(request, restaurant_id, items):
+    """سبد را در سشن ذخیره می‌کند."""
+    request.session[_cart_key(restaurant_id)] = items
+    request.session.modified = True
+
+
+class CartView(APIView):
+    """
+    سبد خرید (عمومی، بدون لاگین).
+    GET: لیست آیتم‌های سبد + جمع کل
+    POST: افزودن آیتم (menu_item_id, quantity)
+    PATCH: تغییر تعداد (menu_item_id, quantity)
+    DELETE: حذف آیتم (menu_item_id در بدنه یا query)
+    پارامتر: token یا restaurant_id
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def _restaurant(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        return restaurant, err
+
+    def get(self, request):
+        restaurant, err = self._restaurant(request)
+        if err:
+            return err
+        items = _get_cart(request, restaurant.id)
+        subtotal = sum(
+            (item["quantity"] * float(item["price"])) for item in items
+        )
+        return Response({
+            "restaurant_id": restaurant.id,
+            "items": items,
+            "subtotal": round(subtotal, 2),
+            "total": round(subtotal, 2),
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        restaurant, err = self._restaurant(request)
+        if err:
+            return err
+        menu_item_id = request.data.get("menu_item_id")
+        quantity = request.data.get("quantity", 1)
+        if menu_item_id is None:
+            return Response(
+                {"detail": "menu_item_id is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            quantity = max(1, int(quantity))
+        except (TypeError, ValueError):
+            quantity = 1
+        try:
+            item = MenuItem.objects.get(
+                id=menu_item_id,
+                restaurant=restaurant,
+                is_available=True,
+            )
+        except MenuItem.DoesNotExist:
+            return Response(
+                {"detail": "Menu item not found or not available."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        cart = _get_cart(request, restaurant.id)
+        unit_price = str(item.price)
+        name = item.name
+        for entry in cart:
+            if entry.get("menu_item_id") == menu_item_id:
+                entry["quantity"] = entry.get("quantity", 0) + quantity
+                _set_cart(request, restaurant.id, cart)
+                return self.get(request)
+        cart.append({
+            "menu_item_id": menu_item_id,
+            "name": name,
+            "price": unit_price,
+            "quantity": quantity,
+        })
+        _set_cart(request, restaurant.id, cart)
+        return self.get(request)
+
+    def patch(self, request):
+        restaurant, err = self._restaurant(request)
+        if err:
+            return err
+        menu_item_id = request.data.get("menu_item_id")
+        quantity = request.data.get("quantity")
+        if menu_item_id is None:
+            return Response(
+                {"detail": "menu_item_id is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            quantity = max(0, int(quantity))
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "quantity must be a non-negative integer."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        cart = _get_cart(request, restaurant.id)
+        for i, entry in enumerate(cart):
+            if entry.get("menu_item_id") == menu_item_id:
+                if quantity == 0:
+                    cart.pop(i)
+                else:
+                    entry["quantity"] = quantity
+                _set_cart(request, restaurant.id, cart)
+                return self.get(request)
+        return Response(
+            {"detail": "Item not in cart."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    def delete(self, request):
+        restaurant, err = self._restaurant(request)
+        if err:
+            return err
+        menu_item_id = request.data.get("menu_item_id") if request.data else request.query_params.get("menu_item_id")
+        if menu_item_id is None:
+            return Response(
+                {"detail": "menu_item_id is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            menu_item_id = int(menu_item_id)
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "Invalid menu_item_id."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        cart = _get_cart(request, restaurant.id)
+        new_cart = [e for e in cart if e.get("menu_item_id") != menu_item_id]
+        if len(new_cart) == len(cart):
+            return Response(
+                {"detail": "Item not in cart."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        _set_cart(request, restaurant.id, new_cart)
+        return self.get(request)
+
+
+class RestaurantOrderOptionsView(APIView):
+    """
+    گزینه‌های سفارش رستوران برای فرانت (دلیوری فقط اگر فعال باشد).
+    GET با token یا restaurant_id — بدون احراز هویت.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={
+                "show_prices": True,
+                "show_images": True,
+                "show_descriptions": True,
+                "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
+            },
+        )
+        return Response({
+            "restaurant_id": restaurant.id,
+            "has_delivery": getattr(settings_obj, "has_delivery", False),
+            "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
+            "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+        }, status=status.HTTP_200_OK)
+
+
+class OrderCreateView(APIView):
+    """
+    ثبت سفارش از سبد خرید.
+    POST: service_type (dine_in | pickup | delivery), payment_method (cash | online),
+          table_number (اختیاری، برای dine_in)، notes
+    اگر دلیوری فعال نباشد، delivery قبول نمی‌شود.
+    پرداخت آنلاین/نقد طبق تنظیمات رستوران چک می‌شود.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={
+                "show_prices": True,
+                "show_images": True,
+                "show_descriptions": True,
+                "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
+            },
+        )
+        cart = _get_cart(request, restaurant.id)
+        if not cart:
+            return Response(
+                {"detail": "Cart is empty."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        service_type = (request.data.get("service_type") or "").strip().lower() or "dine_in"
+        payment_method = (request.data.get("payment_method") or "").strip().lower() or "cash"
+        table_number = (request.data.get("table_number") or "").strip()
+        notes = (request.data.get("notes") or "").strip()
+
+        if service_type not in ("dine_in", "pickup", "delivery"):
+            return Response(
+                {"detail": "Invalid service_type. Use dine_in, pickup, or delivery."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if service_type == "delivery" and not getattr(settings_obj, "has_delivery", False):
+            return Response(
+                {"detail": "Delivery is not available for this restaurant."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if payment_method not in ("cash", "online"):
+            return Response(
+                {"detail": "Invalid payment_method. Use cash or online."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if payment_method == "cash" and not getattr(settings_obj, "allow_payment_cash", True):
+            return Response(
+                {"detail": "Cash payment is not allowed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if payment_method == "online" and not getattr(settings_obj, "allow_payment_online", True):
+            return Response(
+                {"detail": "Online payment is not allowed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if service_type == "dine_in" and not table_number:
+            return Response(
+                {"detail": "table_number is required for dine-in."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        total = sum(
+            (item["quantity"] * float(item["price"])) for item in cart
+        )
+        items_json = [
+            {
+                "menu_item_id": item["menu_item_id"],
+                "name": item["name"],
+                "price": item["price"],
+                "quantity": item["quantity"],
+            }
+            for item in cart
+        ]
+        session_key = request.session.session_key or ""
+        if not session_key and hasattr(request.session, "create"):
+            request.session.create()
+            session_key = request.session.session_key or ""
+
+        with transaction.atomic():
+            order = Order.objects.create(
+                restaurant=restaurant,
+                status=Order.Status.PENDING,
+                total_amount=total,
+                currency="EUR",
+                items_json=items_json,
+                notes=notes,
+                service_type=service_type,
+                table_number=table_number,
+                payment_method=payment_method,
+                session_key=session_key,
+            )
+        _set_cart(request, restaurant.id, [])
+        return Response({
+            "order_id": order.id,
+            "status": order.status,
+            "total_amount": str(order.total_amount),
+            "currency": order.currency,
+            "service_type": order.service_type,
+            "payment_method": order.payment_method,
+            "table_number": order.table_number or "",
+        }, status=status.HTTP_201_CREATED)
+
+
+class OrderListView(APIView):
+    """
+    لیست سفارشات همین کاربر (با session_key) برای یک رستوران.
+    GET با token یا restaurant_id.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        session_key = request.session.session_key or ""
+        orders = Order.objects.filter(
+            restaurant=restaurant,
+            session_key=session_key,
+        ).order_by("-created_at")[:50]
+        out = []
+        for o in orders:
+            out.append({
+                "id": o.id,
+                "status": o.get_status_display(),
+                "status_key": o.status,
+                "total_amount": str(o.total_amount),
+                "currency": o.currency,
+                "service_type": o.service_type,
+                "payment_method": o.payment_method,
+                "table_number": o.table_number or "",
+                "created_at": o.created_at.isoformat() if o.created_at else None,
+                "items": o.items_json,
+            })
+        return Response({"orders": out}, status=status.HTTP_200_OK)
 
 
 def menu_qr_image_view(request, token):

@@ -377,8 +377,11 @@ class PaymentInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     """سفارشات هر رستوران"""
-    list_display = ("id", "restaurant", "customer_short", "status", "total_amount", "currency", "created_at")
-    list_filter = ("status", "restaurant", "created_at")
+    list_display = (
+        "id", "restaurant", "customer_short", "service_type", "table_number",
+        "payment_method", "status", "total_amount", "currency", "created_at",
+    )
+    list_filter = ("status", "service_type", "payment_method", "restaurant", "created_at")
     search_fields = ("restaurant__name", "customer__email", "customer__phone", "customer__name", "stripe_order_id")
     readonly_fields = ("created_at", "updated_at")
     list_editable = ("status",)
