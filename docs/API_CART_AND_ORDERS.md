@@ -3,16 +3,93 @@
 Base URL: **`/api/business-menu`**  
 (مثال: `https://preismenu.de/api/business-menu`)
 
-همهٔ اندپوینت‌های زیر **بدون احراز هویت** (AllowAny) هستند و با **Session** کار می‌کنند. برای شناسایی رستوران در هر درخواست باید یکی از دو پارامتر را بفرستی:
+---
 
-| پارامتر | نوع | توضیح |
-|---------|-----|--------|
-| **token** | string | توکن یکتای QR منو (از اپ/لینک منو) |
-| **restaurant_id** | integer | شناسهٔ رستوران |
+## تفکیک استفاده
+
+| طرف | کجا استفاده می‌شود | احراز هویت |
+|-----|---------------------|------------|
+| **وبسایت (مشتری)** | کاربر از سایت/لینک منو غذا انتخاب می‌کند، به سبد اضافه می‌کند و سفارش ثبت می‌کند. | بدون لاگین (Session مرورگر) |
+| **اپ پنل ادمین** | ادمین رستوران فقط **لیست سفارشات** رستوران خودش را می‌بیند. | **JWT** (لاگین ادمین با OTP) |
 
 ---
 
-## 1. سبد خرید (Cart)
+## بخش ۱ — وبسایت (مشتری)
+
+این اندپوینت‌ها برای **سایت منو / لینک QR** هستند. مشتری بدون لاگین با **Session** سبد و سفارش می‌گذارد. برای شناسایی رستوران در هر درخواست یکی از دو پارامتر را بفرست:
+
+| پارامتر | نوع | توضیح |
+|---------|-----|--------|
+| **token** | string | توکن یکتای QR منو |
+| **restaurant_id** | integer | شناسهٔ رستوران |
+
+### خلاصه اندپوینت‌های مشتری
+
+| متد | مسیر | کاربرد |
+|-----|------|--------|
+| GET | `/api/business-menu/cart/` | دریافت سبد (Query: token یا restaurant_id) |
+| POST | `/api/business-menu/cart/` | افزودن به سبد (Body: token/restaurant_id, menu_item_id, quantity) |
+| PATCH | `/api/business-menu/cart/` | تغییر تعداد (Body: token/restaurant_id, menu_item_id, quantity) |
+| DELETE | `/api/business-menu/cart/` | حذف آیتم (Body یا Query: token/restaurant_id, menu_item_id) |
+| GET | `/api/business-menu/order-options/` | گزینه‌های دلیوری و پرداخت (Query: token یا restaurant_id) |
+| POST | `/api/business-menu/orders/` | ثبت سفارش (Body: token/restaurant_id, service_type, payment_method, table_number برای dine_in, notes) |
+| GET | `/api/business-menu/orders/list/` | لیست سفارشات **همین مشتری** (همان Session) برای آن رستوران (Query: token یا restaurant_id) |
+
+---
+
+## بخش ۲ — اپ پنل ادمین
+
+فقط **ادمین رستوران** (لاگین‌شده با OTP و JWT) می‌تواند از این اندپوینت استفاده کند. رستوران از روی توکن ادمین تشخیص داده می‌شود؛ نیازی به فرستادن `restaurant_id` نیست.
+
+### خلاصه اندپوینت ادمین
+
+| متد | مسیر | کاربرد |
+|-----|------|--------|
+| **GET** | **`/api/business-menu/admin/orders/`** | لیست **همه سفارشات** رستوران ادمین لاگین‌شده |
+
+**Headers:**  
+`Authorization: Bearer <access_token>` (JWT که بعد از لاگین ادمین برمی‌گردد)
+
+**پاسخ موفق (200 OK):**
+
+```json
+{
+  "restaurant_id": 2,
+  "restaurant_name": "نام رستوران",
+  "orders": [
+    {
+      "id": 42,
+      "status": "pending",
+      "total_amount": "18.50",
+      "currency": "EUR",
+      "service_type": "dine_in",
+      "payment_method": "online",
+      "table_number": "22",
+      "notes": "یادداشت",
+      "created_at": "2026-03-09T12:00:00",
+      "items": [
+        {
+          "menu_item_id": 5,
+          "name": "Beyti kebap",
+          "price": "18.50",
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+**پاسخ خطا:**  
+- `401` — توکن نامعتبر یا منقضی  
+- `403` — `{"detail": "Business admin not found."}`  
+- `404` — `{"detail": "Restaurant not found for this admin."}`  
+
+---
+
+## جزئیات بخش ۱ — وبسایت (مشتری)
+
+### 1. سبد خرید (Cart)
 
 ### 1.1 دریافت سبد — GET `/cart/`
 
@@ -311,8 +388,7 @@ GET /api/business-menu/orders/list/?token=abc123
   "orders": [
     {
       "id": 42,
-      "status": "در انتظار",
-      "status_key": "pending",
+      "status": "pending",
       "total_amount": "18.50",
       "currency": "EUR",
       "service_type": "dine_in",
@@ -336,7 +412,9 @@ GET /api/business-menu/orders/list/?token=abc123
 
 ---
 
-## خلاصهٔ اندپوینت‌ها
+## خلاصهٔ همه اندپوینت‌ها
+
+**وبسایت (مشتری) — بدون احراز هویت، با Session:**
 
 | متد | مسیر | توضیح |
 |-----|------|--------|
@@ -346,6 +424,12 @@ GET /api/business-menu/orders/list/?token=abc123
 | DELETE | `/api/business-menu/cart/` | حذف آیتم (`menu_item_id`) |
 | GET | `/api/business-menu/order-options/` | گزینه‌های دلیوری و پرداخت (با `token` یا `restaurant_id`) |
 | POST | `/api/business-menu/orders/` | ثبت سفارش (service_type, payment_method, table_number در صورت Dine In, notes) |
-| GET | `/api/business-menu/orders/list/` | لیست سفارشات همین Session |
+| GET | `/api/business-menu/orders/list/` | لیست سفارشات **همین مشتری** (همان Session) برای آن رستوران |
 
-**نکته:** اگر از دامنهٔ همان سایت (مثلاً preismenu.de) درخواست بزنی، Session از طریق Cookie ارسال می‌شود. برای اپ موبایل یا دامنهٔ دیگر باید Session/Cookie را طبق معماری بکند مدیریت کنی یا بعداً با توکن کاربر جایگزین شود.
+**اپ پنل ادمین — با JWT (لاگین ادمین):**
+
+| متد | مسیر | توضیح |
+|-----|------|--------|
+| GET | `/api/business-menu/admin/orders/` | لیست **همه سفارشات** رستوران ادمین. Header: `Authorization: Bearer <access_token>` |
+
+**نکته (مشتری):** اگر از دامنهٔ همان سایت درخواست بزنی، Session از طریق Cookie ارسال می‌شود. برای اپ موبایل یا دامنهٔ دیگر باید Session/Cookie را طبق معماری بکند مدیریت کنی.

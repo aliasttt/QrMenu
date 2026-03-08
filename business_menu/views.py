@@ -2265,8 +2265,7 @@ class OrderListView(APIView):
         for o in orders:
             out.append({
                 "id": o.id,
-                "status": o.get_status_display(),
-                "status_key": o.status,
+                "status": o.status,
                 "total_amount": str(o.total_amount),
                 "currency": o.currency,
                 "service_type": o.service_type,
@@ -2276,6 +2275,209 @@ class OrderListView(APIView):
                 "items": o.items_json,
             })
         return Response({"orders": out}, status=status.HTTP_200_OK)
+
+
+class AdminOrderListView(APIView):
+    """
+    لیست سفارشات رستوران برای اپ پنل ادمین.
+    فقط ادمین لاگین‌شده (JWT) می‌تواند سفارشات رستوران خودش را ببیند.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return Response(
+                {"detail": "Business admin not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            restaurant = admin.restaurant
+        except Restaurant.DoesNotExist:
+            return Response(
+                {"detail": "Restaurant not found for this admin."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        orders = Order.objects.filter(restaurant=restaurant).order_by("-created_at")[:200]
+        out = []
+        for o in orders:
+            out.append({
+                "id": o.id,
+                "status": o.status,
+                "total_amount": str(o.total_amount),
+                "currency": o.currency,
+                "service_type": o.service_type,
+                "payment_method": o.payment_method,
+                "table_number": o.table_number or "",
+                "notes": o.notes or "",
+                "created_at": o.created_at.isoformat() if o.created_at else None,
+                "items": o.items_json,
+            })
+        return Response({
+            "restaurant_id": restaurant.id,
+            "restaurant_name": restaurant.name,
+            "orders": out,
+        }, status=status.HTTP_200_OK)
+
+
+class AdminOrderNewListView(APIView):
+    """
+    لیست سفارشات جدید (فقط وضعیت pending) برای اپ — برای بخش «New Order».
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return Response(
+                {"detail": "Business admin not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            restaurant = admin.restaurant
+        except Restaurant.DoesNotExist:
+            return Response(
+                {"detail": "Restaurant not found for this admin."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        orders = Order.objects.filter(
+            restaurant=restaurant,
+            status=Order.Status.PENDING,
+        ).order_by("-created_at")[:100]
+        out = []
+        for o in orders:
+            out.append({
+                "id": o.id,
+                "status": o.status,
+                "total_amount": str(o.total_amount),
+                "currency": o.currency,
+                "service_type": o.service_type,
+                "payment_method": o.payment_method,
+                "table_number": o.table_number or "",
+                "notes": o.notes or "",
+                "created_at": o.created_at.isoformat() if o.created_at else None,
+                "items": o.items_json,
+            })
+        return Response({
+            "restaurant_id": restaurant.id,
+            "restaurant_name": restaurant.name,
+            "orders": out,
+        }, status=status.HTTP_200_OK)
+
+
+class AdminOrderDetailView(APIView):
+    """
+    به‌روزرسانی وضعیت سفارش توسط ادمین (Accept / Reject / Prepare / Complete).
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_admin_restaurant(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return None, Response(
+                {"detail": "Business admin not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            return admin.restaurant, None
+        except Restaurant.DoesNotExist:
+            return None, Response(
+                {"detail": "Restaurant not found for this admin."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def patch(self, request, order_id):
+        restaurant, err = self._get_admin_restaurant(request)
+        if err:
+            return err
+        new_status = (request.data.get("status") or "").strip().lower()
+        allowed = ("preparing", "cancelled", "completed", "paid")
+        if new_status not in allowed:
+            return Response(
+                {"detail": f"Invalid status. Use one of: {', '.join(allowed)}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            order = Order.objects.get(id=order_id, restaurant=restaurant)
+        except Order.DoesNotExist:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        order.status = new_status
+        order.save(update_fields=["status", "updated_at"])
+        return Response({
+            "id": order.id,
+            "status": order.status,
+        }, status=status.HTTP_200_OK)
+
+
+class AdminOrderSettingsView(APIView):
+    """
+    تنظیمات سفارش از سمت اپ: دلیوری و روش‌های پرداخت (کش / آنلاین).
+    اپ این مقادیر را می‌خواند و از اپ ست می‌کند؛ وب (order-options) همان مقادیر را برای مشتری نشان می‌دهد.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_settings(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return None, None, Response(
+                {"detail": "Business admin not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            restaurant = admin.restaurant
+        except Restaurant.DoesNotExist:
+            return None, None, Response(
+                {"detail": "Restaurant not found for this admin."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={
+                "show_prices": True,
+                "show_images": True,
+                "show_descriptions": True,
+                "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
+            },
+        )
+        return restaurant, settings_obj, None
+
+    def get(self, request):
+        restaurant, settings_obj, err = self._get_settings(request)
+        if err:
+            return err
+        return Response({
+            "restaurant_id": restaurant.id,
+            "restaurant_name": restaurant.name,
+            "has_delivery": getattr(settings_obj, "has_delivery", False),
+            "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
+            "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+        }, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        restaurant, settings_obj, err = self._get_settings(request)
+        if err:
+            return err
+        data = request.data or {}
+        if "has_delivery" in data:
+            settings_obj.has_delivery = bool(data["has_delivery"])
+        if "allow_payment_cash" in data:
+            settings_obj.allow_payment_cash = bool(data["allow_payment_cash"])
+        if "allow_payment_online" in data:
+            settings_obj.allow_payment_online = bool(data["allow_payment_online"])
+        settings_obj.save(update_fields=["has_delivery", "allow_payment_cash", "allow_payment_online", "updated_at"])
+        return Response({
+            "restaurant_id": restaurant.id,
+            "restaurant_name": restaurant.name,
+            "has_delivery": settings_obj.has_delivery,
+            "allow_payment_cash": settings_obj.allow_payment_cash,
+            "allow_payment_online": settings_obj.allow_payment_online,
+        }, status=status.HTTP_200_OK)
 
 
 def menu_qr_image_view(request, token):
