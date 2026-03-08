@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.db import IntegrityError
 from django.conf import settings
@@ -1971,6 +1973,7 @@ def _set_cart(request, restaurant_id, items):
     request.session.modified = True
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class CartView(APIView):
     """
     سبد خرید (عمومی، بدون لاگین).
@@ -2135,6 +2138,7 @@ class RestaurantOrderOptionsView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class OrderCreateView(APIView):
     """
     ثبت سفارش از سبد خرید.

@@ -139,10 +139,16 @@
           return;
         }
         this.orderLoading = true;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+          (document.cookie.split('; ').find(r => r.startsWith('csrftoken=')) || '').split('=')[1] || '';
         try {
           const r = await fetch(this.apiBase + '/orders/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '' },
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
+              'X-Requested-With': 'XMLHttpRequest',
+            },
             body: JSON.stringify({
               restaurant_id: this.restaurantId,
               service_type: this.serviceType,
@@ -150,14 +156,20 @@
               table_number: this.tableNumber,
               notes: this.orderNote,
             }),
+            credentials: 'same-origin',
           });
-          const data = await r.json().catch(() => ({}));
+          let data = {};
+          const ct = r.headers.get('Content-Type') || '';
+          if (ct.includes('application/json')) {
+            data = await r.json().catch(() => ({}));
+          }
           if (r.ok && data.order_id) {
             this.lastOrder = { ...data, items: [...this.cartItems] };
             this.orderTab = 3;
             this.cartItems = [];
           } else {
-            this.orderError = data.detail || 'Could not place order';
+            const msg = data.detail || data.message;
+            this.orderError = (Array.isArray(msg) ? msg[0] : msg) || ('Could not place order (HTTP ' + r.status + ')');
           }
         } catch (e) {
           this.orderError = 'Network error';
