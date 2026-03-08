@@ -345,8 +345,36 @@ def restaurants_list(request):
     return render(request, "pages/restaurants_list.html", {"restaurants": restaurants})
 
 
+def _ensure_restaurant_settings_columns():
+    """اگر ستون‌های has_delivery و ... در جدول نباشند (مایگریشن روی سرور اجرا نشده)، با raw SQL اضافه می‌کند."""
+    from django.db import connection
+    vendor = connection.vendor
+    if vendor != "postgresql":
+        return
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name = 'business_menu_restaurantsettings' AND column_name = 'has_delivery';
+        """)
+        if cursor.fetchone():
+            return
+        for col, default in [
+            ("has_delivery", "false"),
+            ("allow_payment_cash", "true"),
+            ("allow_payment_online", "true"),
+        ]:
+            cursor.execute(
+                f"ALTER TABLE business_menu_restaurantsettings ADD COLUMN IF NOT EXISTS {col} boolean DEFAULT {default} NOT NULL;"
+            )
+
+
 def restaurant_menu(request, restaurant_id):
     """صفحهٔ منوی یک رستوران — تنظیمات و تم از اپ اعمال می‌شود."""
+    # اگر مایگریشن روی سرور اجرا نشده باشد، ستون‌های جدید را با raw SQL اضافه کن (فقط PostgreSQL)
+    try:
+        _ensure_restaurant_settings_columns()
+    except Exception:
+        pass
     restaurant = get_object_or_404(
         Restaurant.objects.select_related("admin", "settings", "settings__menu_theme"),
         pk=restaurant_id,
@@ -359,6 +387,9 @@ def restaurant_menu(request, restaurant_id):
             "show_images": True,
             "show_descriptions": True,
             "show_serial": False,
+            "has_delivery": False,
+            "allow_payment_cash": True,
+            "allow_payment_online": True,
         },
     )
     if settings_obj.menu_theme_id is None:
@@ -436,6 +467,14 @@ def restaurant_menu(request, restaurant_id):
             break
 
     restaurant_hours = getattr(restaurant, "hours", None) or ""
+    # سبد و گزینه‌های سفارش برای پنل Orders (همان کلید سشن business_menu)
+    cart_key = f"cart_restaurant_{restaurant.id}"
+    cart_items = list(request.session.get(cart_key, []))
+    order_options = {
+        "has_delivery": getattr(settings_obj, "has_delivery", False),
+        "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
+        "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+    }
     return render(
         request,
         "pages/restaurant_menu.html",
@@ -449,6 +488,8 @@ def restaurant_menu(request, restaurant_id):
             "theme_slug": theme_slug,
             "settings": settings_obj,
             "packages": [],
+            "cart_items": cart_items,
+            "order_options": order_options,
         },
     )
 
