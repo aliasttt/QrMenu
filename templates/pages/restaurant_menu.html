@@ -411,114 +411,91 @@
         </div>
       </div>
 
-      <div class="min-h-0 flex-1 overflow-y-auto p-4 lg:p-6">
-        <!-- ========== DESKTOP: همه در یک صفحه ========== -->
-        <div class="hidden lg:block">
-          <div class="mx-auto max-w-5xl space-y-6">
-            <div class="grid gap-6 lg:grid-cols-2">
-              <div class="space-y-6">
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                  <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Cart Items</h3>
-                  <template x-if="cartItems.length === 0">
-                    <p class="py-4 text-center text-slate-500 dark:text-slate-400">Cart is empty.</p>
-                  </template>
-                  <template x-if="cartItems.length > 0">
-                    <div class="space-y-3">
-                      <template x-for="item in cartItems" :key="item.menu_item_id">
-                        <div class="flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-slate-50/80 py-3 px-4 dark:border-slate-700 dark:bg-slate-800/50">
-                          <div class="min-w-0 flex-1">
-                            <p class="font-medium text-slate-900 dark:text-white" x-text="item.name"></p>
-                            <p class="text-sm text-slate-600 dark:text-slate-400">€ <span x-text="item.price"></span> × <span x-text="item.quantity"></span></p>
-                          </div>
-                          <div class="flex items-center gap-2">
-                            <button @click="updateQty(item.menu_item_id, -1)" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">−</button>
-                            <span class="min-w-[2rem] text-center font-semibold text-slate-900 dark:text-white" x-text="item.quantity"></span>
-                            <button @click="updateQty(item.menu_item_id, 1)" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">+</button>
-                            <button @click="removeFromCart(item.menu_item_id)" class="rounded-lg p-2 text-rose-500 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/30" aria-label="Remove"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                          </div>
+      <div class="min-h-0 flex-1 overflow-y-auto lg:overflow-hidden flex flex-col p-4 lg:p-4">
+        <!-- ========== DESKTOP: دو ستون، بدون اسکرول، بدون Order Summary ========== -->
+        <div class="hidden lg:flex lg:flex-1 lg:min-h-0 lg:overflow-hidden">
+          <div class="mx-auto w-full max-w-5xl grid grid-cols-2 gap-4 overflow-hidden">
+            <div class="flex flex-col min-h-0 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+              <div class="flex-1 min-h-0 overflow-y-auto p-4">
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Cart Items</h3>
+                <template x-if="cartItems.length === 0">
+                  <p class="py-2 text-sm text-slate-500 dark:text-slate-400">Cart is empty.</p>
+                </template>
+                <template x-if="cartItems.length > 0">
+                  <div class="space-y-2">
+                    <template x-for="item in cartItems" :key="item.menu_item_id">
+                      <div class="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/80 py-2 px-3 dark:border-slate-700 dark:bg-slate-800/50">
+                        <div class="min-w-0 flex-1">
+                          <p class="text-sm font-medium text-slate-900 dark:text-white" x-text="item.name"></p>
+                          <p class="text-xs text-slate-600 dark:text-slate-400">€ <span x-text="item.price"></span> × <span x-text="item.quantity"></span></p>
                         </div>
-                      </template>
-                      <div class="flex justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
-                        <span class="font-medium text-slate-600 dark:text-slate-400">Subtotal</span>
-                        <span class="font-semibold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span></span>
+                        <div class="flex items-center gap-1">
+                          <button @click="updateQty(item.menu_item_id, -1)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">−</button>
+                          <span class="min-w-[1.5rem] text-center text-sm font-semibold" x-text="item.quantity"></span>
+                          <button @click="updateQty(item.menu_item_id, 1)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">+</button>
+                          <button @click="removeFromCart(item.menu_item_id)" class="rounded p-1.5 text-rose-500 dark:text-rose-400" aria-label="Remove"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                        </div>
                       </div>
-                      <div class="flex justify-between">
-                        <span class="font-semibold text-slate-900 dark:text-white">Total</span>
-                        <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">€ <span x-text="cartSubtotal()"></span></span>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                  <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Service Type</h3>
-                  <div class="flex flex-wrap gap-3">
-                    <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'" class="rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition">Dine In</button>
-                    <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'" class="rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition">Pickup</button>
+                    </template>
+                    <p class="flex justify-between border-t border-slate-200 pt-2 text-sm dark:border-slate-700"><span class="text-slate-600 dark:text-slate-400">Total</span><span class="font-bold text-indigo-600 dark:text-indigo-400">€ <span x-text="cartSubtotal()"></span></span></p>
+                  </div>
+                </template>
+              </div>
+              <div class="border-t border-slate-200 p-4 dark:border-slate-700 space-y-3">
+                <div>
+                  <p class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Service Type</p>
+                  <div class="flex flex-wrap gap-2">
+                    <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Dine In</button>
+                    <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Pickup</button>
                     <template x-if="orderOptions.has_delivery">
-                      <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'" class="rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition">Delivery</button>
+                      <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Delivery</button>
                     </template>
                   </div>
                   <template x-if="serviceType === 'dine_in'">
-                    <div class="mt-4">
-                      <label class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Table Number</label>
-                      <input type="text" x-model="tableNumber" placeholder="e.g. 22" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500">
+                    <div class="mt-2">
+                      <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">Table Number</label>
+                      <input type="text" x-model="tableNumber" placeholder="e.g. 22" class="mt-0.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                     </div>
                   </template>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                  <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payment</h3>
-                  <div class="flex flex-wrap gap-3">
+                <div>
+                  <p class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payment</p>
+                  <div class="flex flex-wrap gap-2">
                     <template x-if="orderOptions.allow_payment_cash">
-                      <button @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'" class="rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition">Cash</button>
+                      <button @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Cash</button>
                     </template>
                     <template x-if="orderOptions.allow_payment_online">
-                      <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'" class="rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition">Online</button>
+                      <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Online</button>
                     </template>
                   </div>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                  <label class="mb-1.5 block text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order Note</label>
-                  <input type="text" x-model="orderNote" placeholder="Special requests, allergies…" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500">
+                <div>
+                  <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">Order Note</label>
+                  <input type="text" x-model="orderNote" placeholder="Special requests…" class="mt-0.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                 </div>
               </div>
-              <div class="space-y-6">
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                  <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Confirm Order</h3>
-                  <p class="mb-4 text-slate-600 dark:text-slate-400" x-show="cartItems.length === 0">Add items from the menu and set options on the left.</p>
-                  <template x-if="cartItems.length > 0">
-                    <div>
-                      <p class="mb-4 text-2xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-base font-normal text-slate-500">total</span></p>
-                      <p x-show="orderError" class="mb-3 rounded-xl bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="orderError"></p>
-                      <button @click="placeOrder()" :disabled="orderLoading" class="w-full rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white shadow-lg transition hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600">
-                        <span x-show="!orderLoading">Place Order</span>
-                        <span x-show="orderLoading">Placing…</span>
-                      </button>
-                    </div>
-                  </template>
-                </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                  <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order Summary</h3>
-                  <template x-if="lastOrder">
-                    <div class="space-y-3">
-                      <template x-for="line in (lastOrder.items || [])" :key="line.menu_item_id + '-' + line.quantity">
-                        <p class="flex justify-between text-sm text-slate-700 dark:text-slate-300"><span><span x-text="line.quantity"></span>× <span x-text="line.name"></span></span><span>€ <span x-text="(line.quantity * parseFloat(line.price)).toFixed(2)"></span></span></p>
-                      </template>
-                      <div class="border-t border-slate-200 pt-3 dark:border-slate-700">
-                        <p class="flex justify-between font-semibold text-slate-900 dark:text-white">Subtotal <span>€ <span x-text="lastOrder.total_amount"></span></span></p>
-                        <p class="mt-1 flex justify-between text-lg font-bold text-indigo-600 dark:text-indigo-400">Total <span>€ <span x-text="lastOrder.total_amount"></span></span></p>
-                      </div>
-                      <p class="text-sm text-slate-600 dark:text-slate-400">Service: <span x-text="lastOrder.service_type"></span> · Payment: <span x-text="lastOrder.payment_method"></span><span x-show="lastOrder.table_number"> · Table #<span x-text="lastOrder.table_number"></span></span></p>
-                      <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-                        <p class="font-semibold">Thank you</p>
-                        <p class="mt-1">We received your order. Please check our opening hours for collection/dine-in.</p>
-                      </div>
-                    </div>
-                  </template>
+            </div>
+            <div class="flex flex-col min-h-0 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+              <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Confirm Order</h3>
+              <p class="mb-3 text-sm text-slate-600 dark:text-slate-400" x-show="cartItems.length === 0">Add items and set options on the left.</p>
+              <template x-if="cartItems.length > 0">
+                <div class="flex flex-col flex-1">
+                  <p class="mb-3 text-xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-sm font-normal text-slate-500">total</span></p>
+                  <p x-show="orderError" class="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="orderError"></p>
                   <template x-if="!lastOrder">
-                    <p class="py-4 text-center text-slate-500 dark:text-slate-400">Place an order to see the summary here.</p>
+                    <button @click="placeOrder()" :disabled="orderLoading" class="mt-auto w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                      <span x-show="!orderLoading">Place Order</span>
+                      <span x-show="orderLoading">Placing…</span>
+                    </button>
+                  </template>
+                  <template x-if="lastOrder">
+                    <div class="mt-auto rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
+                      <p class="font-semibold">Thank you</p>
+                      <p class="mt-0.5">Order received. Total € <span x-text="lastOrder.total_amount"></span></p>
+                    </div>
                   </template>
                 </div>
-              </div>
+              </template>
             </div>
           </div>
         </div>

@@ -2207,25 +2207,36 @@ class OrderCreateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        total = sum(
-            (item["quantity"] * float(item["price"])) for item in cart
-        )
+        try:
+            total = sum(
+                (item["quantity"] * float(str(item.get("price", 0)).replace(",", "."))) for item in cart
+            )
+        except (ValueError, TypeError) as e:
+            logger.warning("Order create: invalid cart price %s", e)
+            return Response(
+                {"detail": "Invalid cart data. Please refresh and try again."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         items_json = [
             {
-                "menu_item_id": item["menu_item_id"],
-                "name": item["name"],
-                "price": item["price"],
-                "quantity": item["quantity"],
+                "menu_item_id": item.get("menu_item_id"),
+                "name": item.get("name", ""),
+                "price": str(item.get("price", 0)),
+                "quantity": int(item.get("quantity", 1)),
             }
             for item in cart
         ]
         session_key = request.session.session_key or ""
         if not session_key and hasattr(request.session, "create"):
-            request.session.create()
-            session_key = request.session.session_key or ""
+            try:
+                request.session.create()
+                session_key = request.session.session_key or ""
+            except Exception:
+                pass
 
-        with transaction.atomic():
-            order = Order.objects.create(
+        try:
+            with transaction.atomic():
+                order = Order.objects.create(
                 restaurant=restaurant,
                 status=Order.Status.PENDING,
                 total_amount=total,
@@ -2236,17 +2247,23 @@ class OrderCreateView(APIView):
                 table_number=table_number,
                 payment_method=payment_method,
                 session_key=session_key,
+                )
+            _set_cart(request, restaurant.id, [])
+            return Response({
+                "order_id": order.id,
+                "status": order.status,
+                "total_amount": str(order.total_amount),
+                "currency": order.currency,
+                "service_type": order.service_type,
+                "payment_method": order.payment_method,
+                "table_number": order.table_number or "",
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.exception("Order create failed: %s", e)
+            return Response(
+                {"detail": "Order could not be created. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        _set_cart(request, restaurant.id, [])
-        return Response({
-            "order_id": order.id,
-            "status": order.status,
-            "total_amount": str(order.total_amount),
-            "currency": order.currency,
-            "service_type": order.service_type,
-            "payment_method": order.payment_method,
-            "table_number": order.table_number or "",
-        }, status=status.HTTP_201_CREATED)
 
 
 class OrderListView(APIView):
