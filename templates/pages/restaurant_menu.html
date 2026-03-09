@@ -51,6 +51,7 @@
       paymentMethod: 'cash',
       orderNote: '',
       lastOrder: null,
+      orderHistory: [],
       orderLoading: false,
       orderError: '',
       setCategory(id) { this.activeCategory = id; },
@@ -123,6 +124,14 @@
         this.orderPanelOpen = true;
         this.orderTab = 1;
         this.orderError = '';
+        this.fetchOrderHistory();
+      },
+      async fetchOrderHistory() {
+        try {
+          const r = await fetch(this.apiBase + '/orders/list/?restaurant_id=' + this.restaurantId, { credentials: 'same-origin' });
+          const data = await r.json();
+          if (data.orders) this.orderHistory = data.orders;
+        } catch (e) { this.orderHistory = []; }
       },
       canGoToConfirm() {
         if (this.cartItems.length === 0) return false;
@@ -164,9 +173,14 @@
             data = await r.json().catch(() => ({}));
           }
           if (r.ok && data.order_id) {
+            if (data.requires_payment && data.payment_url) {
+              window.location.href = data.payment_url;
+              return;
+            }
             this.lastOrder = { ...data, items: [...this.cartItems] };
             this.orderTab = 3;
             this.cartItems = [];
+            this.fetchOrderHistory();
           } else {
             const msg = data.detail || data.message;
             this.orderError = (Array.isArray(msg) ? msg[0] : msg) || ('Could not place order (HTTP ' + r.status + ')');
@@ -490,12 +504,28 @@
                   </template>
                   <template x-if="lastOrder">
                     <div class="mt-auto rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-                      <p class="font-semibold">Thank you</p>
-                      <p class="mt-0.5">Order received. Total € <span x-text="lastOrder.total_amount"></span></p>
+                      <p class="font-semibold">Order placed successfully</p>
+                      <p class="mt-0.5">Your order is pending. Total € <span x-text="lastOrder.total_amount"></span>. Check status in Order history below.</p>
                     </div>
                   </template>
                 </div>
               </template>
+              <div class="mt-4 border-t border-slate-200 pt-4 dark:border-slate-700">
+                <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order history</h3>
+                <template x-if="orderHistory.length === 0">
+                  <p class="text-sm text-slate-500 dark:text-slate-400">No orders yet. Place an order to see it here (pending → preparing → completed).</p>
+                </template>
+                <template x-if="orderHistory.length > 0">
+                  <ul class="space-y-2 max-h-32 overflow-y-auto">
+                    <template x-for="o in orderHistory" :key="o.id">
+                      <li class="flex justify-between items-center rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800/50">
+                        <span class="text-slate-700 dark:text-slate-300">#<span x-text="o.id"></span> · € <span x-text="o.total_amount"></span></span>
+                        <span class="rounded-full px-2 py-0.5 text-xs font-medium capitalize" :class="o.status === 'pending' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200' : o.status === 'preparing' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200' : o.status === 'completed' || o.status === 'paid' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'" x-text="o.status"></span>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+              </div>
             </div>
           </div>
         </div>
@@ -559,6 +589,22 @@
               <label class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Order Note</label>
               <input type="text" x-model="orderNote" placeholder="Order Note" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
             </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order history</h3>
+              <template x-if="orderHistory.length === 0">
+                <p class="text-sm text-slate-500 dark:text-slate-400">No orders yet.</p>
+              </template>
+              <template x-if="orderHistory.length > 0">
+                <ul class="space-y-2">
+                  <template x-for="o in orderHistory" :key="o.id">
+                    <li class="flex justify-between items-center rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800/50">
+                      <span class="text-slate-700 dark:text-slate-300">#<span x-text="o.id"></span> · € <span x-text="o.total_amount"></span></span>
+                      <span class="rounded-full px-2 py-0.5 text-xs font-medium capitalize" :class="o.status === 'pending' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200' : o.status === 'preparing' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200' : o.status === 'completed' || o.status === 'paid' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'" x-text="o.status"></span>
+                    </li>
+                  </template>
+                </ul>
+              </template>
+            </div>
             <button @click="goToConfirmStep()" :disabled="!canGoToConfirm()" class="w-full rounded-xl py-4 text-base font-semibold transition disabled:opacity-50" :class="canGoToConfirm() ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'">Next →</button>
           </div>
 
@@ -582,9 +628,9 @@
                   </template>
                   <p class="border-t border-slate-200 pt-3 font-semibold dark:border-slate-700">Total € <span x-text="lastOrder.total_amount"></span></p>
                   <p class="text-sm text-slate-600 dark:text-slate-400">Service: <span x-text="lastOrder.service_type"></span> · Payment: <span x-text="lastOrder.payment_method"></span></p>
-                  <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-                    <p class="font-semibold">Thank you</p>
-                    <p class="mt-1">We received your order.</p>
+                  <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
+                    <p class="font-semibold">Order placed successfully</p>
+                    <p class="mt-1">Your order is pending. The restaurant will update the status (e.g. preparing, completed).</p>
                   </div>
                 </div>
               </template>

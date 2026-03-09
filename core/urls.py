@@ -12,6 +12,7 @@ urlpatterns = [
     path("contact/", views.contact, name="contact"),
     path("restaurants/", views.restaurants_list, name="restaurants_list"),
     path("restaurants/<int:restaurant_id>/menu/", views.restaurant_menu, name="restaurant_menu"),
+    path("restaurants/<int:restaurant_id>/order/<int:order_id>/pay/", views.order_payment, name="order_payment"),
     path("m/<slug:restaurant_slug>/", views.public_menu, name="public_menu"),
     path("m/<slug:restaurant_slug>/checkout/", views.checkout, name="checkout"),
     path("auth/login/", views.login_view, name="login"),

@@ -1975,6 +1975,31 @@ def _set_cart(request, restaurant_id, items):
     request.session.modified = True
 
 
+def _ensure_order_columns():
+    """If Order table is missing service_type, table_number, payment_method, session_key (migration not run),
+    add them via raw SQL for PostgreSQL so order create does not 500."""
+    from django.db import connection
+    if connection.vendor != "postgresql":
+        return
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name = 'business_menu_order' AND column_name = 'service_type';
+        """)
+        if cursor.fetchone():
+            return
+        for sql in [
+            "ALTER TABLE business_menu_order ADD COLUMN IF NOT EXISTS service_type varchar(20) DEFAULT 'dine_in';",
+            "ALTER TABLE business_menu_order ADD COLUMN IF NOT EXISTS table_number varchar(32) DEFAULT '';",
+            "ALTER TABLE business_menu_order ADD COLUMN IF NOT EXISTS payment_method varchar(20) DEFAULT 'cash';",
+            "ALTER TABLE business_menu_order ADD COLUMN IF NOT EXISTS session_key varchar(40) DEFAULT '';",
+        ]:
+            try:
+                cursor.execute(sql)
+            except Exception:
+                pass
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class CartView(APIView):
     """
@@ -2155,6 +2180,10 @@ class OrderCreateView(APIView):
         restaurant, err = _get_restaurant_for_public(request)
         if err:
             return err
+        try:
+            _ensure_order_columns()
+        except Exception:
+            pass
         settings_obj, _ = RestaurantSettings.objects.get_or_create(
             restaurant=restaurant,
             defaults={
@@ -2255,7 +2284,7 @@ class OrderCreateView(APIView):
                     session_key=session_key,
                 )
             _set_cart(request, restaurant.id, [])
-            return Response({
+            payload = {
                 "order_id": order.id,
                 "status": str(order.status),
                 "total_amount": str(order.total_amount),
@@ -2263,7 +2292,11 @@ class OrderCreateView(APIView):
                 "service_type": str(order.service_type),
                 "payment_method": str(order.payment_method),
                 "table_number": str(order.table_number or ""),
-            }, status=status.HTTP_201_CREATED)
+            }
+            if payment_method == "online":
+                payload["requires_payment"] = True
+                payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order.id}/pay/"
+            return Response(payload, status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.exception("Order create failed: %s", e)
             return Response(
@@ -2283,6 +2316,10 @@ class OrderListView(APIView):
         restaurant, err = _get_restaurant_for_public(request)
         if err:
             return err
+        try:
+            _ensure_order_columns()
+        except Exception:
+            pass
         session_key = request.session.session_key or ""
         orders = Order.objects.filter(
             restaurant=restaurant,
@@ -2292,14 +2329,14 @@ class OrderListView(APIView):
         for o in orders:
             out.append({
                 "id": o.id,
-                "status": o.status,
+                "status": str(o.status),
                 "total_amount": str(o.total_amount),
-                "currency": o.currency,
-                "service_type": o.service_type,
-                "payment_method": o.payment_method,
-                "table_number": o.table_number or "",
+                "currency": str(o.currency) if o.currency else "EUR",
+                "service_type": str(getattr(o, "service_type", "")) or "dine_in",
+                "payment_method": str(getattr(o, "payment_method", "")) or "cash",
+                "table_number": str(getattr(o, "table_number", "") or ""),
                 "created_at": o.created_at.isoformat() if o.created_at else None,
-                "items": o.items_json,
+                "items": o.items_json or [],
             })
         return Response({"orders": out}, status=status.HTTP_200_OK)
 

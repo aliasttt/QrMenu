@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 
-from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme
+from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order
 
 
 def _restaurant_payload(restaurant_slug="orange-bistro"):
@@ -582,6 +582,37 @@ def panel_campaigns(request):
         {
             "campaigns": campaigns,
             "campaigns_crumbs": [{"label": "Panel", "url": "/panel/"}, {"label": "Campaigns", "url": ""}],
+        },
+    )
+
+
+def order_payment(request, restaurant_id, order_id):
+    """Stripe payment page for an order (online payment). Placeholder until Stripe secret key is set."""
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_id, is_active=True)
+    order = get_object_or_404(Order, pk=order_id, restaurant=restaurant)
+    if order.payment_method != "online":
+        return render(
+            request,
+            "pages/order_payment.html",
+            {"restaurant": restaurant, "order": order, "error": "This order is not for online payment."},
+            status=400,
+        )
+    if str(order.status) not in ("pending", "paid"):
+        return render(
+            request,
+            "pages/order_payment.html",
+            {"restaurant": restaurant, "order": order, "error": "This order is already completed or cancelled."},
+            status=400,
+        )
+    return render(
+        request,
+        "pages/order_payment.html",
+        {
+            "restaurant": restaurant,
+            "order": order,
+            "order_items": order.items_json if getattr(order, "items_json", None) else [],
+            "total_amount": order.total_amount,
+            "currency": order.currency or "EUR",
         },
     )
 
