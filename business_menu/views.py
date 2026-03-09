@@ -12,9 +12,11 @@ from django.conf import settings
 from django.templatetags.static import static as static_url
 import io
 import json
-import qrcode
 import logging
 import re
+from decimal import Decimal
+
+import qrcode
 
 logger = logging.getLogger(__name__)
 
@@ -2235,28 +2237,32 @@ class OrderCreateView(APIView):
                 pass
 
         try:
+            total_decimal = Decimal(str(round(total, 2)))
+        except Exception:
+            total_decimal = Decimal("0.00")
+        try:
             with transaction.atomic():
                 order = Order.objects.create(
-                restaurant=restaurant,
-                status=Order.Status.PENDING,
-                total_amount=total,
-                currency="EUR",
-                items_json=items_json,
-                notes=notes,
-                service_type=service_type,
-                table_number=table_number,
-                payment_method=payment_method,
-                session_key=session_key,
+                    restaurant=restaurant,
+                    status=Order.Status.PENDING,
+                    total_amount=total_decimal,
+                    currency="EUR",
+                    items_json=items_json,
+                    notes=notes,
+                    service_type=service_type,
+                    table_number=table_number,
+                    payment_method=payment_method,
+                    session_key=session_key,
                 )
             _set_cart(request, restaurant.id, [])
             return Response({
                 "order_id": order.id,
-                "status": order.status,
+                "status": str(order.status),
                 "total_amount": str(order.total_amount),
-                "currency": order.currency,
-                "service_type": order.service_type,
-                "payment_method": order.payment_method,
-                "table_number": order.table_number or "",
+                "currency": str(order.currency),
+                "service_type": str(order.service_type),
+                "payment_method": str(order.payment_method),
+                "table_number": str(order.table_number or ""),
             }, status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.exception("Order create failed: %s", e)
