@@ -4,6 +4,12 @@ from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 
 from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order
+from business_menu.hours_utils import (
+    is_within_opening_hours,
+    is_datetime_within_hours,
+    get_open_days,
+    get_slots_for_day,
+)
 
 
 def _restaurant_payload(restaurant_slug="orange-bistro"):
@@ -466,7 +472,20 @@ def restaurant_menu(request, restaurant_id):
         if len(banner_images) >= 3:
             break
 
-    restaurant_hours = getattr(restaurant, "hours", None) or ""
+    restaurant_hours = getattr(settings_obj, "opening_hours", None) or getattr(restaurant, "hours", None) or ""
+    is_within_hours = is_within_opening_hours(settings_obj)
+    scheduled_for = (request.GET.get("scheduled_for") or "").strip()
+    # If customer chose a future time from schedule page, allow ordering even when "now" is closed
+    if scheduled_for:
+        from datetime import datetime
+        try:
+            dt = datetime.fromisoformat(scheduled_for.replace("Z", "+00:00").split("+")[0].split(".")[0])
+            if dt > datetime.now() and is_datetime_within_hours(settings_obj, dt):
+                is_within_hours = True
+            else:
+                scheduled_for = ""
+        except (ValueError, TypeError):
+            scheduled_for = ""
     # سبد و گزینه‌های سفارش برای پنل Orders (همان کلید سشن business_menu)
     cart_key = f"cart_restaurant_{restaurant.id}"
     cart_items = list(request.session.get(cart_key, []))
@@ -481,6 +500,9 @@ def restaurant_menu(request, restaurant_id):
         {
             "restaurant": restaurant,
             "restaurant_hours": restaurant_hours,
+            "is_within_hours": is_within_hours,
+            "scheduled_for": scheduled_for,
+            "schedule_url": f"/restaurants/{restaurant_id}/schedule/",
             "menu_cards": menu_cards,
             "menu_sections": menu_sections,
             "category_list": category_list,
@@ -582,6 +604,62 @@ def panel_campaigns(request):
         {
             "campaigns": campaigns,
             "campaigns_crumbs": [{"label": "Panel", "url": "/panel/"}, {"label": "Campaigns", "url": ""}],
+        },
+    )
+
+
+def restaurant_schedule(request, restaurant_id):
+    """Schedule page: pick a future date/time when restaurant is open (for ordering when currently closed)."""
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_id, is_active=True)
+    settings_obj, _ = RestaurantSettings.objects.get_or_create(
+        restaurant=restaurant,
+        defaults={
+            "show_prices": True,
+            "show_images": True,
+            "show_descriptions": True,
+            "show_serial": False,
+            "has_delivery": False,
+            "allow_payment_cash": True,
+            "allow_payment_online": True,
+        },
+    )
+    restaurant_hours = getattr(settings_obj, "opening_hours", None) or ""
+    hours_json = getattr(settings_obj, "opening_hours_json", None) or []
+    open_days = get_open_days(settings_obj) if hours_json else set(range(7))
+    from datetime import datetime, date, timedelta, time as dt_time
+
+    # Build next 14 days with their slots (simplified: one slot per day = first open/close)
+    days_with_slots = []
+    today = date.today()
+    for i in range(14):
+        d = today + timedelta(days=i)
+        wd = d.weekday()
+        if wd not in open_days:
+            continue
+        slots = get_slots_for_day(settings_obj, wd)
+        if not slots:
+            continue
+        options = []
+        for open_t, close_t in slots[:2]:
+            start_dt = datetime.combine(d, open_t)
+            end_dt = datetime.combine(d, close_t)
+            if end_dt <= start_dt:
+                end_dt += timedelta(days=1)
+            t = start_dt
+            while t < end_dt and len(options) < 12:
+                if t > datetime.now():
+                    options.append((t.isoformat(), t.strftime("%H:%M")))
+                t += timedelta(minutes=60)
+        if options:
+            days_with_slots.append({"date": d, "date_label": d.strftime("%A, %b %d"), "options": options})
+    return render(
+        request,
+        "pages/restaurant_schedule.html",
+        {
+            "restaurant": restaurant,
+            "restaurant_hours": restaurant_hours,
+            "days_with_slots": days_with_slots,
+            "menu_url": f"/restaurants/{restaurant_id}/menu/",
         },
     )
 

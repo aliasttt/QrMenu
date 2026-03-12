@@ -16,6 +16,11 @@ import logging
 import re
 from decimal import Decimal
 
+from business_menu.hours_utils import (
+    is_within_opening_hours as _is_within_opening_hours,
+    is_datetime_within_hours as _is_datetime_within_hours,
+)
+
 import qrcode
 
 logger = logging.getLogger(__name__)
@@ -47,6 +52,7 @@ from .models import (
     MenuTheme,
     RestaurantSettings,
     Order,
+    Reservation,
 )
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, MenuItemSerializer,
@@ -2035,6 +2041,15 @@ class CartView(APIView):
         restaurant, err = self._restaurant(request)
         if err:
             return err
+        try:
+            settings_obj = RestaurantSettings.objects.get(restaurant=restaurant)
+            if not _is_within_opening_hours(settings_obj):
+                return Response(
+                    {"detail": "Ordering is only available during opening hours. Check the schedule or request a reservation."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        except RestaurantSettings.DoesNotExist:
+            pass
         menu_item_id = request.data.get("menu_item_id")
         quantity = request.data.get("quantity", 1)
         if menu_item_id is None:
@@ -2196,6 +2211,32 @@ class OrderCreateView(APIView):
                 "allow_payment_online": True,
             },
         )
+        scheduled_for = (request.data.get("scheduled_for") or "").strip() or None
+        scheduled_dt = None
+        if scheduled_for:
+            try:
+                from datetime import datetime
+                scheduled_dt = datetime.fromisoformat(scheduled_for.replace("Z", "").split("+")[0].split(".")[0])
+                if scheduled_dt <= datetime.now():
+                    return Response(
+                        {"detail": "scheduled_for must be a future date and time."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                if not _is_datetime_within_hours(settings_obj, scheduled_dt):
+                    return Response(
+                        {"detail": "Chosen time is outside opening hours."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            except (ValueError, TypeError):
+                return Response(
+                    {"detail": "Invalid scheduled_for format. Use ISO format (e.g. 2025-03-10T12:00)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        elif not _is_within_opening_hours(settings_obj):
+            return Response(
+                {"detail": "Ordering is only available during opening hours. Check the schedule or request a reservation for another day."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         cart = _get_cart(request, restaurant.id)
         if not cart:
             return Response(
@@ -2282,6 +2323,7 @@ class OrderCreateView(APIView):
                     table_number=table_number,
                     payment_method=payment_method,
                     session_key=session_key,
+                    scheduled_for=scheduled_dt,
                 )
             _set_cart(request, restaurant.id, [])
             payload = {

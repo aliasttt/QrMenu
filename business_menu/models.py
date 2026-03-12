@@ -458,6 +458,9 @@ class RestaurantSettings(models.Model):
     )
     allow_payment_cash = models.BooleanField(default=True, help_text="پرداخت نقدی مجاز")
     allow_payment_online = models.BooleanField(default=True, help_text="پرداخت آنلاین (کارت/استریپ) مجاز")
+    # Opening hours: display text and optional JSON for validation. JSON: [{"day": 0, "open": "09:00", "close": "22:00"}, ...] day 0=Monday, 6=Sunday
+    opening_hours = models.TextField(blank=True, help_text="Display text e.g. Mon–Fri 9:00–22:00")
+    opening_hours_json = models.JSONField(default=list, blank=True, help_text="List of {day, open, close} for order validation; empty = no restriction")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -466,6 +469,33 @@ class RestaurantSettings(models.Model):
 
     def __str__(self) -> str:
         return f"Settings - {self.restaurant.name}"
+
+
+class Reservation(models.Model):
+    """Reservation request for a future date (when restaurant is closed or for scheduled visit)."""
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        CONFIRMED = "confirmed", "Confirmed"
+        CANCELLED = "cancelled", "Cancelled"
+
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="reservations")
+    requested_date = models.DateField(help_text="Requested reservation date")
+    requested_time = models.CharField(max_length=10, blank=True, help_text="e.g. 19:00 or 7 PM")
+    customer_name = models.CharField(max_length=200)
+    customer_phone = models.CharField(max_length=32, blank=True)
+    customer_email = models.EmailField(blank=True)
+    notes = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Reservation"
+        verbose_name_plural = "Reservations"
+        ordering = ["requested_date", "requested_time"]
+
+    def __str__(self):
+        return f"{self.restaurant.name} – {self.requested_date} – {self.customer_name}"
 
 
 class MenuQRCode(models.Model):
@@ -606,6 +636,12 @@ class Order(models.Model):
         blank=True,
         db_index=True,
         help_text="کلید سشن مرورگر برای لیست سفارشات همین کاربر",
+    )
+    scheduled_for = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="When the order is scheduled for (future date/time); null = order now.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
