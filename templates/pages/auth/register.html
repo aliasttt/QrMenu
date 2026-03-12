@@ -5,16 +5,97 @@
 <section class="container mx-auto px-4 py-16 sm:px-6">
   <div class="mx-auto max-w-md">
     <div class="card-soft" data-reveal>
-      <h1 class="text-2xl font-bold text-slate-900">Create your account</h1>
-      <p class="mt-2 text-slate-600">Start your trial and launch your digital menu.</p>
-      <form class="mt-6 space-y-4">
-        {% include "partials/form_fields.html" with label="Restaurant Name" name="restaurant_name" placeholder="Orange Bistro" %}
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-400">Start your 12-day free trial. No payment required.</p>
+      <form id="register-form" class="mt-6 space-y-4">
+        {% csrf_token %}
+        {% include "partials/form_fields.html" with label="Restaurant name" name="restaurant_name" placeholder="Orange Bistro" %}
+        {% include "partials/form_fields.html" with label="Your first name" name="first_name" placeholder="John" %}
+        {% include "partials/form_fields.html" with label="Your last name" name="last_name" placeholder="Doe" %}
         {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
+        {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+49 123 456789" %}
         {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
-        <button type="button" class="btn-primary w-full">Create account</button>
+        {% include "partials/form_fields.html" with label="Confirm password" name="confirm_password" field_type="password" placeholder="••••••••" %}
+        {% include "partials/form_fields.html" with label="Country" name="country" placeholder="Germany" %}
+        {% include "partials/form_fields.html" with label="City" name="city" placeholder="Berlin" %}
+        <div class="flex items-start gap-2">
+          <input type="checkbox" id="accept_terms" name="accept_terms" required class="rounded border-slate-300 mt-1">
+          <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">I accept the terms and conditions</label>
+        </div>
+        <div class="flex items-start gap-2">
+          <input type="checkbox" id="b2b_confirmation" name="b2b_confirmation" required class="rounded border-slate-300 mt-1">
+          <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">I confirm I am acting as a business (B2B)</label>
+        </div>
+        <div id="form-errors" class="hidden text-sm text-red-600"></div>
+        <button type="submit" id="btn-submit" class="btn-primary w-full">Create account</button>
       </form>
-      <p class="mt-5 text-center text-sm text-slate-600">Already have an account? <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">Login</a></p>
+      <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">Already have an account? <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">Login</a></p>
     </div>
   </div>
 </section>
+<script>
+(function() {
+  const form = document.getElementById("register-form");
+  const btn = document.getElementById("btn-submit");
+  const errEl = document.getElementById("form-errors");
+  if (!form || !btn) return;
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    errEl.classList.add("hidden");
+    errEl.textContent = "";
+    const fd = new FormData(form);
+    const body = {
+      restaurant_name: fd.get("restaurant_name") || "",
+      first_name: fd.get("first_name") || "",
+      last_name: fd.get("last_name") || "",
+      email: fd.get("email") || "",
+      phone: fd.get("phone") || "",
+      password: fd.get("password") || "",
+      confirm_password: fd.get("confirm_password") || "",
+      country: fd.get("country") || "",
+      city: fd.get("city") || "",
+      accept_terms: fd.get("accept_terms") === "on",
+      b2b_confirmation: fd.get("b2b_confirmation") === "on",
+    };
+
+    btn.disabled = true;
+    btn.textContent = "Creating account…";
+
+    fetch("/api/business-menu/signup/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": fd.get("csrfmiddlewaretoken") || "",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify(body),
+      credentials: "same-origin",
+    })
+      .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data }; }); })
+      .then(function({ ok, data }) {
+        if (ok && data.success) {
+          window.location.href = "/auth/login/?registered=1";
+          return;
+        }
+        var msg = data.message || "Registration failed.";
+        if (data.errors) {
+          var parts = [];
+          for (var k in data.errors) parts.push(k + ": " + (Array.isArray(data.errors[k]) ? data.errors[k].join(" ") : data.errors[k]));
+          msg = parts.join("\n");
+        }
+        errEl.textContent = msg;
+        errEl.classList.remove("hidden");
+        btn.disabled = false;
+        btn.textContent = "Create account";
+      })
+      .catch(function() {
+        errEl.textContent = "Network error. Please try again.";
+        errEl.classList.remove("hidden");
+        btn.disabled = false;
+        btn.textContent = "Create account";
+      });
+  });
+})();
+</script>
 {% endblock %}

@@ -25,11 +25,28 @@ class BusinessAdmin(models.Model):
     payment_status = models.CharField(
         max_length=20,
         choices=[
+            ('trial', 'Trial'),
             ('unpaid', 'Unpaid'),
             ('paid', 'Paid'),
         ],
-        default='unpaid',
-        help_text="Payment status - users cannot login until payment is confirmed"
+        default='trial',
+        help_text="trial=12-day free; unpaid=trial ended, subscribe to continue; paid=subscribed"
+    )
+    trial_ends_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="End of 12-day free trial (set on signup)"
+    )
+    subscription_ends_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="End of current paid subscription period"
+    )
+    stripe_customer_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True,
+        help_text="Stripe Customer ID for platform subscription payments"
+    )
+    stripe_account_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True,
+        help_text="Stripe Connect account ID (for receiving customer payments)"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -69,6 +86,8 @@ class Restaurant(models.Model):
     description = models.TextField(blank=True, help_text="Restaurant description")
     address = models.TextField(blank=True, help_text="Restaurant address")
     phone = models.CharField(max_length=32, blank=True, help_text="Restaurant phone number")
+    country = models.CharField(max_length=100, blank=True, help_text="Country")
+    city = models.CharField(max_length=100, blank=True, help_text="City")
     is_active = models.BooleanField(default=True, help_text="Active/Inactive status")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

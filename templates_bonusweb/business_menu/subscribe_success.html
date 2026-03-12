@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Subscription complete" %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-16 text-center">
+  <h1 class="text-3xl font-extrabold mb-2 text-green-600">{% trans "Thank you!" %}</h1>
+  <p class="text-slate-600 mb-6">{% trans "Your subscription is active. You can now use the app and connect your Stripe account to receive customer payments." %}</p>
+  <div class="flex flex-col sm:flex-row gap-3 justify-center">
+    <button type="button" id="btn-connect-stripe" class="inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Connect Stripe to receive payments" %}</button>
+    <a href="/auth/login/" class="inline-block rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50">{% trans "Go to login" %}</a>
+  </div>
+</div>
+<script>
+(function() {
+  const adminId = "{{ admin_id|escapejs }}";
+  const btn = document.getElementById("btn-connect-stripe");
+  if (!adminId || !btn) return;
+  btn.addEventListener("click", function() {
+    btn.disabled = true;
+    fetch("/api/business-menu/api/create-connect-link/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+      body: JSON.stringify({ admin_id: adminId }),
+      credentials: "same-origin"
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.url) window.location.href = data.url;
+        else alert(data.message || "Error");
+        btn.disabled = false;
+      })
+      .catch(function() { btn.disabled = false; });
+  });
+})();
+</script>
+{% endblock %}

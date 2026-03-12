@@ -241,6 +241,16 @@ TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "") or os.getenv("TWILIO
 TWILIO_VERIFY_SERVICE_SID = os.environ.get("TWILIO_VERIFY_SERVICE_SID", "") or os.getenv("TWILIO_VERIFY_SERVICE_SID", "")
 OTP_THROTTLE_RATE = os.environ.get("OTP_THROTTLE_RATE", os.getenv("OTP_THROTTLE_RATE", "5/minute"))
 
+# Site base URL (for emails, Stripe redirects)
+SITE_URL = os.environ.get("SITE_URL", "") or os.getenv("SITE_URL", "https://preismenu.de")
+
+# Stripe (payments + Connect)
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "") or os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "") or os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "") or os.getenv("STRIPE_WEBHOOK_SECRET", "")
+# Annual subscription price ID (create in Stripe Dashboard → Products)
+STRIPE_PRICE_ID_ANNUAL = os.environ.get("STRIPE_PRICE_ID_ANNUAL", "") or os.getenv("STRIPE_PRICE_ID_ANNUAL", "")
+
 # Firebase (optional)
 FIREBASE_CONFIG = {}
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "") or os.getenv("VAPID_PUBLIC_KEY", "")

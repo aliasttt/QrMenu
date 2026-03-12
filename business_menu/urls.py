@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from .views import (
     SendOTPView,
     LoginView,
+    RestaurantOwnerSignupView,
     UpdateProfileView,
     RestaurantListCreateView,
     MenuItemListCreateView,
@@ -37,6 +38,13 @@ from .views import (
     menu_qr_image_view,
     menu_themes_preview_view,
 )
+from .stripe_views import (
+    StripeWebhookView,
+    CreateCheckoutSessionView,
+    CreateConnectAccountLinkView,
+    SubscribePageView,
+    SubscribeSuccessView,
+)
 
 # app_name removed to avoid namespace conflict
 # app_name = 'business_menu'
@@ -46,10 +54,18 @@ def redirect_to_service_agreement(request):
     return redirect('/service-agreement/')
 
 urlpatterns = [
-    # Registration page (redirected to service agreement)
+    # Restaurant owner signup (web) – starts 12-day trial
+    path('signup/', RestaurantOwnerSignupView.as_view(), name='restaurant_owner_signup'),
+    # Legacy register redirect
     path('register/', redirect_to_service_agreement, name='restaurant_owner_register'),
-    # Payment page (public)
+    # Payment / subscription page (public)
     path('payment/', PaymentPageView.as_view(), name='payment_page'),
+    # Stripe: subscribe (after trial), Connect onboarding
+    path('subscribe/', SubscribePageView.as_view(), name='subscribe_page'),
+    path('subscribe/success/', SubscribeSuccessView.as_view(), name='subscribe_success'),
+    path('api/create-checkout-session/', CreateCheckoutSessionView.as_view(), name='stripe_create_checkout'),
+    path('api/create-connect-link/', CreateConnectAccountLinkView.as_view(), name='stripe_connect_link'),
+    path('api/stripe-webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
     # API endpoints
     path('send-otp/', SendOTPView.as_view(), name='send_otp'),
     path('login/', LoginView.as_view(), name='login'),

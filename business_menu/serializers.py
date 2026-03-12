@@ -863,13 +863,16 @@ class SendOTPSerializer(serializers.Serializer):
 
 
 class RestaurantOwnerRegistrationSerializer(serializers.Serializer):
-    """Serializer برای ثبت‌نام صاحب رستوران"""
-    first_name = serializers.CharField(required=True, max_length=200, help_text="First name")
-    last_name = serializers.CharField(required=True, max_length=200, help_text="Last name")
+    """Serializer for restaurant owner signup (web). Starts 12-day trial."""
+    restaurant_name = serializers.CharField(required=True, max_length=200, help_text="Restaurant name")
+    first_name = serializers.CharField(required=True, max_length=200, help_text="Owner first name")
+    last_name = serializers.CharField(required=True, max_length=200, help_text="Owner last name")
     phone = serializers.CharField(required=True, help_text="Phone number")
     email = serializers.EmailField(required=True, help_text="Email address")
     password = serializers.CharField(required=True, write_only=True, min_length=8, help_text="Password (minimum 8 characters)")
     confirm_password = serializers.CharField(required=True, write_only=True, help_text="Confirm password")
+    country = serializers.CharField(required=False, allow_blank=True, max_length=100, help_text="Country")
+    city = serializers.CharField(required=False, allow_blank=True, max_length=100, help_text="City")
     accept_terms = serializers.BooleanField(required=True, help_text="Accept terms and conditions")
     b2b_confirmation = serializers.BooleanField(required=True, help_text="I confirm that I am acting as a business customer (B2B)")
     

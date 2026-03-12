@@ -9,6 +9,8 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.db import IntegrityError
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 from django.templatetags.static import static as static_url
 import io
 import json
@@ -419,13 +421,20 @@ class LoginView(APIView):
                 "message": error_message
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Check payment status - user cannot login until payment is confirmed
-        if admin.payment_status != 'paid':
+        # Allow login if: paid OR (trial and trial not expired)
+        now = timezone.now()
+        if admin.payment_status == "paid":
+            pass  # allow
+        elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
+            pass  # allow during trial
+        else:
+            # unpaid or trial expired
             return Response({
                 "success": False,
-                "message": "Registration is not complete. Please complete payment to access your account. Contact support if you have already paid.",
+                "message": "Your trial has ended. Please subscribe to continue using the service.",
                 "payment_required": True,
-                "admin_id": admin.id
+                "admin_id": admin.id,
+                "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
             }, status=status.HTTP_403_FORBIDDEN)
         
         # تولید JWT token
@@ -3192,104 +3201,73 @@ def menu_themes_preview_view(request):
         return HttpResponse('<h1>Preview file not found</h1>', status=404)
 
 
-# DEPRECATED: This view is no longer used. Registration is now handled via service agreement.
-# The URL /business-menu/register/ now redirects to /service-agreement/
-# class RestaurantOwnerRegistrationView(APIView):
-#     """
-#     View for restaurant owner registration
-#     GET /business-menu/register/ - Display registration form
-#     POST /business-menu/register/ - Process registration
-#     """
-#     permission_classes = [permissions.AllowAny]
-#     
-#     def get(self, request):
-#         """Display registration form"""
-#         return render(request, 'business_menu/register.html')
-#     
-#     def post(self, request):
-#         """Process registration"""
-#         serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
-#         
-#         if not serializer.is_valid():
-#             # Check if this is an AJAX request
-#             if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':
-#                 return Response({
-#                     "success": False,
-#                     "errors": serializer.errors
-#                 }, status=status.HTTP_400_BAD_REQUEST)
-#             else:
-#                 # Regular form submission - re-render form with errors
-#                 from django.contrib import messages
-#                 for field, errors in serializer.errors.items():
-#                     for error in errors if isinstance(errors, list) else [errors]:
-#                         messages.error(request, f"{field}: {error}")
-#                 return render(request, 'business_menu/register.html', status=400)
-#         
-#         validated_data = serializer.validated_data
-#         
-#         # Create BusinessAdmin
-#         try:
-#             admin = BusinessAdmin.objects.create(
-#                 phone=validated_data['phone'],
-#                 name=f"{validated_data['first_name']} {validated_data['last_name']}",
-#                 email=validated_data['email'],
-#                 is_active=True,
-#                 payment_status='unpaid'  # Always set to unpaid initially
-#             )
-#             
-#             # Create User account for authentication
-#             from django.contrib.auth.models import User
-#             username = f"business_admin_{validated_data['phone'].replace('+', '').replace('-', '').replace(' ', '')}"
-#             
-#             # Ensure username is unique
-#             base_username = username
-#             counter = 1
-#             while User.objects.filter(username=username).exists():
-#                 username = f"{base_username}_{counter}"
-#                 counter += 1
-#             
-#             user = User.objects.create(
-#                 username=username,
-#                 email=validated_data['email'],
-#                 first_name=validated_data['first_name'],
-#                 last_name=validated_data['last_name'],
-#                 is_active=True
-#             )
-#             user.set_password(validated_data['password'])
-#             user.save()
-#             
-#             # Link auth_user to BusinessAdmin
-#             admin.auth_user = user
-#             admin.save(update_fields=['auth_user'])
-#             
-#             # Check if this is an AJAX request
-#             if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':
-#                 return Response({
-#                     "success": True,
-#                     "message": "Registration successful. Please complete payment to access your account.",
-#                     "admin_id": admin.id,
-#                     "payment_url": f"/business-menu/payment/?admin_id={admin.id}"
-#                 }, status=status.HTTP_201_CREATED)
-#             else:
-#                 # Regular form submission - redirect to payment page
-#                 from django.shortcuts import redirect
-#                 return redirect(f'/business-menu/payment/?admin_id={admin.id}')
-#             
-#         except Exception as e:
-#             import traceback
-#             logger.error(f"Error in restaurant owner registration: {str(e)}")
-#             logger.error(traceback.format_exc())
-#             
-#             # Check if this is an AJAX request
-#             if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':
-#                 return Response({
-#                     "success": False,
-#                     "message": f"Registration failed: {str(e)}"
-#                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#             else:
-#                 from django.contrib import messages
-#                 messages.error(request, f"Registration failed: {str(e)}")
-#                 return render(request, 'business_menu/register.html', status=500)
+class RestaurantOwnerSignupView(APIView):
+    """
+    Web signup for restaurant owners. Creates account and starts 12-day free trial.
+    No payment during trial. Stripe Connect is not active during trial.
+    POST /api/business-menu/signup/
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        try:
+            with transaction.atomic():
+                trial_ends_at = timezone.now() + timedelta(days=12)
+                admin = BusinessAdmin.objects.create(
+                    phone=validated_data["phone"],
+                    name=f"{validated_data['first_name']} {validated_data['last_name']}".strip(),
+                    email=validated_data["email"],
+                    is_active=True,
+                    payment_status="trial",
+                    trial_ends_at=trial_ends_at,
+                )
+                base_username = _BM_ADMIN_USERNAME_PREFIX + re.sub(r"\D", "", validated_data["phone"])
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}_{counter}"
+                    counter += 1
+                user = User.objects.create(
+                    username=username,
+                    email=validated_data["email"],
+                    first_name=validated_data["first_name"],
+                    last_name=validated_data["last_name"],
+                    is_active=True,
+                )
+                user.set_password(validated_data["password"])
+                user.save()
+                admin.auth_user = user
+                admin.save(update_fields=["auth_user"])
+
+                restaurant = Restaurant.objects.create(
+                    admin=admin,
+                    name=validated_data.get("restaurant_name", "").strip() or "My Restaurant",
+                    country=validated_data.get("country", "").strip() or "",
+                    city=validated_data.get("city", "").strip() or "",
+                )
+                RestaurantSettings.objects.get_or_create(restaurant=restaurant)
+
+            return Response(
+                {
+                    "success": True,
+                    "message": "Registration successful. Your 12-day free trial has started. Download the app and log in with your phone number.",
+                    "admin_id": admin.id,
+                    "trial_ends_at": trial_ends_at.isoformat(),
+                    "login_url": "/auth/login/",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as e:
+            logger.exception("Restaurant owner signup failed: %s", e)
+            return Response(
+                {"success": False, "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class PaymentPageView(APIView):

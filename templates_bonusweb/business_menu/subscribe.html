@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Subscribe" %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-16">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-extrabold mb-2">{% trans "Subscribe to continue" %}</h1>
+    <p class="text-slate-400">{% trans "Your trial has ended. Complete your subscription to keep using the service." %}</p>
+  </div>
+  <div class="p-8 rounded-2xl border bg-white/70 backdrop-blur">
+    <p class="mb-6 text-slate-600">{% trans "Pay securely with Stripe (card, Apple Pay, Google Pay)." %}</p>
+    <button type="button" id="btn-subscribe" class="w-full rounded-xl bg-primary px-6 py-4 font-semibold text-white hover:bg-primary/90">
+      {% trans "Subscribe now" %}
+    </button>
+    <p class="mt-4 text-sm text-slate-500 text-center">{% trans "You will be redirected to Stripe Checkout." %}</p>
+  </div>
+</div>
+<script>
+(function() {
+  const adminId = "{{ admin_id|escapejs }}";
+  const btn = document.getElementById("btn-subscribe");
+  if (!adminId || !btn) return;
+  btn.addEventListener("click", function() {
+    btn.disabled = true;
+    btn.textContent = "{% trans 'Redirecting...' %}";
+    fetch("/api/business-menu/api/create-checkout-session/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+      body: JSON.stringify({ admin_id: adminId }),
+      credentials: "same-origin"
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.url) window.location.href = data.url;
+        else { alert(data.message || "Error"); btn.disabled = false; btn.textContent = "{% trans 'Subscribe now' %}"; }
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = "{% trans 'Subscribe now' %}";
+        alert("{% trans 'Request failed. Try again.' %}");
+      });
+  });
+})();
+</script>
+{% endblock %}
