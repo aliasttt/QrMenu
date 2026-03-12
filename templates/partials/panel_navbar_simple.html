@@ -1,0 +1,6 @@
+<header class="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+  <nav class="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6">
+    <a href="{% url 'panel_dashboard' %}{% if request.GET.admin_id %}?admin_id={{ request.GET.admin_id }}{% endif %}" class="font-bold text-slate-900 dark:text-white">Panel</a>
+    <a href="{% url 'landing' %}" class="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Site</a>
+  </nav>
+</header>

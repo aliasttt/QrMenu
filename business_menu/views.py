@@ -3252,6 +3252,8 @@ class RestaurantOwnerSignupView(APIView):
                 )
                 RestaurantSettings.objects.get_or_create(restaurant=restaurant)
 
+            from django.conf import settings
+            base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
             return Response(
                 {
                     "success": True,
@@ -3259,6 +3261,7 @@ class RestaurantOwnerSignupView(APIView):
                     "admin_id": admin.id,
                     "trial_ends_at": trial_ends_at.isoformat(),
                     "login_url": "/auth/login/",
+                    "panel_url": f"{base}/panel/?admin_id={admin.id}",
                 },
                 status=status.HTTP_201_CREATED,
             )

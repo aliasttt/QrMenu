@@ -42,6 +42,8 @@ from .stripe_views import (
     StripeWebhookView,
     CreateCheckoutSessionView,
     CreateConnectAccountLinkView,
+    ConnectPageView,
+    ConnectDoneView,
     SubscribePageView,
     SubscribeSuccessView,
 )
@@ -63,6 +65,8 @@ urlpatterns = [
     # Stripe: subscribe (after trial), Connect onboarding
     path('subscribe/', SubscribePageView.as_view(), name='subscribe_page'),
     path('subscribe/success/', SubscribeSuccessView.as_view(), name='subscribe_success'),
+    path('connect/', ConnectPageView.as_view(), name='stripe_connect_page'),
+    path('connect/done/', ConnectDoneView.as_view(), name='stripe_connect_done'),
     path('api/create-checkout-session/', CreateCheckoutSessionView.as_view(), name='stripe_create_checkout'),
     path('api/create-connect-link/', CreateConnectAccountLinkView.as_view(), name='stripe_connect_link'),
     path('api/stripe-webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),

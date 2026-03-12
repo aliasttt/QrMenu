@@ -3,7 +3,8 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 
-from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order
+from django.utils import timezone
+from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order, BusinessAdmin
 from business_menu.hours_utils import (
     is_within_opening_hours,
     is_datetime_within_hours,
@@ -538,24 +539,65 @@ def register_view(request):
 
 
 def panel_dashboard(request):
-    stats = [
-        {"label": "Today Orders", "value": "128", "delta": "+12%"},
-        {"label": "Revenue", "value": "$2,430", "delta": "+8.4%"},
-        {"label": "Menu Items", "value": "64", "delta": "+3"},
-        {"label": "Active Campaigns", "value": "3", "delta": "Live"},
-    ]
-    recent_orders = [
-        {"id": "#1023", "customer": "John S.", "amount": "$34.00", "status": "Completed"},
-        {"id": "#1022", "customer": "Nadia K.", "amount": "$19.50", "status": "Preparing"},
-        {"id": "#1021", "customer": "Alex R.", "amount": "$42.20", "status": "Completed"},
-    ]
+    """Simple panel: plan status, payment/Stripe, app download links. Use ?admin_id=X to identify owner."""
+    admin_id = request.GET.get("admin_id")
+    if admin_id:
+        try:
+            admin = BusinessAdmin.objects.get(id=int(admin_id))
+        except (ValueError, BusinessAdmin.DoesNotExist):
+            admin = None
+        if admin:
+            now = timezone.now()
+            payment_status = admin.payment_status
+            is_trial = payment_status == "trial"
+            trial_active = is_trial and admin.trial_ends_at and now < admin.trial_ends_at
+            is_paid = payment_status == "paid"
+            subscription_active = is_paid and (not admin.subscription_ends_at or admin.subscription_ends_at > now)
+            plan_active = trial_active or subscription_active
+            expires_at = None
+            if is_trial and admin.trial_ends_at:
+                expires_at = admin.trial_ends_at
+            elif is_paid and admin.subscription_ends_at:
+                expires_at = admin.subscription_ends_at
+            from django.conf import settings
+            return render(
+                request,
+                "pages/panel/dashboard_simple.html",
+                {
+                    "admin": admin,
+                    "admin_id": admin.id,
+                    "restaurant_name": getattr(admin.restaurant, "name", "") if hasattr(admin, "restaurant") and admin.restaurant else "",
+                    "plan_active": plan_active,
+                    "payment_status": payment_status,
+                    "trial_active": trial_active,
+                    "subscription_active": subscription_active,
+                    "expires_at": expires_at,
+                    "stripe_connected": bool(admin.stripe_account_id),
+                    "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
+                    "connect_stripe_url": f"/business-menu/connect/?admin_id={admin.id}",
+                    "app_android_url": getattr(settings, "APP_ANDROID_URL", "") or getattr(settings, "QR_MENU_APK_DEFAULT_URL", "https://example.com/app.apk"),
+                    "app_ios_url": getattr(settings, "APP_IOS_URL", "https://apps.apple.com/app/id000000000"),
+                },
+            )
+    # Fallback: show minimal dashboard without admin (e.g. link to login/register)
+    from django.conf import settings
     return render(
         request,
-        "pages/panel/dashboard.html",
+        "pages/panel/dashboard_simple.html",
         {
-            "stats": stats,
-            "recent_orders": recent_orders,
-            "dashboard_crumbs": [{"label": "Panel", "url": "/panel/"}, {"label": "Dashboard", "url": ""}],
+            "admin": None,
+            "admin_id": None,
+            "restaurant_name": "",
+            "plan_active": False,
+            "payment_status": "",
+            "trial_active": False,
+            "subscription_active": False,
+            "expires_at": None,
+            "stripe_connected": False,
+            "subscribe_url": "",
+            "connect_stripe_url": "",
+            "app_android_url": getattr(settings, "APP_ANDROID_URL", "") or getattr(settings, "QR_MENU_APK_DEFAULT_URL", ""),
+            "app_ios_url": getattr(settings, "APP_IOS_URL", "https://apps.apple.com/app/id000000000"),
         },
     )
 

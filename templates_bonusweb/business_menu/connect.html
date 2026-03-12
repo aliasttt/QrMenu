@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Connect Stripe" %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-16 text-center">
+  {% if error %}
+  <p class="text-red-600 dark:text-red-400">{{ error }}</p>
+  <a href="{% url 'panel_dashboard' %}" class="mt-4 inline-block rounded-xl bg-slate-200 px-4 py-2 text-slate-800 dark:bg-slate-700 dark:text-slate-200">Back to panel</a>
+  {% else %}
+  <p class="text-slate-600">Redirecting to Stripe…</p>
+  {% endif %}
+</div>
+{% endblock %}

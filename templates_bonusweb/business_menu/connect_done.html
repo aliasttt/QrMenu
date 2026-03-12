@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Stripe connected" %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-16 text-center">
+  <h1 class="text-2xl font-bold text-green-600 dark:text-green-400">{% trans "Stripe connected" %}</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "You can now receive customer payments." %}</p>
+  {% if admin_id %}
+  <a href="/panel/?admin_id={{ admin_id }}" class="mt-6 inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Back to panel" %}</a>
+  {% else %}
+  <a href="/panel/" class="mt-6 inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Back to panel" %}</a>
+  {% endif %}
+</div>
+{% endblock %}

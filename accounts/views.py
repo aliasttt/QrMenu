@@ -364,6 +364,16 @@ class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [RegisterThrottle]
 
+    def get(self, request):
+        """Allow GET for browsable API; use POST to register."""
+        return Response(
+            {
+                "detail": "POST to register. Send phone/number, password, interests. Returns JWT on success.",
+                "allowed_methods": ["POST", "OPTIONS"],
+            },
+            status=status.HTTP_200_OK,
+        )
+
     def post(self, request):
         # If this phone is already registered, log them in and return tokens (no 409)
         number = (request.data.get('number') or request.data.get('phone') or '').strip()

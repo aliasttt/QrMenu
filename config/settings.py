@@ -255,9 +255,11 @@ STRIPE_PRICE_ID_ANNUAL = os.environ.get("STRIPE_PRICE_ID_ANNUAL", "") or os.gete
 FIREBASE_CONFIG = {}
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "") or os.getenv("VAPID_PUBLIC_KEY", "")
 
-# APK / app download
+# App download (panel + public pages)
 QR_MENU_APK_DEFAULT_URL = os.environ.get("APP_ANDROID_QR_MENU", os.getenv("APP_ANDROID_QR_MENU", "https://example.com/app.apk"))
 MENU_PANEL_APK_DEFAULT_URL = QR_MENU_APK_DEFAULT_URL
+APP_ANDROID_URL = os.environ.get("APP_ANDROID_URL", os.getenv("APP_ANDROID_URL", QR_MENU_APK_DEFAULT_URL))
+APP_IOS_URL = os.environ.get("APP_IOS_URL", os.getenv("APP_IOS_URL", "https://apps.apple.com/app/id000000000"))
 
 # Security (from config.security)
 from config.security import get_security_settings

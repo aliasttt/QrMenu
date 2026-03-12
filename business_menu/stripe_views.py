@@ -6,7 +6,7 @@ Stripe: subscription checkout, webhooks, Connect onboarding.
 import logging
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -190,6 +190,49 @@ class CreateConnectAccountLinkView(APIView):
                 {"success": False, "message": str(e)},
                 status=status.HTTP_502_BAD_GATEWAY,
             )
+
+
+class ConnectPageView(APIView):
+    """GET: create Stripe Connect onboarding link and redirect to Stripe. For paid admins only."""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        admin_id = request.GET.get("admin_id")
+        if not admin_id or not _stripe_enabled():
+            return render(request, "business_menu/connect.html", {"error": "Missing admin or Stripe not configured."})
+        try:
+            admin = BusinessAdmin.objects.get(id=int(admin_id))
+        except (ValueError, BusinessAdmin.DoesNotExist):
+            return render(request, "business_menu/connect.html", {"error": "Invalid admin."})
+        if admin.payment_status != "paid":
+            return render(request, "business_menu/connect.html", {"error": "Subscribe first to connect Stripe."})
+        import stripe
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        base_url = request.build_absolute_uri("/").rstrip("/")
+        try:
+            if not admin.stripe_account_id:
+                account = stripe.Account.create(type="express", email=(admin.email or "").strip() or None)
+                admin.stripe_account_id = account.id
+                admin.save(update_fields=["stripe_account_id"])
+            link = stripe.AccountLink.create(
+                account=admin.stripe_account_id,
+                refresh_url=f"{base_url}/business-menu/connect/?admin_id={admin_id}",
+                return_url=f"{base_url}/business-menu/connect/done/?admin_id={admin_id}",
+                type="account_onboarding",
+            )
+            return redirect(link.url)
+        except Exception as e:
+            logger.exception("Connect redirect failed: %s", e)
+            return render(request, "business_menu/connect.html", {"error": str(e)})
+
+
+class ConnectDoneView(APIView):
+    """Shown after Stripe Connect onboarding return."""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        admin_id = request.GET.get("admin_id")
+        return render(request, "business_menu/connect_done.html", {"admin_id": admin_id})
 
 
 class SubscribePageView(APIView):
