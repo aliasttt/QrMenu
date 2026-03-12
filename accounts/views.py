@@ -52,7 +52,18 @@ class LoginView(APIView):
     """
     permission_classes = [permissions.AllowAny]
     throttle_classes = [LoginThrottle]
-    
+
+    def get(self, request):
+        """If browser (Accept: text/html), redirect to HTML login page."""
+        accept = request.META.get("HTTP_ACCEPT", "")
+        if "text/html" in accept:
+            from django.shortcuts import redirect
+            return redirect("/auth/login/")
+        return Response(
+            {"detail": "POST to login. Send phone/number and password.", "allowed_methods": ["POST", "OPTIONS"]},
+            status=status.HTTP_200_OK,
+        )
+
     def post(self, request):
         # Accept both 'phone' and 'number' for backward compatibility
         number = request.data.get('number', '').strip() or request.data.get('phone', '').strip()
@@ -365,7 +376,11 @@ class RegisterView(APIView):
     throttle_classes = [RegisterThrottle]
 
     def get(self, request):
-        """Allow GET for browsable API; use POST to register."""
+        """If browser (Accept: text/html), redirect to HTML register page. Else return API info."""
+        accept = request.META.get("HTTP_ACCEPT", "")
+        if "text/html" in accept:
+            from django.shortcuts import redirect
+            return redirect("/auth/register/")
         return Response(
             {
                 "detail": "POST to register. Send phone/number, password, interests. Returns JWT on success.",

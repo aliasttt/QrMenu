@@ -23,7 +23,7 @@ urlpatterns = [
     # Using regex to match both cases explicitly (middleware disables APPEND_SLASH for API routes)
     # IMPORTANT: This must come before router.urls to avoid conflicts
     re_path(r'^login/?$', LoginView.as_view(), name="accounts_login"),
-    re_path(r'^register/?$', RegisterView.as_view(), name="register"),
+    re_path(r'^register/?$', RegisterView.as_view(), name="accounts_register"),
     re_path(r'^verify-email/?$', VerifyEmailView.as_view(), name="verify_email"),
     re_path(r'^send-email-code/?$', SendEmailCodeView.as_view(), name="send_email_code"),
     re_path(r'^password/forgot/?$', PasswordForgotView.as_view(), name="password_forgot"),
