@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Payment cancelled" %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-16 text-center">
+  <h1 class="text-3xl font-extrabold mb-2 text-amber-600">{% trans "Payment cancelled" %}</h1>
+  <p class="text-slate-600 dark:text-slate-400 mb-6">{% trans "You cancelled the payment. No charge was made. You can try again anytime to upgrade your plan and enable online payments from your digital menu." %}</p>
+  <div class="flex flex-col sm:flex-row gap-3 justify-center">
+    {% if admin_id %}
+    <a href="/business-menu/subscribe/?admin_id={{ admin_id }}" class="inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90 text-center">{% trans "Try again – Start Plan" %}</a>
+    {% endif %}
+    <a href="{% if admin_id %}/panel/?admin_id={{ admin_id }}{% else %}/panel/{% endif %}" class="inline-block rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-center">{% trans "Back to Dashboard" %}</a>
+  </div>
+</div>
+{% endblock %}

@@ -117,7 +117,7 @@ class CreateCheckoutSessionView(APIView):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         base_url = request.build_absolute_uri("/").rstrip("/")
         success_url = f"{base_url}/business-menu/subscribe/success/?admin_id={admin_id}&session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{base_url}/business-menu/subscribe/?admin_id={admin_id}"
+        cancel_url = f"{base_url}/business-menu/subscribe/cancel/?admin_id={admin_id}"
 
         try:
             session = stripe.checkout.Session.create(
@@ -255,3 +255,14 @@ class SubscribeSuccessView(APIView):
         context = {"admin_id": admin_id}
         from django.shortcuts import render
         return render(request, "business_menu/subscribe_success.html", context)
+
+
+class SubscribeCancelView(APIView):
+    """Shown when the user cancels payment on Stripe Checkout."""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        admin_id = request.GET.get("admin_id")
+        context = {"admin_id": admin_id}
+        from django.shortcuts import render
+        return render(request, "business_menu/subscribe_cancel.html", context)

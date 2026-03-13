@@ -46,6 +46,7 @@ from .stripe_views import (
     ConnectDoneView,
     SubscribePageView,
     SubscribeSuccessView,
+    SubscribeCancelView,
 )
 
 # app_name removed to avoid namespace conflict
@@ -65,6 +66,7 @@ urlpatterns = [
     # Stripe: subscribe (after trial), Connect onboarding
     path('subscribe/', SubscribePageView.as_view(), name='subscribe_page'),
     path('subscribe/success/', SubscribeSuccessView.as_view(), name='subscribe_success'),
+    path('subscribe/cancel/', SubscribeCancelView.as_view(), name='subscribe_cancel'),
     path('connect/', ConnectPageView.as_view(), name='stripe_connect_page'),
     path('connect/done/', ConnectDoneView.as_view(), name='stripe_connect_done'),
     path('api/create-checkout-session/', CreateCheckoutSessionView.as_view(), name='stripe_create_checkout'),

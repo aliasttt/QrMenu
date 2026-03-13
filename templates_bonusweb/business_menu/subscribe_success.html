@@ -7,7 +7,11 @@
   <p class="text-slate-600 mb-6">{% trans "Your subscription is active. You can now use the app and connect your Stripe account to receive customer payments." %}</p>
   <div class="flex flex-col sm:flex-row gap-3 justify-center">
     <button type="button" id="btn-connect-stripe" class="inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Connect Stripe to receive payments" %}</button>
-    <a href="/auth/login/" class="inline-block rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50">{% trans "Go to login" %}</a>
+    {% if admin_id %}
+    <a href="/panel/?admin_id={{ admin_id }}" class="inline-block rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">{% trans "Back to Dashboard" %}</a>
+    {% else %}
+    <a href="/panel/" class="inline-block rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">{% trans "Back to Dashboard" %}</a>
+    {% endif %}
   </div>
 </div>
 <script>

@@ -14,15 +14,12 @@ def fix_sequence_for_table(table_name: str) -> bool:
     if table_name not in SIGNUP_SEQUENCE_TABLES:
         return False
     try:
-        quoted = f'"{table_name}"'
         with connection.cursor() as cursor:
+            # pg_get_serial_sequence wants table name as text; FROM needs quoted identifier
+            quoted_table = connection.ops.quote_name(table_name)
             cursor.execute(
-                f"""
-                SELECT setval(
-                    pg_get_serial_sequence({quoted}, 'id'),
-                    (SELECT COALESCE(MAX(id), 1) FROM {quoted})
-                );
-                """
+                "SELECT setval(pg_get_serial_sequence(%s, 'id'), (SELECT COALESCE(MAX(id), 0) FROM " + quoted_table + "))",
+                [table_name],
             )
     except Exception:
         return False

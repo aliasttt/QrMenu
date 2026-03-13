@@ -62,10 +62,13 @@
             <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
             Connected – you can receive customer payments.
           </p>
-        {% else %}
+        {% elif subscription_active and connect_stripe_url %}
           <p class="text-slate-600 dark:text-slate-400">Connect your Stripe account to receive payments from orders.</p>
-          {% if subscription_active and connect_stripe_url %}
-            <a href="{{ connect_stripe_url }}" class="mt-3 inline-block rounded-xl border border-slate-300 px-4 py-2.5 font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200">Connect Stripe</a>
+          <a href="{{ connect_stripe_url }}" class="mt-3 inline-block rounded-xl border border-slate-300 px-4 py-2.5 font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200">Connect Stripe</a>
+        {% else %}
+          <p class="text-slate-600 dark:text-slate-400">If you want your customers' online payments to be processed from the digital menu, pay 200 Euros now to upgrade your plan.</p>
+          {% if subscribe_url %}
+            <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary px-4 py-3 text-center font-semibold text-white hover:bg-primary/90">Start Plan</a>
           {% endif %}
         {% endif %}
       </div>

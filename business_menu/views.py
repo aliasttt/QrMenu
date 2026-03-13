@@ -3226,74 +3226,87 @@ class RestaurantOwnerSignupView(APIView):
             return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
-        try:
-            from config.sequence_utils import fix_auth_and_signup_sequences
-            fix_auth_and_signup_sequences()
-        except Exception:
-            pass
-        try:
-            with transaction.atomic():
-                trial_ends_at = timezone.now() + timedelta(days=12)
-                admin = BusinessAdmin.objects.create(
-                    phone=validated_data["phone"],
-                    name=f"{validated_data['first_name']} {validated_data['last_name']}".strip(),
-                    email=validated_data["email"],
-                    is_active=True,
-                    payment_status="trial",
-                    trial_ends_at=trial_ends_at,
-                )
-                base_username = _BM_ADMIN_USERNAME_PREFIX + re.sub(r"\D", "", validated_data["phone"])
-                username = base_username
-                counter = 1
-                while User.objects.filter(username=username).exists():
-                    username = f"{base_username}_{counter}"
-                    counter += 1
-                user = User.objects.create(
-                    username=username,
-                    email=validated_data["email"],
-                    first_name=validated_data["first_name"],
-                    last_name=validated_data["last_name"],
-                    is_active=True,
-                )
-                user.set_password(validated_data["password"])
-                user.save()
-                admin.auth_user = user
-                admin.save(update_fields=["auth_user"])
+        from config.sequence_utils import fix_auth_and_signup_sequences
 
-                restaurant = Restaurant.objects.create(
-                    admin=admin,
-                    name=validated_data.get("restaurant_name", "").strip() or "My Restaurant",
-                    country=validated_data.get("country", "").strip() or "",
-                    city=validated_data.get("city", "").strip() or "",
-                )
-                RestaurantSettings.objects.get_or_create(restaurant=restaurant)
+        for attempt in range(2):
+            try:
+                fix_auth_and_signup_sequences()
+                with transaction.atomic():
+                    trial_ends_at = timezone.now() + timedelta(days=12)
+                    admin = BusinessAdmin.objects.create(
+                        phone=validated_data["phone"],
+                        name=f"{validated_data['first_name']} {validated_data['last_name']}".strip(),
+                        email=validated_data["email"],
+                        is_active=True,
+                        payment_status="trial",
+                        trial_ends_at=trial_ends_at,
+                    )
+                    base_username = _BM_ADMIN_USERNAME_PREFIX + re.sub(r"\D", "", validated_data["phone"])
+                    username = base_username
+                    counter = 1
+                    while User.objects.filter(username=username).exists():
+                        username = f"{base_username}_{counter}"
+                        counter += 1
+                    user = User.objects.create(
+                        username=username,
+                        email=validated_data["email"],
+                        first_name=validated_data["first_name"],
+                        last_name=validated_data["last_name"],
+                        is_active=True,
+                    )
+                    user.set_password(validated_data["password"])
+                    user.save()
+                    admin.auth_user = user
+                    admin.save(update_fields=["auth_user"])
 
-            from django.conf import settings
-            from django.contrib.auth import login as auth_login
-            auth_login(request, user)
-            base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
-            return Response(
-                {
-                    "success": True,
-                    "message": "Registration successful. Your 12-day free trial has started.",
-                    "admin_id": admin.id,
-                    "trial_ends_at": trial_ends_at.isoformat(),
-                    "panel_url": f"{base}/panel/?admin_id={admin.id}",
-                },
-                status=status.HTTP_201_CREATED,
-            )
-        except IntegrityError as e:
-            logger.exception("Restaurant owner signup failed: %s", e)
-            return Response(
-                {"success": False, "message": "Registration failed (duplicate or database error). Please try again or contact support."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-        except Exception as e:
-            logger.exception("Restaurant owner signup failed: %s", e)
-            return Response(
-                {"success": False, "message": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+                    restaurant = Restaurant.objects.create(
+                        admin=admin,
+                        name=validated_data.get("restaurant_name", "").strip() or "My Restaurant",
+                        country=validated_data.get("country", "").strip() or "",
+                        city=validated_data.get("city", "").strip() or "",
+                    )
+                    RestaurantSettings.objects.get_or_create(restaurant=restaurant)
+
+                from django.conf import settings
+                from django.contrib.auth import login as auth_login
+                auth_login(request, user)
+                base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Registration successful. Your 12-day free trial has started.",
+                        "admin_id": admin.id,
+                        "trial_ends_at": trial_ends_at.isoformat(),
+                        "panel_url": f"{base}/panel/?admin_id={admin.id}",
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            except IntegrityError as e:
+                err_str = str(e).lower()
+                is_pkey_duplicate = (
+                    "auth_user_pkey" in err_str
+                    or "duplicate key" in err_str
+                    or "business_menu_businessadmin_pkey" in err_str
+                    or "business_menu_restaurant_pkey" in err_str
+                )
+                if is_pkey_duplicate and attempt == 0:
+                    logger.warning("Signup sequence conflict, fixing sequences and retrying: %s", e)
+                    continue
+                logger.exception("Restaurant owner signup failed: %s", e)
+                return Response(
+                    {"success": False, "message": "Registration failed (duplicate or database error). Please try again or contact support."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            except Exception as e:
+                logger.exception("Restaurant owner signup failed: %s", e)
+                return Response(
+                    {"success": False, "message": str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+        return Response(
+            {"success": False, "message": "Registration failed (duplicate or database error). Please try again or contact support."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 class PaymentPageView(APIView):
