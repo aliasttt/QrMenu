@@ -3269,14 +3269,15 @@ class RestaurantOwnerSignupView(APIView):
                 RestaurantSettings.objects.get_or_create(restaurant=restaurant)
 
             from django.conf import settings
+            from django.contrib.auth import login as auth_login
+            auth_login(request, user)
             base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
             return Response(
                 {
                     "success": True,
-                    "message": "Registration successful. Your 12-day free trial has started. Download the app and log in with your phone number.",
+                    "message": "Registration successful. Your 12-day free trial has started.",
                     "admin_id": admin.id,
                     "trial_ends_at": trial_ends_at.isoformat(),
-                    "login_url": "/auth/login/",
                     "panel_url": f"{base}/panel/?admin_id={admin.id}",
                 },
                 status=status.HTTP_201_CREATED,

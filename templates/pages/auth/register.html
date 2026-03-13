@@ -75,7 +75,7 @@
       .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data }; }); })
       .then(function({ ok, data }) {
         if (ok && data.success) {
-          window.location.href = "/auth/login/?registered=1";
+          window.location.href = data.panel_url || "/panel/?admin_id=" + data.admin_id;
           return;
         }
         var msg = data.message || "Registration failed.";

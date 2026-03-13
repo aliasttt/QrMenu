@@ -72,7 +72,7 @@ urlpatterns = [
     path('api/stripe-webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
     # API endpoints
     path('send-otp/', SendOTPView.as_view(), name='send_otp'),
-    path('login/', LoginView.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='business_menu_login'),
     path('update-profile/', UpdateProfileView.as_view(), name='update_profile'),
     path('restaurants/', RestaurantListCreateView.as_view(), name='restaurants'),
     path('menu-items/', MenuItemCreateFromAppView.as_view(), name='menu_items'),
