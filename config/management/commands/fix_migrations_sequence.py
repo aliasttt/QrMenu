@@ -21,8 +21,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "--fake",
             nargs=2,
+            action="append",
             metavar=("APP", "NAME"),
-            help="Insert migration record (app name, migration name) if not present. e.g. --fake business_menu 0013_add_customer_order_payment",
+            help="Insert migration record (app name, migration name). Can be repeated. e.g. --fake business_menu 0013_add_customer_order_payment --fake business_menu 0014_order_service_and_restaurant_delivery",
         )
 
     def handle(self, *args, **options):
@@ -30,7 +31,7 @@ class Command(BaseCommand):
             self.stdout.write("This command only runs on PostgreSQL. Skipping.")
             return
         with connection.cursor() as cursor:
-            # 1) Fix sequence so next INSERT gets a new id
+            # 1) Fix django_migrations.id sequence
             cursor.execute("""
                 SELECT setval(
                     pg_get_serial_sequence('django_migrations', 'id'),
@@ -38,9 +39,20 @@ class Command(BaseCommand):
                 );
             """)
             self.stdout.write("Fixed django_migrations id sequence.")
-            # 2) Optionally insert a fake migration record
-            fake = options.get("fake")
-            if fake:
+            # 2) Fix django_content_type.id sequence (avoids duplicate key on post_migrate create_contenttypes)
+            try:
+                cursor.execute("""
+                    SELECT setval(
+                        pg_get_serial_sequence('django_content_type', 'id'),
+                        (SELECT COALESCE(MAX(id), 1) FROM django_content_type)
+                    );
+                """)
+                self.stdout.write("Fixed django_content_type id sequence.")
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f"Could not fix django_content_type sequence: {e}"))
+            # 3) Optionally insert fake migration record(s)
+            fake_list = options.get("fake") or []
+            for fake in fake_list:
                 app_label, migration_name = fake
                 cursor.execute(
                     "SELECT 1 FROM django_migrations WHERE app = %s AND name = %s",
