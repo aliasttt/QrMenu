@@ -244,11 +244,10 @@ OTP_THROTTLE_RATE = os.environ.get("OTP_THROTTLE_RATE", os.getenv("OTP_THROTTLE_
 # Site base URL (for emails, Stripe redirects)
 SITE_URL = os.environ.get("SITE_URL", "") or os.getenv("SITE_URL", "https://preismenu.de")
 
-# Stripe (payments + Connect)
+# Stripe (payments + Connect) — values only from .env / environment (never hardcode secrets here)
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "") or os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "") or os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "") or os.getenv("STRIPE_WEBHOOK_SECRET", "")
-# Annual subscription price ID (create in Stripe Dashboard → Products)
 STRIPE_PRICE_ID_ANNUAL = os.environ.get("STRIPE_PRICE_ID_ANNUAL", "") or os.getenv("STRIPE_PRICE_ID_ANNUAL", "")
 
 # Firebase (optional)
