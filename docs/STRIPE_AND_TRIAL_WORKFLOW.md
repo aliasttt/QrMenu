@@ -56,3 +56,15 @@ python manage.py send_trial_ended_emails
 ```
 
 Optional: `SITE_URL` in `.env` (e.g. `https://preismenu.de`) so the email link uses the correct domain.
+
+---
+
+## 7. خطای دیتابیس: `column "trial_ends_at" does not exist`
+
+اگر این خطا را می‌بینید یعنی مایگریشن مربوط به trial و Stripe روی دیتابیس اجرا نشده است. حتماً مایگریشن را اجرا کنید:
+
+```bash
+python manage.py migrate business_menu
+```
+
+اگر روی سرور (مثلاً Scalingo) هستید، معمولاً مایگریشن در مرحلهٔ deploy اجرا می‌شود؛ اگر دستی اجرا می‌کنید یک بار همین دستور را روی دیتابیس production بزنید.

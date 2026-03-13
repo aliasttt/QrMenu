@@ -311,7 +311,18 @@ class LoginView(APIView):
     در صورت موفقیت، JWT token برمی‌گرداند
     """
     permission_classes = [permissions.AllowAny]
-    
+
+    def get(self, request):
+        """اگر درخواست از مرورگر باشد به صفحهٔ HTML لاگین هدایت شود."""
+        accept = request.META.get("HTTP_ACCEPT", "")
+        if "text/html" in accept:
+            from django.shortcuts import redirect
+            return redirect("/auth/login/")
+        return Response(
+            {"detail": "POST to login. Send phone and code (OTP).", "allowed_methods": ["POST", "OPTIONS"]},
+            status=status.HTTP_200_OK,
+        )
+
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         
