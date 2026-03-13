@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
 from django.utils import timezone
 from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order, BusinessAdmin
@@ -578,6 +578,12 @@ def login_view(request):
     return render(request, "pages/auth/login.html", {})
 
 
+def logout_view(request):
+    """Log out the user and redirect to home."""
+    auth_logout(request)
+    return redirect("landing")
+
+
 def register_view(request):
     return render(request, "pages/auth/register.html")
 
@@ -585,6 +591,10 @@ def register_view(request):
 def panel_dashboard(request):
     """Simple panel: plan status, payment/Stripe, app download links. Use ?admin_id=X to identify owner."""
     admin_id = request.GET.get("admin_id")
+    if not admin_id and request.user.is_authenticated:
+        admin = BusinessAdmin.objects.filter(auth_user=request.user).first()
+        if admin:
+            return redirect(f"/panel/?admin_id={admin.id}")
     if admin_id:
         try:
             admin = BusinessAdmin.objects.get(id=int(admin_id))

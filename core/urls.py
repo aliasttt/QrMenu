@@ -17,6 +17,7 @@ urlpatterns = [
     path("m/<slug:restaurant_slug>/", views.public_menu, name="public_menu"),
     path("m/<slug:restaurant_slug>/checkout/", views.checkout, name="checkout"),
     path("auth/login/", views.login_view, name="login"),
+    path("auth/logout/", views.logout_view, name="logout"),
     path("auth/register/", views.register_view, name="register"),
     path("panel/", views.panel_dashboard, name="panel_dashboard"),
     path("panel/settings/", views.panel_settings, name="panel_settings"),
