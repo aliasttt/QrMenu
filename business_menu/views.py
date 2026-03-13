@@ -3227,6 +3227,11 @@ class RestaurantOwnerSignupView(APIView):
 
         validated_data = serializer.validated_data
         try:
+            from config.sequence_utils import fix_auth_and_signup_sequences
+            fix_auth_and_signup_sequences()
+        except Exception:
+            pass
+        try:
             with transaction.atomic():
                 trial_ends_at = timezone.now() + timedelta(days=12)
                 admin = BusinessAdmin.objects.create(
@@ -3275,6 +3280,12 @@ class RestaurantOwnerSignupView(APIView):
                     "panel_url": f"{base}/panel/?admin_id={admin.id}",
                 },
                 status=status.HTTP_201_CREATED,
+            )
+        except IntegrityError as e:
+            logger.exception("Restaurant owner signup failed: %s", e)
+            return Response(
+                {"success": False, "message": "Registration failed (duplicate or database error). Please try again or contact support."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
         except Exception as e:
             logger.exception("Restaurant owner signup failed: %s", e)

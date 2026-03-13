@@ -1,8 +1,13 @@
 """
-Fix django_migrations.id sequence and optionally mark a migration as applied (fake).
+Fix PostgreSQL sequences so next INSERT gets a new id. Fixes:
+  - django_migrations.id
+  - django_content_type.id
+  - auth_user.id (signup/create User fails with "auth_user_pkey" otherwise)
 
 Use when you see:
   - IntegrityError: duplicate key value violates unique constraint "django_migrations_pkey"
+  - IntegrityError: duplicate key value violates unique constraint "django_content_type_pkey"
+  - IntegrityError: duplicate key value violates unique constraint "auth_user_pkey" (e.g. on signup)
   - DuplicateTable when applying a migration (tables already exist)
 
 Run on Scalingo:
@@ -13,9 +18,18 @@ Run on Scalingo:
 from django.core.management.base import BaseCommand
 from django.db import connection
 
+# Tables whose id sequence we fix (table_name, sequence is on column "id")
+SEQUENCE_TABLES = [
+    "django_migrations",
+    "django_content_type",
+    "auth_user",
+    "business_menu_businessadmin",
+    "business_menu_restaurant",
+]
+
 
 class Command(BaseCommand):
-    help = "Fix django_migrations id sequence (PostgreSQL) and optionally fake a migration."
+    help = "Fix PostgreSQL sequences (django_migrations, django_content_type, auth_user, etc.) and optionally fake migrations."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -31,26 +45,23 @@ class Command(BaseCommand):
             self.stdout.write("This command only runs on PostgreSQL. Skipping.")
             return
         with connection.cursor() as cursor:
-            # 1) Fix django_migrations.id sequence
-            cursor.execute("""
-                SELECT setval(
-                    pg_get_serial_sequence('django_migrations', 'id'),
-                    (SELECT COALESCE(MAX(id), 1) FROM django_migrations)
-                );
-            """)
-            self.stdout.write("Fixed django_migrations id sequence.")
-            # 2) Fix django_content_type.id sequence (avoids duplicate key on post_migrate create_contenttypes)
-            try:
-                cursor.execute("""
-                    SELECT setval(
-                        pg_get_serial_sequence('django_content_type', 'id'),
-                        (SELECT COALESCE(MAX(id), 1) FROM django_content_type)
-                    );
-                """)
-                self.stdout.write("Fixed django_content_type id sequence.")
-            except Exception as e:
-                self.stdout.write(self.style.WARNING(f"Could not fix django_content_type sequence: {e}"))
-            # 3) Optionally insert fake migration record(s)
+            # 1) Fix id sequence for known tables
+            for table in SEQUENCE_TABLES:
+                try:
+                    # Table names are safe (no user input); quote for reserved words
+                    quoted = f'"{table}"'
+                    cursor.execute(
+                        f"""
+                        SELECT setval(
+                            pg_get_serial_sequence({quoted}, 'id'),
+                            (SELECT COALESCE(MAX(id), 1) FROM {quoted})
+                        );
+                        """
+                    )
+                    self.stdout.write(f"Fixed {table} id sequence.")
+                except Exception as e:
+                    self.stdout.write(self.style.WARNING(f"Could not fix {table} sequence: {e}"))
+            # 2) Optionally insert fake migration record(s)
             fake_list = options.get("fake") or []
             for fake in fake_list:
                 app_label, migration_name = fake

@@ -54,11 +54,14 @@ scalingo --app qrmenu run "python manage.py migrate"
 
 ## اگر بعد از migrate خطای `django_content_type_pkey` دیدید
 
-یعنی sequence جدول `django_content_type` خراب است و موقع سیگنال post_migrate خطا می‌دهد. دستور `fix_migrations_sequence` الان این sequence را هم درست می‌کند. یک بار **بدون** `--fake` اجرا کنید بعد دوباره migrate:
+اگر بعد از اجرای migrate این خطا را دیدید:
+`IntegrityError: duplicate key value violates unique constraint "django_content_type_pkey"`
+
+یعنی sequence جدول `django_content_type` خراب است. دستور `fix_migrations_sequence` الان این sequence را هم درست می‌کند. یک بار **بدون** `--fake` اجرا کنید، بعد دوباره migrate:
 
 ```bash
 scalingo --app qrmenu run "python manage.py fix_migrations_sequence"
 scalingo --app qrmenu run "python manage.py migrate"
 ```
 
-اگر باز هم همان خطا آمد، احتمالاً Django دارد ContentTypeهای جدید می‌سازد و با id تکراری برخورد می‌کند. در آن صورت می‌توان با `--run-syncdb` یا با یک دستور SQL جدا sequence را به‌روز کرد (در دستور بالا الان خودکار انجام می‌شود).
+اگر باز هم همان خطا آمد، احتمالاً دیتابیس از جای دیگری (مثلاً اسکریپت یا دستور دیگر) رکورد تکراری می‌گیرد؛ در آن صورت با پشتیبانی Scalingo یا با دستی چک کردن مقدار `SELECT MAX(id) FROM django_content_type` و درست کردن sequence می‌توان جلو رفت.

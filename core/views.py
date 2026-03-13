@@ -1,7 +1,8 @@
 import json
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
+from django.contrib.auth import authenticate, login as auth_login
 
 from django.utils import timezone
 from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order, BusinessAdmin
@@ -531,7 +532,50 @@ def checkout(request, restaurant_slug):
 
 
 def login_view(request):
-    return render(request, "pages/auth/login.html")
+    """GET: show login form. POST: email + password → authenticate restaurant owner, session login, redirect to panel."""
+    if request.method == "POST":
+        email = (request.POST.get("email") or "").strip()
+        password = request.POST.get("password") or ""
+        if not email or not password:
+            return render(
+                request,
+                "pages/auth/login.html",
+                {"error": "Email and password are required.", "email": email},
+            )
+        # Find BusinessAdmin by email, then get linked User
+        admin = BusinessAdmin.objects.filter(email__iexact=email).first()
+        if not admin:
+            from django.contrib.auth.models import User
+            user_by_email = User.objects.filter(email__iexact=email).first()
+            if user_by_email:
+                try:
+                    admin = user_by_email.business_menu_admin
+                except BusinessAdmin.DoesNotExist:
+                    admin = None
+        if not admin:
+            return render(
+                request,
+                "pages/auth/login.html",
+                {"error": "No restaurant account found with this email.", "email": email},
+            )
+        user = admin.auth_user
+        if not user:
+            return render(
+                request,
+                "pages/auth/login.html",
+                {"error": "Account not set up. Please contact support.", "email": email},
+            )
+        auth_user = authenticate(request, username=user.username, password=password)
+        if auth_user is not None:
+            auth_login(request, auth_user)
+            admin_id = admin.id
+            return redirect(f"/panel/?admin_id={admin_id}")
+        return render(
+            request,
+            "pages/auth/login.html",
+            {"error": "Invalid password.", "email": email},
+        )
+    return render(request, "pages/auth/login.html", {})
 
 
 def register_view(request):

@@ -59,7 +59,9 @@ Optional: `SITE_URL` in `.env` (e.g. `https://preismenu.de`) so the email link u
 
 ---
 
-## 7. خطای دیتابیس: `column "trial_ends_at" does not exist`
+## 7. خطای دیتابیس / sequence
+
+### `column "trial_ends_at" does not exist`
 
 اگر این خطا را می‌بینید یعنی مایگریشن مربوط به trial و Stripe روی دیتابیس اجرا نشده است. حتماً مایگریشن را اجرا کنید:
 
@@ -68,3 +70,11 @@ python manage.py migrate business_menu
 ```
 
 اگر روی سرور (مثلاً Scalingo) هستید، معمولاً مایگریشن در مرحلهٔ deploy اجرا می‌شود؛ اگر دستی اجرا می‌کنید یک بار همین دستور را روی دیتابیس production بزنید.
+
+### `duplicate key value violates unique constraint "auth_user_pkey"` (در signup)
+
+اگر دیتابیس را قبلاً import کرده‌اید، sequence جدول `auth_user` ممکن است خراب باشد. دو راه‌حل:
+
+1. **خودکار:** در هر درخواست signup، قبل از ساخت User تابع `fix_auth_and_signup_sequences()` اجرا می‌شود (در `config.sequence_utils`) و sequenceهای لازم را درست می‌کند.
+2. **دستی:** یک بار روی سرور اجرا کنید:  
+   `scalingo --app qrmenu run "python manage.py fix_migrations_sequence"`
