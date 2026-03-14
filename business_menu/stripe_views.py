@@ -115,9 +115,8 @@ class CreateCheckoutSessionView(APIView):
 
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        base_url = request.build_absolute_uri("/").rstrip("/")
-        success_url = f"{base_url}/business-menu/subscribe/success/?admin_id={admin_id}&session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{base_url}/business-menu/subscribe/cancel/?admin_id={admin_id}"
+        success_url = "https://preismenu.de/payment-success?session_id={CHECKOUT_SESSION_ID}"
+        cancel_url = "https://preismenu.de/payment-cancel"
 
         try:
             session = stripe.checkout.Session.create(
@@ -125,6 +124,7 @@ class CreateCheckoutSessionView(APIView):
                 client_reference_id=str(admin.id),
                 customer_email=(admin.email or "").strip() or None,
                 line_items=[{"price": price_id, "quantity": 1}],
+                automatic_tax={"enabled": True},
                 success_url=success_url,
                 cancel_url=cancel_url,
             )

@@ -584,6 +584,17 @@ def logout_view(request):
     return redirect("landing")
 
 
+def payment_success_view(request):
+    """Shown after successful Stripe Checkout redirect (preismenu.de/payment-success?session_id=...)."""
+    session_id = request.GET.get("session_id", "")
+    return render(request, "pages/payment_success.html", {"session_id": session_id})
+
+
+def payment_cancel_view(request):
+    """Shown when user cancels Stripe Checkout (preismenu.de/payment-cancel)."""
+    return render(request, "pages/payment_cancel.html")
+
+
 def register_view(request):
     return render(request, "pages/auth/register.html")
 

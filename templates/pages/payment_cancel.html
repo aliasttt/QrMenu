@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Payment cancelled | {{ theme.brand_name }}{% endblock %}
+{% block content %}
+<section class="container mx-auto max-w-xl px-4 py-16 sm:px-6 text-center">
+  <h1 class="text-2xl font-bold text-amber-600 dark:text-amber-400">Payment cancelled</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-400">No charge was made. You can try again anytime from your dashboard.</p>
+  <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+    <a href="{% url 'panel_dashboard' %}" class="inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">Go to Dashboard</a>
+    <a href="{% url 'landing' %}" class="inline-block rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Home</a>
+  </div>
+</section>
+{% endblock %}
