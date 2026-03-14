@@ -128,7 +128,7 @@ class CreateCheckoutSessionView(APIView):
 
         try:
             session = stripe.checkout.Session.create(
-                mode="payment",
+                mode="subscription",
                 client_reference_id=str(admin.id),
                 customer_email=(admin.email or "").strip() or None,
                 line_items=[{"price": price_id, "quantity": 1}],
