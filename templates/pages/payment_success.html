@@ -3,9 +3,9 @@
 {% block content %}
 <section class="container mx-auto max-w-xl px-4 py-16 sm:px-6 text-center">
   <h1 class="text-2xl font-bold text-green-700 dark:text-green-400">Payment successful</h1>
-  <p class="mt-2 text-slate-600 dark:text-slate-400">Your plan has been upgraded. You can now use the full service and connect Stripe to receive customer payments.</p>
+  <p class="mt-2 text-slate-600 dark:text-slate-400">Your plan has been upgraded. To accept online payments from your digital menu, go to your admin panel and connect Stripe.</p>
   <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-    <a href="{% url 'panel_dashboard' %}" class="inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">Go to Dashboard</a>
+    <a href="{% url 'panel_dashboard' %}" class="inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">Go to Admin Panel</a>
     <a href="{% url 'landing' %}" class="inline-block rounded-xl border border-slate-300 dark:border-slate-600 px-6 py-3 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Home</a>
   </div>
 </section>
