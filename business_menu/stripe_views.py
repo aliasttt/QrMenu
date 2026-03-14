@@ -106,11 +106,19 @@ class CreateCheckoutSessionView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        price_id = getattr(settings, "STRIPE_PRICE_ID_ANNUAL", None)
+        price_id = (getattr(settings, "STRIPE_PRICE_ID_ANNUAL", None) or "").strip()
         if not price_id:
             return Response(
                 {"success": False, "message": "Subscription price not configured (STRIPE_PRICE_ID_ANNUAL)."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        if price_id.startswith("prod_"):
+            return Response(
+                {
+                    "success": False,
+                    "message": "STRIPE_PRICE_ID_ANNUAL must be a Price ID (starts with price_), not a Product ID (prod_). In Stripe Dashboard: Products → your product → copy the Price ID.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         import stripe
