@@ -596,7 +596,10 @@ def payment_cancel_view(request):
 
 
 def register_view(request):
-    return render(request, "pages/auth/register.html")
+    from django.conf import settings
+    return render(request, "pages/auth/register.html", {
+        "recaptcha_site_key": getattr(settings, "RECAPTCHA_SITE_KEY", "") or "",
+    })
 
 
 def panel_dashboard(request):

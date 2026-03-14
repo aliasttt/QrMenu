@@ -244,6 +244,10 @@ OTP_THROTTLE_RATE = os.environ.get("OTP_THROTTLE_RATE", os.getenv("OTP_THROTTLE_
 # Site base URL (for emails, Stripe redirects)
 SITE_URL = os.environ.get("SITE_URL", "") or os.getenv("SITE_URL", "https://preismenu.de")
 
+# reCAPTCHA (signup anti-bot) — from .env
+RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY", "") or os.getenv("RECAPTCHA_SITE_KEY", "")
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY", "") or os.getenv("RECAPTCHA_SECRET_KEY", "")
+
 # Stripe (payments + Connect) — values only from .env / environment (never hardcode secrets here)
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "") or os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "") or os.getenv("STRIPE_SECRET_KEY", "")

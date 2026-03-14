@@ -71,6 +71,20 @@ class BusinessAdmin(models.Model):
         return f"{self.name} ({self.phone})"
 
 
+class SignupByIP(models.Model):
+    """One signup per IP to limit abuse when there is no OTP/email verification."""
+    ip_address = models.CharField(max_length=45, unique=True, db_index=True, help_text="Client IP at signup")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Signup by IP"
+        verbose_name_plural = "Signups by IP"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.ip_address
+
+
 class Restaurant(models.Model):
     """
     Restaurant or cafe managed by admin

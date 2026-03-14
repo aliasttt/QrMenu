@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Register | {{ theme.brand_name }}{% endblock %}
+{% block meta %}
+{{ block.super }}
+{% if recaptcha_site_key %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <section class="container mx-auto px-4 py-16 sm:px-6">
@@ -26,7 +32,11 @@
           <input type="checkbox" id="b2b_confirmation" name="b2b_confirmation" required class="rounded border-slate-300 mt-1">
           <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">I confirm I am acting as a business (B2B)</label>
         </div>
-        <div id="form-errors" class="hidden text-sm text-red-600"></div>
+        {% if recaptcha_site_key %}
+        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" id="recaptcha-el"></div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Please complete the "I'm not a robot" check.</p>
+        {% endif %}
+        <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
         <button type="submit" id="btn-submit" class="btn-primary w-full">Create account</button>
       </form>
       <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">Already have an account? <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">Login</a></p>
@@ -58,6 +68,9 @@
       accept_terms: fd.get("accept_terms") === "on",
       b2b_confirmation: fd.get("b2b_confirmation") === "on",
     };
+    if (typeof grecaptcha !== "undefined" && document.getElementById("recaptcha-el")) {
+      body.captcha_token = grecaptcha.getResponse() || "";
+    }
 
     btn.disabled = true;
     btn.textContent = "Creating account…";

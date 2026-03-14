@@ -43,6 +43,7 @@ from .auth_utils import (
 )
 from .models import (
     BusinessAdmin,
+    SignupByIP,
     Restaurant,
     MenuItem,
     MenuItemImage,
@@ -71,6 +72,38 @@ from .cloudinary_utils import (
 )
 
 _BM_ADMIN_USERNAME_PREFIX = "business_admin_"
+
+
+def _get_client_ip(request) -> str:
+    """Client IP for rate/signup limits (X-Forwarded-For when behind proxy)."""
+    xff = (request.META.get("HTTP_X_FORWARDED_FOR") or "").strip()
+    if xff:
+        return xff.split(",")[0].strip()[:45]
+    return (request.META.get("REMOTE_ADDR") or "")[:45]
+
+
+def _verify_recaptcha(token: str) -> bool:
+    """Verify reCAPTCHA v2 response token with Google. Returns True if valid."""
+    secret = getattr(settings, "RECAPTCHA_SECRET_KEY", None) or ""
+    if not secret or not (token or "").strip():
+        return False
+    try:
+        import requests
+        r = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify",
+            data={"secret": secret, "response": token},
+            timeout=10,
+        )
+        data = r.json() if r.ok else {}
+        return data.get("success") is True
+    except Exception:
+        return False
+
+
+def _recaptcha_required() -> bool:
+    """Whether reCAPTCHA verification is required (keys configured)."""
+    sk = getattr(settings, "RECAPTCHA_SECRET_KEY", None) or ""
+    return bool(sk.strip())
 
 
 def _business_admin_phone_from_username(username: str) -> str | None:
@@ -3221,6 +3254,21 @@ class RestaurantOwnerSignupView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        client_ip = _get_client_ip(request)
+        if client_ip and SignupByIP.objects.filter(ip_address=client_ip).exists():
+            return Response(
+                {"success": False, "message": "Only one registration per IP address is allowed. If you already have an account, please log in."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+
+        captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
+        if _recaptcha_required():
+            if not _verify_recaptcha(captcha_token):
+                return Response(
+                    {"success": False, "message": "Please complete the \"I\'m not a robot\" check."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -3266,6 +3314,8 @@ class RestaurantOwnerSignupView(APIView):
                         city=validated_data.get("city", "").strip() or "",
                     )
                     RestaurantSettings.objects.get_or_create(restaurant=restaurant)
+                    if client_ip:
+                        SignupByIP.objects.create(ip_address=client_ip)
 
                 from django.conf import settings
                 from django.contrib.auth import login as auth_login
@@ -3283,6 +3333,11 @@ class RestaurantOwnerSignupView(APIView):
                 )
             except IntegrityError as e:
                 err_str = str(e).lower()
+                if "signupbyip" in err_str or ("unique" in err_str and "ip" in err_str):
+                    return Response(
+                        {"success": False, "message": "Only one registration per IP address is allowed."},
+                        status=status.HTTP_429_TOO_MANY_REQUESTS,
+                    )
                 is_pkey_duplicate = (
                     "auth_user_pkey" in err_str
                     or "duplicate key" in err_str
