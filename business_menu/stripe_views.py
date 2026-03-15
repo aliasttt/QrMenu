@@ -133,6 +133,7 @@ class CreateCheckoutSessionView(APIView):
                 customer_email=(admin.email or "").strip() or None,
                 line_items=[{"price": price_id, "quantity": 1}],
                 automatic_tax={"enabled": True},
+                billing_address_collection="required",
                 success_url=success_url,
                 cancel_url=cancel_url,
             )
