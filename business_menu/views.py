@@ -3282,10 +3282,13 @@ def _create_account_from_signup_data(validated_data, client_ip: str):
     """Create BusinessAdmin, User, Restaurant from validated signup data. Returns (user, admin) or raises."""
     from config.sequence_utils import fix_auth_and_signup_sequences
     fix_auth_and_signup_sequences()
+    first = (validated_data.get("first_name") or "").strip()
+    last = (validated_data.get("last_name") or "").strip()
+    display_name = f"{first} {last}".strip() or ((validated_data.get("email") or "user").split("@")[0] or "Owner")
     trial_ends_at = timezone.now() + timedelta(days=12)
     admin = BusinessAdmin.objects.create(
         phone=validated_data["phone"],
-        name=f"{validated_data['first_name']} {validated_data['last_name']}".strip(),
+        name=display_name,
         email=validated_data["email"],
         is_active=True,
         payment_status="trial",
@@ -3300,8 +3303,8 @@ def _create_account_from_signup_data(validated_data, client_ip: str):
     user = User.objects.create(
         username=username,
         email=validated_data["email"],
-        first_name=validated_data["first_name"],
-        last_name=validated_data["last_name"],
+        first_name=display_name,
+        last_name="",
         is_active=True,
     )
     user.set_password(validated_data["password"])
@@ -3420,8 +3423,8 @@ class RestaurantOwnerSignupView(APIView):
         # Store signup_data as JSON-serializable (same keys as validated_data)
         signup_data = {
             "restaurant_name": validated_data.get("restaurant_name", ""),
-            "first_name": validated_data["first_name"],
-            "last_name": validated_data["last_name"],
+            "first_name": validated_data.get("first_name", ""),
+            "last_name": validated_data.get("last_name", ""),
             "email": validated_data["email"],
             "phone": validated_data["phone"],
             "password": validated_data["password"],

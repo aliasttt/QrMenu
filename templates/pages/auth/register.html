@@ -17,14 +17,9 @@
         <form id="register-form" class="mt-6 space-y-4">
           {% csrf_token %}
           {% include "partials/form_fields.html" with label="Restaurant name" name="restaurant_name" placeholder="Orange Bistro" %}
-          {% include "partials/form_fields.html" with label="Your first name" name="first_name" placeholder="John" %}
-          {% include "partials/form_fields.html" with label="Your last name" name="last_name" placeholder="Doe" %}
           {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
           {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+49 123 456789" %}
           {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
-          {% include "partials/form_fields.html" with label="Confirm password" name="confirm_password" field_type="password" placeholder="••••••••" %}
-          {% include "partials/form_fields.html" with label="Country" name="country" placeholder="Germany" %}
-          {% include "partials/form_fields.html" with label="City" name="city" placeholder="Berlin" %}
           <div class="flex items-start gap-2">
             <input type="checkbox" id="accept_terms" name="accept_terms" required class="rounded border-slate-300 mt-1">
             <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">I accept the terms and conditions</label>
@@ -89,14 +84,9 @@
     const fd = new FormData(form);
     const body = {
       restaurant_name: fd.get("restaurant_name") || "",
-      first_name: fd.get("first_name") || "",
-      last_name: fd.get("last_name") || "",
       email: fd.get("email") || "",
       phone: fd.get("phone") || "",
       password: fd.get("password") || "",
-      confirm_password: fd.get("confirm_password") || "",
-      country: fd.get("country") || "",
-      city: fd.get("city") || "",
       accept_terms: fd.get("accept_terms") === "on",
       b2b_confirmation: fd.get("b2b_confirmation") === "on",
     };

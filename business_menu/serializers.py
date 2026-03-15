@@ -863,18 +863,17 @@ class SendOTPSerializer(serializers.Serializer):
 
 
 class RestaurantOwnerRegistrationSerializer(serializers.Serializer):
-    """Serializer for restaurant owner signup (web). Starts 12-day trial."""
+    """Serializer for restaurant owner signup (web). Minimal fields; rest editable in app."""
     restaurant_name = serializers.CharField(required=True, max_length=200, help_text="Restaurant name")
-    first_name = serializers.CharField(required=True, max_length=200, help_text="Owner first name")
-    last_name = serializers.CharField(required=True, max_length=200, help_text="Owner last name")
     phone = serializers.CharField(required=True, help_text="Phone number")
     email = serializers.EmailField(required=True, help_text="Email address")
     password = serializers.CharField(required=True, write_only=True, min_length=8, help_text="Password (minimum 8 characters)")
-    confirm_password = serializers.CharField(required=True, write_only=True, help_text="Confirm password")
-    country = serializers.CharField(required=False, allow_blank=True, max_length=100, help_text="Country")
-    city = serializers.CharField(required=False, allow_blank=True, max_length=100, help_text="City")
     accept_terms = serializers.BooleanField(required=True, help_text="Accept terms and conditions")
     b2b_confirmation = serializers.BooleanField(required=True, help_text="I confirm that I am acting as a business customer (B2B)")
+    first_name = serializers.CharField(required=False, allow_blank=True, max_length=200, default="")
+    last_name = serializers.CharField(required=False, allow_blank=True, max_length=200, default="")
+    country = serializers.CharField(required=False, allow_blank=True, max_length=100, default="")
+    city = serializers.CharField(required=False, allow_blank=True, max_length=100, default="")
     
     def validate_phone(self, value):
         """بررسی فرمت شماره تلفن"""
@@ -885,14 +884,9 @@ class RestaurantOwnerRegistrationSerializer(serializers.Serializer):
             raise serializers.ValidationError(f"Invalid phone number format: {str(e)}")
     
     def validate(self, attrs):
-        """بررسی تطابق رمز عبور و قوانین"""
-        password = attrs.get('password')
-        confirm_password = attrs.get('confirm_password')
+        """بررسی قوانین"""
         accept_terms = attrs.get('accept_terms')
         b2b_confirmation = attrs.get('b2b_confirmation', False)
-        
-        if password != confirm_password:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match"})
         
         if not accept_terms:
             raise serializers.ValidationError({"accept_terms": "You must accept the terms and conditions"})
