@@ -1559,17 +1559,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class LogoutView(APIView):
     """
     Logout endpoint - optional refresh token revoke and device token cleanup
-    POST /api/accounts/logout/
-    Headers: Authorization: Bearer <access>
-    Body (optional):
-      {
-        "refresh": "<refresh_token>",  // optional, to revoke this session
-        "all_sessions": false,         // optional, revoke all refresh tokens (if blacklist installed)
-        "device_token": "<fcm token>", // optional, remove this device
-        "all_devices": false           // optional, remove all user's devices
-      }
+    GET /api/accounts/logout/  → session logout + redirect to / (for browser/DRF link)
+    POST /api/accounts/logout/ → revoke tokens, return JSON
     """
     permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        """Browser/DRF link: clear session and redirect to home."""
+        from django.contrib.auth import logout as auth_logout
+        from django.shortcuts import redirect
+        auth_logout(request)
+        return redirect("/")
 
     def post(self, request):
         tokens_revoked = False
