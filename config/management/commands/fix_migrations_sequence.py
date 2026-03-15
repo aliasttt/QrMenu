@@ -50,17 +50,15 @@ class Command(BaseCommand):
             return
         with connection.cursor() as cursor:
             # 1) Fix id sequence for known tables
+            # pg_get_serial_sequence() expects table name as TEXT (e.g. 'django_migrations'), not identifier
             for table in SEQUENCE_TABLES:
                 try:
-                    # Table names are safe (no user input); quote for reserved words
-                    quoted = f'"{table}"'
+                    quoted_table = connection.ops.quote_name(table)
                     cursor.execute(
-                        f"""
-                        SELECT setval(
-                            pg_get_serial_sequence({quoted}, 'id'),
-                            (SELECT COALESCE(MAX(id), 1) FROM {quoted})
-                        );
-                        """
+                        "SELECT setval(pg_get_serial_sequence(%s, 'id'), (SELECT COALESCE(MAX(id), 0) FROM "
+                        + quoted_table
+                        + "))",
+                        [table],
                     )
                     self.stdout.write(f"Fixed {table} id sequence.")
                 except Exception as e:
