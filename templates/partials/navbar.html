@@ -20,21 +20,21 @@
       </span>
     </a>
 
-    <ul class="hidden items-center gap-1 md:flex text-sm font-medium">
-      <li>
+    <ul class="hidden items-center gap-1 md:flex text-sm font-medium flex-shrink-0 whitespace-nowrap">
+      <li class="whitespace-nowrap">
         <a href="{% url 'landing' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+           class="rounded-full px-3 py-2 whitespace-nowrap {% if request.path == '/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Home
         </a>
       </li>
-      <li>
+      <li class="whitespace-nowrap">
         <a href="{% url 'features' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/features/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+           class="rounded-full px-3 py-2 whitespace-nowrap {% if request.path == '/features/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Features
         </a>
       </li>
-      <li class="relative" x-data @click.outside="servicesOpen = false">
-        <button type="button" @click="servicesOpen = !servicesOpen" class="rounded-full px-3 py-2 flex items-center gap-1 {% if '/services/' in request.path %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+      <li class="relative whitespace-nowrap" x-data @click.outside="servicesOpen = false">
+        <button type="button" @click="servicesOpen = !servicesOpen" class="rounded-full px-3 py-2 flex items-center gap-1 whitespace-nowrap {% if '/services/' in request.path %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Services
           <svg class="h-4 w-4 transition-transform" :class="{ 'rotate-180': servicesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
         </button>
@@ -54,27 +54,27 @@
           <a href="{% url 'service_detail' 'smart-order-management' %}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">Smart Order Management</a>
         </div>
       </li>
-      <li>
+      <li class="whitespace-nowrap">
         <a href="{% url 'how_it_works' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+           class="rounded-full px-3 py-2 whitespace-nowrap {% if request.path == '/how-it-works/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           How it works
         </a>
       </li>
-      <li>
+      <li class="whitespace-nowrap">
         <a href="{% url 'pricing' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+           class="rounded-full px-3 py-2 whitespace-nowrap {% if request.path == '/pricing/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Pricing
         </a>
       </li>
-      <li>
+      <li class="whitespace-nowrap">
         <a href="{% url 'restaurants_list' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+           class="rounded-full px-3 py-2 whitespace-nowrap {% if request.path == '/restaurants/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Restaurants &amp; Cafes
         </a>
       </li>
-      <li>
+      <li class="whitespace-nowrap">
         <a href="{% url 'contact' %}"
-           class="rounded-full px-3 py-2 {% if request.path == '/contact/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
+           class="rounded-full px-3 py-2 whitespace-nowrap {% if request.path == '/contact/' %}text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400{% else %}text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400{% endif %}">
           Contact
         </a>
       </li>
