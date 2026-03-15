@@ -8,6 +8,7 @@ Use when you see:
   - IntegrityError: duplicate key value violates unique constraint "django_migrations_pkey"
   - IntegrityError: duplicate key value violates unique constraint "django_content_type_pkey"
   - IntegrityError: duplicate key value violates unique constraint "auth_user_pkey" (e.g. on signup)
+  - IntegrityError: duplicate key value violates unique constraint "auth_permission_pkey" (after migrate)
   - DuplicateTable when applying a migration (tables already exist)
 
 Run on Scalingo:
@@ -23,6 +24,7 @@ SEQUENCE_TABLES = [
     "django_migrations",
     "django_content_type",
     "auth_user",
+    "auth_permission",
     "business_menu_businessadmin",
     "business_menu_restaurant",
 ]

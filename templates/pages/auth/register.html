@@ -138,6 +138,11 @@
         errEl.classList.remove("hidden");
         btn.disabled = false;
         btn.textContent = "Continue";
+        if (msg && (msg.indexOf("robot") !== -1 || msg.indexOf("recaptcha") !== -1 || msg.indexOf("I'm not a robot") !== -1)) {
+          if (typeof grecaptcha !== "undefined" && document.getElementById("recaptcha-el")) {
+            try { grecaptcha.reset(); } catch (e) {}
+          }
+        }
       })
       .catch(function() {
         errEl.textContent = "Network error. Please try again.";

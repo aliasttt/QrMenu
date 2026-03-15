@@ -1,4 +1,35 @@
-# Fix: DuplicateTable when running migrate on Scalingo
+# Fix: Migrations on Scalingo
+
+## خطا: `relation "business_menu_signupbyip" does not exist` (یا جدول دیگری وجود ندارد)
+
+یعنی مایگریشن‌های جدید (مثلاً 0018 SignupByIP، 0019 PendingEmailVerification) روی دیتابیس Scalingo اجرا نشده‌اند. کافی است migrate را اجرا کنید:
+
+```bash
+scalingo --app qrmenu run "python manage.py migrate business_menu"
+```
+
+یا برای همهٔ اپ‌ها:
+
+```bash
+scalingo --app qrmenu run "python manage.py migrate"
+```
+
+بعد از deploy هر بار که مدل جدید یا مایگریشن جدید اضافه کردید، این دستور را روی Scalingo اجرا کنید.
+
+---
+
+## خطا بعد از migrate: `auth_permission_pkey` / Key (id)=(2) already exists
+
+یعنی مایگریشن‌ها اعمال شده‌اند ولی بعد از آن، سیگنال `post_migrate` موقع ساختن Permissionها به خطای تکراری خورده (sequence جدول `auth_permission` با داده‌ها همگام نیست). اول sequence را درست کنید، بعد یک بار دیگر migrate بزنید:
+
+```bash
+scalingo --app qrmenu run "python manage.py fix_migrations_sequence"
+scalingo --app qrmenu run "python manage.py migrate"
+```
+
+دستور `fix_migrations_sequence` الان سکوئنس `auth_permission` را هم درست می‌کند. بعد از آن، `migrate` دوباره اجرا می‌شود و معمولاً «No migrations to apply» می‌دهد ولی سیگنال post_migrate دوباره اجرا شده و Permissionهای جدید بدون خطا ساخته می‌شوند.
+
+---
 
 ## خطا: `relation "business_menu_customer" already exists`
 
