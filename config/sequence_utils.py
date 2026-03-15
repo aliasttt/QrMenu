@@ -4,7 +4,12 @@ Used by signup (and fix_migrations_sequence command) when DB was imported and se
 """
 from django.db import connection
 
-SIGNUP_SEQUENCE_TABLES = ("auth_user", "business_menu_businessadmin", "business_menu_restaurant")
+SIGNUP_SEQUENCE_TABLES = (
+    "auth_user",
+    "business_menu_businessadmin",
+    "business_menu_restaurant",
+    "accounts_passwordresetcode",
+)
 
 
 def fix_sequence_for_table(table_name: str) -> bool:

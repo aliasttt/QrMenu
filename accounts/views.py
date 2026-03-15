@@ -1189,7 +1189,12 @@ class PasswordForgotView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Send reset code to registered email
+        # Send reset code to registered email (fix sequence if out of sync, e.g. after DB import)
+        try:
+            from config.sequence_utils import fix_sequence_for_table
+            fix_sequence_for_table("accounts_passwordresetcode")
+        except Exception:
+            pass
         code = str(random.randint(100000, 999999))
         expires_at = timezone.now() + timedelta(minutes=10)
         PasswordResetCode.objects.create(user=user, email=email, code=code, expires_at=expires_at)
