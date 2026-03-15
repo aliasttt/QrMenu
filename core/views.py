@@ -595,6 +595,11 @@ def payment_cancel_view(request):
     return render(request, "pages/payment_cancel.html")
 
 
+def forgot_password_view(request):
+    """Forgot password: 3 steps (email → code → new password). Rendered as single page with JS steps."""
+    return render(request, "pages/auth/forgot_password.html")
+
+
 def register_view(request):
     from django.conf import settings
     return render(request, "pages/auth/register.html", {

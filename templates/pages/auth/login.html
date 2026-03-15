@@ -13,6 +13,9 @@
       {% if request.GET.registered %}
       <p class="mt-4 text-sm text-green-700 dark:text-green-400">Registration successful. Sign in below.</p>
       {% endif %}
+      {% if request.GET.password_reset %}
+      <p class="mt-4 text-sm text-green-700 dark:text-green-400">Password updated. You can log in with your new password.</p>
+      {% endif %}
       <form method="post" action="/auth/login/" class="mt-6 space-y-4">
         {% csrf_token %}
         <div>
@@ -26,6 +29,9 @@
             class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-slate-900 dark:text-white">
         </div>
         <button type="submit" class="btn-primary w-full">Login</button>
+        <p class="text-center text-sm text-slate-600 dark:text-slate-400">
+          <a href="{% url 'forgot_password' %}" class="font-medium text-primary-600 hover:underline">Forgot password?</a>
+        </p>
       </form>
       <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">No account? <a href="{% url 'register' %}" class="font-semibold text-primary-600 hover:underline">Register</a></p>
     </div>
