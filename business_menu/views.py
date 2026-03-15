@@ -43,6 +43,7 @@ from .auth_utils import (
 )
 from .models import (
     BusinessAdmin,
+    PendingEmailVerification,
     SignupByIP,
     Restaurant,
     MenuItem,
@@ -104,6 +105,38 @@ def _recaptcha_required() -> bool:
     """Whether reCAPTCHA verification is required (keys configured)."""
     sk = getattr(settings, "RECAPTCHA_SECRET_KEY", None) or ""
     return bool(sk.strip())
+
+
+def _send_signup_verification_email(email: str, code: str) -> bool:
+    """Send 6-digit verification code to email. From QR Menu / mybonus-berlin.de. Returns True if sent."""
+    from django.core.mail import send_mail
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@mybonus-berlin.de")
+    subject = "Your verification code - QR Menu"
+    message = f"""Hello,
+
+Your verification code for QR Menu signup is:
+
+  {code}
+
+Enter this 6-digit code on the registration page to complete your account.
+
+This code expires in 15 minutes. If you did not request this, please ignore this email.
+
+Best regards,
+QR Menu Team
+"""
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        logger.exception("Failed to send signup verification email: %s", e)
+        return False
 
 
 def _business_admin_phone_from_username(username: str) -> str | None:
@@ -3245,92 +3278,85 @@ def menu_themes_preview_view(request):
         return HttpResponse('<h1>Preview file not found</h1>', status=404)
 
 
+def _create_account_from_signup_data(validated_data, client_ip: str):
+    """Create BusinessAdmin, User, Restaurant from validated signup data. Returns (user, admin) or raises."""
+    from config.sequence_utils import fix_auth_and_signup_sequences
+    fix_auth_and_signup_sequences()
+    trial_ends_at = timezone.now() + timedelta(days=12)
+    admin = BusinessAdmin.objects.create(
+        phone=validated_data["phone"],
+        name=f"{validated_data['first_name']} {validated_data['last_name']}".strip(),
+        email=validated_data["email"],
+        is_active=True,
+        payment_status="trial",
+        trial_ends_at=trial_ends_at,
+    )
+    base_username = _BM_ADMIN_USERNAME_PREFIX + re.sub(r"\D", "", validated_data["phone"])
+    username = base_username
+    counter = 1
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}_{counter}"
+        counter += 1
+    user = User.objects.create(
+        username=username,
+        email=validated_data["email"],
+        first_name=validated_data["first_name"],
+        last_name=validated_data["last_name"],
+        is_active=True,
+    )
+    user.set_password(validated_data["password"])
+    user.save()
+    admin.auth_user = user
+    admin.save(update_fields=["auth_user"])
+    restaurant = Restaurant.objects.create(
+        admin=admin,
+        name=validated_data.get("restaurant_name", "").strip() or "My Restaurant",
+        country=validated_data.get("country", "").strip() or "",
+        city=validated_data.get("city", "").strip() or "",
+    )
+    RestaurantSettings.objects.get_or_create(restaurant=restaurant)
+    if client_ip:
+        SignupByIP.objects.create(ip_address=client_ip)
+    return user, admin
+
+
 class RestaurantOwnerSignupView(APIView):
     """
-    Web signup for restaurant owners. Creates account and starts 12-day free trial.
-    No payment during trial. Stripe Connect is not active during trial.
-    POST /api/business-menu/signup/
+    Web signup for restaurant owners. Two steps:
+    1) POST with form data → validate, send 6-digit code to email, return email_verification_required.
+    2) POST with email + email_verification_code → verify, create account, login, return panel_url.
     """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        import random
         client_ip = _get_client_ip(request)
-        if client_ip and SignupByIP.objects.filter(ip_address=client_ip).exists():
-            return Response(
-                {"success": False, "message": "Only one registration per IP address is allowed. If you already have an account, please log in."},
-                status=status.HTTP_429_TOO_MANY_REQUESTS,
-            )
+        email = (request.data.get("email") or "").strip()
+        code = (request.data.get("email_verification_code") or request.data.get("code") or "").strip()
 
-        captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
-        if _recaptcha_required():
-            if not _verify_recaptcha(captcha_token):
+        # Step 2: verify email code and create account
+        if code and email:
+            if client_ip and SignupByIP.objects.filter(ip_address=client_ip).exists():
                 return Response(
-                    {"success": False, "message": "Please complete the \"I\'m not a robot\" check."},
+                    {"success": False, "message": "Only one registration per IP address is allowed. If you already have an account, please log in."},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
+                )
+            now = timezone.now()
+            pending = (
+                PendingEmailVerification.objects.filter(email__iexact=email, code=code, expires_at__gt=now)
+                .order_by("-created_at")
+                .first()
+            )
+            if not pending:
+                return Response(
+                    {"success": False, "message": "Invalid or expired verification code. Please request a new code or check your email."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
-        serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        validated_data = serializer.validated_data
-        from config.sequence_utils import fix_auth_and_signup_sequences
-
-        for attempt in range(2):
+            signup_data = pending.signup_data
             try:
-                fix_auth_and_signup_sequences()
                 with transaction.atomic():
-                    trial_ends_at = timezone.now() + timedelta(days=12)
-                    admin = BusinessAdmin.objects.create(
-                        phone=validated_data["phone"],
-                        name=f"{validated_data['first_name']} {validated_data['last_name']}".strip(),
-                        email=validated_data["email"],
-                        is_active=True,
-                        payment_status="trial",
-                        trial_ends_at=trial_ends_at,
-                    )
-                    base_username = _BM_ADMIN_USERNAME_PREFIX + re.sub(r"\D", "", validated_data["phone"])
-                    username = base_username
-                    counter = 1
-                    while User.objects.filter(username=username).exists():
-                        username = f"{base_username}_{counter}"
-                        counter += 1
-                    user = User.objects.create(
-                        username=username,
-                        email=validated_data["email"],
-                        first_name=validated_data["first_name"],
-                        last_name=validated_data["last_name"],
-                        is_active=True,
-                    )
-                    user.set_password(validated_data["password"])
-                    user.save()
-                    admin.auth_user = user
-                    admin.save(update_fields=["auth_user"])
-
-                    restaurant = Restaurant.objects.create(
-                        admin=admin,
-                        name=validated_data.get("restaurant_name", "").strip() or "My Restaurant",
-                        country=validated_data.get("country", "").strip() or "",
-                        city=validated_data.get("city", "").strip() or "",
-                    )
-                    RestaurantSettings.objects.get_or_create(restaurant=restaurant)
-                    if client_ip:
-                        SignupByIP.objects.create(ip_address=client_ip)
-
-                from django.conf import settings
-                from django.contrib.auth import login as auth_login
-                auth_login(request, user)
-                base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
-                return Response(
-                    {
-                        "success": True,
-                        "message": "Registration successful. Your 12-day free trial has started.",
-                        "admin_id": admin.id,
-                        "trial_ends_at": trial_ends_at.isoformat(),
-                        "panel_url": f"{base}/panel/?admin_id={admin.id}",
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
+                    user, admin = _create_account_from_signup_data(signup_data, client_ip)
+                    pending.delete()
             except IntegrityError as e:
                 err_str = str(e).lower()
                 if "signupbyip" in err_str or ("unique" in err_str and "ip" in err_str):
@@ -3338,29 +3364,90 @@ class RestaurantOwnerSignupView(APIView):
                         {"success": False, "message": "Only one registration per IP address is allowed."},
                         status=status.HTTP_429_TOO_MANY_REQUESTS,
                     )
-                is_pkey_duplicate = (
-                    "auth_user_pkey" in err_str
-                    or "duplicate key" in err_str
-                    or "business_menu_businessadmin_pkey" in err_str
-                    or "business_menu_restaurant_pkey" in err_str
-                )
-                if is_pkey_duplicate and attempt == 0:
-                    logger.warning("Signup sequence conflict, fixing sequences and retrying: %s", e)
-                    continue
-                logger.exception("Restaurant owner signup failed: %s", e)
+                if "phone" in err_str or "email" in err_str or "duplicate" in err_str:
+                    pending.delete()
+                    return Response(
+                        {"success": False, "message": "This email or phone is already registered. Please log in."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                raise
+            from django.contrib.auth import login as auth_login
+            auth_login(request, user)
+            base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
+            return Response(
+                {
+                    "success": True,
+                    "message": "Registration successful. Your 12-day free trial has started.",
+                    "admin_id": admin.id,
+                    "trial_ends_at": admin.trial_ends_at.isoformat() if admin.trial_ends_at else None,
+                    "panel_url": f"{base}/panel/?admin_id={admin.id}",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        # Step 1: validate form, send verification email
+        if client_ip and SignupByIP.objects.filter(ip_address=client_ip).exists():
+            return Response(
+                {"success": False, "message": "Only one registration per IP address is allowed. If you already have an account, please log in."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+        captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
+        if _recaptcha_required():
+            if not _verify_recaptcha(captcha_token):
                 return Response(
-                    {"success": False, "message": "Registration failed (duplicate or database error). Please try again or contact support."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    {"success": False, "message": "Please complete the \"I\'m not a robot\" check."},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-            except Exception as e:
-                logger.exception("Restaurant owner signup failed: %s", e)
-                return Response(
-                    {"success": False, "message": str(e)},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+        serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        signup_email = (validated_data.get("email") or "").strip().lower()
+        if not signup_email:
+            return Response({"success": False, "message": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Rate limit: do not send new code for same email within 60 seconds
+        since = timezone.now() - timedelta(seconds=60)
+        if PendingEmailVerification.objects.filter(email__iexact=signup_email, created_at__gte=since).exists():
+            return Response(
+                {"success": False, "message": "Please wait a minute before requesting a new code. Check your email for the code we already sent."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+
+        verification_code = "".join([str(random.randint(0, 9)) for _ in range(6)])
+        expires_at = timezone.now() + timedelta(minutes=15)
+        # Store signup_data as JSON-serializable (same keys as validated_data)
+        signup_data = {
+            "restaurant_name": validated_data.get("restaurant_name", ""),
+            "first_name": validated_data["first_name"],
+            "last_name": validated_data["last_name"],
+            "email": validated_data["email"],
+            "phone": validated_data["phone"],
+            "password": validated_data["password"],
+            "country": validated_data.get("country", ""),
+            "city": validated_data.get("city", ""),
+        }
+        PendingEmailVerification.objects.filter(email__iexact=signup_email).delete()
+        PendingEmailVerification.objects.create(
+            email=signup_email,
+            code=verification_code,
+            signup_data=signup_data,
+            expires_at=expires_at,
+        )
+        if not _send_signup_verification_email(validated_data["email"], verification_code):
+            return Response(
+                {"success": False, "message": "Failed to send verification email. Please try again or contact support."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         return Response(
-            {"success": False, "message": "Registration failed (duplicate or database error). Please try again or contact support."},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            {
+                "success": True,
+                "email_verification_required": True,
+                "email": validated_data["email"],
+                "message": "We sent a 6-digit verification code to your email. Enter it below to complete registration.",
+            },
+            status=status.HTTP_200_OK,
         )
 
 

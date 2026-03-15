@@ -11,43 +11,75 @@
 <section class="container mx-auto px-4 py-16 sm:px-6">
   <div class="mx-auto max-w-md">
     <div class="card-soft" data-reveal>
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h1>
-      <p class="mt-2 text-slate-600 dark:text-slate-400">Start your 12-day free trial. No payment required.</p>
-      <form id="register-form" class="mt-6 space-y-4">
-        {% csrf_token %}
-        {% include "partials/form_fields.html" with label="Restaurant name" name="restaurant_name" placeholder="Orange Bistro" %}
-        {% include "partials/form_fields.html" with label="Your first name" name="first_name" placeholder="John" %}
-        {% include "partials/form_fields.html" with label="Your last name" name="last_name" placeholder="Doe" %}
-        {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
-        {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+49 123 456789" %}
-        {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
-        {% include "partials/form_fields.html" with label="Confirm password" name="confirm_password" field_type="password" placeholder="••••••••" %}
-        {% include "partials/form_fields.html" with label="Country" name="country" placeholder="Germany" %}
-        {% include "partials/form_fields.html" with label="City" name="city" placeholder="Berlin" %}
-        <div class="flex items-start gap-2">
-          <input type="checkbox" id="accept_terms" name="accept_terms" required class="rounded border-slate-300 mt-1">
-          <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">I accept the terms and conditions</label>
-        </div>
-        <div class="flex items-start gap-2">
-          <input type="checkbox" id="b2b_confirmation" name="b2b_confirmation" required class="rounded border-slate-300 mt-1">
-          <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">I confirm I am acting as a business (B2B)</label>
-        </div>
-        {% if recaptcha_site_key %}
-        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" id="recaptcha-el"></div>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Please complete the "I'm not a robot" check.</p>
-        {% endif %}
-        <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
-        <button type="submit" id="btn-submit" class="btn-primary w-full">Create account</button>
-      </form>
+      <div id="step-form">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">Start your 12-day free trial. No payment required.</p>
+        <form id="register-form" class="mt-6 space-y-4">
+          {% csrf_token %}
+          {% include "partials/form_fields.html" with label="Restaurant name" name="restaurant_name" placeholder="Orange Bistro" %}
+          {% include "partials/form_fields.html" with label="Your first name" name="first_name" placeholder="John" %}
+          {% include "partials/form_fields.html" with label="Your last name" name="last_name" placeholder="Doe" %}
+          {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
+          {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+49 123 456789" %}
+          {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
+          {% include "partials/form_fields.html" with label="Confirm password" name="confirm_password" field_type="password" placeholder="••••••••" %}
+          {% include "partials/form_fields.html" with label="Country" name="country" placeholder="Germany" %}
+          {% include "partials/form_fields.html" with label="City" name="city" placeholder="Berlin" %}
+          <div class="flex items-start gap-2">
+            <input type="checkbox" id="accept_terms" name="accept_terms" required class="rounded border-slate-300 mt-1">
+            <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">I accept the terms and conditions</label>
+          </div>
+          <div class="flex items-start gap-2">
+            <input type="checkbox" id="b2b_confirmation" name="b2b_confirmation" required class="rounded border-slate-300 mt-1">
+            <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">I confirm I am acting as a business (B2B)</label>
+          </div>
+          {% if recaptcha_site_key %}
+          <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" id="recaptcha-el"></div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Please complete the "I'm not a robot" check.</p>
+          {% endif %}
+          <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
+          <button type="submit" id="btn-submit" class="btn-primary w-full">Continue</button>
+        </form>
+      </div>
+      <div id="step-verify" class="hidden">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Verify your email</h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">We sent a 6-digit code to <strong id="verify-email-display"></strong>. Enter it below to complete registration.</p>
+        <form id="verify-form" class="mt-6 space-y-4">
+          {% csrf_token %}
+          <div>
+            <label for="email_verification_code" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Verification code</label>
+            <input type="text" id="email_verification_code" name="email_verification_code" inputmode="numeric" pattern="[0-9]*" maxlength="6" minlength="6" placeholder="000000" required
+              class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white text-center text-2xl tracking-[0.5em] font-mono">
+          </div>
+          <div id="verify-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
+          <button type="submit" id="btn-verify" class="btn-primary w-full">Complete registration</button>
+        </form>
+        <p class="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+          <button type="button" id="back-to-form" class="text-primary-600 hover:underline">Use a different email</button>
+        </p>
+      </div>
       <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">Already have an account? <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">Login</a></p>
     </div>
   </div>
 </section>
 <script>
 (function() {
+  const stepForm = document.getElementById("step-form");
+  const stepVerify = document.getElementById("step-verify");
   const form = document.getElementById("register-form");
+  const verifyForm = document.getElementById("verify-form");
   const btn = document.getElementById("btn-submit");
+  const btnVerify = document.getElementById("btn-verify");
   const errEl = document.getElementById("form-errors");
+  const verifyErrEl = document.getElementById("verify-errors");
+  const verifyEmailDisplay = document.getElementById("verify-email-display");
+  let pendingEmail = "";
+
+  function getCsrf() {
+    var input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    return input ? input.value : "";
+  }
+
   if (!form || !btn) return;
 
   form.addEventListener("submit", function(e) {
@@ -73,22 +105,27 @@
     }
 
     btn.disabled = true;
-    btn.textContent = "Creating account…";
+    btn.textContent = "Sending code…";
 
     fetch("/api/business-menu/signup/", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": fd.get("csrfmiddlewaretoken") || "",
-        "Accept": "application/json",
-      },
+      headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrf(), "Accept": "application/json" },
       body: JSON.stringify(body),
       credentials: "same-origin",
     })
       .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data }; }); })
       .then(function({ ok, data }) {
         if (ok && data.success) {
-          window.location.href = data.panel_url || "/panel/?admin_id=" + data.admin_id;
+          if (data.email_verification_required && data.email) {
+            pendingEmail = data.email;
+            if (verifyEmailDisplay) verifyEmailDisplay.textContent = data.email;
+            if (stepForm) stepForm.classList.add("hidden");
+            if (stepVerify) stepVerify.classList.remove("hidden");
+            btn.disabled = false;
+            btn.textContent = "Continue";
+            return;
+          }
+          window.location.href = data.panel_url || "/panel/?admin_id=" + (data.admin_id || "");
           return;
         }
         var msg = data.message || "Registration failed.";
@@ -100,15 +137,64 @@
         errEl.textContent = msg;
         errEl.classList.remove("hidden");
         btn.disabled = false;
-        btn.textContent = "Create account";
+        btn.textContent = "Continue";
       })
       .catch(function() {
         errEl.textContent = "Network error. Please try again.";
         errEl.classList.remove("hidden");
         btn.disabled = false;
-        btn.textContent = "Create account";
+        btn.textContent = "Continue";
       });
   });
+
+  if (document.getElementById("back-to-form")) {
+    document.getElementById("back-to-form").addEventListener("click", function() {
+      if (stepVerify) stepVerify.classList.add("hidden");
+      if (stepForm) stepForm.classList.remove("hidden");
+      pendingEmail = "";
+      verifyErrEl.classList.add("hidden");
+      if (verifyForm) verifyForm.reset();
+    });
+  }
+
+  if (verifyForm && btnVerify) {
+    verifyForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      verifyErrEl.classList.add("hidden");
+      verifyErrEl.textContent = "";
+      var code = (document.getElementById("email_verification_code") || {}).value || "";
+      if (!pendingEmail) {
+        verifyErrEl.textContent = "Session expired. Please start over.";
+        verifyErrEl.classList.remove("hidden");
+        return;
+      }
+      btnVerify.disabled = true;
+      btnVerify.textContent = "Verifying…";
+      fetch("/api/business-menu/signup/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrf(), "Accept": "application/json" },
+        body: JSON.stringify({ email: pendingEmail, email_verification_code: code }),
+        credentials: "same-origin",
+      })
+        .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data }; }); })
+        .then(function({ ok, data }) {
+          if (ok && data.success && data.panel_url) {
+            window.location.href = data.panel_url;
+            return;
+          }
+          verifyErrEl.textContent = data.message || "Invalid or expired code. Please try again.";
+          verifyErrEl.classList.remove("hidden");
+          btnVerify.disabled = false;
+          btnVerify.textContent = "Complete registration";
+        })
+        .catch(function() {
+          verifyErrEl.textContent = "Network error. Please try again.";
+          verifyErrEl.classList.remove("hidden");
+          btnVerify.disabled = false;
+          btnVerify.textContent = "Complete registration";
+        });
+    });
+  }
 })();
 </script>
 {% endblock %}

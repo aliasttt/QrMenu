@@ -85,6 +85,20 @@ class SignupByIP(models.Model):
         return self.ip_address
 
 
+class PendingEmailVerification(models.Model):
+    """Temporary store for signup data until user verifies email with 6-digit code."""
+    email = models.EmailField(db_index=True)
+    code = models.CharField(max_length=6)  # 6-digit verification code
+    signup_data = models.JSONField(help_text="Validated signup form data (temporary, deleted after verify)")
+    expires_at = models.DateTimeField(db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Pending email verification"
+        verbose_name_plural = "Pending email verifications"
+        ordering = ["-created_at"]
+
+
 class Restaurant(models.Model):
     """
     Restaurant or cafe managed by admin
