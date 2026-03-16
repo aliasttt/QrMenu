@@ -13,7 +13,7 @@
   {% if not admin_id %}
   <div class="mt-8 rounded-2xl border-2 border-amber-300 bg-amber-50 p-6 dark:border-amber-600 dark:bg-amber-900/20">
     <p class="text-amber-800 dark:text-amber-200">Open this page with your panel link (e.g. /panel/?admin_id=...) or log in from the app.</p>
-    <a href="{% url 'register' %}" class="mt-4 inline-block rounded-xl bg-primary-600 px-4 py-2.5 font-medium text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Register</a>
+    <a href="{% url 'register' %}" class="btn-primary mt-4 inline-block rounded-xl px-4 py-2.5 font-medium">Register</a>
     <a href="{% url 'login' %}" class="mt-4 ml-3 inline-block rounded-xl border-2 border-slate-400 bg-white px-4 py-2.5 font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Login</a>
   </div>
   {% else %}
@@ -49,7 +49,7 @@
           </div>
         {% endif %}
         {% if not plan_active and subscribe_url %}
-          <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary-600 px-4 py-3 text-center font-semibold text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Subscribe to continue</a>
+          <a href="{{ subscribe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">Subscribe to continue</a>
         {% endif %}
       </div>
     </div>
@@ -64,11 +64,11 @@
           </p>
         {% elif subscription_active and connect_stripe_url %}
           <p class="text-slate-600 dark:text-slate-400">To accept online payments from your digital menu, you need to connect Stripe. Click below to complete setup.</p>
-          <a href="{{ connect_stripe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary-600 px-4 py-3 text-center font-semibold text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Connect Stripe</a>
+          <a href="{{ connect_stripe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">Connect Stripe</a>
         {% else %}
           <p class="text-slate-600 dark:text-slate-400">If you want your customers' online payments to be processed from the digital menu, pay 200 Euros now to upgrade your plan.</p>
           {% if subscribe_url %}
-            <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary-600 px-4 py-3 text-center font-semibold text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Start Plan</a>
+            <a href="{{ subscribe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">Start Plan</a>
           {% endif %}
         {% endif %}
       </div>
