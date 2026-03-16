@@ -159,6 +159,45 @@ class CreateCheckoutSessionView(APIView):
             )
 
 
+class RedirectToStripeCheckoutView(APIView):
+    """GET with ?admin_id=X: create Checkout Session and redirect to Stripe. On error redirect to subscribe page."""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        admin_id = request.GET.get("admin_id")
+        if not admin_id:
+            return redirect("/business-menu/subscribe/")
+        try:
+            admin = BusinessAdmin.objects.get(id=admin_id)
+        except (BusinessAdmin.DoesNotExist, ValueError, TypeError):
+            return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+        if not _stripe_enabled():
+            return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+        price_id = (getattr(settings, "STRIPE_PRICE_ID_ANNUAL", None) or "").strip()
+        if not price_id or price_id.startswith("prod_"):
+            return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+        import stripe
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        success_url = "https://preismenu.de/payment-success?session_id={CHECKOUT_SESSION_ID}"
+        cancel_url = "https://preismenu.de/payment-cancel"
+        try:
+            session = stripe.checkout.Session.create(
+                mode="subscription",
+                client_reference_id=str(admin.id),
+                customer_email=(admin.email or "").strip() or None,
+                line_items=[{"price": price_id, "quantity": 1}],
+                automatic_tax={"enabled": True},
+                billing_address_collection="required",
+                success_url=success_url,
+                cancel_url=cancel_url,
+            )
+            if session and getattr(session, "url", None):
+                return redirect(session.url)
+        except Exception as e:
+            logger.exception("RedirectToStripeCheckout failed: %s", e)
+        return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+
+
 class CreateConnectAccountLinkView(APIView):
     """Create Stripe Connect Express account (if needed) and Account Link for onboarding. For paid admins only."""
     permission_classes = [permissions.AllowAny]

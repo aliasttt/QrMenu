@@ -192,7 +192,7 @@ def pricing(request):
     if request.user.is_authenticated:
         admin = BusinessAdmin.objects.filter(auth_user=request.user).first()
         if admin:
-            get_started_url = f"/business-menu/subscribe/?admin_id={admin.id}"
+            get_started_url = f"/business-menu/subscribe/checkout/?admin_id={admin.id}"
     if not get_started_url:
         from django.urls import reverse
         get_started_url = reverse("register")
@@ -666,7 +666,7 @@ def panel_dashboard(request):
                     "subscription_active": subscription_active,
                     "expires_at": expires_at,
                     "stripe_connected": bool(admin.stripe_account_id),
-                    "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
+                    "subscribe_url": f"/business-menu/subscribe/checkout/?admin_id={admin.id}",
                     "connect_stripe_url": f"/business-menu/connect/?admin_id={admin.id}",
                     "app_android_url": getattr(settings, "APP_ANDROID_URL", "") or getattr(settings, "QR_MENU_APK_DEFAULT_URL", "https://example.com/app.apk"),
                     "app_ios_url": getattr(settings, "APP_IOS_URL", "https://apps.apple.com/app/id000000000"),

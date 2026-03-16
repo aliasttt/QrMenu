@@ -41,6 +41,7 @@ from .views import (
 from .stripe_views import (
     StripeWebhookView,
     CreateCheckoutSessionView,
+    RedirectToStripeCheckoutView,
     CreateConnectAccountLinkView,
     CreateOrderPaymentIntentView,
     ConnectPageView,
@@ -66,6 +67,7 @@ urlpatterns = [
     path('payment/', PaymentPageView.as_view(), name='payment_page'),
     # Stripe: subscribe (after trial), Connect onboarding
     path('subscribe/', SubscribePageView.as_view(), name='subscribe_page'),
+    path('subscribe/checkout/', RedirectToStripeCheckoutView.as_view(), name='subscribe_checkout'),
     path('subscribe/success/', SubscribeSuccessView.as_view(), name='subscribe_success'),
     path('subscribe/cancel/', SubscribeCancelView.as_view(), name='subscribe_cancel'),
     path('connect/', ConnectPageView.as_view(), name='stripe_connect_page'),
