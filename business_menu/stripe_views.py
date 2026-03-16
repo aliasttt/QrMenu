@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import timedelta
 
-from .models import BusinessAdmin
+from .models import BusinessAdmin, Restaurant, Order
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +78,19 @@ class StripeWebhookView(APIView):
                     )
                     if updated:
                         logger.info("Connect account verified: %s", stripe_account_id)
+
+        elif event.type == "payment_intent.succeeded":
+            pi = event.data.object
+            order_id = (pi.get("metadata") or {}).get("order_id")
+            if order_id:
+                try:
+                    order = Order.objects.get(pk=int(order_id), stripe_payment_intent_id=pi.get("id"))
+                    if str(order.status) != "paid":
+                        order.status = "paid"
+                        order.save(update_fields=["status"])
+                        logger.info("Order %s marked paid via PaymentIntent %s", order_id, pi.get("id"))
+                except (Order.DoesNotExist, ValueError, TypeError):
+                    pass
 
         return HttpResponse("OK", status=200)
 
@@ -275,3 +288,82 @@ class SubscribeCancelView(APIView):
         context = {"admin_id": admin_id}
         from django.shortcuts import render
         return render(request, "business_menu/subscribe_cancel.html", context)
+
+
+class CreateOrderPaymentIntentView(APIView):
+    """Create a Stripe PaymentIntent for a customer order. Money goes to restaurant's Connect account."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        if not _stripe_enabled():
+            return Response(
+                {"success": False, "error": "Stripe is not configured."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        restaurant_id = request.data.get("restaurant_id") or request.query_params.get("restaurant_id")
+        order_id = request.data.get("order_id") or request.query_params.get("order_id")
+        if not restaurant_id or not order_id:
+            return Response(
+                {"success": False, "error": "restaurant_id and order_id required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            restaurant = Restaurant.objects.select_related("admin").get(pk=int(restaurant_id), is_active=True)
+        except (Restaurant.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"success": False, "error": "Restaurant not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        try:
+            order = Order.objects.get(pk=int(order_id), restaurant=restaurant)
+        except (Order.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"success": False, "error": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        admin = getattr(restaurant, "admin", None)
+        if not (admin and getattr(admin, "stripe_account_id", None)):
+            return Response(
+                {"success": False, "error": "This restaurant does not accept online payment."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if str(order.payment_method) != "online":
+            return Response(
+                {"success": False, "error": "This order is not for online payment."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if str(order.status) not in ("pending", "paid"):
+            return Response(
+                {"success": False, "error": "Order is no longer pending."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        amount_decimal = getattr(order, "total_amount", 0) or 0
+        amount_cents = int(round(float(amount_decimal) * 100))
+        if amount_cents < 50:
+            return Response(
+                {"success": False, "error": "Amount too small."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        currency = (getattr(order, "currency", None) or "eur").lower()[:3]
+        import stripe
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        try:
+            pi = stripe.PaymentIntent.create(
+                amount=amount_cents,
+                currency=currency,
+                automatic_payment_methods={"enabled": True},
+                transfer_data={"destination": admin.stripe_account_id},
+                metadata={"order_id": str(order.id), "restaurant_id": str(restaurant.id)},
+            )
+        except Exception as e:
+            logger.exception("PaymentIntent create failed: %s", e)
+            return Response(
+                {"success": False, "error": str(e)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        order.stripe_payment_intent_id = pi.id
+        order.save(update_fields=["stripe_payment_intent_id"])
+        return Response({
+            "success": True,
+            "client_secret": pi.client_secret,
+        })

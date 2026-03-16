@@ -26,17 +26,107 @@
 
       <div class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
         <p class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payment method</p>
-        <p class="mt-2 text-slate-700 dark:text-slate-300">Card and other payment options will appear here once Stripe is configured (Stripe secret key and publishable key).</p>
-        <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-          <p class="font-semibold">Stripe integration</p>
-          <p class="mt-1">Configure <code class="rounded bg-amber-200/50 px-1 dark:bg-amber-800/30">STRIPE_SECRET_KEY</code> and <code class="rounded bg-amber-200/50 px-1 dark:bg-amber-800/30">STRIPE_PUBLISHABLE_KEY</code> in settings, then add Stripe.js and Payment Intent or Checkout here.</p>
-        </div>
+        {% if not stripe_connected or not stripe_configured %}
+        <p class="mt-2 text-slate-700 dark:text-slate-300">This restaurant does not accept online payment. Please pay by cash when you pick up or dine in.</p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a href="/restaurants/{{ restaurant.id }}/menu/" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Back to menu</a>
         </div>
+        {% else %}
+        <p class="mt-2 text-slate-600 dark:text-slate-400">Pay with card. The payment goes to {{ restaurant.name }}.</p>
+        <div id="payment-form-wrap" class="mt-4">
+          <form id="payment-form" class="space-y-4">
+            {% csrf_token %}
+            <div id="card-element" class="rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-4 min-h-[44px"></div>
+            <div id="card-errors" class="text-sm text-red-600 dark:text-red-400 hidden"></div>
+            <button type="submit" id="submit-payment" class="w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50">
+              Pay {{ currency }} {{ total_amount }}
+            </button>
+          </form>
+        </div>
+        <div id="payment-success" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
+          <p class="font-semibold">Payment successful.</p>
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">Back to menu</a>
+        </div>
+        <div class="mt-6">
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="text-sm text-slate-600 dark:text-slate-400 hover:underline">Back to menu</a>
+        </div>
+        {% endif %}
       </div>
     </div>
     {% endif %}
   </div>
 </div>
+{% if stripe_connected and stripe_configured and stripe_publishable_key %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(function() {
+  var publishableKey = "{{ stripe_publishable_key|escapejs }}";
+  var createIntentUrl = "{{ create_payment_intent_url|default:'/api/business-menu/api/create-order-payment-intent/'|escapejs }}";
+  var restaurantId = {{ restaurant.id }};
+  var orderId = {{ order.id }};
+  var form = document.getElementById("payment-form");
+  var submitBtn = document.getElementById("submit-payment");
+  var cardErrors = document.getElementById("card-errors");
+  var formWrap = document.getElementById("payment-form-wrap");
+  var successEl = document.getElementById("payment-success");
+  if (!form || !publishableKey) return;
+  var stripe = Stripe(publishableKey);
+  var elements = stripe.elements();
+  var cardElement = elements.create("card", { style: { base: { fontSize: "16px" } } });
+  cardElement.mount("#card-element");
+  cardElement.on("change", function(e) {
+    if (e.error) {
+      cardErrors.textContent = e.error.message;
+      cardErrors.classList.remove("hidden");
+    } else {
+      cardErrors.textContent = "";
+      cardErrors.classList.add("hidden");
+    }
+  });
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    if (!submitBtn) return;
+    submitBtn.disabled = true;
+    cardErrors.classList.add("hidden");
+    fetch(createIntentUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value || "" },
+      body: JSON.stringify({ restaurant_id: restaurantId, order_id: orderId }),
+      credentials: "same-origin"
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.client_secret) {
+        cardErrors.textContent = data.error || "Could not start payment.";
+        cardErrors.classList.remove("hidden");
+        submitBtn.disabled = false;
+        return;
+      }
+      return stripe.confirmCardPayment(data.client_secret, {
+        payment_method: { card: cardElement }
+      });
+    })
+    .then(function(result) {
+      if (!result) return;
+      if (result.error) {
+        cardErrors.textContent = result.error.message || "Payment failed.";
+        cardErrors.classList.remove("hidden");
+        submitBtn.disabled = false;
+        return;
+      }
+      if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+        if (formWrap) formWrap.classList.add("hidden");
+        if (successEl) successEl.classList.remove("hidden");
+      }
+      submitBtn.disabled = false;
+    })
+    .catch(function(err) {
+      cardErrors.textContent = err.message || "Something went wrong.";
+      cardErrors.classList.remove("hidden");
+      submitBtn.disabled = false;
+    });
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}

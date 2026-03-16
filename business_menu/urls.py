@@ -42,6 +42,7 @@ from .stripe_views import (
     StripeWebhookView,
     CreateCheckoutSessionView,
     CreateConnectAccountLinkView,
+    CreateOrderPaymentIntentView,
     ConnectPageView,
     ConnectDoneView,
     SubscribePageView,
@@ -71,6 +72,7 @@ urlpatterns = [
     path('connect/done/', ConnectDoneView.as_view(), name='stripe_connect_done'),
     path('api/create-checkout-session/', CreateCheckoutSessionView.as_view(), name='stripe_create_checkout'),
     path('api/create-connect-link/', CreateConnectAccountLinkView.as_view(), name='stripe_connect_link'),
+    path('api/create-order-payment-intent/', CreateOrderPaymentIntentView.as_view(), name='stripe_create_order_payment_intent'),
     path('api/stripe-webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
     # API endpoints
     path('send-otp/', SendOTPView.as_view(), name='send_otp'),

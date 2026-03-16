@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings as django_settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -491,10 +492,21 @@ def restaurant_menu(request, restaurant_id):
     # سبد و گزینه‌های سفارش برای پنل Orders (همان کلید سشن business_menu)
     cart_key = f"cart_restaurant_{restaurant.id}"
     cart_items = list(request.session.get(cart_key, []))
+    stripe_ok = bool(
+        getattr(django_settings, "STRIPE_SECRET_KEY", None)
+        and getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", None)
+    )
+    admin = getattr(restaurant, "admin", None)
+    stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+    allow_online = (
+        getattr(settings_obj, "allow_payment_online", True)
+        and stripe_ok
+        and stripe_connected
+    )
     order_options = {
         "has_delivery": getattr(settings_obj, "has_delivery", False),
         "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
-        "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+        "allow_payment_online": allow_online,
     }
     return render(
         request,
@@ -780,8 +792,12 @@ def restaurant_schedule(request, restaurant_id):
 
 
 def order_payment(request, restaurant_id, order_id):
-    """Stripe payment page for an order (online payment). Placeholder until Stripe secret key is set."""
-    restaurant = get_object_or_404(Restaurant, pk=restaurant_id, is_active=True)
+    """Stripe Connect payment page for an order. Online payment only if restaurant has Stripe Connect."""
+    restaurant = get_object_or_404(
+        Restaurant.objects.select_related("admin"),
+        pk=restaurant_id,
+        is_active=True,
+    )
     order = get_object_or_404(Order, pk=order_id, restaurant=restaurant)
     if order.payment_method != "online":
         return render(
@@ -797,6 +813,12 @@ def order_payment(request, restaurant_id, order_id):
             {"restaurant": restaurant, "order": order, "error": "This order is already completed or cancelled."},
             status=400,
         )
+    admin = getattr(restaurant, "admin", None)
+    stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+    stripe_configured = bool(
+        getattr(django_settings, "STRIPE_SECRET_KEY", None)
+        and getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", None)
+    )
     return render(
         request,
         "pages/order_payment.html",
@@ -806,6 +828,10 @@ def order_payment(request, restaurant_id, order_id):
             "order_items": order.items_json if getattr(order, "items_json", None) else [],
             "total_amount": order.total_amount,
             "currency": order.currency or "EUR",
+            "stripe_connected": stripe_connected,
+            "stripe_configured": stripe_configured,
+            "stripe_publishable_key": getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", "") or "",
+            "create_payment_intent_url": "/api/business-menu/api/create-order-payment-intent/",
         },
     )
 
