@@ -188,7 +188,15 @@ def pricing(request):
         {"q": "Is there a free trial?", "a": "Yes. Start with a free trial to build your menu and test ordering. No card required until you go live."},
         {"q": "Why 19% VAT?", "a": "We are VAT-registered in the EU. If you are in the EU and liable for VAT, 19% is added at checkout (total €238/year). If you are outside the EU or VAT-exempt, the amount may differ."},
     ]
-    return render(request, "pages/pricing.html", {"plan": plan, "benefits": benefits, "faqs": faqs})
+    get_started_url = None
+    if request.user.is_authenticated:
+        admin = BusinessAdmin.objects.filter(auth_user=request.user).first()
+        if admin:
+            get_started_url = f"/business-menu/subscribe/?admin_id={admin.id}"
+    if not get_started_url:
+        from django.urls import reverse
+        get_started_url = reverse("register")
+    return render(request, "pages/pricing.html", {"plan": plan, "benefits": benefits, "faqs": faqs, "get_started_url": get_started_url})
 
 
 def contact(request):
