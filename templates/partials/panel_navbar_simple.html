@@ -1,6 +1,38 @@
 <header class="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-  <nav class="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6">
-    <a href="{% url 'panel_dashboard' %}{% if request.GET.admin_id %}?admin_id={{ request.GET.admin_id }}{% endif %}" class="font-bold text-slate-900 dark:text-white">Panel</a>
-    <a href="{% url 'landing' %}" class="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Site</a>
+  <nav class="container mx-auto flex items-center justify-between gap-3 px-4 py-3 sm:px-6" aria-label="Panel">
+    <div class="flex items-center gap-3 min-w-0">
+      <a href="{% url 'landing' %}" class="flex shrink-0 items-center justify-center rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" title="Back to site" aria-label="Back to site">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      </a>
+      <a href="{% url 'panel_dashboard' %}{% if request.GET.admin_id %}?admin_id={{ request.GET.admin_id }}{% endif %}" class="font-bold text-slate-900 dark:text-white truncate">Panel</a>
+    </div>
+    <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+      <button type="button" id="panel-theme-toggle" class="flex items-center justify-center rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <span class="dark:hidden" aria-hidden="true"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></span>
+        <span class="hidden dark:inline" aria-hidden="true"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg></span>
+      </button>
+      {% if restaurant_name %}
+      <span class="hidden sm:inline text-sm font-medium text-slate-700 dark:text-slate-300 truncate max-w-[140px]" title="{{ restaurant_name }}">Hello, {{ restaurant_name }}</span>
+      {% endif %}
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'logout' %}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500">Logout</a>
+      {% else %}
+      <a href="{% url 'landing' %}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Site</a>
+      {% endif %}
+    </div>
   </nav>
 </header>
+<script>
+(function() {
+  var btn = document.getElementById('panel-theme-toggle');
+  if (!btn) return;
+  function applyTheme(isDark) {
+    if (isDark) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
+    else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
+  }
+  btn.addEventListener('click', function() {
+    var isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+})();
+</script>

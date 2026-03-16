@@ -11,16 +11,16 @@
   <p class="mt-1 text-slate-600 dark:text-slate-400">Payment, plan and app access. Use the app for orders, menu and settings.</p>
 
   {% if not admin_id %}
-  <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-900/20">
+  <div class="mt-8 rounded-2xl border-2 border-amber-300 bg-amber-50 p-6 dark:border-amber-600 dark:bg-amber-900/20">
     <p class="text-amber-800 dark:text-amber-200">Open this page with your panel link (e.g. /panel/?admin_id=...) or log in from the app.</p>
-    <a href="{% url 'register' %}" class="mt-4 inline-block rounded-xl bg-primary px-4 py-2.5 font-medium text-white hover:bg-primary/90">Register</a>
-    <a href="{% url 'login' %}" class="mt-4 ml-3 inline-block rounded-xl border border-slate-300 px-4 py-2.5 font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200">Login</a>
+    <a href="{% url 'register' %}" class="mt-4 inline-block rounded-xl bg-primary-600 px-4 py-2.5 font-medium text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Register</a>
+    <a href="{% url 'login' %}" class="mt-4 ml-3 inline-block rounded-xl border-2 border-slate-400 bg-white px-4 py-2.5 font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Login</a>
   </div>
   {% else %}
 
   <!-- Plan & Payment -->
   <div class="mt-8 space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/50">
+    <div class="rounded-2xl border-2 border-slate-300 bg-white p-6 shadow-sm dark:border-slate-600 dark:bg-slate-800/80">
       <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Plan & payment</h2>
       <div class="mt-4 space-y-3">
         <div class="flex items-center justify-between">
@@ -49,12 +49,12 @@
           </div>
         {% endif %}
         {% if not plan_active and subscribe_url %}
-          <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary px-4 py-3 text-center font-semibold text-white hover:bg-primary/90">Subscribe to continue</a>
+          <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary-600 px-4 py-3 text-center font-semibold text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Subscribe to continue</a>
         {% endif %}
       </div>
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/50">
+    <div class="rounded-2xl border-2 border-slate-300 bg-white p-6 shadow-sm dark:border-slate-600 dark:bg-slate-800/80">
       <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Stripe</h2>
       <div class="mt-4">
         {% if stripe_connected %}
@@ -64,11 +64,11 @@
           </p>
         {% elif subscription_active and connect_stripe_url %}
           <p class="text-slate-600 dark:text-slate-400">To accept online payments from your digital menu, you need to connect Stripe. Click below to complete setup.</p>
-          <a href="{{ connect_stripe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary px-4 py-3 text-center font-semibold text-white hover:bg-primary/90">Connect Stripe</a>
+          <a href="{{ connect_stripe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary-600 px-4 py-3 text-center font-semibold text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Connect Stripe</a>
         {% else %}
           <p class="text-slate-600 dark:text-slate-400">If you want your customers' online payments to be processed from the digital menu, pay 200 Euros now to upgrade your plan.</p>
           {% if subscribe_url %}
-            <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary px-4 py-3 text-center font-semibold text-white hover:bg-primary/90">Start Plan</a>
+            <a href="{{ subscribe_url }}" class="mt-4 inline-block w-full rounded-xl bg-primary-600 px-4 py-3 text-center font-semibold text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600">Start Plan</a>
           {% endif %}
         {% endif %}
       </div>
@@ -76,18 +76,18 @@
   </div>
 
   <!-- App download -->
-  <div class="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-800/30">
+  <div class="mt-10 rounded-2xl border-2 border-slate-300 bg-slate-100 p-6 dark:border-slate-600 dark:bg-slate-800/50">
     <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Download the app</h2>
     <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage orders, menu and settings from your phone.</p>
     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
       {% if app_android_url %}
-      <a href="{{ app_android_url }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 px-5 py-3.5 font-medium text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600">
+      <a href="{{ app_android_url }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-700 bg-slate-800 px-5 py-3.5 font-medium text-white hover:bg-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:hover:bg-slate-600">
         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 2.048a1.5 1.5 0 0 1 1.5 1.5v17a1.5 1.5 0 0 1-1.5 1.5h-11a1.5 1.5 0 0 1-1.5-1.5v-17a1.5 1.5 0 0 1 1.5-1.5h11zm-5.5 11.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-4-2a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm8 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-4-3a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>
         Android
       </a>
       {% endif %}
       {% if app_ios_url %}
-      <a href="{{ app_ios_url }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 px-5 py-3.5 font-medium text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600">
+      <a href="{{ app_ios_url }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-700 bg-slate-800 px-5 py-3.5 font-medium text-white hover:bg-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:hover:bg-slate-600">
         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
         iOS
       </a>
