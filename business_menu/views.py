@@ -44,7 +44,6 @@ from .auth_utils import (
 from .models import (
     BusinessAdmin,
     PendingEmailVerification,
-    SignupByIP,
     Restaurant,
     MenuItem,
     MenuItemImage,
@@ -3318,8 +3317,6 @@ def _create_account_from_signup_data(validated_data, client_ip: str):
         city=validated_data.get("city", "").strip() or "",
     )
     RestaurantSettings.objects.get_or_create(restaurant=restaurant)
-    if client_ip:
-        SignupByIP.objects.create(ip_address=client_ip)
     return user, admin
 
 
@@ -3339,11 +3336,6 @@ class RestaurantOwnerSignupView(APIView):
 
         # Step 2: verify email code and create account
         if code and email:
-            if client_ip and SignupByIP.objects.filter(ip_address=client_ip).exists():
-                return Response(
-                    {"success": False, "message": "Only one registration per IP address is allowed. If you already have an account, please log in."},
-                    status=status.HTTP_429_TOO_MANY_REQUESTS,
-                )
             now = timezone.now()
             pending = (
                 PendingEmailVerification.objects.filter(email__iexact=email, code=code, expires_at__gt=now)
@@ -3362,11 +3354,6 @@ class RestaurantOwnerSignupView(APIView):
                     pending.delete()
             except IntegrityError as e:
                 err_str = str(e).lower()
-                if "signupbyip" in err_str or ("unique" in err_str and "ip" in err_str):
-                    return Response(
-                        {"success": False, "message": "Only one registration per IP address is allowed."},
-                        status=status.HTTP_429_TOO_MANY_REQUESTS,
-                    )
                 if "phone" in err_str or "email" in err_str or "duplicate" in err_str:
                     pending.delete()
                     return Response(
@@ -3389,11 +3376,6 @@ class RestaurantOwnerSignupView(APIView):
             )
 
         # Step 1: validate form, send verification email
-        if client_ip and SignupByIP.objects.filter(ip_address=client_ip).exists():
-            return Response(
-                {"success": False, "message": "Only one registration per IP address is allowed. If you already have an account, please log in."},
-                status=status.HTTP_429_TOO_MANY_REQUESTS,
-            )
         captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
         if _recaptcha_required():
             if not _verify_recaptcha(captcha_token):
