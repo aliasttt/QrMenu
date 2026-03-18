@@ -515,6 +515,7 @@ def restaurant_menu(request, restaurant_id):
         "has_delivery": getattr(settings_obj, "has_delivery", False),
         "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
         "allow_payment_online": allow_online,
+        "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
     }
     return render(
         request,
@@ -525,6 +526,7 @@ def restaurant_menu(request, restaurant_id):
             "is_within_hours": is_within_hours,
             "scheduled_for": scheduled_for,
             "schedule_url": f"/restaurants/{restaurant_id}/schedule/",
+            "reservation_url": f"/restaurants/{restaurant_id}/reservation/",
             "menu_cards": menu_cards,
             "menu_sections": menu_sections,
             "category_list": category_list,
@@ -795,6 +797,68 @@ def restaurant_schedule(request, restaurant_id):
             "restaurant_hours": restaurant_hours,
             "days_with_slots": days_with_slots,
             "menu_url": f"/restaurants/{restaurant_id}/menu/",
+        },
+    )
+
+
+def restaurant_reservation(request, restaurant_id):
+    """Reservation page: pick date, time, guests; optional pre-order from cart. Shown only if reservation_enabled."""
+    restaurant = get_object_or_404(
+        Restaurant.objects.select_related("admin", "settings"),
+        pk=restaurant_id,
+        is_active=True,
+    )
+    settings_obj, _ = RestaurantSettings.objects.get_or_create(
+        restaurant=restaurant,
+        defaults={
+            "show_prices": True,
+            "show_images": True,
+            "show_descriptions": True,
+            "show_serial": False,
+            "has_delivery": False,
+            "allow_payment_cash": True,
+            "allow_payment_online": True,
+            "reservation_enabled": False,
+            "total_tables": 10,
+            "max_guests_per_reservation": 10,
+        },
+    )
+    if not getattr(settings_obj, "reservation_enabled", False):
+        raise Http404("Reservations are not enabled for this restaurant.")
+    restaurant_hours = getattr(settings_obj, "opening_hours", None) or ""
+    hours_json = getattr(settings_obj, "opening_hours_json", None) or []
+    open_days = get_open_days(settings_obj) if hours_json else set(range(7))
+    from datetime import date, timedelta
+    today = date.today()
+    days_available = []
+    for i in range(30):
+        d = today + timedelta(days=i)
+        if d.weekday() in open_days:
+            days_available.append({"date": d.strftime("%Y-%m-%d"), "label": d.strftime("%A, %b %d")})
+    first_reservation_date = days_available[0]["date"] if days_available else ""
+    cart_key = f"cart_restaurant_{restaurant.id}"
+    cart_items = list(request.session.get(cart_key, []))
+    cart_items_json = json.dumps(cart_items)
+    stripe_ok = bool(
+        getattr(django_settings, "STRIPE_SECRET_KEY", None)
+        and getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", None)
+    )
+    admin = getattr(restaurant, "admin", None)
+    stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+    allow_online = getattr(settings_obj, "allow_payment_online", True) and stripe_ok and stripe_connected
+    return render(
+        request,
+        "pages/restaurant_reservation.html",
+        {
+            "restaurant": restaurant,
+            "restaurant_hours": restaurant_hours,
+            "days_available": days_available,
+            "total_tables": getattr(settings_obj, "total_tables", 10),
+            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
+            "cart_items_json": cart_items_json,
+            "allow_payment_online": allow_online,
+            "menu_url": f"/restaurants/{restaurant_id}/menu/",
+            "first_reservation_date": first_reservation_date,
         },
     )
 

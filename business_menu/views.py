@@ -21,6 +21,8 @@ from decimal import Decimal
 from business_menu.hours_utils import (
     is_within_opening_hours as _is_within_opening_hours,
     is_datetime_within_hours as _is_datetime_within_hours,
+    get_open_days as _get_open_days,
+    get_reservation_time_slots_for_day as _get_reservation_time_slots_for_day,
 )
 
 import qrcode
@@ -2255,6 +2257,9 @@ class RestaurantOrderOptionsView(APIView):
                 "has_delivery": False,
                 "allow_payment_cash": True,
                 "allow_payment_online": True,
+                "reservation_enabled": False,
+                "total_tables": 10,
+                "max_guests_per_reservation": 10,
             },
         )
         return Response({
@@ -2262,6 +2267,9 @@ class RestaurantOrderOptionsView(APIView):
             "has_delivery": getattr(settings_obj, "has_delivery", False),
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
             "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+            "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
+            "total_tables": getattr(settings_obj, "total_tables", 10),
+            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
         }, status=status.HTTP_200_OK)
 
 
@@ -2648,6 +2656,9 @@ class AdminOrderSettingsView(APIView):
             "has_delivery": getattr(settings_obj, "has_delivery", False),
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
             "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+            "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
+            "total_tables": getattr(settings_obj, "total_tables", 10),
+            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
         }, status=status.HTTP_200_OK)
 
     def patch(self, request):
@@ -2655,19 +2666,448 @@ class AdminOrderSettingsView(APIView):
         if err:
             return err
         data = request.data or {}
+        update_fields = ["updated_at"]
         if "has_delivery" in data:
             settings_obj.has_delivery = bool(data["has_delivery"])
+            update_fields.append("has_delivery")
         if "allow_payment_cash" in data:
             settings_obj.allow_payment_cash = bool(data["allow_payment_cash"])
+            update_fields.append("allow_payment_cash")
         if "allow_payment_online" in data:
             settings_obj.allow_payment_online = bool(data["allow_payment_online"])
-        settings_obj.save(update_fields=["has_delivery", "allow_payment_cash", "allow_payment_online", "updated_at"])
+            update_fields.append("allow_payment_online")
+        if "reservation_enabled" in data:
+            settings_obj.reservation_enabled = bool(data["reservation_enabled"])
+            update_fields.append("reservation_enabled")
+        if "total_tables" in data:
+            try:
+                settings_obj.total_tables = max(1, int(data["total_tables"]))
+                update_fields.append("total_tables")
+            except (TypeError, ValueError):
+                pass
+        if "max_guests_per_reservation" in data:
+            try:
+                settings_obj.max_guests_per_reservation = max(1, int(data["max_guests_per_reservation"]))
+                update_fields.append("max_guests_per_reservation")
+            except (TypeError, ValueError):
+                pass
+        settings_obj.save(update_fields=update_fields)
         return Response({
             "restaurant_id": restaurant.id,
             "restaurant_name": restaurant.name,
             "has_delivery": settings_obj.has_delivery,
             "allow_payment_cash": settings_obj.allow_payment_cash,
             "allow_payment_online": settings_obj.allow_payment_online,
+            "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
+            "total_tables": getattr(settings_obj, "total_tables", 10),
+            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
+        }, status=status.HTTP_200_OK)
+
+
+# ---------- Reservation (public + admin) ----------
+
+def _reservation_count_for_date(restaurant, req_date):
+    """Count reservations (pending + confirmed) for a date; used to check if day is full."""
+    from django.db.models import Q
+    return Reservation.objects.filter(
+        restaurant=restaurant,
+        requested_date=req_date,
+    ).exclude(status=Reservation.Status.CANCELLED).count()
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ReservationConfigView(APIView):
+    """
+    GET: reservation config for a restaurant (public).
+    Query: token or restaurant_id.
+    Returns: reservation_enabled, opening_hours_json, total_tables, max_guests_per_reservation.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={
+                "show_prices": True,
+                "show_images": True,
+                "show_descriptions": True,
+                "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
+                "reservation_enabled": False,
+                "total_tables": 10,
+                "max_guests_per_reservation": 10,
+            },
+        )
+        if not getattr(settings_obj, "reservation_enabled", False):
+            return Response(
+                {"detail": "Reservations are not enabled for this restaurant."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        hours_json = getattr(settings_obj, "opening_hours_json", None) or []
+        return Response({
+            "restaurant_id": restaurant.id,
+            "restaurant_name": restaurant.name,
+            "reservation_enabled": True,
+            "opening_hours_json": hours_json,
+            "total_tables": getattr(settings_obj, "total_tables", 10),
+            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
+        }, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ReservationSlotsView(APIView):
+    """
+    GET: available time slots for a date (public).
+    Query: token or restaurant_id, date=YYYY-MM-DD.
+    Returns: time_slots (list of "HH:MM"), is_full (bool).
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={"reservation_enabled": False, "total_tables": 10, "max_guests_per_reservation": 10},
+        )
+        if not getattr(settings_obj, "reservation_enabled", False):
+            return Response(
+                {"detail": "Reservations are not enabled."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        date_str = (request.query_params.get("date") or "").strip()
+        if not date_str:
+            return Response(
+                {"detail": "Query parameter 'date' (YYYY-MM-DD) is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            from datetime import datetime as dt
+            req_date = dt.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response(
+                {"detail": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if req_date < timezone.now().date():
+            return Response(
+                {"detail": "Date must be today or in the future."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        day_int = req_date.weekday()  # 0=Monday, 6=Sunday
+        slots = _get_reservation_time_slots_for_day(settings_obj, day_int)
+        count = _reservation_count_for_date(restaurant, req_date)
+        total_tables = getattr(settings_obj, "total_tables", 10)
+        is_full = count >= total_tables
+        return Response({
+            "restaurant_id": restaurant.id,
+            "date": date_str,
+            "time_slots": slots,
+            "is_full": is_full,
+        }, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ReservationCreateView(APIView):
+    """
+    POST: create a reservation (public).
+    Body: requested_date (YYYY-MM-DD), requested_time (HH:MM), guests_count, customer_name,
+          customer_phone, customer_email, notes; optional order_details (list of {name, price, quantity}),
+          payment_method (cash|online). If order_details and payment_method=online, creates Order +
+          PaymentIntent and returns payment_url.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={"reservation_enabled": False, "total_tables": 10, "max_guests_per_reservation": 10},
+        )
+        if not getattr(settings_obj, "reservation_enabled", False):
+            return Response(
+                {"detail": "Reservations are not enabled for this restaurant."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        data = request.data or {}
+        requested_date_str = (data.get("requested_date") or "").strip()
+        requested_time = (data.get("requested_time") or "").strip()[:10]
+        try:
+            guests_count = max(1, int(data.get("guests_count", 1)))
+        except (TypeError, ValueError):
+            guests_count = 1
+        max_guests = getattr(settings_obj, "max_guests_per_reservation", 10)
+        if guests_count > max_guests:
+            return Response(
+                {"detail": f"Maximum {max_guests} guests per reservation."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        customer_name = (data.get("customer_name") or "").strip()
+        if not customer_name:
+            return Response(
+                {"detail": "customer_name is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        customer_phone = (data.get("customer_phone") or "").strip()
+        customer_email = (data.get("customer_email") or "").strip()
+        notes = (data.get("notes") or "").strip()
+        order_details = data.get("order_details")
+        if order_details is not None and not isinstance(order_details, list):
+            order_details = []
+        payment_method = (data.get("payment_method") or "cash").strip().lower()
+        if payment_method not in ("cash", "online"):
+            payment_method = "cash"
+        if payment_method == "online" and not (getattr(settings_obj, "allow_payment_online", True)):
+            return Response(
+                {"detail": "Online payment is not available."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            from datetime import datetime as dt
+            req_date = dt.strptime(requested_date_str, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            return Response(
+                {"detail": "Invalid requested_date. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if req_date < timezone.now().date():
+            return Response(
+                {"detail": "Requested date must be today or in the future."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if _reservation_count_for_date(restaurant, req_date) >= getattr(settings_obj, "total_tables", 10):
+            return Response(
+                {"detail": "This date is fully booked."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order_details_json = list(order_details) if order_details else []
+        total_amount = Decimal("0.00")
+        if order_details_json:
+            for item in order_details_json:
+                qty = int(item.get("quantity") or 1)
+                price = Decimal(str(item.get("price", 0)).replace(",", "."))
+                total_amount += price * qty
+
+        order_created = None
+        stripe_payment_intent_id = None
+        if order_details_json and payment_method == "online" and total_amount > 0:
+            admin = getattr(restaurant, "admin", None)
+            if admin and getattr(admin, "stripe_account_id", None):
+                try:
+                    with transaction.atomic():
+                        order_created = Order.objects.create(
+                            restaurant=restaurant,
+                            status=Order.Status.PENDING,
+                            total_amount=total_amount,
+                            currency="EUR",
+                            items_json=order_details_json,
+                            notes=notes or f"Reservation {requested_date_str} {requested_time}",
+                            service_type=Order.ServiceType.DINE_IN,
+                            table_number="",
+                            payment_method=Order.PaymentMethod.ONLINE,
+                            session_key=request.session.session_key or "",
+                        )
+                    from django.conf import settings as django_settings
+                    if getattr(django_settings, "STRIPE_SECRET_KEY", None):
+                        import stripe
+                        stripe.api_key = django_settings.STRIPE_SECRET_KEY
+                        amount_cents = int(round(float(total_amount) * 100))
+                        if amount_cents >= 50:
+                            pi = stripe.PaymentIntent.create(
+                                amount=amount_cents,
+                                currency="eur",
+                                automatic_payment_methods={"enabled": True},
+                                transfer_data={"destination": admin.stripe_account_id},
+                                metadata={
+                                    "order_id": str(order_created.id),
+                                    "restaurant_id": str(restaurant.id),
+                                    "reservation": "1",
+                                },
+                            )
+                            stripe_payment_intent_id = pi.id
+                            order_created.stripe_payment_intent_id = pi.id
+                            order_created.save(update_fields=["stripe_payment_intent_id"])
+                except Exception as e:
+                    logger.exception("Reservation order/payment create failed: %s", e)
+                    if order_created:
+                        order_created.delete()
+                    return Response(
+                        {"detail": "Could not create payment. Try cash or try again."},
+                        status=status.HTTP_502_BAD_GATEWAY,
+                    )
+
+        with transaction.atomic():
+            reservation = Reservation.objects.create(
+                restaurant=restaurant,
+                requested_date=req_date,
+                requested_time=requested_time,
+                guests_count=guests_count,
+                customer_name=customer_name,
+                customer_phone=customer_phone,
+                customer_email=customer_email,
+                notes=notes,
+                status=Reservation.Status.PENDING,
+                order=order_created,
+                order_details_json=order_details_json,
+                payment_method=payment_method,
+                stripe_payment_intent_id=stripe_payment_intent_id or None,
+            )
+
+        from .reservation_emails import send_reservation_new_request_email
+        try:
+            send_reservation_new_request_email(reservation)
+        except Exception as e:
+            logger.warning("Reservation new-request email failed: %s", e)
+
+        payload = {
+            "reservation_id": reservation.id,
+            "status": reservation.status,
+            "requested_date": requested_date_str,
+            "requested_time": requested_time,
+            "guests_count": guests_count,
+        }
+        if order_created and payment_method == "online" and stripe_payment_intent_id:
+            payload["requires_payment"] = True
+            payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order_created.id}/pay/"
+            payload["order_id"] = order_created.id
+        return Response(payload, status=status.HTTP_201_CREATED)
+
+
+class AdminReservationListView(APIView):
+    """
+    GET: list reservations for the authenticated admin's restaurant (pending first).
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return Response(
+                {"detail": "Business admin not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            restaurant = admin.restaurant
+        except Restaurant.DoesNotExist:
+            return Response(
+                {"detail": "Restaurant not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        reservations = Reservation.objects.filter(restaurant=restaurant).order_by(
+            "requested_date", "requested_time"
+        ).select_related("order")[:200]
+        out = []
+        for r in reservations:
+            out.append({
+                "id": r.id,
+                "requested_date": str(r.requested_date),
+                "requested_time": r.requested_time or "",
+                "guests_count": r.guests_count,
+                "customer_name": r.customer_name,
+                "customer_phone": r.customer_phone or "",
+                "customer_email": r.customer_email or "",
+                "notes": r.notes or "",
+                "status": r.status,
+                "order_details_json": r.order_details_json or [],
+                "payment_method": r.payment_method or "cash",
+                "order_id": r.order_id,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            })
+        return Response({
+            "restaurant_id": restaurant.id,
+            "reservations": out,
+        }, status=status.HTTP_200_OK)
+
+
+class AdminReservationDetailView(APIView):
+    """
+    PATCH: approve (confirmed) or cancel a reservation. On cancel with online payment, refund via Stripe.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_admin_restaurant(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return None, Response(
+                {"detail": "Business admin not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            return admin.restaurant, None
+        except Restaurant.DoesNotExist:
+            return None, Response(
+                {"detail": "Restaurant not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def patch(self, request, reservation_id):
+        restaurant, err = self._get_admin_restaurant(request)
+        if err:
+            return err
+        new_status = (request.data.get("status") or "").strip().lower()
+        if new_status not in ("confirmed", "cancelled"):
+            return Response(
+                {"detail": "Invalid status. Use 'confirmed' or 'cancelled'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            reservation = Reservation.objects.select_related("order").get(
+                id=reservation_id, restaurant=restaurant
+            )
+        except Reservation.DoesNotExist:
+            return Response(
+                {"detail": "Reservation not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if reservation.status != Reservation.Status.PENDING:
+            return Response(
+                {"detail": f"Reservation is already {reservation.status}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if new_status == "cancelled":
+            if reservation.stripe_payment_intent_id:
+                try:
+                    import stripe
+                    stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
+                    if stripe.api_key:
+                        stripe.Refund.create(payment_intent=reservation.stripe_payment_intent_id)
+                        if reservation.order_id:
+                            order = reservation.order
+                            if order:
+                                order.status = Order.Status.REFUNDED
+                                order.save(update_fields=["status", "updated_at"])
+                except Exception as e:
+                    logger.exception("Reservation refund failed: %s", e)
+                    return Response(
+                        {"detail": "Refund failed. Reservation not cancelled."},
+                        status=status.HTTP_502_BAD_GATEWAY,
+                    )
+            from .reservation_emails import send_reservation_cancelled_email
+            try:
+                send_reservation_cancelled_email(reservation)
+            except Exception as e:
+                logger.warning("Reservation cancelled email failed: %s", e)
+        else:
+            from .reservation_emails import send_reservation_confirmation_email
+            try:
+                send_reservation_confirmation_email(reservation)
+            except Exception as e:
+                logger.warning("Reservation confirmation email failed: %s", e)
+        reservation.status = new_status
+        reservation.save(update_fields=["status", "updated_at"])
+        return Response({
+            "id": reservation.id,
+            "status": reservation.status,
         }, status=status.HTTP_200_OK)
 
 

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Reservation — {{ restaurant.name }}{% endblock %}
+{% block content %}
+{% csrf_token %}
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4" x-data="{
+  selectedDate: '',
+  timeSlots: [],
+  isFull: false,
+  loadingSlots: false,
+  guestsCount: 1,
+  customerName: '',
+  customerPhone: '',
+  customerEmail: '',
+  notes: '',
+  paymentMethod: 'cash',
+  submitLoading: false,
+  submitError: '',
+  successReservation: null,
+  apiBase: '/api/business-menu',
+  restaurantId: {{ restaurant.id }},
+  maxGuests: {{ max_guests_per_reservation }},
+  cartItems: {{ cart_items_json|safe }},
+  allowOnline: {{ allow_payment_online|yesno:'true,false' }},
+  async fetchSlots() {
+    if (!this.selectedDate) return;
+    this.loadingSlots = true;
+    this.timeSlots = [];
+    this.isFull = false;
+    try {
+      const r = await fetch(this.apiBase + '/reservation/slots/?restaurant_id=' + this.restaurantId + '&date=' + this.selectedDate);
+      const data = await r.json();
+      if (r.ok) {
+        this.timeSlots = data.time_slots || [];
+        this.isFull = data.is_full || false;
+      }
+    } catch (e) { this.timeSlots = []; }
+    this.loadingSlots = false;
+  },
+  selectedTime: '',
+  cartSubtotal() {
+    return this.cartItems.reduce((s, i) => s + (i.quantity || 0) * parseFloat(i.price || 0), 0).toFixed(2);
+  },
+  hasCart() { return this.cartItems && this.cartItems.length > 0; },
+  orderDetailsPayload() {
+    return (this.cartItems || []).map(i => ({ name: i.name, price: String(i.price), quantity: i.quantity || 1 }));
+  },
+  async submit() {
+    this.submitError = '';
+    if (!this.customerName.trim()) { this.submitError = 'Name is required.'; return; }
+    if (!this.selectedDate) { this.submitError = 'Please select a date.'; return; }
+    if (!this.selectedTime && this.timeSlots.length) { this.submitError = 'Please select a time.'; return; }
+    this.submitLoading = true;
+    const body = {
+      restaurant_id: this.restaurantId,
+      requested_date: this.selectedDate,
+      requested_time: this.selectedTime,
+      guests_count: this.guestsCount,
+      customer_name: this.customerName.trim(),
+      customer_phone: this.customerPhone.trim(),
+      customer_email: this.customerEmail.trim(),
+      notes: this.notes.trim(),
+      payment_method: this.paymentMethod,
+    };
+    if (this.hasCart()) body.order_details = this.orderDetailsPayload();
+    try {
+      const r = await fetch(this.apiBase + '/reservation/create/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '' },
+        body: JSON.stringify(body),
+        credentials: 'same-origin',
+      });
+      const data = await r.json().catch(() => ({}));
+      if (r.ok && data.reservation_id) {
+        if (data.requires_payment && data.payment_url) {
+          window.location.href = data.payment_url;
+          return;
+        }
+        this.successReservation = data;
+      } else {
+        this.submitError = data.detail || (Array.isArray(data.detail) ? data.detail[0] : 'Request failed.');
+      }
+    } catch (e) {
+      this.submitError = 'Network error. Please try again.';
+    }
+    this.submitLoading = false;
+  }
+}" x-init="selectedDate = '{{ first_reservation_date|escapejs }}'; if (selectedDate) fetchSlots()">
+  <div class="mx-auto max-w-2xl">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <h1 class="text-xl font-bold text-slate-900 dark:text-white">Table reservation</h1>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ restaurant.name }}</p>
+      {% if restaurant_hours %}
+      <p class="mt-3 text-sm text-slate-700 dark:text-slate-300"><span class="font-medium">Opening hours:</span> {{ restaurant_hours }}</p>
+      {% endif %}
+
+      <template x-if="successReservation">
+        <div class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
+          <p class="font-semibold">Reservation request sent</p>
+          <p class="mt-1 text-sm">Your reservation for <span x-text="successReservation.requested_date"></span> at <span x-text="successReservation.requested_time"></span> (<span x-text="successReservation.guests_count"></span> guests) is pending. The restaurant will confirm by email.</p>
+          <a href="{{ menu_url }}" class="mt-4 inline-block rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Back to menu</a>
+        </div>
+      </template>
+
+      <template x-if="!successReservation">
+        <form @submit.prevent="submit()" class="mt-6 space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Date</label>
+            <select x-model="selectedDate" @change="fetchSlots(); selectedTime = ''" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+              {% for d in days_available %}
+              <option value="{{ d.date }}" {% if forloop.first %}selected{% endif %}>{{ d.label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div x-show="timeSlots.length || loadingSlots">
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
+            <p x-show="isFull" class="mt-1 text-sm text-amber-600 dark:text-amber-400">This day is fully booked. Please choose another date.</p>
+            <select x-model="selectedTime" :disabled="isFull" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+              <option value="">Select time</option>
+              <template x-for="slot in timeSlots" :key="slot">
+                <option :value="slot" x-text="slot"></option>
+              </template>
+            </select>
+            <p x-show="loadingSlots" class="mt-1 text-sm text-slate-500">Loading…</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Number of guests</label>
+            <input type="number" x-model.number="guestsCount" min="1" :max="maxGuests" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Your name *</label>
+            <input type="text" x-model="customerName" required class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="Name">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Phone</label>
+            <input type="tel" x-model="customerPhone" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="Phone">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+            <input type="email" x-model="customerEmail" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="Email">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Notes</label>
+            <textarea x-model="notes" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="Special requests…"></textarea>
+          </div>
+          <template x-if="hasCart()">
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+              <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Pre-order (from cart)</p>
+              <ul class="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                <template x-for="item in cartItems" :key="item.menu_item_id">
+                  <li x-text="item.quantity + '× ' + item.name + ' — €' + (item.quantity * parseFloat(item.price)).toFixed(2)"></li>
+                </template>
+              </ul>
+              <p class="mt-2 font-semibold text-slate-900 dark:text-white">Subtotal: € <span x-text="cartSubtotal()"></span></p>
+              <div class="mt-3">
+                <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">Payment</label>
+                <div class="mt-1 flex gap-2">
+                  <button type="button" @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">Cash</button>
+                  <template x-if="allowOnline">
+                    <button type="button" @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">Online</button>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </template>
+          <p x-show="submitError" class="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="submitError"></p>
+          <button type="submit" :disabled="submitLoading" class="w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
+            <span x-show="!submitLoading">Request reservation</span>
+            <span x-show="submitLoading">Sending…</span>
+          </button>
+        </form>
+      </template>
+
+      <a href="{{ menu_url }}" class="mt-6 inline-block text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">← Back to menu</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

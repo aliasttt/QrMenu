@@ -83,3 +83,21 @@ def get_slots_for_day(settings_obj, day_int):
         except (ValueError, TypeError):
             continue
     return result
+
+
+def get_reservation_time_slots_for_day(settings_obj, day_int, interval_minutes=30):
+    """
+    Return list of time strings (e.g. "09:00", "09:30") for reservation picker
+    for a weekday (0=Mon .. 6=Sun), from opening_hours_json. interval_minutes between slots.
+    """
+    slots = get_slots_for_day(settings_obj, day_int)
+    result = []
+    for open_t, close_t in slots:
+        current = datetime.combine(date.today(), open_t)
+        end_dt = datetime.combine(date.today(), close_t)
+        if close_t < open_t:
+            end_dt += timedelta(days=1)
+        while current < end_dt:
+            result.append(current.strftime("%H:%M"))
+            current += timedelta(minutes=interval_minutes)
+    return sorted(set(result))

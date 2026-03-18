@@ -508,6 +508,19 @@ class RestaurantSettings(models.Model):
     # Opening hours: display text and optional JSON for validation. JSON: [{"day": 0, "open": "09:00", "close": "22:00"}, ...] day 0=Monday, 6=Sunday
     opening_hours = models.TextField(blank=True, help_text="Display text e.g. Mon–Fri 9:00–22:00")
     opening_hours_json = models.JSONField(default=list, blank=True, help_text="List of {day, open, close} for order validation; empty = no restriction")
+    # Reservation: enabled by owner from app; capacity per day and per reservation
+    reservation_enabled = models.BooleanField(
+        default=False,
+        help_text="If True, reservation tab and reservation page are shown to customers.",
+    )
+    total_tables = models.PositiveIntegerField(
+        default=10,
+        help_text="Max number of reservations per day (when full, no more slots for that day).",
+    )
+    max_guests_per_reservation = models.PositiveIntegerField(
+        default=10,
+        help_text="Max guests allowed per single reservation.",
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -519,7 +532,7 @@ class RestaurantSettings(models.Model):
 
 
 class Reservation(models.Model):
-    """Reservation request for a future date (when restaurant is closed or for scheduled visit)."""
+    """Reservation request: date, time, guests; optional order details when from cart."""
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         CONFIRMED = "confirmed", "Confirmed"
@@ -527,12 +540,37 @@ class Reservation(models.Model):
 
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="reservations")
     requested_date = models.DateField(help_text="Requested reservation date")
-    requested_time = models.CharField(max_length=10, blank=True, help_text="e.g. 19:00 or 7 PM")
+    requested_time = models.CharField(max_length=10, blank=True, help_text="e.g. 19:00 or 19:30")
+    guests_count = models.PositiveIntegerField(default=1, help_text="Number of people")
     customer_name = models.CharField(max_length=200)
     customer_phone = models.CharField(max_length=32, blank=True)
     customer_email = models.EmailField(blank=True)
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, db_index=True)
+    # When reservation is from cart: optional linked order and/or order details for owner
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservation",
+        help_text="Linked order when reservation was submitted with menu items (from cart).",
+    )
+    order_details_json = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Cart items (name, price, quantity) when reservation includes food order.",
+    )
+    payment_method = models.CharField(
+        max_length=20,
+        choices=[("cash", "Cash"), ("online", "Online")],
+        default="cash",
+        help_text="Cash or online; if online and cancelled, refund is issued.",
+    )
+    stripe_payment_intent_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True,
+        help_text="Set when customer pays online; used for refund on cancel.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

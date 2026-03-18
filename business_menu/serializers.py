@@ -938,6 +938,7 @@ class RestaurantSettingsSerializer(serializers.ModelSerializer):
         fields = (
             "menu_theme", "show_prices", "show_images", "show_descriptions", "show_serial",
             "has_delivery", "allow_payment_cash", "allow_payment_online",
+            "reservation_enabled", "total_tables", "max_guests_per_reservation",
             "email",
         )
     
