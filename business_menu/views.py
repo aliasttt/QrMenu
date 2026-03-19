@@ -373,8 +373,7 @@ class SendOTPView(APIView):
 class LoginView(APIView):
     """
     لاگین ادمین برای اپ:
-    - email + password (primary, same as website)
-    - phone/number + code (legacy OTP compatibility)
+    - email + password (same as website)
     POST /api/business-menu/login/
 
     در صورت موفقیت، JWT token برمی‌گرداند.
@@ -389,7 +388,7 @@ class LoginView(APIView):
             return redirect("/auth/login/")
         return Response(
             {
-                "detail": "POST to login. Primary: email+password. Legacy: phone/number+code (OTP).",
+                "detail": "POST to login. Send email and password.",
                 "allowed_methods": ["POST", "OPTIONS"],
             },
             status=status.HTTP_200_OK,
@@ -400,121 +399,27 @@ class LoginView(APIView):
         email = (data.get("email") or "").strip()
         password = data.get("password") or ""
 
-        # Primary flow for app/website parity: email + password
-        if email or password:
-            if not email or not password:
-                return Response({
-                    "success": False,
-                    "message": "Email and password are required."
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            admin = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).first()
-            if not admin:
-                user_by_email = User.objects.filter(email__iexact=email).first()
-                if user_by_email:
-                    try:
-                        admin = user_by_email.business_menu_admin
-                    except BusinessAdmin.DoesNotExist:
-                        admin = None
-            if not admin:
-                return Response({
-                    "success": False,
-                    "message": "No restaurant account found with this email."
-                }, status=status.HTTP_404_NOT_FOUND)
-
-            # Resolve linked user (keep existing behavior for legacy/admin-created records)
-            user = admin.auth_user or get_or_create_user_for_business_admin(
-                admin_phone=admin.phone,
-                admin_name=admin.name,
-                admin_email=admin.email,
-            )
-            sync_user_from_business_admin(
-                user=user,
-                admin_phone=admin.phone,
-                admin_name=admin.name,
-                admin_email=admin.email,
-            )
-            if admin.auth_user_id != user.id:
-                admin.auth_user = user
-                admin.save(update_fields=["auth_user"])
-
-            auth_user = authenticate(request, username=user.username, password=password)
-            if auth_user is None:
-                return Response({
-                    "success": False,
-                    "message": "Invalid email or password."
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            now = timezone.now()
-            if admin.payment_status == "paid":
-                pass
-            elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
-                pass
-            else:
-                return Response({
-                    "success": False,
-                    "message": "Your trial has ended. Please subscribe to continue using the service.",
-                    "payment_required": True,
-                    "admin_id": admin.id,
-                    "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
-                }, status=status.HTTP_403_FORBIDDEN)
-
-            refresh = RefreshToken.for_user(auth_user)
-            try:
-                restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
-            except Restaurant.DoesNotExist:
-                restaurant = None
-
-            response_data = {
-                "success": True,
-                "message": "Login successful",
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-                "user": {
-                    "id": admin.id,
-                    "phone": admin.phone,
-                    "email": admin.email or "",
-                    "is_active": admin.is_active,
-                    "created_at": admin.created_at.isoformat() if admin.created_at else None
-                }
-            }
-            if restaurant:
-                response_data["restaurant"] = {
-                    "id": restaurant.id,
-                    "name": restaurant.name,
-                    "phone": restaurant.phone or admin.phone,
-                    "logo": ""
-                }
-            return Response(response_data, status=status.HTTP_200_OK)
-
-        # Legacy fallback flow: phone/number + OTP code
-        phone = (data.get("phone") or data.get("number") or "").strip()
-        code = (data.get("code") or "").strip()
-        if not phone or not code:
+        if not email or not password:
             return Response({
                 "success": False,
-                "message": "Provide email+password, or phone/number+code."
+                "message": "Email and password are required."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        # فرمت کردن شماره تلفن
-        try:
-            formatted_phone = format_phone_number(phone)
-        except Exception as e:
+
+        admin = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).first()
+        if not admin:
+            user_by_email = User.objects.filter(email__iexact=email).first()
+            if user_by_email:
+                try:
+                    admin = user_by_email.business_menu_admin
+                except BusinessAdmin.DoesNotExist:
+                    admin = None
+        if not admin:
             return Response({
                 "success": False,
-                "message": f"Invalid phone number format: {str(e)}"
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Only admins registered manually by superuser can login.
-        try:
-            admin = BusinessAdmin.objects.get(phone=formatted_phone, is_active=True)
-        except BusinessAdmin.DoesNotExist:
-            return Response({
-                "success": False,
-                "message": "This phone number is not registered as an admin."
+                "message": "No restaurant account found with this email."
             }, status=status.HTTP_404_NOT_FOUND)
-        
-        # Resolve auth user for this admin (prefer linked to avoid duplicates)
+
+        # Resolve linked user (keep existing behavior for legacy/admin-created records)
         user = admin.auth_user or get_or_create_user_for_business_admin(
             admin_phone=admin.phone,
             admin_name=admin.name,
@@ -529,78 +434,20 @@ class LoginView(APIView):
         if admin.auth_user_id != user.id:
             admin.auth_user = user
             admin.save(update_fields=["auth_user"])
-        
-        # بررسی کد - بدون اولویت، هر کدام درست بود لاگین می‌شود
-        verified = False
-        verification_method = None
-        
-        # Test-account shortcut (ONLY for the 20 test admins)
-        # - If admin is a known test admin (e.g. created by our scripts), accept 123456.
-        # - Also keep the explicit phone whitelist as a fallback.
-        admin_email = (admin.email or "").strip().lower()
-        admin_name = (admin.name or "").strip().lower()
-        is_test_admin = admin_email.endswith("@test.local") or admin_name.startswith("test admin")
-        in_unlimited_list = formatted_phone in UNLIMITED_OTP_PHONES and formatted_phone in UNLIMITED_OTP_CODES
 
-        logger.info(
-            "Business-menu login OTP precheck: phone=%s in_unlimited=%s is_test_admin=%s",
-            formatted_phone,
-            in_unlimited_list,
-            is_test_admin,
-        )
-
-        if (is_test_admin and code == "123456") or (in_unlimited_list and code == UNLIMITED_OTP_CODES.get(formatted_phone)):
-            verified = True
-            verification_method = "test_account"
-            logger.info("Test account OTP verified for %s", formatted_phone)
-        
-        # اگر اکانت تستی نبود یا کد تستی درست نبود، OTP عادی را چک می‌کنیم
-        if not verified:
-            # اول OTP تلفن را چک می‌کنیم
-            phone_result = check_otp(formatted_phone, code)
-            logger.info(f"Phone OTP check result for {formatted_phone}: success={phone_result.get('success')}, approved={phone_result.get('approved')}, message={phone_result.get('message')}")
-            
-            if phone_result.get('success', False) and phone_result.get('approved', False):
-                verified = True
-                verification_method = 'phone'
-                logger.info(f"Phone OTP verified for {formatted_phone}")
-            else:
-                # Log why phone OTP failed
-                logger.warning(f"Phone OTP failed for {formatted_phone}: {phone_result.get('message', 'Unknown error')}")
-                
-                # اگر OTP تلفن تایید نشد، کد ایمیل را چک می‌کنیم
-                if user.email:
-                    email_result = verify_email_code(user, user.email, code)
-                    if email_result.get('success', False) and email_result.get('approved', False):
-                        verified = True
-                        verification_method = 'email'
-                        logger.info(f"Email verification code approved for user {user.email}")
-                    else:
-                        logger.warning(f"Email verification failed: {email_result.get('message', 'Unknown error')}")
-                else:
-                    logger.warning(f"User {user.username} has no email, cannot verify email code")
-        
-        # اگر هیچ کدام تایید نشد، خطا بده
-        if not verified:
-            error_message = "Invalid verification code. Please check your code and try again."
-            if user.email:
-                error_message = "Invalid verification code. Please check your SMS or email code and try again."
-            else:
-                error_message = "Invalid verification code. Please check your SMS code and try again."
-            
+        auth_user = authenticate(request, username=user.username, password=password)
+        if auth_user is None:
             return Response({
                 "success": False,
-                "message": error_message
+                "message": "Invalid email or password."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Allow login if: paid OR (trial and trial not expired)
+
         now = timezone.now()
         if admin.payment_status == "paid":
-            pass  # allow
+            pass
         elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
-            pass  # allow during trial
+            pass
         else:
-            # unpaid or trial expired
             return Response({
                 "success": False,
                 "message": "Your trial has ended. Please subscribe to continue using the service.",
@@ -608,17 +455,13 @@ class LoginView(APIView):
                 "admin_id": admin.id,
                 "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
             }, status=status.HTTP_403_FORBIDDEN)
-        
-        # تولید JWT token
-        refresh = RefreshToken.for_user(user)
-        
-        # دریافت رستوران ادمین (OneToOne relationship)
+
+        refresh = RefreshToken.for_user(auth_user)
         try:
             restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
         except Restaurant.DoesNotExist:
             restaurant = None
-        
-        # آماده‌سازی response
+
         response_data = {
             "success": True,
             "message": "Login successful",
@@ -632,8 +475,7 @@ class LoginView(APIView):
                 "created_at": admin.created_at.isoformat() if admin.created_at else None
             }
         }
-        
-        # اضافه کردن اطلاعات رستوران اگر وجود دارد
+
         if restaurant:
             response_data["restaurant"] = {
                 "id": restaurant.id,
