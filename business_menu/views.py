@@ -17,6 +17,7 @@ import io
 import json
 import logging
 import re
+import random
 from decimal import Decimal
 
 from business_menu.hours_utils import (
@@ -60,6 +61,7 @@ from .models import (
     Order,
     Reservation,
 )
+from accounts.models import PasswordResetCode
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, MenuItemSerializer,
     MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
@@ -484,6 +486,191 @@ class LoginView(APIView):
                 "logo": ""  # اگر فیلد logo دارید، آن را اضافه کنید
             }
         
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordView(APIView):
+    """
+    Start password reset for Business Menu admin by email.
+    POST /api/business-menu/forgot-password/
+    Body: {"email": "owner@example.com"}
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = (request.data.get("email") or "").strip().lower()
+        if not email:
+            return Response({"detail": "email is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        admins = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id")
+        if not admins.exists():
+            return Response(
+                {"detail": "No active business admin found with this email."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if admins.count() > 1:
+            return Response(
+                {"detail": "Duplicate admin email found. Email must be unique for password reset."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        admin = admins.first()
+        user = admin.auth_user or User.objects.filter(email__iexact=email).first()
+        if not user:
+            return Response(
+                {"detail": "Account is not linked to an auth user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if admin.auth_user_id != user.id:
+            admin.auth_user = user
+            admin.save(update_fields=["auth_user"])
+
+        code = "".join([str(random.randint(0, 9)) for _ in range(6)])
+        expires_at = timezone.now() + timedelta(minutes=10)
+        PasswordResetCode.objects.create(user=user, email=email, code=code, expires_at=expires_at)
+
+        try:
+            from django.core.mail import get_connection, send_mail
+            connection = get_connection(
+                backend="django.core.mail.backends.smtp.EmailBackend",
+                host=getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST),
+                port=getattr(settings, "BONUS_EMAIL_PORT", getattr(settings, "EMAIL_PORT", 587)),
+                username=getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", "")),
+                password=getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", getattr(settings, "EMAIL_HOST_PASSWORD", "")),
+                use_tls=getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True)),
+                timeout=30,
+            )
+            send_mail(
+                subject="Password Reset Code",
+                message=f"Your password reset code is: {code}\n\nThis code will expire in 10 minutes.",
+                from_email=getattr(settings, "BONUS_FROM_EMAIL", getattr(settings, "DEFAULT_FROM_EMAIL", None)),
+                recipient_list=[email],
+                fail_silently=False,
+                connection=connection,
+            )
+        except Exception:
+            if settings.DEBUG:
+                return Response({"message": "Reset code sent to email", "code": code}, status=status.HTTP_200_OK)
+            return Response({"detail": "failed to send email"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"message": "Reset code sent to email"}, status=status.HTTP_200_OK)
+
+
+class VerifyResetCodeView(APIView):
+    """
+    Verify reset code for Business Menu admin.
+    POST /api/business-menu/verify-reset-code/
+    Body: {"email": "owner@example.com", "code": "123456"}
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = (request.data.get("email") or "").strip().lower()
+        code = (request.data.get("code") or "").strip()
+        if not email or not code:
+            return Response({"detail": "email and code are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        reset = PasswordResetCode.objects.filter(
+            email__iexact=email,
+            code=code,
+            is_used=False,
+        ).order_by("-created_at").first()
+        if not reset:
+            return Response({"detail": "invalid code"}, status=status.HTTP_400_BAD_REQUEST)
+        if reset.is_expired():
+            return Response({"detail": "code expired"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Code verified"}, status=status.HTTP_200_OK)
+
+
+class ResetPasswordView(APIView):
+    """
+    Reset password and auto-login with JWT.
+    POST /api/business-menu/reset-password/
+    Body: {"email": "owner@example.com", "code": "123456", "password": "newpass123"}
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = (request.data.get("email") or "").strip().lower()
+        code = (request.data.get("code") or "").strip()
+        new_password = request.data.get("password") or ""
+        if not email or not code or not new_password:
+            return Response({"detail": "email, code, password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        admins = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id")
+        if not admins.exists():
+            return Response(
+                {"detail": "No active business admin found with this email."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if admins.count() > 1:
+            return Response(
+                {"detail": "Duplicate admin email found. Email must be unique for password reset."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        admin = admins.first()
+
+        reset = PasswordResetCode.objects.filter(
+            email__iexact=email,
+            code=code,
+            is_used=False,
+        ).order_by("-created_at").first()
+        if not reset:
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
+        if reset.is_expired():
+            return Response({"detail": "code expired"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = admin.auth_user or reset.user
+        if not user:
+            return Response({"detail": "Account is not linked to an auth user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save(update_fields=["password"])
+        if admin.auth_user_id != user.id:
+            admin.auth_user = user
+            admin.save(update_fields=["auth_user"])
+
+        PasswordResetCode.objects.filter(email__iexact=email, is_used=False).update(is_used=True)
+
+        now = timezone.now()
+        if admin.payment_status == "paid":
+            pass
+        elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
+            pass
+        else:
+            return Response({
+                "success": False,
+                "message": "Your trial has ended. Please subscribe to continue using the service.",
+                "payment_required": True,
+                "admin_id": admin.id,
+                "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        refresh = RefreshToken.for_user(user)
+        try:
+            restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
+        except Restaurant.DoesNotExist:
+            restaurant = None
+
+        response_data = {
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "user": {
+                "id": admin.id,
+                "email": admin.email or "",
+                "phone": admin.phone or "",
+            },
+        }
+        if restaurant:
+            response_data["restaurant"] = {
+                "id": restaurant.id,
+                "name": restaurant.name,
+                "phone": restaurant.phone or admin.phone,
+                "logo": "",
+            }
+
         return Response(response_data, status=status.HTTP_200_OK)
 
 

@@ -3,6 +3,9 @@ from django.shortcuts import redirect
 from .views import (
     SendOTPView,
     LoginView,
+    ForgotPasswordView,
+    VerifyResetCodeView,
+    ResetPasswordView,
     RestaurantOwnerSignupView,
     UpdateProfileView,
     RestaurantListCreateView,
@@ -84,6 +87,9 @@ urlpatterns = [
     # API endpoints
     path('send-otp/', SendOTPView.as_view(), name='send_otp'),
     path('login/', LoginView.as_view(), name='business_menu_login'),
+    path('forgot-password/', ForgotPasswordView.as_view(), name='business_menu_forgot_password'),
+    path('verify-reset-code/', VerifyResetCodeView.as_view(), name='business_menu_verify_reset_code'),
+    path('reset-password/', ResetPasswordView.as_view(), name='business_menu_reset_password'),
     path('update-profile/', UpdateProfileView.as_view(), name='update_profile'),
     path('restaurants/', RestaurantListCreateView.as_view(), name='restaurants'),
     path('menu-items/', MenuItemCreateFromAppView.as_view(), name='menu_items'),
