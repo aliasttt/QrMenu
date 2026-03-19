@@ -10,6 +10,7 @@ from django.db import transaction
 from django.db import IntegrityError
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth import authenticate
 from datetime import timedelta
 from django.templatetags.static import static as static_url
 import io
@@ -61,7 +62,7 @@ from .models import (
 )
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, MenuItemSerializer,
-    MenuItemCreateSerializer, MenuQRCodeSerializer, LoginSerializer, SendOTPSerializer,
+    MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
     CategorySerializer, MenuSetSerializer, PackageSerializer, PackageCreateSerializer,
     MenuThemeSerializer, RestaurantSettingsSerializer, RestaurantOwnerRegistrationSerializer,
     normalize_price_value,
@@ -371,11 +372,12 @@ class SendOTPView(APIView):
 
 class LoginView(APIView):
     """
-    لاگین ادمین با شماره تلفن و OTP
+    لاگین ادمین برای اپ:
+    - email + password (primary, same as website)
+    - phone/number + code (legacy OTP compatibility)
     POST /api/business-menu/login/
-    Body: {"phone": "+491234567890", "code": "123456"}
-    
-    در صورت موفقیت، JWT token برمی‌گرداند
+
+    در صورت موفقیت، JWT token برمی‌گرداند.
     """
     permission_classes = [permissions.AllowAny]
 
@@ -386,21 +388,113 @@ class LoginView(APIView):
             from django.shortcuts import redirect
             return redirect("/auth/login/")
         return Response(
-            {"detail": "POST to login. Send phone and code (OTP).", "allowed_methods": ["POST", "OPTIONS"]},
+            {
+                "detail": "POST to login. Primary: email+password. Legacy: phone/number+code (OTP).",
+                "allowed_methods": ["POST", "OPTIONS"],
+            },
             status=status.HTTP_200_OK,
         )
 
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        
-        if not serializer.is_valid():
+        data = request.data if hasattr(request, "data") else {}
+        email = (data.get("email") or "").strip()
+        password = data.get("password") or ""
+
+        # Primary flow for app/website parity: email + password
+        if email or password:
+            if not email or not password:
+                return Response({
+                    "success": False,
+                    "message": "Email and password are required."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            admin = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).first()
+            if not admin:
+                user_by_email = User.objects.filter(email__iexact=email).first()
+                if user_by_email:
+                    try:
+                        admin = user_by_email.business_menu_admin
+                    except BusinessAdmin.DoesNotExist:
+                        admin = None
+            if not admin:
+                return Response({
+                    "success": False,
+                    "message": "No restaurant account found with this email."
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            # Resolve linked user (keep existing behavior for legacy/admin-created records)
+            user = admin.auth_user or get_or_create_user_for_business_admin(
+                admin_phone=admin.phone,
+                admin_name=admin.name,
+                admin_email=admin.email,
+            )
+            sync_user_from_business_admin(
+                user=user,
+                admin_phone=admin.phone,
+                admin_name=admin.name,
+                admin_email=admin.email,
+            )
+            if admin.auth_user_id != user.id:
+                admin.auth_user = user
+                admin.save(update_fields=["auth_user"])
+
+            auth_user = authenticate(request, username=user.username, password=password)
+            if auth_user is None:
+                return Response({
+                    "success": False,
+                    "message": "Invalid email or password."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            now = timezone.now()
+            if admin.payment_status == "paid":
+                pass
+            elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
+                pass
+            else:
+                return Response({
+                    "success": False,
+                    "message": "Your trial has ended. Please subscribe to continue using the service.",
+                    "payment_required": True,
+                    "admin_id": admin.id,
+                    "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            refresh = RefreshToken.for_user(auth_user)
+            try:
+                restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
+            except Restaurant.DoesNotExist:
+                restaurant = None
+
+            response_data = {
+                "success": True,
+                "message": "Login successful",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "id": admin.id,
+                    "phone": admin.phone,
+                    "email": admin.email or "",
+                    "is_active": admin.is_active,
+                    "created_at": admin.created_at.isoformat() if admin.created_at else None
+                }
+            }
+            if restaurant:
+                response_data["restaurant"] = {
+                    "id": restaurant.id,
+                    "name": restaurant.name,
+                    "phone": restaurant.phone or admin.phone,
+                    "logo": ""
+                }
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        # Legacy fallback flow: phone/number + OTP code
+        phone = (data.get("phone") or data.get("number") or "").strip()
+        code = (data.get("code") or "").strip()
+        if not phone or not code:
             return Response({
                 "success": False,
-                "errors": serializer.errors
+                "message": "Provide email+password, or phone/number+code."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        phone = serializer.validated_data['phone']
-        code = serializer.validated_data['code']
         
         # فرمت کردن شماره تلفن
         try:

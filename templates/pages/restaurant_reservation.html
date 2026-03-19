@@ -154,10 +154,11 @@
               <p class="mt-2 font-semibold text-slate-900 dark:text-white">Subtotal: € <span x-text="cartSubtotal()"></span></p>
               <div class="mt-3">
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">Payment</label>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Cash = pay on the day. Online = pay now; refunded if reservation is cancelled.</p>
                 <div class="mt-1 flex gap-2">
-                  <button type="button" @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">Cash</button>
+                  <button type="button" @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">Cash (on the day)</button>
                   <template x-if="allowOnline">
-                    <button type="button" @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">Online</button>
+                    <button type="button" @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">Online (refund if cancelled)</button>
                   </template>
                 </div>
               </div>
