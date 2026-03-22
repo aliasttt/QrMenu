@@ -116,6 +116,27 @@ class Restaurant(models.Model):
     phone = models.CharField(max_length=32, blank=True, help_text="Restaurant phone number")
     country = models.CharField(max_length=100, blank=True, help_text="Country")
     city = models.CharField(max_length=100, blank=True, help_text="City")
+    postal_code = models.CharField(max_length=20, blank=True, help_text="Postal / ZIP code")
+    latitude = models.CharField(max_length=32, blank=True, help_text="Latitude as string (e.g. maps)")
+    longitude = models.CharField(max_length=32, blank=True, help_text="Longitude as string (e.g. maps)")
+    restaurant_type = models.CharField(
+        max_length=50,
+        blank=True,
+        default="restaurant",
+        help_text="Venue type label for the app (e.g. restaurant, cafe)",
+    )
+    email = models.EmailField(blank=True, help_text="Public contact email for this restaurant")
+    whatsapp = models.CharField(max_length=32, blank=True, help_text="WhatsApp number")
+    website = models.URLField(blank=True, max_length=500, help_text="Website URL")
+    logo = models.ImageField(upload_to="restaurants/logos/", blank=True, null=True, help_text="Logo image file")
+    gallery = models.JSONField(default=list, blank=True, help_text="List of absolute image URLs for gallery")
+    cover_image_index = models.PositiveIntegerField(default=0, help_text="Index into gallery for cover/banner")
+    working_hours = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text='Per-day hours, e.g. {"monday": {"enabled": true, "open": "09:00", "close": "22:00"}, ...}',
+    )
+    closed_today = models.BooleanField(default=False, help_text="Manually marked closed for today")
     is_active = models.BooleanField(default=True, help_text="Active/Inactive status")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

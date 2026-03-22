@@ -238,8 +238,136 @@ class RestaurantSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Restaurant
-        fields = ('id', 'admin', 'admin_name', 'name', 'description', 'address', 'phone', 'is_active', 'created_at')
+        fields = (
+            'id', 'admin', 'admin_name', 'name', 'description', 'address', 'phone',
+            'country', 'city', 'is_active', 'created_at',
+        )
         read_only_fields = ('id', 'created_at')
+
+
+_WORKING_HOURS_DAY_KEYS = (
+    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+)
+
+
+def _default_working_hours():
+    return {k: {"enabled": False, "open": "", "close": ""} for k in _WORKING_HOURS_DAY_KEYS}
+
+
+class RestaurantProfileSerializer(serializers.ModelSerializer):
+    """
+    GET/PATCH پروفایل رستوران — نام فیلدها همان نام ستون‌های مدل است.
+    لوگو فقط از طریق upload-logo؛ در خروجی به صورت URL مطلق.
+    """
+    logo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Restaurant
+        fields = (
+            "name",
+            "logo",
+            "description",
+            "restaurant_type",
+            "email",
+            "phone",
+            "whatsapp",
+            "website",
+            "address",
+            "city",
+            "country",
+            "postal_code",
+            "latitude",
+            "longitude",
+            "gallery",
+            "cover_image_index",
+            "working_hours",
+            "closed_today",
+        )
+        extra_kwargs = {
+            "gallery": {"required": False},
+            "working_hours": {"required": False},
+            "email": {"allow_blank": True},
+            "website": {"allow_blank": True},
+            "whatsapp": {"allow_blank": True},
+        }
+
+    def get_logo(self, obj):
+        if not obj.logo:
+            return ""
+        request = self.context.get("request")
+        url = obj.logo.url
+        if request:
+            return request.build_absolute_uri(url)
+        return url
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        merged = _default_working_hours()
+        raw = instance.working_hours or {}
+        if isinstance(raw, dict):
+            for k in _WORKING_HOURS_DAY_KEYS:
+                if k in raw and isinstance(raw[k], dict):
+                    merged[k] = {
+                        "enabled": bool(raw[k].get("enabled", False)),
+                        "open": str(raw[k].get("open", "") or ""),
+                        "close": str(raw[k].get("close", "") or ""),
+                    }
+        data["working_hours"] = merged
+        data["gallery"] = list(instance.gallery) if isinstance(instance.gallery, list) else []
+        return data
+
+    def validate_working_hours(self, value):
+        if value is None:
+            return {}
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("working_hours must be an object")
+        out = {}
+        for k in _WORKING_HOURS_DAY_KEYS:
+            if k not in value:
+                continue
+            block = value[k]
+            if not isinstance(block, dict):
+                raise serializers.ValidationError(f"Invalid block for {k}")
+            out[k] = {
+                "enabled": bool(block.get("enabled", False)),
+                "open": str(block.get("open", "") or ""),
+                "close": str(block.get("close", "") or ""),
+            }
+        return out
+
+    def validate_gallery(self, value):
+        if value is None:
+            return []
+        if not isinstance(value, list):
+            raise serializers.ValidationError("gallery must be a list of URL strings")
+        return [str(u).strip() for u in value if str(u).strip()]
+
+    def validate(self, attrs):
+        inst = self.instance
+        gallery = attrs.get("gallery")
+        if gallery is None and inst:
+            gallery = list(inst.gallery or [])
+        else:
+            gallery = list(gallery or [])
+        idx = attrs.get("cover_image_index")
+        if idx is None and inst is not None:
+            idx = inst.cover_image_index
+        if idx is None:
+            idx = 0
+        if gallery and idx >= len(gallery):
+            raise serializers.ValidationError(
+                {"cover_image_index": "cover_image_index must be < len(gallery)"}
+            )
+        if not gallery:
+            attrs["cover_image_index"] = 0
+        return attrs
+
+    def update(self, instance, validated_data):
+        if "working_hours" in validated_data:
+            wh = validated_data["working_hours"]
+            current = instance.working_hours if isinstance(instance.working_hours, dict) else {}
+            validated_data["working_hours"] = {**current, **wh}
+        return super().update(instance, validated_data)
 
 
 class CloudinaryImageSerializer(serializers.ModelSerializer):

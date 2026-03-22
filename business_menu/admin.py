@@ -274,10 +274,17 @@ class RestaurantAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('اطلاعات اصلی', {
-            'fields': ('admin', 'name', 'description')
+            'fields': ('admin', 'name', 'description', 'restaurant_type')
         }),
-        ('اطلاعات تماس', {
-            'fields': ('address', 'phone')
+        ('اطلاعات تماس و مکان', {
+            'fields': (
+                'address', 'city', 'country', 'postal_code',
+                'phone', 'email', 'whatsapp', 'website',
+                'latitude', 'longitude',
+            )
+        }),
+        ('گالری و ساعات', {
+            'fields': ('logo', 'gallery', 'cover_image_index', 'working_hours', 'closed_today'),
         }),
         ('وضعیت', {
             'fields': ('is_active',)

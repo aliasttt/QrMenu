@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.db import IntegrityError
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from datetime import timedelta
@@ -16,8 +17,10 @@ from django.templatetags.static import static as static_url
 import io
 import json
 import logging
+import os
 import re
 import random
+import uuid
 from decimal import Decimal
 
 from business_menu.hours_utils import (
@@ -63,7 +66,8 @@ from .models import (
 )
 from accounts.models import PasswordResetCode
 from .serializers import (
-    BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, MenuItemSerializer,
+    BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, RestaurantProfileSerializer,
+    MenuItemSerializer,
     MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
     CategorySerializer, MenuSetSerializer, PackageSerializer, PackageCreateSerializer,
     MenuThemeSerializer, RestaurantSettingsSerializer, RestaurantOwnerRegistrationSerializer,
@@ -176,6 +180,50 @@ def _get_business_admin_for_user(user) -> BusinessAdmin | None:
     if not phone:
         return None
     return BusinessAdmin.objects.filter(phone=phone, is_active=True).first()
+
+
+def _get_owned_restaurant(user, restaurant_id: int) -> Restaurant | None:
+    admin = _get_business_admin_for_user(user)
+    if not admin:
+        return None
+    try:
+        return Restaurant.objects.get(id=restaurant_id, admin=admin, is_active=True)
+    except Restaurant.DoesNotExist:
+        return None
+
+
+def _sync_working_hours_to_settings(restaurant: Restaurant) -> None:
+    """Mirror `working_hours` JSON into RestaurantSettings.opening_hours_json for سفارش/اعتبارسنجی."""
+    wh = restaurant.working_hours or {}
+    keys = (
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+    )
+    out = []
+    for i, key in enumerate(keys):
+        block = wh.get(key) or {}
+        if not isinstance(block, dict):
+            continue
+        if (
+            block.get("enabled")
+            and str(block.get("open", "")).strip()
+            and str(block.get("close", "")).strip()
+        ):
+            out.append(
+                {
+                    "day": i,
+                    "open": str(block["open"]).strip(),
+                    "close": str(block["close"]).strip(),
+                }
+            )
+    settings_obj, _ = RestaurantSettings.objects.get_or_create(restaurant=restaurant)
+    settings_obj.opening_hours_json = out
+    settings_obj.save(update_fields=["opening_hours_json", "updated_at"])
 
 
 def _normalize_items_payload(items_data):
@@ -479,11 +527,17 @@ class LoginView(APIView):
         }
 
         if restaurant:
+            logo_url = ""
+            if getattr(restaurant, "logo", None):
+                try:
+                    logo_url = request.build_absolute_uri(restaurant.logo.url)
+                except Exception:
+                    logo_url = ""
             response_data["restaurant"] = {
                 "id": restaurant.id,
                 "name": restaurant.name,
                 "phone": restaurant.phone or admin.phone,
-                "logo": ""  # اگر فیلد logo دارید، آن را اضافه کنید
+                "logo": logo_url,
             }
         
         return Response(response_data, status=status.HTTP_200_OK)
@@ -664,11 +718,17 @@ class ResetPasswordView(APIView):
             },
         }
         if restaurant:
+            logo_url = ""
+            if getattr(restaurant, "logo", None):
+                try:
+                    logo_url = request.build_absolute_uri(restaurant.logo.url)
+                except Exception:
+                    logo_url = ""
             response_data["restaurant"] = {
                 "id": restaurant.id,
                 "name": restaurant.name,
                 "phone": restaurant.phone or admin.phone,
-                "logo": "",
+                "logo": logo_url,
             }
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -733,6 +793,99 @@ class RestaurantListCreateView(APIView):
     def _get_admin_from_user(self, user):
         """پیدا کردن BusinessAdmin از روی User"""
         return _get_business_admin_for_user(user)
+
+
+class RestaurantProfileView(APIView):
+    """
+    GET/PATCH پروفایل رستوران — فیلدهای JSON همنام مدل (name, working_hours, gallery, …).
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, restaurant_id):
+        restaurant = _get_owned_restaurant(request.user, int(restaurant_id))
+        if not restaurant:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        ser = RestaurantProfileSerializer(restaurant, context={"request": request})
+        return Response(ser.data)
+
+    def patch(self, request, restaurant_id):
+        restaurant = _get_owned_restaurant(request.user, int(restaurant_id))
+        if not restaurant:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        ser = RestaurantProfileSerializer(
+            restaurant,
+            data=request.data,
+            partial=True,
+            context={"request": request},
+        )
+        if ser.is_valid():
+            with transaction.atomic():
+                ser.save()
+                restaurant.refresh_from_db()
+                _sync_working_hours_to_settings(restaurant)
+            out = RestaurantProfileSerializer(restaurant, context={"request": request})
+            return Response(out.data)
+        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RestaurantProfileLogoUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, restaurant_id):
+        restaurant = _get_owned_restaurant(request.user, int(restaurant_id))
+        if not restaurant:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        if "logo" not in request.FILES:
+            return Response(
+                {"detail": 'Expected multipart file field "logo".'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        restaurant.logo = request.FILES["logo"]
+        restaurant.save(update_fields=["logo", "updated_at"])
+        url = request.build_absolute_uri(restaurant.logo.url)
+        return Response({"logo": url})
+
+
+class RestaurantProfileGalleryView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, restaurant_id):
+        restaurant = _get_owned_restaurant(request.user, int(restaurant_id))
+        if not restaurant:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        if "image" not in request.FILES:
+            return Response(
+                {"detail": 'Expected multipart file field "image".'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        f = request.FILES["image"]
+        ext = os.path.splitext(f.name)[1] or ".jpg"
+        rel = f"restaurants/{restaurant_id}/gallery/{uuid.uuid4().hex}{ext}"
+        saved = default_storage.save(rel, f)
+        url = request.build_absolute_uri(default_storage.url(saved))
+        gallery = list(restaurant.gallery or [])
+        gallery.append(url)
+        restaurant.gallery = gallery
+        restaurant.save(update_fields=["gallery", "updated_at"])
+        return Response({"image_url": url, "gallery": restaurant.gallery})
+
+    def delete(self, request, restaurant_id):
+        restaurant = _get_owned_restaurant(request.user, int(restaurant_id))
+        if not restaurant:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        image_url = request.data.get("image_url")
+        if not image_url:
+            return Response({"detail": "image_url required in JSON body."}, status=status.HTTP_400_BAD_REQUEST)
+        gallery = list(restaurant.gallery or [])
+        if image_url not in gallery:
+            return Response({"detail": "Image not in gallery."}, status=status.HTTP_404_NOT_FOUND)
+        gallery.remove(image_url)
+        idx = restaurant.cover_image_index
+        if idx >= len(gallery):
+            restaurant.cover_image_index = max(0, len(gallery) - 1) if gallery else 0
+        restaurant.gallery = gallery
+        restaurant.save(update_fields=["gallery", "cover_image_index", "updated_at"])
+        return Response({"message": "Image deleted", "gallery": gallery})
 
 
 class UpdateProfileView(APIView):
