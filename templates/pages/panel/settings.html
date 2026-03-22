@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Settings | Panel{% endblock %}
 {% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
@@ -7,17 +8,179 @@
 <section class="container mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=settings_crumbs %}
   <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Restaurant Settings</h1>
+  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Update your restaurant profile and map location. Changes are saved to your account.</p>
 
-  <form class="mt-8 card-panel space-y-5">
-    {% include "partials/form_fields.html" with label="Restaurant Name" name="name" value=restaurant.name %}
-    {% include "partials/form_fields.html" with label="Address" name="address" value=restaurant.address %}
-    {% include "partials/form_fields.html" with label="Phone" name="phone" value=restaurant.phone %}
-    {% include "partials/form_fields.html" with label="Opening Hours" name="hours" value=restaurant.hours %}
-    <div>
-      <label for="logo" class="label-field">Logo Upload (placeholder)</label>
-      <input id="logo" type="file" class="input-field mt-1.5">
+  {% if not restaurant %}
+  <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-100">
+    <p class="font-medium">No restaurant linked to this session.</p>
+    <p class="mt-2 text-sm opacity-90">Sign in with your restaurant owner account or open this page from your dashboard with a valid link.</p>
+    <a href="/auth/login/" class="mt-4 inline-flex rounded-lg bg-amber-800 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-900">Sign in</a>
+  </div>
+  {% else %}
+
+  {% csrf_token %}
+  <input type="hidden" id="settings-restaurant-id" value="{{ restaurant.id }}">
+  <input type="hidden" id="settings-profile-url" value="{{ restaurant_profile_api_url }}">
+
+  <form id="restaurant-settings-form" class="mt-8 space-y-10" onsubmit="return false;">
+    <div class="card-panel space-y-5">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">General</h2>
+      {% include "partials/form_fields.html" with label="Restaurant name" name="settings-name" value=restaurant.name %}
+      {% include "partials/form_fields.html" with label="Phone" name="settings-phone" value=restaurant.phone %}
+      {% include "partials/form_fields.html" with label="Address" name="settings-address" value=restaurant.address %}
+      <div class="grid gap-4 sm:grid-cols-2">
+        {% include "partials/form_fields.html" with label="City" name="settings-city" value=restaurant.city %}
+        {% include "partials/form_fields.html" with label="Postal code" name="settings-postal" value=restaurant.postal_code %}
+      </div>
+      {% include "partials/form_fields.html" with label="Country" name="settings-country" value=restaurant.country %}
     </div>
-    <button class="btn-primary" type="button">Save changes</button>
+
+    <div class="card-panel space-y-4">
+      <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Restaurant location</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Search for an address or click the map to set your pin. Drag the marker to adjust.</p>
+        </div>
+      </div>
+
+      {% if not google_maps_api_key %}
+      <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-900/20 dark:text-rose-200">
+        Google Maps is not configured. Set <code class="rounded bg-rose-100 px-1 dark:bg-rose-800">GOOGLE_MAPS_API_KEY</code> in the server environment to enable the map.
+      </div>
+      {% endif %}
+
+      <div class="relative">
+        <label for="location-search" class="label-field">Search address</label>
+        <input id="location-search" type="text" autocomplete="off" placeholder="Start typing an address…" class="input-field mt-1.5" {% if not google_maps_api_key %}disabled{% endif %}>
+      </div>
+
+      <div id="location-map-loading" class="flex min-h-[220px] items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 text-sm text-slate-500 dark:border-slate-600 dark:bg-slate-800 {% if google_maps_api_key %}flex{% else %}hidden{% endif %}">
+        Loading map…
+      </div>
+      <div id="location-map" class="{% if google_maps_api_key %}hidden{% else %}min-h-[120px]{% endif %} min-h-[280px] w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-600"></div>
+      <p id="location-map-status" class="text-sm text-slate-500 dark:text-slate-400" role="status"></p>
+
+      <input type="hidden" id="id_google_place_id" value="{{ restaurant.google_place_id|default:'' }}">
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="id_latitude" class="label-field">Latitude</label>
+          <input id="id_latitude" type="text" inputmode="decimal" readonly class="input-field mt-1.5 cursor-not-allowed bg-slate-50 dark:bg-slate-800/80" placeholder="—" value="{% if restaurant.latitude is not None %}{{ restaurant.latitude }}{% endif %}">
+        </div>
+        <div>
+          <label for="id_longitude" class="label-field">Longitude</label>
+          <input id="id_longitude" type="text" inputmode="decimal" readonly class="input-field mt-1.5 cursor-not-allowed bg-slate-50 dark:bg-slate-800/80" placeholder="—" value="{% if restaurant.longitude is not None %}{{ restaurant.longitude }}{% endif %}">
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button type="button" id="btn-use-marker" class="btn-secondary text-sm">Use current marker</button>
+        <button type="button" id="btn-geolocate" class="btn-secondary text-sm">Use my location</button>
+        <button type="button" id="btn-copy-coords" class="btn-secondary text-sm">Copy coordinates</button>
+        <button type="button" id="btn-clear-location" class="rounded-lg border border-rose-300 px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/30">Clear location</button>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="button" id="restaurant-settings-save" class="btn-primary">Save changes</button>
+      <span id="settings-save-status" class="text-sm text-slate-500 dark:text-slate-400"></span>
+    </div>
   </form>
+  {% endif %}
 </section>
+
+{% if restaurant and google_maps_api_key %}
+<script src="{% static 'js/restaurant-maps.js' %}"></script>
+<script>
+(function () {
+  var apiKey = "{{ google_maps_api_key|escapejs }}";
+  if (window.PreisMenuMaps) {
+    window.PreisMenuMaps.initLocationPicker({
+      apiKey: apiKey,
+      mapId: "location-map",
+      searchInputId: "location-search",
+      latInputId: "id_latitude",
+      lngInputId: "id_longitude",
+      addressInputId: "settings-address",
+      placeIdInputId: "id_google_place_id",
+      statusId: "location-map-status",
+      loadingId: "location-map-loading",
+      useMarkerBtnId: "btn-use-marker",
+      clearBtnId: "btn-clear-location",
+      geolocateBtnId: "btn-geolocate",
+      copyCoordsBtnId: "btn-copy-coords",
+    });
+  }
+})();
+</script>
+<script>
+(function () {
+  function getCookie(name) {
+    var v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+    return v ? decodeURIComponent(v[2]) : "";
+  }
+  var saveBtn = document.getElementById("restaurant-settings-save");
+  if (!saveBtn) return;
+  saveBtn.addEventListener("click", async function () {
+    var rid = document.getElementById("settings-restaurant-id");
+    var base = document.getElementById("settings-profile-url");
+    var status = document.getElementById("settings-save-status");
+    if (!rid || !base) return;
+    function numOrNull(id) {
+      var el = document.getElementById(id);
+      if (!el || !String(el.value).trim()) return null;
+      var n = parseFloat(String(el.value).replace(",", "."));
+      return isFinite(n) ? n : null;
+    }
+    var lat = numOrNull("id_latitude");
+    var lng = numOrNull("id_longitude");
+    if ((lat === null) !== (lng === null)) {
+      status.textContent = "Set both latitude and longitude, or clear both.";
+      status.classList.add("text-rose-600");
+      return;
+    }
+    var body = {
+      name: (document.getElementById("settings-name") || {}).value || "",
+      phone: (document.getElementById("settings-phone") || {}).value || "",
+      address: (document.getElementById("settings-address") || {}).value || "",
+      city: (document.getElementById("settings-city") || {}).value || "",
+      postal_code: (document.getElementById("settings-postal") || {}).value || "",
+      country: (document.getElementById("settings-country") || {}).value || "",
+      latitude: lat,
+      longitude: lng,
+      google_place_id: (document.getElementById("id_google_place_id") || {}).value || "",
+    };
+    status.classList.remove("text-rose-600");
+    status.textContent = "Saving…";
+    try {
+      var r = await fetch(base.value, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(body),
+      });
+      var data = await r.json().catch(function () { return {}; });
+      if (!r.ok) {
+        status.textContent = (data.detail || data.message || JSON.stringify(data)) || "Save failed";
+        status.classList.add("text-rose-600");
+        return;
+      }
+      status.textContent = "Saved.";
+      if (data.latitude != null) {
+        var le = document.getElementById("id_latitude");
+        var ln = document.getElementById("id_longitude");
+        if (le) le.value = String(data.latitude);
+        if (ln) ln.value = String(data.longitude);
+      }
+    } catch (e) {
+      status.textContent = "Network error";
+      status.classList.add("text-rose-600");
+    }
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}

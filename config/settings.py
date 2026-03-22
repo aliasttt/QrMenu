@@ -244,6 +244,9 @@ OTP_THROTTLE_RATE = os.environ.get("OTP_THROTTLE_RATE", os.getenv("OTP_THROTTLE_
 # Site base URL (for emails, Stripe redirects)
 SITE_URL = os.environ.get("SITE_URL", "") or os.getenv("SITE_URL", "https://preismenu.de")
 
+# Google Maps (browser-only key; restrict by HTTP referrer in Google Cloud Console)
+GOOGLE_MAPS_API_KEY = (os.environ.get("GOOGLE_MAPS_API_KEY", "") or os.getenv("GOOGLE_MAPS_API_KEY", "")).strip()
+
 # reCAPTCHA (signup anti-bot) — from .env
 RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY", "") or os.getenv("RECAPTCHA_SITE_KEY", "")
 RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY", "") or os.getenv("RECAPTCHA_SECRET_KEY", "")

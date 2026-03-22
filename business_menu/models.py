@@ -117,8 +117,25 @@ class Restaurant(models.Model):
     country = models.CharField(max_length=100, blank=True, help_text="Country")
     city = models.CharField(max_length=100, blank=True, help_text="City")
     postal_code = models.CharField(max_length=20, blank=True, help_text="Postal / ZIP code")
-    latitude = models.CharField(max_length=32, blank=True, help_text="Latitude as string (e.g. maps)")
-    longitude = models.CharField(max_length=32, blank=True, help_text="Longitude as string (e.g. maps)")
+    latitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True,
+        help_text="WGS84 latitude (-90..90)",
+    )
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True,
+        help_text="WGS84 longitude (-180..180)",
+    )
+    google_place_id = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Google Places place_id when chosen from autocomplete",
+    )
     restaurant_type = models.CharField(
         max_length=50,
         blank=True,
@@ -148,6 +165,17 @@ class Restaurant(models.Model):
     
     def __str__(self) -> str:
         return f"{self.name} - {self.admin.name}"
+
+    @property
+    def google_maps_url(self) -> str:
+        """Shareable Google Maps link for current coordinates (no API calls)."""
+        if self.latitude is not None and self.longitude is not None:
+            return f"https://www.google.com/maps?q={self.latitude},{self.longitude}"
+        return ""
+
+    @property
+    def has_map_location(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
 
 
 class MenuItem(models.Model):

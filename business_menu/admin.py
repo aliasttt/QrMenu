@@ -280,11 +280,13 @@ class RestaurantAdmin(admin.ModelAdmin):
             'fields': (
                 'address', 'city', 'country', 'postal_code',
                 'phone', 'email', 'whatsapp', 'website',
-                'latitude', 'longitude',
             )
         }),
         ('گالری و ساعات', {
             'fields': ('logo', 'gallery', 'cover_image_index', 'working_hours', 'closed_today'),
+        }),
+        ('نقشه', {
+            'fields': ('latitude', 'longitude', 'google_place_id'),
         }),
         ('وضعیت', {
             'fields': ('is_active',)

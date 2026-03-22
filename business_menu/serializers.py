@@ -260,6 +260,7 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
     لوگو فقط از طریق upload-logo؛ در خروجی به صورت URL مطلق.
     """
     logo = serializers.SerializerMethodField()
+    google_maps_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Restaurant
@@ -278,6 +279,8 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
             "postal_code",
             "latitude",
             "longitude",
+            "google_place_id",
+            "google_maps_url",
             "gallery",
             "cover_image_index",
             "working_hours",
@@ -289,7 +292,11 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
             "email": {"allow_blank": True},
             "website": {"allow_blank": True},
             "whatsapp": {"allow_blank": True},
+            "google_place_id": {"allow_blank": True, "required": False},
         }
+
+    def get_google_maps_url(self, obj):
+        return obj.google_maps_url or ""
 
     def get_logo(self, obj):
         if not obj.logo:
@@ -314,7 +321,37 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
                     }
         data["working_hours"] = merged
         data["gallery"] = list(instance.gallery) if isinstance(instance.gallery, list) else []
+        if instance.latitude is not None:
+            data["latitude"] = str(instance.latitude)
+        else:
+            data["latitude"] = None
+        if instance.longitude is not None:
+            data["longitude"] = str(instance.longitude)
+        else:
+            data["longitude"] = None
         return data
+
+    def validate_latitude(self, value):
+        if value is None or value == "":
+            return None
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            raise serializers.ValidationError("Invalid latitude.")
+        if v < -90 or v > 90:
+            raise serializers.ValidationError("Latitude must be between -90 and 90.")
+        return value
+
+    def validate_longitude(self, value):
+        if value is None or value == "":
+            return None
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            raise serializers.ValidationError("Invalid longitude.")
+        if v < -180 or v > 180:
+            raise serializers.ValidationError("Longitude must be between -180 and 180.")
+        return value
 
     def validate_working_hours(self, value):
         if value is None:
@@ -360,6 +397,23 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
             )
         if not gallery:
             attrs["cover_image_index"] = 0
+
+        lat = attrs.get("latitude", serializers.empty)
+        lng = attrs.get("longitude", serializers.empty)
+        if inst is not None:
+            if lat is serializers.empty:
+                lat = inst.latitude
+            if lng is serializers.empty:
+                lng = inst.longitude
+        else:
+            if lat is serializers.empty:
+                lat = None
+            if lng is serializers.empty:
+                lng = None
+        if (lat is None) != (lng is None):
+            raise serializers.ValidationError(
+                "latitude and longitude must both be set or both cleared."
+            )
         return attrs
 
     def update(self, instance, validated_data):

@@ -1,4 +1,5 @@
 import json
+from urllib.parse import quote
 
 from django.conf import settings as django_settings
 from django.shortcuts import render, get_object_or_404, redirect
@@ -517,6 +518,21 @@ def restaurant_menu(request, restaurant_id):
         "allow_payment_online": allow_online,
         "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
     }
+    has_location = bool(getattr(restaurant, "has_map_location", False))
+    google_maps_link = (restaurant.google_maps_url or "") if has_location else ""
+    lat_s = ""
+    lng_s = ""
+    if has_location and restaurant.latitude is not None and restaurant.longitude is not None:
+        lat_s = str(restaurant.latitude)
+        lng_s = str(restaurant.longitude)
+    apple_maps_link = ""
+    if has_location and lat_s and lng_s:
+        apple_maps_link = (
+            f"https://maps.apple.com/?ll={lat_s},{lng_s}&q={quote(restaurant.name)}"
+        )
+    parts = [p for p in [restaurant.address, restaurant.postal_code, restaurant.city] if (p or "").strip()]
+    location_address = ", ".join(parts) if parts else (restaurant.address or "")
+    gmaps_key = getattr(django_settings, "GOOGLE_MAPS_API_KEY", "") or ""
     return render(
         request,
         "pages/restaurant_menu.html",
@@ -536,6 +552,13 @@ def restaurant_menu(request, restaurant_id):
             "packages": [],
             "cart_items": cart_items,
             "order_options": order_options,
+            "has_location": has_location,
+            "location_address": location_address,
+            "google_maps_link": google_maps_link,
+            "apple_maps_link": apple_maps_link,
+            "embed_latitude": lat_s,
+            "embed_longitude": lng_s,
+            "google_maps_api_key": gmaps_key,
         },
     )
 
@@ -698,9 +721,30 @@ def panel_dashboard(request):
 
 
 def panel_settings(request):
-    payload = _restaurant_payload()
-    payload["settings_crumbs"] = [{"label": "Panel", "url": "/panel/"}, {"label": "Settings", "url": ""}]
-    return render(request, "pages/panel/settings.html", payload)
+    admin = None
+    if request.user.is_authenticated:
+        admin = BusinessAdmin.objects.filter(auth_user=request.user).select_related("restaurant").first()
+    if not admin:
+        aid = request.GET.get("admin_id")
+        if aid:
+            try:
+                admin = BusinessAdmin.objects.select_related("restaurant").get(id=int(aid))
+            except (ValueError, BusinessAdmin.DoesNotExist):
+                admin = None
+    restaurant = getattr(admin, "restaurant", None) if admin else None
+    profile_url = ""
+    if restaurant:
+        profile_url = f"/api/business-menu/restaurant-profile/{restaurant.id}/"
+    return render(
+        request,
+        "pages/panel/settings.html",
+        {
+            "settings_crumbs": [{"label": "Panel", "url": "/panel/"}, {"label": "Settings", "url": ""}],
+            "restaurant": restaurant,
+            "google_maps_api_key": getattr(django_settings, "GOOGLE_MAPS_API_KEY", "") or "",
+            "restaurant_profile_api_url": profile_url,
+        },
+    )
 
 
 def panel_categories(request):
