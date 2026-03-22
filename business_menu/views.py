@@ -9,6 +9,8 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.db import IntegrityError
 from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth.password_validation import validate_password
 from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.contrib.auth import authenticate
@@ -66,7 +68,8 @@ from .models import (
 )
 from accounts.models import PasswordResetCode
 from .serializers import (
-    BusinessAdminSerializer, BusinessAdminUpdateSerializer, RestaurantSerializer, RestaurantProfileSerializer,
+    BusinessAdminSerializer, BusinessAdminUpdateSerializer, BusinessMenuResetPasswordSerializer,
+    RestaurantSerializer, RestaurantProfileSerializer,
     MenuItemSerializer,
     MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
     CategorySerializer, MenuSetSerializer, PackageSerializer, PackageCreateSerializer,
@@ -642,16 +645,19 @@ class ResetPasswordView(APIView):
     """
     Reset password and auto-login with JWT.
     POST /api/business-menu/reset-password/
-    Body: {"email": "owner@example.com", "code": "123456", "password": "newpass123"}
+    Body (JSON): {"email": "...", "code": "123456", "password": "newpass123"}
+    Field names are fixed: email, code, password — they are not Django model columns; password maps to User.password via set_password.
     """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = (request.data.get("email") or "").strip().lower()
-        code = (request.data.get("code") or "").strip()
-        new_password = request.data.get("password") or ""
-        if not email or not code or not new_password:
-            return Response({"detail": "email, code, password are required"}, status=status.HTTP_400_BAD_REQUEST)
+        ser = BusinessMenuResetPasswordSerializer(data=request.data)
+        if not ser.is_valid():
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        email = ser.validated_data["email"].strip().lower()
+        code = ser.validated_data["code"].strip()
+        new_password = ser.validated_data["password"]
 
         admins = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id")
         if not admins.exists():
@@ -680,13 +686,25 @@ class ResetPasswordView(APIView):
         if not user:
             return Response({"detail": "Account is not linked to an auth user."}, status=status.HTTP_400_BAD_REQUEST)
 
-        user.set_password(new_password)
-        user.save(update_fields=["password"])
-        if admin.auth_user_id != user.id:
-            admin.auth_user = user
-            admin.save(update_fields=["auth_user"])
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as e:
+            return Response({"detail": e.messages}, status=status.HTTP_400_BAD_REQUEST)
 
-        PasswordResetCode.objects.filter(email__iexact=email, is_used=False).update(is_used=True)
+        try:
+            user.set_password(new_password)
+            user.save(update_fields=["password"])
+            if admin.auth_user_id != user.id:
+                admin.auth_user = user
+                admin.save(update_fields=["auth_user"])
+
+            PasswordResetCode.objects.filter(email__iexact=email, is_used=False).update(is_used=True)
+        except Exception as exc:
+            logger.exception("reset-password: failed to save user password: %s", exc)
+            return Response(
+                {"detail": "Could not update password. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         now = timezone.now()
         if admin.payment_status == "paid":
@@ -694,17 +712,31 @@ class ResetPasswordView(APIView):
         elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
             pass
         else:
-            return Response({
-                "success": False,
-                "message": "Your trial has ended. Please subscribe to continue using the service.",
-                "payment_required": True,
-                "admin_id": admin.id,
-                "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
-            }, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {
+                    "success": False,
+                    "message": "Your trial has ended. Please subscribe to continue using the service.",
+                    "payment_required": True,
+                    "admin_id": admin.id,
+                    "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        refresh = RefreshToken.for_user(user)
         try:
-            restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
+            refresh = RefreshToken.for_user(user)
+        except Exception as exc:
+            logger.exception("reset-password: JWT issue for user_id=%s: %s", getattr(user, "id", None), exc)
+            return Response(
+                {"detail": "Password was updated but could not issue a session token. Please log in manually."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        restaurant = None
+        try:
+            r = admin.restaurant
+            if r.is_active:
+                restaurant = r
         except Restaurant.DoesNotExist:
             restaurant = None
 

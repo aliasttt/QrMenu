@@ -274,7 +274,7 @@ class RestaurantAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('اطلاعات اصلی', {
-            'fields': ('admin', 'name', 'description', 'restaurant_type')
+            'fields': ('admin', 'name', 'description', 'restaurant_type', 'public_slug')
         }),
         ('اطلاعات تماس و مکان', {
             'fields': (

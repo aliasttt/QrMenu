@@ -386,18 +386,8 @@ def _ensure_restaurant_settings_columns():
             )
 
 
-def restaurant_menu(request, restaurant_id):
-    """صفحهٔ منوی یک رستوران — تنظیمات و تم از اپ اعمال می‌شود."""
-    # اگر مایگریشن روی سرور اجرا نشده باشد، ستون‌های جدید را با raw SQL اضافه کن (فقط PostgreSQL)
-    try:
-        _ensure_restaurant_settings_columns()
-    except Exception:
-        pass
-    restaurant = get_object_or_404(
-        Restaurant.objects.select_related("admin", "settings", "settings__menu_theme"),
-        pk=restaurant_id,
-        is_active=True,
-    )
+def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> dict:
+    """Shared template context for production menu pages (by numeric id or resolved public_slug)."""
     settings_obj, _ = RestaurantSettings.objects.get_or_create(
         restaurant=restaurant,
         defaults={
@@ -533,37 +523,67 @@ def restaurant_menu(request, restaurant_id):
     parts = [p for p in [restaurant.address, restaurant.postal_code, restaurant.city] if (p or "").strip()]
     location_address = ", ".join(parts) if parts else (restaurant.address or "")
     gmaps_key = getattr(django_settings, "GOOGLE_MAPS_API_KEY", "") or ""
+    return {
+        "restaurant": restaurant,
+        "restaurant_hours": restaurant_hours,
+        "is_within_hours": is_within_hours,
+        "scheduled_for": scheduled_for,
+        "schedule_url": f"/restaurants/{restaurant_id}/schedule/",
+        "reservation_url": f"/restaurants/{restaurant_id}/reservation/",
+        "menu_cards": menu_cards,
+        "menu_sections": menu_sections,
+        "category_list": category_list,
+        "banner_images": banner_images,
+        "theme_slug": theme_slug,
+        "settings": settings_obj,
+        "packages": [],
+        "cart_items": cart_items,
+        "order_options": order_options,
+        "has_location": has_location,
+        "location_address": location_address,
+        "google_maps_link": google_maps_link,
+        "apple_maps_link": apple_maps_link,
+        "embed_latitude": lat_s,
+        "embed_longitude": lng_s,
+        "google_maps_api_key": gmaps_key,
+    }
+
+
+def restaurant_menu(request, restaurant_id):
+    """صفحهٔ منوی یک رستوران — تنظیمات و تم از اپ اعمال می‌شود."""
+    try:
+        _ensure_restaurant_settings_columns()
+    except Exception:
+        pass
+    restaurant = get_object_or_404(
+        Restaurant.objects.select_related("admin", "settings", "settings__menu_theme"),
+        pk=restaurant_id,
+        is_active=True,
+    )
     return render(
         request,
         "pages/restaurant_menu.html",
-        {
-            "restaurant": restaurant,
-            "restaurant_hours": restaurant_hours,
-            "is_within_hours": is_within_hours,
-            "scheduled_for": scheduled_for,
-            "schedule_url": f"/restaurants/{restaurant_id}/schedule/",
-            "reservation_url": f"/restaurants/{restaurant_id}/reservation/",
-            "menu_cards": menu_cards,
-            "menu_sections": menu_sections,
-            "category_list": category_list,
-            "banner_images": banner_images,
-            "theme_slug": theme_slug,
-            "settings": settings_obj,
-            "packages": [],
-            "cart_items": cart_items,
-            "order_options": order_options,
-            "has_location": has_location,
-            "location_address": location_address,
-            "google_maps_link": google_maps_link,
-            "apple_maps_link": apple_maps_link,
-            "embed_latitude": lat_s,
-            "embed_longitude": lng_s,
-            "google_maps_api_key": gmaps_key,
-        },
+        build_restaurant_menu_context(request, restaurant, restaurant_id),
     )
 
 
 def public_menu(request, restaurant_slug):
+    """Production menu when `public_slug` matches; otherwise demo payload for /m/<slug>/."""
+    try:
+        _ensure_restaurant_settings_columns()
+    except Exception:
+        pass
+    db_restaurant = (
+        Restaurant.objects.filter(is_active=True, public_slug=restaurant_slug)
+        .select_related("admin", "settings", "settings__menu_theme")
+        .first()
+    )
+    if db_restaurant:
+        return render(
+            request,
+            "pages/restaurant_menu.html",
+            build_restaurant_menu_context(request, db_restaurant, db_restaurant.id),
+        )
     payload = _restaurant_payload(restaurant_slug)
     payload["checkout_url"] = f"/m/{restaurant_slug}/checkout/"
     payload["cart_items_json"] = json.dumps(payload["cart_items"])

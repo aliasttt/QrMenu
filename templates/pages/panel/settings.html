@@ -81,14 +81,22 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div
+      id="settings-save-alert"
+      class="hidden rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800/80"
+      role="alert"
+    ></div>
+
+    <div class="flex flex-wrap items-center gap-3">
       <button type="button" id="restaurant-settings-save" class="btn-primary">Save changes</button>
-      <span id="settings-save-status" class="text-sm text-slate-500 dark:text-slate-400"></span>
+      <span id="settings-save-status" class="text-sm font-medium text-slate-500 dark:text-slate-400" aria-live="polite"></span>
     </div>
   </form>
   {% endif %}
 </section>
+{% endblock %}
 
+{% block scripts %}
 {% if restaurant and google_maps_api_key %}
 <script src="{% static 'js/restaurant-maps.js' %}"></script>
 <script>
@@ -113,19 +121,68 @@
   }
 })();
 </script>
+{% endif %}
+{% if restaurant %}
 <script>
 (function () {
   function getCookie(name) {
     var v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
     return v ? decodeURIComponent(v[2]) : "";
   }
+  function formatApiError(data, status) {
+    if (status === 401) {
+      return "Session expired or not signed in. Open /auth/login/ and try again.";
+    }
+    if (status === 403) {
+      return "You do not have permission to update this restaurant.";
+    }
+    if (data && data.detail) {
+      return typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail);
+    }
+    if (data && data.message) {
+      return String(data.message);
+    }
+    if (data && typeof data === "object") {
+      var parts = [];
+      for (var k in data) {
+        if (!Object.prototype.hasOwnProperty.call(data, k)) continue;
+        var v = data[k];
+        if (Array.isArray(v) && v.length) parts.push(k + ": " + v[0]);
+        else if (typeof v === "string") parts.push(k + ": " + v);
+      }
+      if (parts.length) return parts.join(" ");
+    }
+    return "Could not save (HTTP " + status + ").";
+  }
   var saveBtn = document.getElementById("restaurant-settings-save");
   if (!saveBtn) return;
+  var alertEl = document.getElementById("settings-save-alert");
+  var status = document.getElementById("settings-save-status");
+  function showAlert(msg, isError) {
+    if (!alertEl) return;
+    if (!msg) {
+      alertEl.classList.add("hidden");
+      alertEl.textContent = "";
+      return;
+    }
+    alertEl.classList.remove("hidden");
+    alertEl.textContent = msg;
+    alertEl.classList.toggle("border-rose-300", !!isError);
+    alertEl.classList.toggle("bg-rose-50", !!isError);
+    alertEl.classList.toggle("text-rose-800", !!isError);
+    alertEl.classList.toggle("dark:border-rose-800", !!isError);
+    alertEl.classList.toggle("dark:bg-rose-900/30", !!isError);
+    alertEl.classList.toggle("dark:text-rose-200", !!isError);
+    alertEl.classList.toggle("border-emerald-200", !isError);
+    alertEl.classList.toggle("bg-emerald-50", !isError);
+    alertEl.classList.toggle("text-emerald-900", !isError);
+    alertEl.classList.toggle("dark:border-emerald-800", !isError);
+    alertEl.classList.toggle("dark:bg-emerald-900/20", !isError);
+    alertEl.classList.toggle("dark:text-emerald-100", !isError);
+  }
   saveBtn.addEventListener("click", async function () {
-    var rid = document.getElementById("settings-restaurant-id");
     var base = document.getElementById("settings-profile-url");
-    var status = document.getElementById("settings-save-status");
-    if (!rid || !base) return;
+    if (!base || !base.value) return;
     function numOrNull(id) {
       var el = document.getElementById(id);
       if (!el || !String(el.value).trim()) return null;
@@ -135,10 +192,14 @@
     var lat = numOrNull("id_latitude");
     var lng = numOrNull("id_longitude");
     if ((lat === null) !== (lng === null)) {
-      status.textContent = "Set both latitude and longitude, or clear both.";
-      status.classList.add("text-rose-600");
+      showAlert("Set both latitude and longitude, or clear both before saving.", true);
+      if (status) {
+        status.textContent = "";
+        status.className = "text-sm font-medium text-rose-600 dark:text-rose-400";
+      }
       return;
     }
+    showAlert("", false);
     var body = {
       name: (document.getElementById("settings-name") || {}).value || "",
       phone: (document.getElementById("settings-phone") || {}).value || "",
@@ -150,8 +211,10 @@
       longitude: lng,
       google_place_id: (document.getElementById("id_google_place_id") || {}).value || "",
     };
-    status.classList.remove("text-rose-600");
-    status.textContent = "Saving…";
+    if (status) {
+      status.textContent = "Saving…";
+      status.className = "text-sm font-medium text-slate-500 dark:text-slate-400";
+    }
     try {
       var r = await fetch(base.value, {
         method: "PATCH",
@@ -162,22 +225,39 @@
         },
         body: JSON.stringify(body),
       });
-      var data = await r.json().catch(function () { return {}; });
+      var raw = await r.text();
+      var data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        data = { detail: raw || "Invalid response" };
+      }
       if (!r.ok) {
-        status.textContent = (data.detail || data.message || JSON.stringify(data)) || "Save failed";
-        status.classList.add("text-rose-600");
+        var errMsg = formatApiError(data, r.status);
+        showAlert(errMsg, true);
+        if (status) {
+          status.textContent = "Not saved";
+          status.className = "text-sm font-medium text-rose-600 dark:text-rose-400";
+        }
         return;
       }
-      status.textContent = "Saved.";
-      if (data.latitude != null) {
+      showAlert("Settings saved successfully.", false);
+      if (status) {
+        status.textContent = "Saved";
+        status.className = "text-sm font-medium text-emerald-700 dark:text-emerald-400";
+      }
+      if (data.latitude != null && data.longitude != null) {
         var le = document.getElementById("id_latitude");
         var ln = document.getElementById("id_longitude");
         if (le) le.value = String(data.latitude);
         if (ln) ln.value = String(data.longitude);
       }
     } catch (e) {
-      status.textContent = "Network error";
-      status.classList.add("text-rose-600");
+      showAlert("Network error — check your connection and try again.", true);
+      if (status) {
+        status.textContent = "Not saved";
+        status.className = "text-sm font-medium text-rose-600 dark:text-rose-400";
+      }
     }
   });
 })();

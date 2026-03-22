@@ -111,11 +111,14 @@
         var geocoder = new google.maps.Geocoder();
 
         function reverseGeocode(latLng) {
-          geocoder.geocode({ location: latLng }, function (results, status) {
-            if (status === "OK" && results && results[0] && addrEl) {
-              addrEl.value = results[0].formatted_address || addrEl.value;
-            }
-          });
+          try {
+            geocoder.geocode({ location: latLng }, function (results, status) {
+              if (status !== "OK" || !results || !results[0] || !addrEl) return;
+              try {
+                addrEl.value = results[0].formatted_address || addrEl.value;
+              } catch (e) {}
+            });
+          } catch (e) {}
         }
 
         function placeMarker(latLng, doGeocode) {
@@ -258,10 +261,42 @@
       });
   }
 
+  /**
+   * Load map JS only when the location block scrolls near the viewport.
+   */
+  function initLocationEmbedLazy(opts) {
+    var root = opts.root || document.getElementById(opts.rootId || "public-location-wrap");
+    if (!root) {
+      initLocationEmbed(opts);
+      return;
+    }
+    var fired = false;
+    function run() {
+      if (fired) return;
+      fired = true;
+      initLocationEmbed(opts);
+    }
+    if (!("IntersectionObserver" in window)) {
+      run();
+      return;
+    }
+    var obs = new IntersectionObserver(
+      function (entries) {
+        if (entries[0] && entries[0].isIntersecting) {
+          obs.disconnect();
+          run();
+        }
+      },
+      { rootMargin: "120px", threshold: 0.01 }
+    );
+    obs.observe(root);
+  }
+
   global.PreisMenuMaps = {
     loadGoogleMapsScript: loadGoogleMapsScript,
     initLocationPicker: initLocationPicker,
     initLocationEmbed: initLocationEmbed,
+    initLocationEmbedLazy: initLocationEmbedLazy,
     DEFAULT_CENTER: DEFAULT_CENTER,
   };
 })(typeof window !== "undefined" ? window : this);

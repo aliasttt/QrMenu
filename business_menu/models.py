@@ -118,18 +118,26 @@ class Restaurant(models.Model):
     city = models.CharField(max_length=100, blank=True, help_text="City")
     postal_code = models.CharField(max_length=20, blank=True, help_text="Postal / ZIP code")
     latitude = models.DecimalField(
-        max_digits=10,
-        decimal_places=7,
+        max_digits=9,
+        decimal_places=6,
         null=True,
         blank=True,
-        help_text="WGS84 latitude (-90..90)",
+        help_text="WGS84 latitude [-90, 90]",
     )
     longitude = models.DecimalField(
-        max_digits=10,
-        decimal_places=7,
+        max_digits=9,
+        decimal_places=6,
         null=True,
         blank=True,
-        help_text="WGS84 longitude (-180..180)",
+        help_text="WGS84 longitude [-180, 180]",
+    )
+    public_slug = models.SlugField(
+        max_length=120,
+        null=True,
+        blank=True,
+        unique=True,
+        db_index=True,
+        help_text="Optional public URL segment for /m/<slug>/ (e.g. my-bistro)",
     )
     google_place_id = models.CharField(
         max_length=255,

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from .models import (
     BusinessAdmin,
     Restaurant,
@@ -170,6 +170,17 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
         return data
 
 
+class BusinessMenuResetPasswordSerializer(serializers.Serializer):
+    """
+    POST /api/business-menu/reset-password/
+    Keys must match what the view expects: email, code, password (not model fields — User.password is set server-side).
+    """
+
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=32, trim_whitespace=True)
+    password = serializers.CharField(write_only=True, min_length=1, max_length=128)
+
+
 class BusinessAdminUpdateSerializer(serializers.ModelSerializer):
     """Serializer برای آپدیت پروفایل ادمین (فقط email و phone)"""
     class Meta:
@@ -331,27 +342,25 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
             data["longitude"] = None
         return data
 
-    def validate_latitude(self, value):
+    def _quantize_coord(self, value, lo, hi):
+        """Normalize to Decimal with 6 dp; inclusive bounds."""
         if value is None or value == "":
             return None
         try:
-            v = float(value)
-        except (TypeError, ValueError):
-            raise serializers.ValidationError("Invalid latitude.")
-        if v < -90 or v > 90:
-            raise serializers.ValidationError("Latitude must be between -90 and 90.")
-        return value
+            d = Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError):
+            raise serializers.ValidationError("Invalid number.")
+        d = d.quantize(Decimal("0.000001"), rounding=ROUND_HALF_UP)
+        lo_d, hi_d = Decimal(str(lo)), Decimal(str(hi))
+        if d < lo_d or d > hi_d:
+            raise serializers.ValidationError(f"Must be between {lo} and {hi} (inclusive).")
+        return d
+
+    def validate_latitude(self, value):
+        return self._quantize_coord(value, -90, 90)
 
     def validate_longitude(self, value):
-        if value is None or value == "":
-            return None
-        try:
-            v = float(value)
-        except (TypeError, ValueError):
-            raise serializers.ValidationError("Invalid longitude.")
-        if v < -180 or v > 180:
-            raise serializers.ValidationError("Longitude must be between -180 and 180.")
-        return value
+        return self._quantize_coord(value, -180, 180)
 
     def validate_working_hours(self, value):
         if value is None:

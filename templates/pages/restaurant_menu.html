@@ -734,3 +734,22 @@
   </div>
 </section>
 {% endblock %}
+
+{% block scripts %}
+{% if has_location and google_maps_api_key %}
+<script src="{% static 'js/restaurant-maps.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.PreisMenuMaps) return;
+  window.PreisMenuMaps.initLocationEmbedLazy({
+    rootId: "public-location-wrap",
+    apiKey: "{{ google_maps_api_key|escapejs }}",
+    mapId: "public-location-map",
+    loadingId: "public-location-map-loading",
+    lat: "{{ embed_latitude|escapejs }}",
+    lng: "{{ embed_longitude|escapejs }}",
+  });
+});
+</script>
+{% endif %}
+{% endblock %}
