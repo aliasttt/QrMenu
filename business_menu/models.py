@@ -578,6 +578,37 @@ class RestaurantSettings(models.Model):
         default=10,
         help_text="Max guests allowed per single reservation.",
     )
+    # Online ordering settings (keys are kept identical to app payload keys)
+    enabled = models.BooleanField(default=True)
+    min_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=15.00)
+    estimated_delivery_time = models.CharField(max_length=50, default="30-45", blank=True)
+    delivery_enabled = models.BooleanField(default=True)
+    delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=3.50)
+    free_delivery_above = models.DecimalField(max_digits=10, decimal_places=2, default=30.00)
+    delivery_radius_km = models.DecimalField(max_digits=10, decimal_places=2, default=5)
+    delivery_zones = models.JSONField(default=list, blank=True)
+    delivery_hours_same_as_working = models.BooleanField(default=True)
+    delivery_hours_start = models.CharField(max_length=5, default="11:00", blank=True)
+    delivery_hours_end = models.CharField(max_length=5, default="22:00", blank=True)
+    pickup_enabled = models.BooleanField(default=True)
+    pickup_preparation_time = models.CharField(max_length=50, default="15-20", blank=True)
+    online_payment_enabled = models.BooleanField(default=True)
+    payment_gateway = models.CharField(
+        max_length=20,
+        choices=[
+            ("stripe", "Only Stripe"),
+            ("paypal", "Only PayPal"),
+            ("both", "Stripe + PayPal"),
+            ("none", "No online payment"),
+        ],
+        default="stripe",
+    )
+    stripe_publishable_key = models.CharField(max_length=255, blank=True, default="")
+    stripe_secret_key = models.CharField(max_length=255, blank=True, default="")
+    paypal_client_id = models.CharField(max_length=255, blank=True, default="")
+    paypal_client_secret = models.CharField(max_length=255, blank=True, default="")
+    card_payment_enabled = models.BooleanField(default=False)
+    cash_payment_enabled = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

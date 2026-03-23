@@ -73,7 +73,7 @@ from .serializers import (
     MenuItemSerializer,
     MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
     CategorySerializer, MenuSetSerializer, PackageSerializer, PackageCreateSerializer,
-    MenuThemeSerializer, RestaurantSettingsSerializer, RestaurantOwnerRegistrationSerializer,
+    MenuThemeSerializer, RestaurantSettingsSerializer, OnlineOrderingSettingsSerializer, RestaurantOwnerRegistrationSerializer,
     normalize_price_value,
 )
 from .cloudinary_utils import (
@@ -2315,6 +2315,81 @@ class RestaurantSettingsDetailView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OnlineOrderingSettingsView(APIView):
+    """
+    GET  /api/business-menu/online-ordering/{restaurant_id}/
+    PATCH /api/business-menu/online-ordering/{restaurant_id}/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_admin_from_user(self, user):
+        return _get_business_admin_for_user(user)
+
+    def _get_restaurant(self, request, restaurant_id: int):
+        admin = self._get_admin_from_user(request.user)
+        if not admin:
+            return None
+        try:
+            return Restaurant.objects.get(id=restaurant_id, admin=admin, is_active=True)
+        except Restaurant.DoesNotExist:
+            return None
+
+    def _get_settings(self, restaurant):
+        settings_obj, _ = RestaurantSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={
+                "show_prices": True,
+                "show_images": True,
+                "show_descriptions": True,
+                "show_serial": False,
+                "has_delivery": False,
+                "allow_payment_cash": True,
+                "allow_payment_online": True,
+                "enabled": True,
+                "min_order_amount": Decimal("15.00"),
+                "estimated_delivery_time": "30-45",
+                "delivery_enabled": True,
+                "delivery_fee": Decimal("3.50"),
+                "free_delivery_above": Decimal("30.00"),
+                "delivery_radius_km": Decimal("5"),
+                "delivery_zones": [],
+                "delivery_hours_same_as_working": True,
+                "delivery_hours_start": "11:00",
+                "delivery_hours_end": "22:00",
+                "pickup_enabled": True,
+                "pickup_preparation_time": "15-20",
+                "online_payment_enabled": True,
+                "payment_gateway": "stripe",
+                "stripe_publishable_key": "",
+                "stripe_secret_key": "",
+                "paypal_client_id": "",
+                "paypal_client_secret": "",
+                "card_payment_enabled": False,
+                "cash_payment_enabled": True,
+            },
+        )
+        return settings_obj
+
+    def get(self, request, restaurant_id: int):
+        restaurant = self._get_restaurant(request, restaurant_id)
+        if not restaurant:
+            return Response({"detail": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings_obj = self._get_settings(restaurant)
+        serializer = OnlineOrderingSettingsSerializer(settings_obj)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, restaurant_id: int):
+        restaurant = self._get_restaurant(request, restaurant_id)
+        if not restaurant:
+            return Response({"detail": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings_obj = self._get_settings(restaurant)
+        serializer = OnlineOrderingSettingsSerializer(settings_obj, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -1139,3 +1139,31 @@ class RestaurantSettingsSerializer(serializers.ModelSerializer):
             return obj.restaurant.admin.email
         return None
 
+
+class OnlineOrderingSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestaurantSettings
+        fields = (
+            "enabled",
+            "min_order_amount",
+            "estimated_delivery_time",
+            "delivery_enabled",
+            "delivery_fee",
+            "free_delivery_above",
+            "delivery_radius_km",
+            "delivery_zones",
+            "delivery_hours_same_as_working",
+            "delivery_hours_start",
+            "delivery_hours_end",
+            "pickup_enabled",
+            "pickup_preparation_time",
+            "online_payment_enabled",
+            "payment_gateway",
+            "stripe_publishable_key",
+            "stripe_secret_key",
+            "paypal_client_id",
+            "paypal_client_secret",
+            "card_payment_enabled",
+            "cash_payment_enabled",
+        )
+
