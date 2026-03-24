@@ -69,6 +69,7 @@ from .models import (
 from accounts.models import PasswordResetCode
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, BusinessMenuResetPasswordSerializer,
+    BusinessMenuChangePasswordSerializer,
     RestaurantSerializer, RestaurantProfileSerializer,
     MenuItemSerializer,
     MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
@@ -1142,6 +1143,76 @@ class UpdateProfileView(APIView):
     def put(self, request):
         # Some clients use PUT for updates; treat it as PATCH.
         return self.patch(request)
+
+
+class ChangePasswordView(APIView):
+    """
+    POST /api/business-menu/change-password/
+    Authenticated business admin changes Django User password (same keys as app).
+    Body: {"current_password": "...", "new_password": "..."}
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Business admin account not found. Please contact support or verify your account.",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        ser = BusinessMenuChangePasswordSerializer(data=request.data)
+        if not ser.is_valid():
+            return Response(
+                {"success": False, "message": "Invalid input.", "errors": ser.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        current = ser.validated_data["current_password"]
+        new_password = ser.validated_data["new_password"]
+
+        user = admin.auth_user or request.user
+        if not user.check_password(current):
+            return Response(
+                {"success": False, "message": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if new_password == current:
+            return Response(
+                {"success": False, "message": "New password must be different from the current password."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as e:
+            msgs = list(getattr(e, "messages", []) or [str(e)])
+            return Response(
+                {"success": False, "message": "; ".join(str(m) for m in msgs)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user.set_password(new_password)
+            user.save(update_fields=["password"])
+            if admin.auth_user_id != user.id:
+                admin.auth_user = user
+                admin.save(update_fields=["auth_user"])
+        except Exception as exc:
+            logger.exception("change-password: failed for user_id=%s: %s", getattr(user, "id", None), exc)
+            return Response(
+                {"success": False, "message": "Could not update password. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        return Response(
+            {"success": True, "message": "Password updated successfully."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class MenuItemListCreateView(APIView):

@@ -181,6 +181,16 @@ class BusinessMenuResetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, min_length=1, max_length=128)
 
 
+class BusinessMenuChangePasswordSerializer(serializers.Serializer):
+    """
+    POST /api/business-menu/change-password/
+    Keys: current_password, new_password (same as app settings payload).
+    """
+
+    current_password = serializers.CharField(write_only=True, min_length=1, max_length=128)
+    new_password = serializers.CharField(write_only=True, min_length=1, max_length=128)
+
+
 class BusinessAdminUpdateSerializer(serializers.ModelSerializer):
     """Serializer برای آپدیت پروفایل ادمین (فقط email و phone)"""
     class Meta:

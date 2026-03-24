@@ -8,6 +8,7 @@ from .views import (
     ResetPasswordView,
     RestaurantOwnerSignupView,
     UpdateProfileView,
+    ChangePasswordView,
     RestaurantProfileView,
     RestaurantProfileLogoUploadView,
     RestaurantProfileGalleryView,
@@ -95,6 +96,7 @@ urlpatterns = [
     path('verify-reset-code/', VerifyResetCodeView.as_view(), name='business_menu_verify_reset_code'),
     path('reset-password/', ResetPasswordView.as_view(), name='business_menu_reset_password'),
     path('update-profile/', UpdateProfileView.as_view(), name='update_profile'),
+    path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path(
         'restaurant-profile/<int:restaurant_id>/',
         RestaurantProfileView.as_view(),
