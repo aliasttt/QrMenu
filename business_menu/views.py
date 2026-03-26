@@ -63,6 +63,7 @@ from .models import (
     PackageItem,
     MenuTheme,
     RestaurantSettings,
+    ReservationSettings,
     Order,
     Reservation,
 )
@@ -2462,6 +2463,167 @@ class OnlineOrderingSettingsView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def _default_reservation_schedule():
+    return {
+        "monday": {"enabled": True, "start": "11:00", "end": "22:00"},
+        "tuesday": {"enabled": True, "start": "11:00", "end": "22:00"},
+        "wednesday": {"enabled": True, "start": "11:00", "end": "22:00"},
+        "thursday": {"enabled": True, "start": "11:00", "end": "22:00"},
+        "friday": {"enabled": True, "start": "11:00", "end": "23:00"},
+        "saturday": {"enabled": True, "start": "10:00", "end": "23:00"},
+        "sunday": {"enabled": False, "start": "", "end": ""},
+    }
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ReservationSettingsView(APIView):
+    """
+    GET/PATCH /api/business-menu/reservation-settings/{restaurant_id}/
+    Field names in response/body match ReservationSettings model fields exactly.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_admin_from_user(self, user):
+        return _get_business_admin_for_user(user)
+
+    def _get_restaurant(self, request, restaurant_id: int):
+        admin = self._get_admin_from_user(request.user)
+        if not admin:
+            return None
+        try:
+            return Restaurant.objects.get(id=restaurant_id, admin=admin, is_active=True)
+        except Restaurant.DoesNotExist:
+            return None
+
+    def _get_settings(self, restaurant):
+        settings_obj, _ = ReservationSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={
+                "enabled": True,
+                "closed_today": False,
+                "max_guests_per_reservation": 8,
+                "advance_booking_days": 14,
+                "schedule": _default_reservation_schedule(),
+                "reservation_duration": 60,
+                "buffer_minutes": 15,
+                "blocked_dates": [],
+                "tables": [],
+            },
+        )
+        return settings_obj
+
+    def _to_response(self, request, settings_obj):
+        floor_plan_image = ""
+        if settings_obj.floor_plan_image:
+            try:
+                floor_plan_image = request.build_absolute_uri(settings_obj.floor_plan_image.url)
+            except Exception:
+                floor_plan_image = settings_obj.floor_plan_image.url
+        return {
+            "enabled": settings_obj.enabled,
+            "closed_today": settings_obj.closed_today,
+            "max_guests_per_reservation": settings_obj.max_guests_per_reservation,
+            "advance_booking_days": settings_obj.advance_booking_days,
+            "schedule": settings_obj.schedule or _default_reservation_schedule(),
+            "reservation_duration": settings_obj.reservation_duration,
+            "buffer_minutes": settings_obj.buffer_minutes,
+            "blocked_dates": settings_obj.blocked_dates or [],
+            "tables": settings_obj.tables or [],
+            "floor_plan_image": floor_plan_image,
+        }
+
+    def get(self, request, restaurant_id: int):
+        restaurant = self._get_restaurant(request, restaurant_id)
+        if not restaurant:
+            return Response({"detail": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings_obj = self._get_settings(restaurant)
+        return Response(self._to_response(request, settings_obj), status=status.HTTP_200_OK)
+
+    def patch(self, request, restaurant_id: int):
+        restaurant = self._get_restaurant(request, restaurant_id)
+        if not restaurant:
+            return Response({"detail": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings_obj = self._get_settings(restaurant)
+        data = request.data or {}
+        update_fields = []
+
+        for key in (
+            "enabled",
+            "closed_today",
+            "max_guests_per_reservation",
+            "advance_booking_days",
+            "schedule",
+            "reservation_duration",
+            "buffer_minutes",
+            "blocked_dates",
+            "tables",
+        ):
+            if key in data:
+                setattr(settings_obj, key, data.get(key))
+                update_fields.append(key)
+
+        if update_fields:
+            update_fields.append("updated_at")
+            settings_obj.save(update_fields=update_fields)
+
+        return Response(self._to_response(request, settings_obj), status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ReservationFloorPlanView(APIView):
+    """
+    POST/DELETE /api/business-menu/reservation-settings/{restaurant_id}/floor-plan/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_admin_from_user(self, user):
+        return _get_business_admin_for_user(user)
+
+    def _get_restaurant(self, request, restaurant_id: int):
+        admin = self._get_admin_from_user(request.user)
+        if not admin:
+            return None
+        try:
+            return Restaurant.objects.get(id=restaurant_id, admin=admin, is_active=True)
+        except Restaurant.DoesNotExist:
+            return None
+
+    def _get_settings(self, restaurant):
+        settings_obj, _ = ReservationSettings.objects.get_or_create(
+            restaurant=restaurant,
+            defaults={"schedule": _default_reservation_schedule()},
+        )
+        return settings_obj
+
+    def post(self, request, restaurant_id: int):
+        restaurant = self._get_restaurant(request, restaurant_id)
+        if not restaurant:
+            return Response({"detail": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+        image_file = request.FILES.get("floor_plan_image")
+        if not image_file:
+            return Response({"detail": "floor_plan_image is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        settings_obj = self._get_settings(restaurant)
+        settings_obj.floor_plan_image = image_file
+        settings_obj.save(update_fields=["floor_plan_image", "updated_at"])
+        return Response(
+            {"floor_plan_image": request.build_absolute_uri(settings_obj.floor_plan_image.url)},
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request, restaurant_id: int):
+        restaurant = self._get_restaurant(request, restaurant_id)
+        if not restaurant:
+            return Response({"detail": "Restaurant not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        settings_obj = self._get_settings(restaurant)
+        if settings_obj.floor_plan_image:
+            settings_obj.floor_plan_image.delete(save=False)
+            settings_obj.floor_plan_image = None
+            settings_obj.save(update_fields=["floor_plan_image", "updated_at"])
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def _get_restaurant_for_public(request):

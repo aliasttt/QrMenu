@@ -619,6 +619,40 @@ class RestaurantSettings(models.Model):
         return f"Settings - {self.restaurant.name}"
 
 
+class ReservationSettings(models.Model):
+    """
+    Reservation settings per restaurant.
+    Field names intentionally match app payload keys.
+    """
+    restaurant = models.OneToOneField(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="reservation_settings",
+    )
+    enabled = models.BooleanField(default=True)
+    closed_today = models.BooleanField(default=False)
+    max_guests_per_reservation = models.PositiveIntegerField(default=8)
+    advance_booking_days = models.PositiveIntegerField(default=14)
+    schedule = models.JSONField(default=dict, blank=True)
+    reservation_duration = models.PositiveIntegerField(default=60)
+    buffer_minutes = models.PositiveIntegerField(default=15)
+    blocked_dates = models.JSONField(default=list, blank=True)
+    tables = models.JSONField(default=list, blank=True)
+    floor_plan_image = models.ImageField(
+        upload_to="restaurants/floorplans/",
+        blank=True,
+        null=True,
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Reservation Settings"
+        verbose_name_plural = "Reservation Settings"
+
+    def __str__(self) -> str:
+        return f"Reservation Settings - {self.restaurant.name}"
+
+
 class Reservation(models.Model):
     """Reservation request: date, time, guests; optional order details when from cart."""
     class Status(models.TextChoices):

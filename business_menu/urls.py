@@ -33,6 +33,8 @@ from .views import (
     MenuThemeListView,
     RestaurantSettingsDetailView,
     OnlineOrderingSettingsView,
+    ReservationSettingsView,
+    ReservationFloorPlanView,
     CartView,
     RestaurantOrderOptionsView,
     OrderCreateView,
@@ -124,6 +126,8 @@ urlpatterns = [
     path('menu-themes/', MenuThemeListView.as_view(), name='menu_themes'),
     path('restaurant-settings/<int:restaurant_id>/', RestaurantSettingsDetailView.as_view(), name='restaurant_settings'),
     path('online-ordering/<int:restaurant_id>/', OnlineOrderingSettingsView.as_view(), name='online_ordering_settings'),
+    path('reservation-settings/<int:restaurant_id>/', ReservationSettingsView.as_view(), name='reservation_settings'),
+    path('reservation-settings/<int:restaurant_id>/floor-plan/', ReservationFloorPlanView.as_view(), name='reservation_floor_plan'),
     # سبد و سفارش (عمومی، با token یا restaurant_id)
     path('cart/', CartView.as_view(), name='cart'),
     path('order-options/', RestaurantOrderOptionsView.as_view(), name='order_options'),
