@@ -24,6 +24,7 @@ from django.db import connection
 SEQUENCE_TABLES = [
     "django_migrations",
     "django_content_type",
+    "django_admin_log",
     "auth_user",
     "auth_permission",
     "business_menu_businessadmin",
@@ -53,11 +54,10 @@ class Command(BaseCommand):
             # pg_get_serial_sequence() expects table name as TEXT (e.g. 'django_migrations'), not identifier
             for table in SEQUENCE_TABLES:
                 try:
-                    quoted_table = connection.ops.quote_name(table)
                     cursor.execute(
-                        "SELECT setval(pg_get_serial_sequence(%s, 'id'), (SELECT COALESCE(MAX(id), 0) FROM "
-                        + quoted_table
-                        + "))",
+                        "SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE((SELECT MAX(id) FROM "
+                        + connection.ops.quote_name(table)
+                        + "), 0) + 1, false)",
                         [table],
                     )
                     self.stdout.write(f"Fixed {table} id sequence.")
