@@ -1,9 +1,11 @@
 from django.contrib import admin
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from accounts.models import Profile
 from .models import (
     BusinessAdmin,
@@ -315,6 +317,56 @@ class RestaurantAdmin(admin.ModelAdmin):
         email = getattr(obj.admin, "email", "") or ""
         return email.strip() or "-"
     admin_email.short_description = "Admin email"
+
+    def delete_model(self, request, obj):
+        """
+        Use an explicit transaction for single deletes so admin can show
+        a clear error instead of surfacing raw DB integrity exceptions.
+        """
+        try:
+            with transaction.atomic():
+                obj.delete()
+        except IntegrityError:
+            self.message_user(
+                request,
+                (
+                    f'حذف رستوران "{obj}" انجام نشد. '
+                    "ابتدا رکوردهای وابسته (مثل سفارش/پرداخت/رزرو) را حذف کنید و دوباره تلاش کنید."
+                ),
+                level=messages.ERROR,
+            )
+
+    def delete_queryset(self, request, queryset):
+        """
+        Avoid bulk fast-delete edge-cases by deleting row-by-row.
+        This keeps behavior predictable when there are many related rows.
+        """
+        failed = []
+        deleted_count = 0
+        for obj in queryset:
+            try:
+                with transaction.atomic():
+                    obj.delete()
+                    deleted_count += 1
+            except IntegrityError:
+                failed.append(str(obj))
+
+        if deleted_count:
+            self.message_user(
+                request,
+                f"{deleted_count} رستوران با موفقیت حذف شد.",
+                level=messages.SUCCESS,
+            )
+        if failed:
+            self.message_user(
+                request,
+                (
+                    "حذف بعضی رستوران‌ها انجام نشد به‌خاطر داده‌های وابسته: "
+                    + ", ".join(failed[:5])
+                    + (" ..." if len(failed) > 5 else "")
+                ),
+                level=messages.ERROR,
+            )
 
 
 # ——— منوها: دسته‌بندی و مجموعه‌ها ———
