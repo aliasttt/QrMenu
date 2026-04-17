@@ -41,10 +41,19 @@
           Steigere deinen Umsatz mit einer professionellen QR-Speisekarte, Online-Bestellung und einem beeindruckenden mobilen Erlebnis.
         </p>
 
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="mt-8 flex flex-wrap items-center gap-3">
           <a href="{% url 'register' %}" class="btn-primary">Jetzt starten</a>
           <a href="{% url 'restaurants_list' %}" class="btn-secondary">Beispiel ansehen</a>
         </div>
+        <a
+          href="https://apps.apple.com/tr/app/mybonusqrmenu/id6757697259"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-5 inline-block transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 rounded-md"
+          aria-label="Download on the App Store"
+        >
+          <img src="{% static 'img/app-store-badge.svg' %}" alt="Download on the App Store" class="h-11 w-auto sm:h-12" width="135" height="45" loading="eager">
+        </a>
 
         <div class="mt-8 grid max-w-xl grid-cols-3 gap-3">
           <div class="rounded-xl border border-orange-200/70 bg-white/80 p-3 text-center shadow-soft dark:border-slate-700 dark:bg-slate-800/80">
