@@ -82,3 +82,14 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["admin"]["id"], admin.id)
+
+    def test_login_unknown_phone_returns_json_error_without_404(self):
+        response = self.client.post(
+            "/api/business-menu/login",
+            {"number": "5350382335", "opCode": "123456"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.data["success"])
+        self.assertIn("not registered", response.data["message"])

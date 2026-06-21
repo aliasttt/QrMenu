@@ -584,7 +584,7 @@ class LoginView(APIView):
             return Response({
                 "success": False,
                 "message": "This phone number is not registered as an admin. Please contact the system administrator."
-            }, status=status.HTTP_404_NOT_FOUND)
+            }, status=status.HTTP_200_OK)
 
         otp_result = check_otp(formatted_phone, code)
         if not (otp_result.get("success") and otp_result.get("approved")):
@@ -593,7 +593,7 @@ class LoginView(APIView):
                 "message": otp_result.get("message", "Invalid OTP code"),
                 "status": otp_result.get("status", "error"),
                 "error_code": otp_result.get("error_code"),
-            }, status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_200_OK)
 
         user = self._resolve_user_for_admin(admin)
         return self._login_response(request, admin, user, message="OTP verified successfully")
