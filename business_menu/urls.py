@@ -92,7 +92,9 @@ urlpatterns = [
     path('api/create-order-payment-intent/', CreateOrderPaymentIntentView.as_view(), name='stripe_create_order_payment_intent'),
     path('api/stripe-webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
     # API endpoints
+    path('send-otp', SendOTPView.as_view(), name='send_otp_no_slash'),
     path('send-otp/', SendOTPView.as_view(), name='send_otp'),
+    path('login', LoginView.as_view(), name='business_menu_login_no_slash'),
     path('login/', LoginView.as_view(), name='business_menu_login'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='business_menu_forgot_password'),
     path('verify-reset-code/', VerifyResetCodeView.as_view(), name='business_menu_verify_reset_code'),
@@ -160,4 +162,3 @@ urlpatterns = [
     # Theme preview (for testing)
     path('themes/preview/', menu_themes_preview_view, name='menu_themes_preview'),
 ]
-
