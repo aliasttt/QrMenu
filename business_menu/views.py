@@ -536,8 +536,19 @@ class LoginView(APIView):
                     "message": "Email and password are required."
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            admin = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).first()
-            if not admin:
+            admin = None
+            auth_user = None
+            admin_candidates = list(BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id"))
+
+            for candidate in admin_candidates:
+                candidate_user = self._resolve_user_for_admin(candidate)
+                authenticated = authenticate(request, username=candidate_user.username, password=password)
+                if authenticated is not None:
+                    admin = candidate
+                    auth_user = authenticated
+                    break
+
+            if not admin_candidates:
                 user_by_email = User.objects.filter(email__iexact=email).first()
                 if user_by_email:
                     try:
@@ -547,16 +558,17 @@ class LoginView(APIView):
             if not admin:
                 return Response({
                     "success": False,
-                    "message": "No restaurant account found with this email."
-                }, status=status.HTTP_404_NOT_FOUND)
-
-            user = self._resolve_user_for_admin(admin)
-            auth_user = authenticate(request, username=user.username, password=password)
-            if auth_user is None:
-                return Response({
-                    "success": False,
                     "message": "Invalid email or password."
                 }, status=status.HTTP_400_BAD_REQUEST)
+
+            if auth_user is None:
+                user = self._resolve_user_for_admin(admin)
+                auth_user = authenticate(request, username=user.username, password=password)
+                if auth_user is None:
+                    return Response({
+                        "success": False,
+                        "message": "Invalid email or password."
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
             return self._login_response(request, admin, auth_user)
 

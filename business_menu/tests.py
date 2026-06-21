@@ -1,6 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.contrib.auth.models import User
 from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
@@ -93,3 +94,41 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data["success"])
         self.assertIn("not registered", response.data["message"])
+
+    def test_email_login_uses_admin_whose_linked_user_password_matches(self):
+        email = "duplicate@example.com"
+        wrong_user = User.objects.create_user(
+            username="business_admin_491111111111",
+            email=email,
+            password="WrongPass123",
+        )
+        wrong_admin = BusinessAdmin.objects.create(
+            auth_user=wrong_user,
+            phone="+491111111111",
+            name="Wrong Admin",
+            email=email,
+            payment_status="paid",
+        )
+        right_user = User.objects.create_user(
+            username="business_admin_492222222222",
+            email=email,
+            password="RightPass123",
+        )
+        right_admin = BusinessAdmin.objects.create(
+            auth_user=right_user,
+            phone="+492222222222",
+            name="Right Admin",
+            email=email,
+            payment_status="paid",
+        )
+
+        response = self.client.post(
+            "/api/business-menu/login/",
+            {"email": email, "password": "RightPass123"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["success"])
+        self.assertEqual(response.data["admin"]["id"], right_admin.id)
+        self.assertNotEqual(response.data["admin"]["id"], wrong_admin.id)
