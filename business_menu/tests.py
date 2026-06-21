@@ -1,3 +1,32 @@
-from django.test import TestCase
+from datetime import timedelta
+from unittest.mock import patch
 
-# Create your tests here.
+from django.test import override_settings
+from django.utils import timezone
+from rest_framework.test import APITestCase
+
+from .models import BusinessAdmin
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class BusinessMenuLoginTests(APITestCase):
+    def test_login_accepts_legacy_number_and_opcode_payload(self):
+        admin = BusinessAdmin.objects.create(
+            phone="+4915901234567",
+            name="QR Menu Admin",
+            email="owner@example.com",
+            payment_status="trial",
+            trial_ends_at=timezone.now() + timedelta(days=1),
+        )
+
+        with patch("business_menu.views.check_otp", return_value={"success": True, "approved": True}):
+            response = self.client.post(
+                "/api/business-menu/login/",
+                {"number": "015901234567", "opCode": "123456"},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["success"])
+        self.assertIn("access", response.data)
+        self.assertEqual(response.data["admin"]["id"], admin.id)

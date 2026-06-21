@@ -73,7 +73,7 @@ from .serializers import (
     BusinessMenuChangePasswordSerializer,
     RestaurantSerializer, RestaurantProfileSerializer,
     MenuItemSerializer,
-    MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer,
+    MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer, LoginSerializer,
     CategorySerializer, MenuSetSerializer, PackageSerializer, PackageCreateSerializer,
     MenuThemeSerializer, RestaurantSettingsSerializer, OnlineOrderingSettingsSerializer, RestaurantOwnerRegistrationSerializer,
     normalize_price_value,
@@ -449,32 +449,7 @@ class LoginView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def post(self, request):
-        data = request.data if hasattr(request, "data") else {}
-        email = (data.get("email") or "").strip()
-        password = data.get("password") or ""
-
-        if not email or not password:
-            return Response({
-                "success": False,
-                "message": "Email and password are required."
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        admin = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).first()
-        if not admin:
-            user_by_email = User.objects.filter(email__iexact=email).first()
-            if user_by_email:
-                try:
-                    admin = user_by_email.business_menu_admin
-                except BusinessAdmin.DoesNotExist:
-                    admin = None
-        if not admin:
-            return Response({
-                "success": False,
-                "message": "No restaurant account found with this email."
-            }, status=status.HTTP_404_NOT_FOUND)
-
-        # Resolve linked user (keep existing behavior for legacy/admin-created records)
+    def _resolve_user_for_admin(self, admin):
         user = admin.auth_user or get_or_create_user_for_business_admin(
             admin_phone=admin.phone,
             admin_name=admin.name,
@@ -489,29 +464,28 @@ class LoginView(APIView):
         if admin.auth_user_id != user.id:
             admin.auth_user = user
             admin.save(update_fields=["auth_user"])
+        return user
 
-        auth_user = authenticate(request, username=user.username, password=password)
-        if auth_user is None:
-            return Response({
-                "success": False,
-                "message": "Invalid email or password."
-            }, status=status.HTTP_400_BAD_REQUEST)
-
+    def _payment_required_response(self, admin):
         now = timezone.now()
         if admin.payment_status == "paid":
-            pass
-        elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
-            pass
-        else:
-            return Response({
-                "success": False,
-                "message": "Your trial has ended. Please subscribe to continue using the service.",
-                "payment_required": True,
-                "admin_id": admin.id,
-                "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
-            }, status=status.HTTP_403_FORBIDDEN)
+            return None
+        if admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
+            return None
+        return Response({
+            "success": False,
+            "message": "Your trial has ended. Please subscribe to continue using the service.",
+            "payment_required": True,
+            "admin_id": admin.id,
+            "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
+        }, status=status.HTTP_403_FORBIDDEN)
 
-        refresh = RefreshToken.for_user(auth_user)
+    def _login_response(self, request, admin, user, message="Login successful"):
+        payment_response = self._payment_required_response(admin)
+        if payment_response is not None:
+            return payment_response
+
+        refresh = RefreshToken.for_user(user)
         try:
             restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
         except Restaurant.DoesNotExist:
@@ -519,7 +493,7 @@ class LoginView(APIView):
 
         response_data = {
             "success": True,
-            "message": "Login successful",
+            "message": message,
             "access": str(refresh.access_token),
             "refresh": str(refresh),
             "user": {
@@ -528,7 +502,14 @@ class LoginView(APIView):
                 "email": admin.email or "",
                 "is_active": admin.is_active,
                 "created_at": admin.created_at.isoformat() if admin.created_at else None
-            }
+            },
+            "admin": {
+                "id": admin.id,
+                "phone": admin.phone,
+                "name": admin.name,
+                "email": admin.email or "",
+                "is_active": admin.is_active,
+            },
         }
 
         if restaurant:
@@ -544,8 +525,81 @@ class LoginView(APIView):
                 "phone": restaurant.phone or admin.phone,
                 "logo": logo_url,
             }
-        
+
         return Response(response_data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        data = request.data if hasattr(request, "data") else {}
+        email = (data.get("email") or "").strip()
+        password = data.get("password") or ""
+
+        if email or password:
+            if not email or not password:
+                return Response({
+                    "success": False,
+                    "message": "Email and password are required."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            admin = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).first()
+            if not admin:
+                user_by_email = User.objects.filter(email__iexact=email).first()
+                if user_by_email:
+                    try:
+                        admin = user_by_email.business_menu_admin
+                    except BusinessAdmin.DoesNotExist:
+                        admin = None
+            if not admin:
+                return Response({
+                    "success": False,
+                    "message": "No restaurant account found with this email."
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            user = self._resolve_user_for_admin(admin)
+            auth_user = authenticate(request, username=user.username, password=password)
+            if auth_user is None:
+                return Response({
+                    "success": False,
+                    "message": "Invalid email or password."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            return self._login_response(request, admin, auth_user)
+
+        serializer = LoginSerializer(data=data)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        phone = serializer.validated_data["phone"]
+        code = serializer.validated_data["code"]
+
+        try:
+            formatted_phone = format_phone_number(phone)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": f"Invalid phone number format: {str(e)}"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        admin = BusinessAdmin.objects.filter(phone=formatted_phone, is_active=True).first()
+        if not admin:
+            return Response({
+                "success": False,
+                "message": "This phone number is not registered as an admin. Please contact the system administrator."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        otp_result = check_otp(formatted_phone, code)
+        if not (otp_result.get("success") and otp_result.get("approved")):
+            return Response({
+                "success": False,
+                "message": otp_result.get("message", "Invalid OTP code"),
+                "status": otp_result.get("status", "error"),
+                "error_code": otp_result.get("error_code"),
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user = self._resolve_user_for_admin(admin)
+        return self._login_response(request, admin, user, message="OTP verified successfully")
 
 
 class ForgotPasswordView(APIView):

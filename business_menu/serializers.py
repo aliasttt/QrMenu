@@ -843,11 +843,14 @@ class LoginSerializer(serializers.Serializer):
     # Some clients send `number` instead of `phone` (legacy compatibility).
     phone = serializers.CharField(required=False, allow_blank=True, help_text="شماره تلفن (یا number)")
     number = serializers.CharField(required=False, allow_blank=True, help_text="Legacy phone field (maps to phone)")
-    code = serializers.CharField(required=True, help_text="کد OTP")
+    code = serializers.CharField(required=False, allow_blank=True, help_text="OTP code")
+    opCode = serializers.CharField(required=False, allow_blank=True, help_text="Legacy OTP field (maps to code)")
 
     def validate(self, attrs):
         phone = (attrs.get("phone") or "").strip()
         number = (attrs.get("number") or "").strip()
+        code = (attrs.get("code") or "").strip()
+        op_code = (attrs.get("opCode") or "").strip()
 
         if not phone and number:
             phone = number
@@ -856,8 +859,16 @@ class LoginSerializer(serializers.Serializer):
         if not phone:
             raise serializers.ValidationError({"phone": "Phone number is required"})
 
+        if not code and op_code:
+            code = op_code
+            attrs["code"] = code
+
+        if not code:
+            raise serializers.ValidationError({"code": "OTP code is required"})
+
         # Keep `number` in sync for clients that read it back
         attrs["number"] = phone
+        attrs["opCode"] = code
         return attrs
 
 
@@ -1176,4 +1187,3 @@ class OnlineOrderingSettingsSerializer(serializers.ModelSerializer):
             "card_payment_enabled",
             "cash_payment_enabled",
         )
-
