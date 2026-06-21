@@ -40,6 +40,7 @@ from accounts.twilio_utils import (
     send_otp,
     check_otp,
     format_phone_number,
+    phone_variants_for_lookup,
     UNLIMITED_OTP_PHONES,
     UNLIMITED_OTP_CODES,
 )
@@ -324,28 +325,23 @@ class SendOTPView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Only admins registered manually by superuser can receive OTP.
+        # Accept legacy/common phone formats too, so app input and DB rows do not need
+        # to be byte-for-byte identical.
+        variants = phone_variants_for_lookup(phone) | phone_variants_for_lookup(formatted_phone)
         try:
-            admin = BusinessAdmin.objects.get(phone=formatted_phone, is_active=True)
-        except BusinessAdmin.DoesNotExist:
-            return Response({
-                "success": False,
-                "message": "This phone number is not registered as an admin. Please contact the system administrator."
-            }, status=status.HTTP_404_NOT_FOUND)
-        except BusinessAdmin.MultipleObjectsReturned:
-            # Handle duplicate admins (shouldn't happen due to unique constraint, but just in case)
-            admin = BusinessAdmin.objects.filter(phone=formatted_phone, is_active=True).first()
-            if not admin:
-                return Response({
-                    "success": False,
-                    "message": "This phone number is not registered as an admin. Please contact the system administrator."
-                }, status=status.HTTP_404_NOT_FOUND)
+            admin = BusinessAdmin.objects.filter(phone__in=variants, is_active=True).order_by("-id").first()
         except Exception as e:
-            # Log the actual error for debugging
             logger.error(f"Error checking admin for phone {formatted_phone}: {str(e)}", exc_info=True)
             return Response({
                 "success": False,
                 "message": f"Error checking admin: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if not admin:
+            return Response({
+                "success": False,
+                "message": "This phone number is not registered as an admin. Please contact the system administrator."
+            }, status=status.HTTP_200_OK)
         
         # ارسال OTP به شماره تلفن از طریق Twilio SMS
         try:
@@ -582,7 +578,8 @@ class LoginView(APIView):
                 "message": f"Invalid phone number format: {str(e)}"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        admin = BusinessAdmin.objects.filter(phone=formatted_phone, is_active=True).first()
+        variants = phone_variants_for_lookup(phone) | phone_variants_for_lookup(formatted_phone)
+        admin = BusinessAdmin.objects.filter(phone__in=variants, is_active=True).order_by("-id").first()
         if not admin:
             return Response({
                 "success": False,
