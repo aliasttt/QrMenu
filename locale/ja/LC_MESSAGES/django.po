@@ -20,310 +20,310 @@ msgstr ""
 
 #: .\core\views.py:106
 msgid "Owner, Basil House"
-msgstr ""
+msgstr "オーナー、Basil House"
 
 #: .\core\views.py:106
 msgid "We increased table turnover with faster ordering."
-msgstr ""
+msgstr "より速い注文でテーブル回転率を上げました。"
 
 #: .\core\views.py:107
 msgid "Manager, South Fork"
-msgstr ""
+msgstr "マネージャー、South Fork"
 
 #: .\core\views.py:107
 msgid "Campaigns helped us fill off-peak hours."
-msgstr ""
+msgstr "キャンペーンでオフピーク時間を埋めることができました。"
 
 #: .\core\views.py:108
 msgid "Founder, Luna Cafe"
-msgstr ""
+msgstr "創設者、Luna Cafe"
 
 #: .\core\views.py:108
 msgid "Our staff now spends less time taking manual orders."
-msgstr ""
+msgstr "スタッフが手動で注文を取る時間が減りました。"
 
 #: .\core\views.py:111 .\core\views.py:133
 msgid "AI menu import"
-msgstr ""
+msgstr "AIメニューインポート"
 
 #: .\core\views.py:112 .\core\views.py:134
 msgid "Multilingual menus"
-msgstr ""
+msgstr "多言語メニュー"
 
 #: .\core\views.py:113 .\core\views.py:135
 msgid "QR code generation"
-msgstr ""
+msgstr "QRコード生成"
 
 #: .\core\views.py:114 .\core\views.py:136
 msgid "Order management"
-msgstr ""
+msgstr "注文管理"
 
 #: .\core\views.py:115 .\core\views.py:137
 msgid "Campaign engine"
-msgstr ""
+msgstr "キャンペーンエンジン"
 
 #: .\core\views.py:116 .\core\views.py:138
 msgid "Daily analytics"
-msgstr ""
+msgstr "日次分析"
 
 #: .\core\views.py:117 .\core\views.py:139
 msgid "Category controls"
-msgstr ""
+msgstr "カテゴリー管理"
 
 #: .\core\views.py:118 .\core\views.py:140
 msgid "Live availability"
-msgstr ""
+msgstr "リアルタイム在庫"
 
 #: .\core\views.py:119 .\core\views.py:141
 msgid "POS-ready payloads"
-msgstr ""
+msgstr "POS対応データ"
 
 #: .\core\views.py:120 .\core\views.py:142
 msgid "Mobile-first pages"
-msgstr ""
+msgstr "モバイルファーストページ"
 
 #: .\core\views.py:121 .\core\views.py:143
 msgid "Role-ready panel"
-msgstr ""
+msgstr "ロール対応パネル"
 
 #: .\core\views.py:122 .\core\views.py:144
 msgid "Conversion focused UI"
-msgstr ""
+msgstr "コンバージョン重視UI"
 
 #: .\core\views.py:133
 msgid ""
 "Upload a PDF or photo and we extract your dishes and prices automatically."
-msgstr ""
+msgstr "PDFや写真をアップロードすると、料理と価格を自動で抽出します。"
 
 #: .\core\views.py:134
 msgid ""
 "Serve your menu in multiple languages and switch by customer preference."
-msgstr ""
+msgstr "複数言語でメニューを提供し、お客様の好みで切り替えられます。"
 
 #: .\core\views.py:135
 msgid "Generate and download QR codes for tables, takeaway, and delivery."
-msgstr ""
+msgstr "テーブル、テイクアウト、配達用のQRコードを生成しダウンロード。"
 
 #: .\core\views.py:136
 msgid ""
 "Receive, track, and fulfill orders from one dashboard with status updates."
-msgstr ""
+msgstr "1つのダッシュボードで注文を受け、追跡し、ステータスを更新しながら完了。"
 
 #: .\core\views.py:137
 msgid ""
 "Create time-based discounts, happy hours, and target specific categories."
-msgstr ""
+msgstr "時間限定割引やハッピーアワーを作成し、特定のカテゴリーを狙えます。"
 
 #: .\core\views.py:138
 msgid "View orders, revenue, and top items with simple charts and exports."
-msgstr ""
+msgstr "シンプルなグラフとエクスポートで注文、売上、人気商品を確認。"
 
 #: .\core\views.py:139
 msgid "Organize items into categories and reorder with drag-and-drop."
-msgstr ""
+msgstr "アイテムをカテゴリー分けし、ドラッグ&ドロップで並べ替え。"
 
 #: .\core\views.py:140
 msgid "Mark items as out of stock and hide or show sections by schedule."
-msgstr ""
+msgstr "在庫切れをマークし、スケジュールでセクションを表示/非表示に。"
 
 #: .\core\views.py:141
 msgid "Send orders to your POS or kitchen display via webhooks or API."
-msgstr ""
+msgstr "WebhookやAPIでPOSやキッチンディスプレイに注文を送信。"
 
 #: .\core\views.py:142
 msgid "Menus and checkout are optimized for phones and tablets."
-msgstr ""
+msgstr "メニューと決済はスマホやタブレットに最適化されています。"
 
 #: .\core\views.py:143
 msgid "Invite staff with roles: admin, manager, or view-only."
-msgstr ""
+msgstr "管理者、マネージャー、閲覧のみといった役割でスタッフを招待。"
 
 #: .\core\views.py:144
 msgid "Clean design and clear CTAs to maximize add-to-cart and checkout."
-msgstr ""
+msgstr "クリーンなデザインと明確なCTAでカート追加と決済を最大化。"
 
 #: .\core\views.py:147
 msgid "Can I use my own domain?"
-msgstr ""
+msgstr "自分のドメインを使えますか？"
 
 #: .\core\views.py:147
 msgid ""
 "Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the "
 "settings panel."
-msgstr ""
+msgstr "はい。設定パネルからカスタムドメイン（例：menu.yourrestaurant.com）を接続できます。"
 
 #: .\core\views.py:148
 msgid "Is there a mobile app for staff?"
-msgstr ""
+msgstr "スタッフ向けモバイルアプリはありますか？"
 
 #: .\core\views.py:148
 msgid ""
 "The panel is fully responsive; you can use it from any browser. Native apps "
 "are on our roadmap."
-msgstr ""
+msgstr "パネルは完全レスポンシブで、どのブラウザからでも使えます。ネイティブアプリはロードマップにあります。"
 
 #: .\core\views.py:149
 msgid "How do I print QR codes?"
-msgstr ""
+msgstr "QRコードはどう印刷しますか？"
 
 #: .\core\views.py:149
 msgid ""
 "Generate QR codes from the dashboard and download as PNG or SVG. Print on "
 "table tents or stickers."
-msgstr ""
+msgstr "ダッシュボードでQRコードを生成し、PNGまたはSVGでダウンロード。テーブルテントやステッカーに印刷します。"
 
 #: .\core\views.py:150
 msgid "Do you integrate with POS?"
-msgstr ""
+msgstr "POSと連携できますか？"
 
 #: .\core\views.py:150
 msgid ""
 "We support webhooks and an API so you can push orders to your POS or kitchen "
 "display system."
-msgstr ""
+msgstr "WebhookとAPIをサポートしており、POSやキッチンディスプレイに注文を送信できます。"
 
 #: .\core\views.py:157
 msgid "Set up your menu"
-msgstr ""
+msgstr "メニューを設定"
 
 #: .\core\views.py:157
 msgid ""
 "Create categories, add dishes with prices and photos, and set availability."
-msgstr ""
+msgstr "カテゴリーを作成し、価格と写真付きの料理を追加、在庫を設定。"
 
 #: .\core\views.py:157
 msgid "Drag-and-drop reorder, bulk edit, or import from spreadsheet."
-msgstr ""
+msgstr "ドラッグ&ドロップで並べ替え、一括編集、または表計算からインポート。"
 
 #: .\core\views.py:158
 msgid "Generate your QR"
-msgstr ""
+msgstr "QRを生成"
 
 #: .\core\views.py:158
 msgid ""
 "Print QR codes for each table or area. Customers scan to open your menu."
-msgstr ""
+msgstr "各テーブルやエリア向けのQRコードを印刷。お客様がスキャンしてメニューを開きます。"
 
 #: .\core\views.py:158
 msgid "Download PNG or SVG, print on table tents or stickers."
-msgstr ""
+msgstr "PNGまたはSVGでダウンロードし、テーブルテントやステッカーに印刷。"
 
 #: .\core\views.py:159
 msgid "Get online orders"
-msgstr ""
+msgstr "オンライン注文を受ける"
 
 #: .\core\views.py:159
 msgid ""
 "Customers browse, add to cart, and checkout. You receive and fulfill orders."
-msgstr ""
+msgstr "お客様がメニューを見てカートに追加し、決済。あなたは注文を受け、対応します。"
 
 #: .\core\views.py:159
 msgid "Optional: connect to POS or kitchen display."
-msgstr ""
+msgstr "任意：POSやキッチンディスプレイと連携。"
 
 #: .\core\views.py:170
 msgid "QR menu — customers scan and browse your menu on their phone"
-msgstr ""
+msgstr "QRメニュー — お客様がスマホでスキャンして閲覧。"
 
 #: .\core\views.py:171
 msgid "Unlimited menu items and categories"
-msgstr ""
+msgstr "無制限のメニュー項目とカテゴリー"
 
 #: .\core\views.py:172
 msgid "Unlimited QR codes for tables and takeaway"
-msgstr ""
+msgstr "テーブルとテイクアウト用QRコード無制限"
 
 #: .\core\views.py:173
 msgid "Online ordering — guests order and pay from the same link"
-msgstr ""
+msgstr "オンライン注文 — 同じリンクでゲストが注文と支払いを完結。"
 
 #: .\core\views.py:174
 msgid "Customizable themes to match your brand"
-msgstr ""
+msgstr "ブランドに合わせてカスタマイズ可能なテーマ"
 
 #: .\core\views.py:175
 msgid "Campaigns & discounts (happy hour, daily specials)"
-msgstr ""
+msgstr "キャンペーン＆割引（ハッピーアワー、日替わり特価）"
 
 #: .\core\views.py:176
 msgid "Multilingual menu support"
-msgstr ""
+msgstr "多言語メニュー対応"
 
 #: .\core\views.py:177
 msgid "Real-time updates — change prices and availability instantly"
-msgstr ""
+msgstr "リアルタイム更新 — 価格と在庫を即時反映。"
 
 #: .\core\views.py:178
 msgid "Basic analytics — see what sells"
-msgstr ""
+msgstr "基本分析 — 売れているものを把握。"
 
 #: .\core\views.py:179
 msgid "Email & WhatsApp support"
-msgstr ""
+msgstr "メールとWhatsAppでサポート"
 
 #: .\core\views.py:183
 msgid "Win more orders"
-msgstr ""
+msgstr "より多くの注文を獲得"
 
 #: .\core\views.py:183
 msgid ""
 "Guests order directly from the QR menu. No waiting for staff—faster turnover "
 "and higher revenue."
-msgstr ""
+msgstr "お客様がQRメニューから直接注文。スタッフを待たず、回転率と売上がアップ。"
 
 #: .\core\views.py:184
 msgid "Look professional"
-msgstr ""
+msgstr "プロフェッショナルに見せる"
 
 #: .\core\views.py:184
 msgid ""
 "A clean digital menu and your own domain build trust. Stand out from "
 "competitors still using paper."
-msgstr ""
+msgstr "洗練されたデジタルメニューと独自ドメインで信頼を構築。紙のままの競合と差別化。"
 
 #: .\core\views.py:185
 msgid "One subscription, everything included"
-msgstr ""
+msgstr "1つのサブスクリプションですべて込み"
 
 #: .\core\views.py:185
 msgid ""
 "No per-order fees or hidden costs. One annual fee covers menu, ordering, and "
 "support."
-msgstr ""
+msgstr "注文ごとの手数料や隠れコストなし。年会費だけでメニュー・注文・サポートすべて。"
 
 #: .\core\views.py:186
 msgid "Launch in minutes"
-msgstr ""
+msgstr "数分で開始"
 
 #: .\core\views.py:186
 msgid ""
 "Add your dishes, print a QR code, and go live. No IT or design skills needed."
-msgstr ""
+msgstr "料理を追加し、QRコードを印刷して公開。ITやデザインの知識は不要。"
 
 #: .\core\views.py:189
 msgid "What is included in the price?"
-msgstr ""
+msgstr "料金には何が含まれますか？"
 
 #: .\core\views.py:189
 msgid ""
 "Everything: QR menu, online ordering, unlimited items and QR codes, "
 "campaigns, custom domain option, themes, and support. One annual "
 "subscription, no per-order fees."
-msgstr ""
+msgstr "すべて：QRメニュー、オンライン注文、無制限のアイテムとQR、キャンペーン、カスタムドメイン、テーマ、サポート。年会費のみで注文手数料なし。"
 
 #: .\core\views.py:190
 msgid "Is there a free trial?"
-msgstr ""
+msgstr "無料トライアルはありますか？"
 
 #: .\core\views.py:190
 msgid ""
 "Yes. Start with a free trial to build your menu and test ordering. No card "
 "required until you go live."
-msgstr ""
+msgstr "はい。無料トライアルでメニューを作成し、注文をテスト。公開まではカード不要。"
 
 #: .\core\views.py:191
 msgid "Why 19% VAT?"
-msgstr ""
+msgstr "なぜ19%の付加価値税ですか？"
 
 #: .\core\views.py:191
 #, python-format
@@ -331,292 +331,292 @@ msgid ""
 "We are VAT-registered in the EU. If you are in the EU and liable for VAT, "
 "19% is added at checkout (total €238/year). If you are outside the EU or VAT-"
 "exempt, the amount may differ."
-msgstr ""
+msgstr "当社はEUで付加価値税登録されています。EU内で課税対象の場合、決済時に19%が加算されます（年間合計€238）。EU圏外や免税の場合は金額が異なる場合があります。"
 
 #: .\core\views.py:211 .\templates\partials\navbar.html:47
 msgid "AI Menu Import"
-msgstr ""
+msgstr "AIメニューインポート"
 
 #: .\core\views.py:212
 msgid "Turn paper menus into digital menus in minutes."
-msgstr ""
+msgstr "紙のメニューを数分でデジタル化。"
 
 #: .\core\views.py:213
 msgid ""
 "Upload a photo or PDF and let AI extract dish names, descriptions, and "
 "prices automatically."
-msgstr ""
+msgstr "写真やPDFをアップロードすると、AIが料理名・説明・価格を自動抽出。"
 
 #: .\core\views.py:216
 msgid "Save hours of manual typing"
-msgstr ""
+msgstr "手入力の時間を大幅に節約"
 
 #: .\core\views.py:217
 msgid "Launch your QR menu faster"
-msgstr ""
+msgstr "QRメニューをより速く公開"
 
 #: .\core\views.py:218
 msgid "Reduce human data-entry errors"
-msgstr ""
+msgstr "人的入力ミスを削減"
 
 #: .\core\views.py:223 .\templates\partials\navbar.html:48
 msgid "Customizable Themes"
-msgstr ""
+msgstr "カスタマイズ可能なテーマ"
 
 #: .\core\views.py:224
 msgid "Match your menu design to your restaurant brand."
-msgstr ""
+msgstr "メニューデザインをレストランのブランドに合わせて。"
 
 #: .\core\views.py:225
 msgid ""
 "Choose from modern themes and customize colors, typography, and layout in a "
 "few clicks."
-msgstr ""
+msgstr "モダンなテーマから選び、色・書体・レイアウトを数クリックでカスタマイズ。"
 
 #: .\core\views.py:228
 msgid "Consistent brand identity"
-msgstr ""
+msgstr "一貫したブランドアイデンティティ"
 
 #: .\core\views.py:229
 msgid "Better visual experience for guests"
-msgstr ""
+msgstr "ゲストによりよい視覚体験"
 
 #: .\core\views.py:230
 msgid "Faster edits with pre-built styles"
-msgstr ""
+msgstr "定義済みスタイルで編集を高速化"
 
 #: .\core\views.py:235 .\templates\partials\navbar.html:49
 msgid "Dedicated Support"
-msgstr ""
+msgstr "専任サポート"
 
 #: .\core\views.py:236
 msgid "Real help when you need it most."
-msgstr ""
+msgstr "最も必要なときの本物のサポート。"
 
 #: .\core\views.py:237
 msgid ""
 "Our team helps with setup, menu updates, and optimization so your staff can "
 "focus on service."
-msgstr ""
+msgstr "セットアップ、メニュー更新、最適化を弊社チームが支援。スタッフはサービスに集中できます。"
 
 #: .\core\views.py:240
 msgid "Priority support for urgent issues"
-msgstr ""
+msgstr "緊急案件の優先サポート"
 
 #: .\core\views.py:241
 msgid "Faster onboarding for new branches"
-msgstr ""
+msgstr "新店舗の立ち上げを迅速化"
 
 #: .\core\views.py:242
 msgid "Better uptime and smoother operations"
-msgstr ""
+msgstr "稼働時間の向上と円滑なオペレーション"
 
 #: .\core\views.py:247 .\templates\partials\navbar.html:50
 msgid "Menu Creation"
-msgstr ""
+msgstr "メニュー作成"
 
 #: .\core\views.py:248
 msgid "Build clean, organized menus your guests love."
-msgstr ""
+msgstr "ゲストが気に入る、きれいで整理されたメニューを作成。"
 
 #: .\core\views.py:249
 msgid ""
 "Create categories, add dish photos, set prices, and reorder items with a "
 "simple dashboard."
-msgstr ""
+msgstr "シンプルなダッシュボードでカテゴリー作成、料理写真追加、価格設定、並べ替え。"
 
 #: .\core\views.py:252
 msgid "Unlimited menu items"
-msgstr ""
+msgstr "無制限のメニュー項目"
 
 #: .\core\views.py:253
 msgid "Quick editing for daily changes"
-msgstr ""
+msgstr "毎日の変更に素早く対応"
 
 #: .\core\views.py:254
 msgid "Clear structure for better ordering"
-msgstr ""
+msgstr "注文しやすい明確な構成"
 
 #: .\core\views.py:259 .\templates\partials\navbar.html:51
 msgid "Multi-Service Management"
-msgstr ""
+msgstr "マルチサービス管理"
 
 #: .\core\views.py:260
 msgid "Run dine-in, takeaway, and delivery from one panel."
-msgstr ""
+msgstr "1つのパネルで店内・テイクアウト・配達を管理。"
 
 #: .\core\views.py:261
 msgid ""
 "Manage service types, availability, and order flow in one place without "
 "switching tools."
-msgstr ""
+msgstr "サービス種別、在庫、注文フローを1箇所で管理。ツール切り替え不要。"
 
 #: .\core\views.py:264
 msgid "One dashboard for all channels"
-msgstr ""
+msgstr "すべてのチャネル対応の1つのダッシュボード"
 
 #: .\core\views.py:265
 msgid "Less staff confusion"
-msgstr ""
+msgstr "スタッフの混乱を軽減"
 
 #: .\core\views.py:266
 msgid "Higher operational speed"
-msgstr ""
+msgstr "業務スピード向上"
 
 #: .\core\views.py:271 .\templates\partials\navbar.html:52
 msgid "Multilingual Support"
-msgstr ""
+msgstr "多言語サポート"
 
 #: .\core\views.py:272
 msgid "Serve local and international guests better."
-msgstr ""
+msgstr "地元と海外のゲスト双方をより良くもてなす。"
 
 #: .\core\views.py:273
 msgid ""
 "Offer your menu in multiple languages and let customers switch language "
 "instantly."
-msgstr ""
+msgstr "複数言語でメニューを提供し、お客様が瞬時に切り替えできるように。"
 
 #: .\core\views.py:276
 msgid "Better guest experience for tourists"
-msgstr ""
+msgstr "観光客により良い体験"
 
 #: .\core\views.py:277
 msgid "Fewer ordering mistakes"
-msgstr ""
+msgstr "注文ミスの減少"
 
 #: .\core\views.py:278
 msgid "Higher conversion on the menu page"
-msgstr ""
+msgstr "メニューページのコンバージョン向上"
 
 #: .\core\views.py:283 .\templates\partials\navbar.html:53
 msgid "Online Ordering"
-msgstr ""
+msgstr "オンライン注文"
 
 #: .\core\views.py:284
 msgid "Take orders directly from the QR menu."
-msgstr ""
+msgstr "QRメニューから直接注文を受ける。"
 
 #: .\core\views.py:285
 msgid ""
 "Guests browse, add to cart, and checkout from their phone with a smooth "
 "mobile-first flow."
-msgstr ""
+msgstr "モバイルファーストなスムーズなフローで、ゲストが閲覧、カート追加、決済までスマホで完結。"
 
 #: .\core\views.py:288
 msgid "Increase average order value"
-msgstr ""
+msgstr "平均注文額を増やす"
 
 #: .\core\views.py:289
 msgid "Reduce table waiting time"
-msgstr ""
+msgstr "テーブルでの待ち時間を短縮"
 
 #: .\core\views.py:290
 msgid "Capture more takeaway orders"
-msgstr ""
+msgstr "テイクアウト注文を増やす"
 
 #: .\core\views.py:295 .\templates\partials\navbar.html:54
 msgid "PDF Export"
-msgstr ""
+msgstr "PDFエクスポート"
 
 #: .\core\views.py:296
 msgid "Keep digital and printed menus in sync."
-msgstr ""
+msgstr "デジタルと印刷メニューを同期。"
 
 #: .\core\views.py:297
 msgid ""
 "Export your latest menu as PDF for table cards, flyers, and offline sharing."
-msgstr ""
+msgstr "最新メニューをテーブルカードやチラシ、オフライン共有用にPDFエクスポート。"
 
 #: .\core\views.py:300
 msgid "Ready-to-print output"
-msgstr ""
+msgstr "印刷可能な出力"
 
 #: .\core\views.py:301
 msgid "Consistent branding across channels"
-msgstr ""
+msgstr "全チャネルで一貫したブランディング"
 
 #: .\core\views.py:302
 msgid "Simple backup of menu data"
-msgstr ""
+msgstr "メニューデータの簡単バックアップ"
 
 #: .\core\views.py:307 .\templates\partials\navbar.html:55
 msgid "Real-Time Updates"
-msgstr ""
+msgstr "リアルタイム更新"
 
 #: .\core\views.py:308
 msgid "Update prices and stock instantly."
-msgstr ""
+msgstr "価格と在庫を即座に更新。"
 
 #: .\core\views.py:309
 msgid ""
 "Publish menu changes live in seconds so guests always see accurate "
 "information."
-msgstr ""
+msgstr "メニュー変更を数秒で公開し、常に正確な情報をゲストに提示。"
 
 #: .\core\views.py:312
 msgid "No stale menu data"
-msgstr ""
+msgstr "古いメニュー情報なし"
 
 #: .\core\views.py:313
 msgid "Fewer customer complaints"
-msgstr ""
+msgstr "お客様のクレーム減少"
 
 #: .\core\views.py:314
 msgid "Faster reaction to peak-hour demand"
-msgstr ""
+msgstr "ピーク時の需要に迅速対応"
 
 #: .\core\views.py:319 .\templates\partials\navbar.html:56
 msgid "Secure Payment Processing"
-msgstr ""
+msgstr "安全な決済処理"
 
 #: .\core\views.py:320
 msgid "Accept payments safely and confidently."
-msgstr ""
+msgstr "決済を安全かつ確実に受け付ける。"
 
 #: .\core\views.py:321
 msgid ""
 "Support secure online checkout with trusted gateways and encrypted "
 "transaction flow."
-msgstr ""
+msgstr "信頼できるゲートウェイと暗号化された取引フローで、安全なオンライン決済に対応。"
 
 #: .\core\views.py:324
 msgid "Safer transactions"
-msgstr ""
+msgstr "より安全な取引"
 
 #: .\core\views.py:325
 msgid "More trust from customers"
-msgstr ""
+msgstr "顧客からの信頼向上"
 
 #: .\core\views.py:326
 msgid "Higher checkout completion"
-msgstr ""
+msgstr "決済完了率が向上"
 
 #: .\core\views.py:331 .\templates\partials\navbar.html:57
 msgid "Smart Order Management"
-msgstr ""
+msgstr "スマート注文管理"
 
 #: .\core\views.py:332
 msgid "Track every order in one clean queue."
-msgstr ""
+msgstr "すべての注文を1つのクリーンな待ち行列で追跡。"
 
 #: .\core\views.py:333
 msgid ""
 "Filter by status, prioritize prep, and keep front-of-house and kitchen fully "
 "synchronized."
-msgstr ""
+msgstr "ステータスで絞り込み、調理を優先順位付けし、ホールとキッチンを完全同期。"
 
 #: .\core\views.py:336
 msgid "Clear workflow for staff"
-msgstr ""
+msgstr "スタッフに明確なワークフロー"
 
 #: .\core\views.py:337
 msgid "Faster fulfillment"
-msgstr ""
+msgstr "対応スピード向上"
 
 #: .\core\views.py:338
 msgid "Improved customer satisfaction"
-msgstr ""
+msgstr "顧客満足度の向上"
 
 #: .\templates\admin\business_menu_section.html:11
 msgid "Model name"
@@ -1093,24 +1093,24 @@ msgstr ""
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
-msgstr ""
+msgstr "モダンレストラン向けの充実機能"
 
 #: .\templates\pages\features.html:11
 msgid ""
 "Everything you need to digitize your menu, run promotions, and grow orders."
-msgstr ""
+msgstr "メニューをデジタル化し、プロモーションを実施し、注文を増やすために必要なすべて。"
 
 #: .\templates\pages\features.html:29
 msgid "Dashboard and analytics view"
-msgstr ""
+msgstr "ダッシュボードと分析ビュー"
 
 #: .\templates\pages\features.html:35
 msgid "One dashboard for menu, orders, and campaigns."
-msgstr ""
+msgstr "メニュー、注文、キャンペーンを一元管理するダッシュボード。"
 
 #: .\templates\pages\features.html:40
 msgid "Frequently asked questions"
-msgstr ""
+msgstr "よくある質問"
 
 #: .\templates\pages\features.html:52
 msgid "See pricing"
@@ -1126,23 +1126,23 @@ msgstr "使い方"
 msgid ""
 "Set up your menu, generate QR codes, and start receiving orders in three "
 "simple steps."
-msgstr ""
+msgstr "メニューを設定し、QRコードを生成し、3ステップで注文受付を開始。"
 
 #: .\templates\pages\how_it_works.html:11
 msgid "Get your digital menu live and start taking orders in minutes."
-msgstr ""
+msgstr "デジタルメニューを公開し、数分で注文受付を開始。"
 
 #: .\templates\pages\how_it_works.html:30
 msgid "QR code and digital ordering"
-msgstr ""
+msgstr "QRコードとデジタル注文"
 
 #: .\templates\pages\how_it_works.html:36
 msgid "Scan, browse, order — no app download required."
-msgstr ""
+msgstr "スキャンして、閲覧して、注文 — アプリのダウンロード不要。"
 
 #: .\templates\pages\how_it_works.html:41
 msgid "Get started free"
-msgstr ""
+msgstr "無料で始める"
 
 #: .\templates\pages\landing.html:3
 msgid "QR Menu + Ordering"
@@ -1903,39 +1903,39 @@ msgstr "料金"
 msgid ""
 "One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT "
 "(€238 total). Everything included."
-msgstr ""
+msgstr "シンプルな年額プラン：QRメニューとオンライン注文が年€200＋19%VAT（合計€238）。すべて込み。"
 
 #: .\templates\pages\pricing.html:10
 msgid "Simple annual pricing"
-msgstr ""
+msgstr "シンプルな年額料金"
 
 #: .\templates\pages\pricing.html:11
 msgid ""
 "One plan. QR menu + online ordering. Everything you need to run digital "
 "dining—no per-order fees, no hidden costs."
-msgstr ""
+msgstr "1つのプラン。QRメニュー＋オンライン注文。デジタル飲食運営に必要なすべて — 注文手数料や隠れコストなし。"
 
 #: .\templates\pages\pricing.html:17
 msgid "Annual subscription"
-msgstr ""
+msgstr "年間サブスクリプション"
 
 #: .\templates\pages\pricing.html:18
 msgid "QR menu & online ordering"
-msgstr ""
+msgstr "QRメニューとオンライン注文"
 
 #: .\templates\pages\pricing.html:19
 msgid "year"
-msgstr ""
+msgstr "年"
 
 #: .\templates\pages\pricing.html:20
 #, python-format
 msgid "plus 19%% VAT"
-msgstr ""
+msgstr "＋19％VAT"
 
 #: .\templates\pages\pricing.html:21
 #, python-format
 msgid "€%(total)s total per year"
-msgstr ""
+msgstr "年間合計 %(total)s €"
 
 #: .\templates\pages\pricing.html:22
 msgid "Get started"
@@ -1943,15 +1943,15 @@ msgstr "始める"
 
 #: .\templates\pages\pricing.html:36
 msgid "Why restaurant owners choose us"
-msgstr ""
+msgstr "レストランオーナーが選ぶ理由"
 
 #: .\templates\pages\pricing.html:37
 msgid "One annual fee. No surprises. Built for real venues."
-msgstr ""
+msgstr "年会費のみ。サプライズなし。実店舗のために設計。"
 
 #: .\templates\pages\pricing.html:49
 msgid "Pricing FAQ"
-msgstr ""
+msgstr "料金に関するFAQ"
 
 #: .\templates\pages\pricing.html:61
 msgid "Contact us"
@@ -1959,7 +1959,7 @@ msgstr "お問い合わせ"
 
 #: .\templates\pages\pricing.html:67
 msgid "Get started — €200/year"
-msgstr ""
+msgstr "始める — 年間 €200"
 
 #: .\templates\pages\public_menu.html:3
 #: .\templates\pages\restaurant_menu.html:3

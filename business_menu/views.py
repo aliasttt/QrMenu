@@ -3081,6 +3081,8 @@ class OrderCreateView(APIView):
                 {"detail": "Delivery is not available for this restaurant."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if service_type == "delivery":
+            payment_method = "online"
         if payment_method not in ("cash", "online"):
             return Response(
                 {"detail": "Invalid payment_method. Use cash or online."},

@@ -20,310 +20,310 @@ msgstr ""
 
 #: .\core\views.py:106
 msgid "Owner, Basil House"
-msgstr ""
+msgstr "老板，Basil House"
 
 #: .\core\views.py:106
 msgid "We increased table turnover with faster ordering."
-msgstr ""
+msgstr "通过更快下单，我们提升了餐桌翻台率。"
 
 #: .\core\views.py:107
 msgid "Manager, South Fork"
-msgstr ""
+msgstr "经理，South Fork"
 
 #: .\core\views.py:107
 msgid "Campaigns helped us fill off-peak hours."
-msgstr ""
+msgstr "营销活动帮助我们填满了淡季时段。"
 
 #: .\core\views.py:108
 msgid "Founder, Luna Cafe"
-msgstr ""
+msgstr "创始人，Luna Cafe"
 
 #: .\core\views.py:108
 msgid "Our staff now spends less time taking manual orders."
-msgstr ""
+msgstr "员工现在花在手动接单上的时间更少了。"
 
 #: .\core\views.py:111 .\core\views.py:133
 msgid "AI menu import"
-msgstr ""
+msgstr "AI 菜单导入"
 
 #: .\core\views.py:112 .\core\views.py:134
 msgid "Multilingual menus"
-msgstr ""
+msgstr "多语言菜单"
 
 #: .\core\views.py:113 .\core\views.py:135
 msgid "QR code generation"
-msgstr ""
+msgstr "生成二维码"
 
 #: .\core\views.py:114 .\core\views.py:136
 msgid "Order management"
-msgstr ""
+msgstr "订单管理"
 
 #: .\core\views.py:115 .\core\views.py:137
 msgid "Campaign engine"
-msgstr ""
+msgstr "营销引擎"
 
 #: .\core\views.py:116 .\core\views.py:138
 msgid "Daily analytics"
-msgstr ""
+msgstr "每日分析"
 
 #: .\core\views.py:117 .\core\views.py:139
 msgid "Category controls"
-msgstr ""
+msgstr "分类控制"
 
 #: .\core\views.py:118 .\core\views.py:140
 msgid "Live availability"
-msgstr ""
+msgstr "实时库存"
 
 #: .\core\views.py:119 .\core\views.py:141
 msgid "POS-ready payloads"
-msgstr ""
+msgstr "POS 就绪数据"
 
 #: .\core\views.py:120 .\core\views.py:142
 msgid "Mobile-first pages"
-msgstr ""
+msgstr "移动优先页面"
 
 #: .\core\views.py:121 .\core\views.py:143
 msgid "Role-ready panel"
-msgstr ""
+msgstr "角色权限面板"
 
 #: .\core\views.py:122 .\core\views.py:144
 msgid "Conversion focused UI"
-msgstr ""
+msgstr "转化优化界面"
 
 #: .\core\views.py:133
 msgid ""
 "Upload a PDF or photo and we extract your dishes and prices automatically."
-msgstr ""
+msgstr "上传 PDF 或照片，我们自动提取菜品和价格。"
 
 #: .\core\views.py:134
 msgid ""
 "Serve your menu in multiple languages and switch by customer preference."
-msgstr ""
+msgstr "支持多语言菜单，可根据顾客偏好切换。"
 
 #: .\core\views.py:135
 msgid "Generate and download QR codes for tables, takeaway, and delivery."
-msgstr ""
+msgstr "为餐桌、自取和配送生成并下载二维码。"
 
 #: .\core\views.py:136
 msgid ""
 "Receive, track, and fulfill orders from one dashboard with status updates."
-msgstr ""
+msgstr "从一个面板接收、跟踪并完成订单，实时更新状态。"
 
 #: .\core\views.py:137
 msgid ""
 "Create time-based discounts, happy hours, and target specific categories."
-msgstr ""
+msgstr "创建限时折扣、欢乐时光，并定向到特定分类。"
 
 #: .\core\views.py:138
 msgid "View orders, revenue, and top items with simple charts and exports."
-msgstr ""
+msgstr "通过简单的图表和导出查看订单、收入和热销品。"
 
 #: .\core\views.py:139
 msgid "Organize items into categories and reorder with drag-and-drop."
-msgstr ""
+msgstr "将菜品按分类整理，通过拖放重新排序。"
 
 #: .\core\views.py:140
 msgid "Mark items as out of stock and hide or show sections by schedule."
-msgstr ""
+msgstr "将商品标记为售罄，并按时间表隐藏或显示分类。"
 
 #: .\core\views.py:141
 msgid "Send orders to your POS or kitchen display via webhooks or API."
-msgstr ""
+msgstr "通过 webhook 或 API 将订单发送到 POS 或厨房显示屏。"
 
 #: .\core\views.py:142
 msgid "Menus and checkout are optimized for phones and tablets."
-msgstr ""
+msgstr "菜单和结账针对手机和平板进行优化。"
 
 #: .\core\views.py:143
 msgid "Invite staff with roles: admin, manager, or view-only."
-msgstr ""
+msgstr "以角色邀请员工：管理员、经理或仅查看。"
 
 #: .\core\views.py:144
 msgid "Clean design and clear CTAs to maximize add-to-cart and checkout."
-msgstr ""
+msgstr "简洁设计和清晰行动号召，最大化加购与结账率。"
 
 #: .\core\views.py:147
 msgid "Can I use my own domain?"
-msgstr ""
+msgstr "可以使用自己的域名吗？"
 
 #: .\core\views.py:147
 msgid ""
 "Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the "
 "settings panel."
-msgstr ""
+msgstr "可以。您可以在设置面板中连接自定义域名（例如 menu.yourrestaurant.com）。"
 
 #: .\core\views.py:148
 msgid "Is there a mobile app for staff?"
-msgstr ""
+msgstr "有员工用的移动应用吗？"
 
 #: .\core\views.py:148
 msgid ""
 "The panel is fully responsive; you can use it from any browser. Native apps "
 "are on our roadmap."
-msgstr ""
+msgstr "面板完全响应式，可在任意浏览器中使用。原生应用在规划中。"
 
 #: .\core\views.py:149
 msgid "How do I print QR codes?"
-msgstr ""
+msgstr "如何打印二维码？"
 
 #: .\core\views.py:149
 msgid ""
 "Generate QR codes from the dashboard and download as PNG or SVG. Print on "
 "table tents or stickers."
-msgstr ""
+msgstr "在仪表盘中生成二维码，下载为 PNG 或 SVG。可打印在桌卡或贴纸上。"
 
 #: .\core\views.py:150
 msgid "Do you integrate with POS?"
-msgstr ""
+msgstr "支持与 POS 集成吗？"
 
 #: .\core\views.py:150
 msgid ""
 "We support webhooks and an API so you can push orders to your POS or kitchen "
 "display system."
-msgstr ""
+msgstr "我们支持 webhook 和 API，可将订单推送到您的 POS 或厨房显示系统。"
 
 #: .\core\views.py:157
 msgid "Set up your menu"
-msgstr ""
+msgstr "设置菜单"
 
 #: .\core\views.py:157
 msgid ""
 "Create categories, add dishes with prices and photos, and set availability."
-msgstr ""
+msgstr "创建分类，添加带价格和照片的菜品，并设置库存。"
 
 #: .\core\views.py:157
 msgid "Drag-and-drop reorder, bulk edit, or import from spreadsheet."
-msgstr ""
+msgstr "拖放重新排序、批量编辑或从电子表格导入。"
 
 #: .\core\views.py:158
 msgid "Generate your QR"
-msgstr ""
+msgstr "生成二维码"
 
 #: .\core\views.py:158
 msgid ""
 "Print QR codes for each table or area. Customers scan to open your menu."
-msgstr ""
+msgstr "为每张餐桌或区域打印二维码，顾客扫描即可打开菜单。"
 
 #: .\core\views.py:158
 msgid "Download PNG or SVG, print on table tents or stickers."
-msgstr ""
+msgstr "下载 PNG 或 SVG，打印在桌卡或贴纸上。"
 
 #: .\core\views.py:159
 msgid "Get online orders"
-msgstr ""
+msgstr "接收在线订单"
 
 #: .\core\views.py:159
 msgid ""
 "Customers browse, add to cart, and checkout. You receive and fulfill orders."
-msgstr ""
+msgstr "顾客浏览菜单、加入购物车并结账，您接收并完成订单。"
 
 #: .\core\views.py:159
 msgid "Optional: connect to POS or kitchen display."
-msgstr ""
+msgstr "可选：连接到 POS 或厨房显示屏。"
 
 #: .\core\views.py:170
 msgid "QR menu — customers scan and browse your menu on their phone"
-msgstr ""
+msgstr "二维码菜单——顾客手机扫码即可浏览。"
 
 #: .\core\views.py:171
 msgid "Unlimited menu items and categories"
-msgstr ""
+msgstr "无限菜品和分类"
 
 #: .\core\views.py:172
 msgid "Unlimited QR codes for tables and takeaway"
-msgstr ""
+msgstr "无限的堂食和外带二维码"
 
 #: .\core\views.py:173
 msgid "Online ordering — guests order and pay from the same link"
-msgstr ""
+msgstr "在线点单——顾客在同一链接下单并付款。"
 
 #: .\core\views.py:174
 msgid "Customizable themes to match your brand"
-msgstr ""
+msgstr "可自定义主题匹配品牌"
 
 #: .\core\views.py:175
 msgid "Campaigns & discounts (happy hour, daily specials)"
-msgstr ""
+msgstr "营销与折扣（欢乐时光、每日特价）"
 
 #: .\core\views.py:176
 msgid "Multilingual menu support"
-msgstr ""
+msgstr "多语言菜单支持"
 
 #: .\core\views.py:177
 msgid "Real-time updates — change prices and availability instantly"
-msgstr ""
+msgstr "实时更新——瞬间修改价格和库存。"
 
 #: .\core\views.py:178
 msgid "Basic analytics — see what sells"
-msgstr ""
+msgstr "基础分析——了解什么最畅销。"
 
 #: .\core\views.py:179
 msgid "Email & WhatsApp support"
-msgstr ""
+msgstr "邮件与 WhatsApp 支持"
 
 #: .\core\views.py:183
 msgid "Win more orders"
-msgstr ""
+msgstr "赢得更多订单"
 
 #: .\core\views.py:183
 msgid ""
 "Guests order directly from the QR menu. No waiting for staff—faster turnover "
 "and higher revenue."
-msgstr ""
+msgstr "顾客直接通过二维码菜单下单，无需等待员工，翻台更快，收入更高。"
 
 #: .\core\views.py:184
 msgid "Look professional"
-msgstr ""
+msgstr "呈现专业形象"
 
 #: .\core\views.py:184
 msgid ""
 "A clean digital menu and your own domain build trust. Stand out from "
 "competitors still using paper."
-msgstr ""
+msgstr "简洁的数字菜单和专属域名建立信任，让您在仍使用纸质菜单的同行中脱颖而出。"
 
 #: .\core\views.py:185
 msgid "One subscription, everything included"
-msgstr ""
+msgstr "一个订阅，全部包含"
 
 #: .\core\views.py:185
 msgid ""
 "No per-order fees or hidden costs. One annual fee covers menu, ordering, and "
 "support."
-msgstr ""
+msgstr "无按单收费或隐藏费用。一年费用涵盖菜单、点单和支持。"
 
 #: .\core\views.py:186
 msgid "Launch in minutes"
-msgstr ""
+msgstr "几分钟内上线"
 
 #: .\core\views.py:186
 msgid ""
 "Add your dishes, print a QR code, and go live. No IT or design skills needed."
-msgstr ""
+msgstr "添加菜品、打印二维码、直接上线。无需 IT 或设计技能。"
 
 #: .\core\views.py:189
 msgid "What is included in the price?"
-msgstr ""
+msgstr "价格包含哪些内容？"
 
 #: .\core\views.py:189
 msgid ""
 "Everything: QR menu, online ordering, unlimited items and QR codes, "
 "campaigns, custom domain option, themes, and support. One annual "
 "subscription, no per-order fees."
-msgstr ""
+msgstr "全部：二维码菜单、在线点单、无限菜品与二维码、营销活动、自定义域名选项、主题以及支持。一次年费，无按单费用。"
 
 #: .\core\views.py:190
 msgid "Is there a free trial?"
-msgstr ""
+msgstr "有免费试用吗？"
 
 #: .\core\views.py:190
 msgid ""
 "Yes. Start with a free trial to build your menu and test ordering. No card "
 "required until you go live."
-msgstr ""
+msgstr "可以。使用免费试用构建菜单并测试点单，在正式上线之前无需信用卡。"
 
 #: .\core\views.py:191
 msgid "Why 19% VAT?"
-msgstr ""
+msgstr "为什么是 19% 增值税？"
 
 #: .\core\views.py:191
 #, python-format
@@ -331,292 +331,292 @@ msgid ""
 "We are VAT-registered in the EU. If you are in the EU and liable for VAT, "
 "19% is added at checkout (total €238/year). If you are outside the EU or VAT-"
 "exempt, the amount may differ."
-msgstr ""
+msgstr "我们在欧盟已注册增值税。若您位于欧盟并需缴纳增值税，结账时会加收 19%（年费合计 €238）。欧盟以外或免税用户金额可能不同。"
 
 #: .\core\views.py:211 .\templates\partials\navbar.html:47
 msgid "AI Menu Import"
-msgstr ""
+msgstr "AI 菜单导入"
 
 #: .\core\views.py:212
 msgid "Turn paper menus into digital menus in minutes."
-msgstr ""
+msgstr "几分钟将纸质菜单转换为数字菜单。"
 
 #: .\core\views.py:213
 msgid ""
 "Upload a photo or PDF and let AI extract dish names, descriptions, and "
 "prices automatically."
-msgstr ""
+msgstr "上传照片或 PDF，AI 自动提取菜品名称、描述和价格。"
 
 #: .\core\views.py:216
 msgid "Save hours of manual typing"
-msgstr ""
+msgstr "节省数小时手动录入"
 
 #: .\core\views.py:217
 msgid "Launch your QR menu faster"
-msgstr ""
+msgstr "更快上线二维码菜单"
 
 #: .\core\views.py:218
 msgid "Reduce human data-entry errors"
-msgstr ""
+msgstr "减少人工录入错误"
 
 #: .\core\views.py:223 .\templates\partials\navbar.html:48
 msgid "Customizable Themes"
-msgstr ""
+msgstr "可自定义主题"
 
 #: .\core\views.py:224
 msgid "Match your menu design to your restaurant brand."
-msgstr ""
+msgstr "让菜单设计与您的餐厅品牌一致。"
 
 #: .\core\views.py:225
 msgid ""
 "Choose from modern themes and customize colors, typography, and layout in a "
 "few clicks."
-msgstr ""
+msgstr "从现代主题中选择，几次点击即可自定义颜色、字体和布局。"
 
 #: .\core\views.py:228
 msgid "Consistent brand identity"
-msgstr ""
+msgstr "统一的品牌形象"
 
 #: .\core\views.py:229
 msgid "Better visual experience for guests"
-msgstr ""
+msgstr "为顾客提供更佳的视觉体验"
 
 #: .\core\views.py:230
 msgid "Faster edits with pre-built styles"
-msgstr ""
+msgstr "使用预设样式加快编辑"
 
 #: .\core\views.py:235 .\templates\partials\navbar.html:49
 msgid "Dedicated Support"
-msgstr ""
+msgstr "专属支持"
 
 #: .\core\views.py:236
 msgid "Real help when you need it most."
-msgstr ""
+msgstr "在您最需要的时候提供真实的帮助。"
 
 #: .\core\views.py:237
 msgid ""
 "Our team helps with setup, menu updates, and optimization so your staff can "
 "focus on service."
-msgstr ""
+msgstr "我们的团队协助设置、菜单更新和优化，让您的员工专注服务。"
 
 #: .\core\views.py:240
 msgid "Priority support for urgent issues"
-msgstr ""
+msgstr "紧急问题的优先支持"
 
 #: .\core\views.py:241
 msgid "Faster onboarding for new branches"
-msgstr ""
+msgstr "新分店更快上线"
 
 #: .\core\views.py:242
 msgid "Better uptime and smoother operations"
-msgstr ""
+msgstr "更高的正常运行时间和更流畅的运营"
 
 #: .\core\views.py:247 .\templates\partials\navbar.html:50
 msgid "Menu Creation"
-msgstr ""
+msgstr "菜单创建"
 
 #: .\core\views.py:248
 msgid "Build clean, organized menus your guests love."
-msgstr ""
+msgstr "打造干净、条理清晰、顾客喜爱的菜单。"
 
 #: .\core\views.py:249
 msgid ""
 "Create categories, add dish photos, set prices, and reorder items with a "
 "simple dashboard."
-msgstr ""
+msgstr "在简单的面板中创建分类、添加菜品照片、设置价格并重新排序。"
 
 #: .\core\views.py:252
 msgid "Unlimited menu items"
-msgstr ""
+msgstr "无限菜品"
 
 #: .\core\views.py:253
 msgid "Quick editing for daily changes"
-msgstr ""
+msgstr "快速编辑应对每日变动"
 
 #: .\core\views.py:254
 msgid "Clear structure for better ordering"
-msgstr ""
+msgstr "清晰结构，助力点单"
 
 #: .\core\views.py:259 .\templates\partials\navbar.html:51
 msgid "Multi-Service Management"
-msgstr ""
+msgstr "多服务管理"
 
 #: .\core\views.py:260
 msgid "Run dine-in, takeaway, and delivery from one panel."
-msgstr ""
+msgstr "在一个面板中管理堂食、自取和配送。"
 
 #: .\core\views.py:261
 msgid ""
 "Manage service types, availability, and order flow in one place without "
 "switching tools."
-msgstr ""
+msgstr "在同一处管理服务类型、可用性和订单流程，无需在工具间切换。"
 
 #: .\core\views.py:264
 msgid "One dashboard for all channels"
-msgstr ""
+msgstr "一个面板管理所有渠道"
 
 #: .\core\views.py:265
 msgid "Less staff confusion"
-msgstr ""
+msgstr "减少员工混乱"
 
 #: .\core\views.py:266
 msgid "Higher operational speed"
-msgstr ""
+msgstr "更高的运营速度"
 
 #: .\core\views.py:271 .\templates\partials\navbar.html:52
 msgid "Multilingual Support"
-msgstr ""
+msgstr "多语言支持"
 
 #: .\core\views.py:272
 msgid "Serve local and international guests better."
-msgstr ""
+msgstr "更好地服务本地和国际顾客。"
 
 #: .\core\views.py:273
 msgid ""
 "Offer your menu in multiple languages and let customers switch language "
 "instantly."
-msgstr ""
+msgstr "以多语言提供菜单，顾客可即时切换语言。"
 
 #: .\core\views.py:276
 msgid "Better guest experience for tourists"
-msgstr ""
+msgstr "为游客提供更好的体验"
 
 #: .\core\views.py:277
 msgid "Fewer ordering mistakes"
-msgstr ""
+msgstr "减少下单错误"
 
 #: .\core\views.py:278
 msgid "Higher conversion on the menu page"
-msgstr ""
+msgstr "菜单页面转化率更高"
 
 #: .\core\views.py:283 .\templates\partials\navbar.html:53
 msgid "Online Ordering"
-msgstr ""
+msgstr "在线点单"
 
 #: .\core\views.py:284
 msgid "Take orders directly from the QR menu."
-msgstr ""
+msgstr "直接通过二维码菜单接单。"
 
 #: .\core\views.py:285
 msgid ""
 "Guests browse, add to cart, and checkout from their phone with a smooth "
 "mobile-first flow."
-msgstr ""
+msgstr "顾客通过流畅的移动优先流程，在手机上浏览、加购并完成结账。"
 
 #: .\core\views.py:288
 msgid "Increase average order value"
-msgstr ""
+msgstr "提升平均订单金额"
 
 #: .\core\views.py:289
 msgid "Reduce table waiting time"
-msgstr ""
+msgstr "缩短餐桌等候时间"
 
 #: .\core\views.py:290
 msgid "Capture more takeaway orders"
-msgstr ""
+msgstr "获取更多自取订单"
 
 #: .\core\views.py:295 .\templates\partials\navbar.html:54
 msgid "PDF Export"
-msgstr ""
+msgstr "PDF 导出"
 
 #: .\core\views.py:296
 msgid "Keep digital and printed menus in sync."
-msgstr ""
+msgstr "让数字菜单与纸质菜单保持同步。"
 
 #: .\core\views.py:297
 msgid ""
 "Export your latest menu as PDF for table cards, flyers, and offline sharing."
-msgstr ""
+msgstr "将最新菜单导出为 PDF，用于桌卡、传单和离线分享。"
 
 #: .\core\views.py:300
 msgid "Ready-to-print output"
-msgstr ""
+msgstr "开箱即打的输出"
 
 #: .\core\views.py:301
 msgid "Consistent branding across channels"
-msgstr ""
+msgstr "跨渠道保持品牌一致"
 
 #: .\core\views.py:302
 msgid "Simple backup of menu data"
-msgstr ""
+msgstr "简单的菜单数据备份"
 
 #: .\core\views.py:307 .\templates\partials\navbar.html:55
 msgid "Real-Time Updates"
-msgstr ""
+msgstr "实时更新"
 
 #: .\core\views.py:308
 msgid "Update prices and stock instantly."
-msgstr ""
+msgstr "即时更新价格和库存。"
 
 #: .\core\views.py:309
 msgid ""
 "Publish menu changes live in seconds so guests always see accurate "
 "information."
-msgstr ""
+msgstr "秒级发布菜单更新，让顾客始终看到最新准确信息。"
 
 #: .\core\views.py:312
 msgid "No stale menu data"
-msgstr ""
+msgstr "无过期菜单数据"
 
 #: .\core\views.py:313
 msgid "Fewer customer complaints"
-msgstr ""
+msgstr "顾客投诉减少"
 
 #: .\core\views.py:314
 msgid "Faster reaction to peak-hour demand"
-msgstr ""
+msgstr "更快响应高峰时段需求"
 
 #: .\core\views.py:319 .\templates\partials\navbar.html:56
 msgid "Secure Payment Processing"
-msgstr ""
+msgstr "安全支付处理"
 
 #: .\core\views.py:320
 msgid "Accept payments safely and confidently."
-msgstr ""
+msgstr "安全放心地接受付款。"
 
 #: .\core\views.py:321
 msgid ""
 "Support secure online checkout with trusted gateways and encrypted "
 "transaction flow."
-msgstr ""
+msgstr "使用可信支付网关和加密交易流程，支持安全在线结账。"
 
 #: .\core\views.py:324
 msgid "Safer transactions"
-msgstr ""
+msgstr "更安全的交易"
 
 #: .\core\views.py:325
 msgid "More trust from customers"
-msgstr ""
+msgstr "赢得更多顾客信任"
 
 #: .\core\views.py:326
 msgid "Higher checkout completion"
-msgstr ""
+msgstr "结账完成率更高"
 
 #: .\core\views.py:331 .\templates\partials\navbar.html:57
 msgid "Smart Order Management"
-msgstr ""
+msgstr "智能订单管理"
 
 #: .\core\views.py:332
 msgid "Track every order in one clean queue."
-msgstr ""
+msgstr "在一个整洁的队列中跟踪每个订单。"
 
 #: .\core\views.py:333
 msgid ""
 "Filter by status, prioritize prep, and keep front-of-house and kitchen fully "
 "synchronized."
-msgstr ""
+msgstr "按状态过滤、优先安排制作，让前厅与厨房完全同步。"
 
 #: .\core\views.py:336
 msgid "Clear workflow for staff"
-msgstr ""
+msgstr "员工工作流程更清晰"
 
 #: .\core\views.py:337
 msgid "Faster fulfillment"
-msgstr ""
+msgstr "更快完成订单"
 
 #: .\core\views.py:338
 msgid "Improved customer satisfaction"
-msgstr ""
+msgstr "顾客满意度提升"
 
 #: .\templates\admin\business_menu_section.html:11
 msgid "Model name"
@@ -1093,24 +1093,24 @@ msgstr ""
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
-msgstr ""
+msgstr "为现代餐厅打造的完整功能集"
 
 #: .\templates\pages\features.html:11
 msgid ""
 "Everything you need to digitize your menu, run promotions, and grow orders."
-msgstr ""
+msgstr "数字化菜单、开展促销和提升订单所需的一切。"
 
 #: .\templates\pages\features.html:29
 msgid "Dashboard and analytics view"
-msgstr ""
+msgstr "仪表盘与分析视图"
 
 #: .\templates\pages\features.html:35
 msgid "One dashboard for menu, orders, and campaigns."
-msgstr ""
+msgstr "一个面板管理菜单、订单和营销。"
 
 #: .\templates\pages\features.html:40
 msgid "Frequently asked questions"
-msgstr ""
+msgstr "常见问题"
 
 #: .\templates\pages\features.html:52
 msgid "See pricing"
@@ -1126,23 +1126,23 @@ msgstr "如何运作"
 msgid ""
 "Set up your menu, generate QR codes, and start receiving orders in three "
 "simple steps."
-msgstr ""
+msgstr "三步简单流程：设置菜单、生成二维码、开始接单。"
 
 #: .\templates\pages\how_it_works.html:11
 msgid "Get your digital menu live and start taking orders in minutes."
-msgstr ""
+msgstr "上线数字菜单，几分钟内即可开始接单。"
 
 #: .\templates\pages\how_it_works.html:30
 msgid "QR code and digital ordering"
-msgstr ""
+msgstr "二维码与数字点单"
 
 #: .\templates\pages\how_it_works.html:36
 msgid "Scan, browse, order — no app download required."
-msgstr ""
+msgstr "扫码、浏览、下单——无需下载应用。"
 
 #: .\templates\pages\how_it_works.html:41
 msgid "Get started free"
-msgstr ""
+msgstr "免费开始"
 
 #: .\templates\pages\landing.html:3
 msgid "QR Menu + Ordering"
@@ -1903,39 +1903,39 @@ msgstr "价格"
 msgid ""
 "One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT "
 "(€238 total). Everything included."
-msgstr ""
+msgstr "简单的年度方案：二维码菜单和在线点单 €200/年 + 19% 增值税（合计 €238），全部包含。"
 
 #: .\templates\pages\pricing.html:10
 msgid "Simple annual pricing"
-msgstr ""
+msgstr "简单的年度价格"
 
 #: .\templates\pages\pricing.html:11
 msgid ""
 "One plan. QR menu + online ordering. Everything you need to run digital "
 "dining—no per-order fees, no hidden costs."
-msgstr ""
+msgstr "一个方案，包含二维码菜单和在线点单，无按单费用与隐藏成本。"
 
 #: .\templates\pages\pricing.html:17
 msgid "Annual subscription"
-msgstr ""
+msgstr "年度订阅"
 
 #: .\templates\pages\pricing.html:18
 msgid "QR menu & online ordering"
-msgstr ""
+msgstr "二维码菜单与在线点单"
 
 #: .\templates\pages\pricing.html:19
 msgid "year"
-msgstr ""
+msgstr "年"
 
 #: .\templates\pages\pricing.html:20
 #, python-format
 msgid "plus 19%% VAT"
-msgstr ""
+msgstr "另加 19% 增值税"
 
 #: .\templates\pages\pricing.html:21
 #, python-format
 msgid "€%(total)s total per year"
-msgstr ""
+msgstr "每年合计 €%(total)s"
 
 #: .\templates\pages\pricing.html:22
 msgid "Get started"
@@ -1943,15 +1943,15 @@ msgstr "开始"
 
 #: .\templates\pages\pricing.html:36
 msgid "Why restaurant owners choose us"
-msgstr ""
+msgstr "为什么餐厅老板选择我们"
 
 #: .\templates\pages\pricing.html:37
 msgid "One annual fee. No surprises. Built for real venues."
-msgstr ""
+msgstr "一次年费，无隐藏成本，专为实体餐饮打造。"
 
 #: .\templates\pages\pricing.html:49
 msgid "Pricing FAQ"
-msgstr ""
+msgstr "价格常见问题"
 
 #: .\templates\pages\pricing.html:61
 msgid "Contact us"
@@ -1959,7 +1959,7 @@ msgstr "联系我们"
 
 #: .\templates\pages\pricing.html:67
 msgid "Get started — €200/year"
-msgstr ""
+msgstr "开始 — €200/年"
 
 #: .\templates\pages\public_menu.html:3
 #: .\templates\pages\restaurant_menu.html:3

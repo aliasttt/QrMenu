@@ -20,310 +20,310 @@ msgstr ""
 
 #: .\core\views.py:106
 msgid "Owner, Basil House"
-msgstr ""
+msgstr "Ιδιοκτήτρια, Basil House"
 
 #: .\core\views.py:106
 msgid "We increased table turnover with faster ordering."
-msgstr ""
+msgstr "Αυξήσαμε την εναλλαγή τραπεζιών με πιο γρήγορες παραγγελίες."
 
 #: .\core\views.py:107
 msgid "Manager, South Fork"
-msgstr ""
+msgstr "Διευθυντής, South Fork"
 
 #: .\core\views.py:107
 msgid "Campaigns helped us fill off-peak hours."
-msgstr ""
+msgstr "Οι εκστρατείες μας βοήθησαν να γεμίσουμε τις ώρες χαμηλής κίνησης."
 
 #: .\core\views.py:108
 msgid "Founder, Luna Cafe"
-msgstr ""
+msgstr "Ιδρύτρια, Luna Cafe"
 
 #: .\core\views.py:108
 msgid "Our staff now spends less time taking manual orders."
-msgstr ""
+msgstr "Το προσωπικό μας ξοδεύει πλέον λιγότερο χρόνο για χειροκίνητες παραγγελίες."
 
 #: .\core\views.py:111 .\core\views.py:133
 msgid "AI menu import"
-msgstr ""
+msgstr "Εισαγωγή μενού με AI"
 
 #: .\core\views.py:112 .\core\views.py:134
 msgid "Multilingual menus"
-msgstr ""
+msgstr "Πολύγλωσσα μενού"
 
 #: .\core\views.py:113 .\core\views.py:135
 msgid "QR code generation"
-msgstr ""
+msgstr "Δημιουργία κωδικών QR"
 
 #: .\core\views.py:114 .\core\views.py:136
 msgid "Order management"
-msgstr ""
+msgstr "Διαχείριση παραγγελιών"
 
 #: .\core\views.py:115 .\core\views.py:137
 msgid "Campaign engine"
-msgstr ""
+msgstr "Μηχανή εκστρατειών"
 
 #: .\core\views.py:116 .\core\views.py:138
 msgid "Daily analytics"
-msgstr ""
+msgstr "Καθημερινή αναλυτική"
 
 #: .\core\views.py:117 .\core\views.py:139
 msgid "Category controls"
-msgstr ""
+msgstr "Έλεγχοι κατηγοριών"
 
 #: .\core\views.py:118 .\core\views.py:140
 msgid "Live availability"
-msgstr ""
+msgstr "Ζωντανή διαθεσιμότητα"
 
 #: .\core\views.py:119 .\core\views.py:141
 msgid "POS-ready payloads"
-msgstr ""
+msgstr "Δεδομένα έτοιμα για POS"
 
 #: .\core\views.py:120 .\core\views.py:142
 msgid "Mobile-first pages"
-msgstr ""
+msgstr "Σελίδες mobile-first"
 
 #: .\core\views.py:121 .\core\views.py:143
 msgid "Role-ready panel"
-msgstr ""
+msgstr "Πίνακας με ρόλους"
 
 #: .\core\views.py:122 .\core\views.py:144
 msgid "Conversion focused UI"
-msgstr ""
+msgstr "UI εστιασμένο στη μετατροπή"
 
 #: .\core\views.py:133
 msgid ""
 "Upload a PDF or photo and we extract your dishes and prices automatically."
-msgstr ""
+msgstr "Ανεβάστε PDF ή φωτογραφία και εξάγουμε πιάτα και τιμές αυτόματα."
 
 #: .\core\views.py:134
 msgid ""
 "Serve your menu in multiple languages and switch by customer preference."
-msgstr ""
+msgstr "Προσφέρετε το μενού σε πολλές γλώσσες και αλλάξτε ανά προτίμηση πελάτη."
 
 #: .\core\views.py:135
 msgid "Generate and download QR codes for tables, takeaway, and delivery."
-msgstr ""
+msgstr "Δημιουργήστε και κατεβάστε κωδικούς QR για τραπέζια, take-away και delivery."
 
 #: .\core\views.py:136
 msgid ""
 "Receive, track, and fulfill orders from one dashboard with status updates."
-msgstr ""
+msgstr "Λάβετε, παρακολουθήστε και εκπληρώστε παραγγελίες από έναν πίνακα με ενημερώσεις."
 
 #: .\core\views.py:137
 msgid ""
 "Create time-based discounts, happy hours, and target specific categories."
-msgstr ""
+msgstr "Δημιουργήστε χρονικές εκπτώσεις, happy hours και στοχεύστε συγκεκριμένες κατηγορίες."
 
 #: .\core\views.py:138
 msgid "View orders, revenue, and top items with simple charts and exports."
-msgstr ""
+msgstr "Δείτε παραγγελίες, έσοδα και top προϊόντα με απλά γραφήματα και εξαγωγές."
 
 #: .\core\views.py:139
 msgid "Organize items into categories and reorder with drag-and-drop."
-msgstr ""
+msgstr "Οργανώστε αντικείμενα σε κατηγορίες και αναδιατάξτε με drag & drop."
 
 #: .\core\views.py:140
 msgid "Mark items as out of stock and hide or show sections by schedule."
-msgstr ""
+msgstr "Επισημάνετε προϊόντα ως εξαντλημένα και κρύψτε ή δείξτε ενότητες με πρόγραμμα."
 
 #: .\core\views.py:141
 msgid "Send orders to your POS or kitchen display via webhooks or API."
-msgstr ""
+msgstr "Στείλτε παραγγελίες στο POS ή στην οθόνη κουζίνας μέσω webhooks ή API."
 
 #: .\core\views.py:142
 msgid "Menus and checkout are optimized for phones and tablets."
-msgstr ""
+msgstr "Μενού και checkout βελτιστοποιημένα για κινητά και tablet."
 
 #: .\core\views.py:143
 msgid "Invite staff with roles: admin, manager, or view-only."
-msgstr ""
+msgstr "Προσκαλέστε προσωπικό με ρόλους: admin, manager ή μόνο προβολή."
 
 #: .\core\views.py:144
 msgid "Clean design and clear CTAs to maximize add-to-cart and checkout."
-msgstr ""
+msgstr "Καθαρός σχεδιασμός και σαφή CTAs για μέγιστες προσθήκες και checkouts."
 
 #: .\core\views.py:147
 msgid "Can I use my own domain?"
-msgstr ""
+msgstr "Μπορώ να χρησιμοποιήσω το δικό μου domain;"
 
 #: .\core\views.py:147
 msgid ""
 "Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the "
 "settings panel."
-msgstr ""
+msgstr "Ναι. Μπορείτε να συνδέσετε ένα προσαρμοσμένο domain (π.χ. menu.yourrestaurant.com) από τις ρυθμίσεις."
 
 #: .\core\views.py:148
 msgid "Is there a mobile app for staff?"
-msgstr ""
+msgstr "Υπάρχει mobile εφαρμογή για το προσωπικό;"
 
 #: .\core\views.py:148
 msgid ""
 "The panel is fully responsive; you can use it from any browser. Native apps "
 "are on our roadmap."
-msgstr ""
+msgstr "Ο πίνακας είναι πλήρως responsive· χρησιμοποιήστε τον από κάθε browser. Native apps στον σχεδιασμό."
 
 #: .\core\views.py:149
 msgid "How do I print QR codes?"
-msgstr ""
+msgstr "Πώς εκτυπώνω τους κωδικούς QR;"
 
 #: .\core\views.py:149
 msgid ""
 "Generate QR codes from the dashboard and download as PNG or SVG. Print on "
 "table tents or stickers."
-msgstr ""
+msgstr "Δημιουργήστε κωδικούς QR από τον πίνακα και κατεβάστε σε PNG ή SVG. Εκτυπώστε σε καρτ ή αυτοκόλλητα."
 
 #: .\core\views.py:150
 msgid "Do you integrate with POS?"
-msgstr ""
+msgstr "Ενσωματώνεστε με POS;"
 
 #: .\core\views.py:150
 msgid ""
 "We support webhooks and an API so you can push orders to your POS or kitchen "
 "display system."
-msgstr ""
+msgstr "Υποστηρίζουμε webhooks και API για να στέλνετε παραγγελίες στο POS ή στην οθόνη κουζίνας."
 
 #: .\core\views.py:157
 msgid "Set up your menu"
-msgstr ""
+msgstr "Ρύθμιση μενού"
 
 #: .\core\views.py:157
 msgid ""
 "Create categories, add dishes with prices and photos, and set availability."
-msgstr ""
+msgstr "Δημιουργήστε κατηγορίες, προσθέστε πιάτα με τιμές και φωτογραφίες, ορίστε διαθεσιμότητα."
 
 #: .\core\views.py:157
 msgid "Drag-and-drop reorder, bulk edit, or import from spreadsheet."
-msgstr ""
+msgstr "Αναδιάταξη με drag & drop, μαζική επεξεργασία ή εισαγωγή από spreadsheet."
 
 #: .\core\views.py:158
 msgid "Generate your QR"
-msgstr ""
+msgstr "Δημιουργήστε το QR σας"
 
 #: .\core\views.py:158
 msgid ""
 "Print QR codes for each table or area. Customers scan to open your menu."
-msgstr ""
+msgstr "Εκτυπώστε κωδικούς QR για κάθε τραπέζι ή περιοχή. Οι πελάτες τους σαρώνουν για να δουν το μενού."
 
 #: .\core\views.py:158
 msgid "Download PNG or SVG, print on table tents or stickers."
-msgstr ""
+msgstr "Κατεβάστε σε PNG ή SVG, εκτυπώστε σε καρτ ή αυτοκόλλητα."
 
 #: .\core\views.py:159
 msgid "Get online orders"
-msgstr ""
+msgstr "Λάβετε online παραγγελίες"
 
 #: .\core\views.py:159
 msgid ""
 "Customers browse, add to cart, and checkout. You receive and fulfill orders."
-msgstr ""
+msgstr "Οι πελάτες περιηγούνται, προσθέτουν στο καλάθι και πληρώνουν. Εσείς λαμβάνετε και εκπληρώνετε."
 
 #: .\core\views.py:159
 msgid "Optional: connect to POS or kitchen display."
-msgstr ""
+msgstr "Προαιρετικά: σύνδεση σε POS ή οθόνη κουζίνας."
 
 #: .\core\views.py:170
 msgid "QR menu — customers scan and browse your menu on their phone"
-msgstr ""
+msgstr "QR μενού — οι πελάτες σαρώνουν και βλέπουν το μενού από το κινητό."
 
 #: .\core\views.py:171
 msgid "Unlimited menu items and categories"
-msgstr ""
+msgstr "Απεριόριστα προϊόντα και κατηγορίες"
 
 #: .\core\views.py:172
 msgid "Unlimited QR codes for tables and takeaway"
-msgstr ""
+msgstr "Απεριόριστοι κωδικοί QR για τραπέζια και take-away"
 
 #: .\core\views.py:173
 msgid "Online ordering — guests order and pay from the same link"
-msgstr ""
+msgstr "Online παραγγελίες — οι επισκέπτες παραγγέλνουν και πληρώνουν από τον ίδιο σύνδεσμο."
 
 #: .\core\views.py:174
 msgid "Customizable themes to match your brand"
-msgstr ""
+msgstr "Προσαρμόσιμα θέματα για το brand σας"
 
 #: .\core\views.py:175
 msgid "Campaigns & discounts (happy hour, daily specials)"
-msgstr ""
+msgstr "Εκστρατείες & εκπτώσεις (happy hour, ημερήσιες προσφορές)"
 
 #: .\core\views.py:176
 msgid "Multilingual menu support"
-msgstr ""
+msgstr "Υποστήριξη πολύγλωσσου μενού"
 
 #: .\core\views.py:177
 msgid "Real-time updates — change prices and availability instantly"
-msgstr ""
+msgstr "Ενημερώσεις σε πραγματικό χρόνο — αλλάξτε τιμές και διαθεσιμότητα άμεσα."
 
 #: .\core\views.py:178
 msgid "Basic analytics — see what sells"
-msgstr ""
+msgstr "Βασικά analytics — δείτε τι πουλάει."
 
 #: .\core\views.py:179
 msgid "Email & WhatsApp support"
-msgstr ""
+msgstr "Υποστήριξη μέσω email και WhatsApp"
 
 #: .\core\views.py:183
 msgid "Win more orders"
-msgstr ""
+msgstr "Κερδίστε περισσότερες παραγγελίες"
 
 #: .\core\views.py:183
 msgid ""
 "Guests order directly from the QR menu. No waiting for staff—faster turnover "
 "and higher revenue."
-msgstr ""
+msgstr "Οι επισκέπτες παραγγέλνουν απευθείας από το QR μενού. Χωρίς αναμονή — γρηγορότερη ροή και υψηλότερα έσοδα."
 
 #: .\core\views.py:184
 msgid "Look professional"
-msgstr ""
+msgstr "Δείξτε επαγγελματικοί"
 
 #: .\core\views.py:184
 msgid ""
 "A clean digital menu and your own domain build trust. Stand out from "
 "competitors still using paper."
-msgstr ""
+msgstr "Ένα καθαρό ψηφιακό μενού και το δικό σας domain χτίζουν εμπιστοσύνη. Ξεχωρίστε από όσους ακόμα χρησιμοποιούν χαρτί."
 
 #: .\core\views.py:185
 msgid "One subscription, everything included"
-msgstr ""
+msgstr "Μία συνδρομή, όλα περιλαμβάνονται"
 
 #: .\core\views.py:185
 msgid ""
 "No per-order fees or hidden costs. One annual fee covers menu, ordering, and "
 "support."
-msgstr ""
+msgstr "Χωρίς χρέωση ανά παραγγελία ή κρυφές χρεώσεις. Μία ετήσια συνδρομή καλύπτει μενού, παραγγελίες και υποστήριξη."
 
 #: .\core\views.py:186
 msgid "Launch in minutes"
-msgstr ""
+msgstr "Ξεκινήστε σε λεπτά"
 
 #: .\core\views.py:186
 msgid ""
 "Add your dishes, print a QR code, and go live. No IT or design skills needed."
-msgstr ""
+msgstr "Προσθέστε τα πιάτα, εκτυπώστε QR και ξεκινήστε. Χωρίς γνώσεις IT ή σχεδίασης."
 
 #: .\core\views.py:189
 msgid "What is included in the price?"
-msgstr ""
+msgstr "Τι περιλαμβάνει η τιμή;"
 
 #: .\core\views.py:189
 msgid ""
 "Everything: QR menu, online ordering, unlimited items and QR codes, "
 "campaigns, custom domain option, themes, and support. One annual "
 "subscription, no per-order fees."
-msgstr ""
+msgstr "Όλα: QR μενού, online παραγγελίες, απεριόριστα προϊόντα και QR, εκστρατείες, custom domain, θέματα και υποστήριξη. Μία ετήσια συνδρομή χωρίς χρέωση ανά παραγγελία."
 
 #: .\core\views.py:190
 msgid "Is there a free trial?"
-msgstr ""
+msgstr "Υπάρχει δωρεάν δοκιμή;"
 
 #: .\core\views.py:190
 msgid ""
 "Yes. Start with a free trial to build your menu and test ordering. No card "
 "required until you go live."
-msgstr ""
+msgstr "Ναι. Ξεκινήστε με δωρεάν δοκιμή για να χτίσετε το μενού και να δοκιμάσετε τις παραγγελίες. Χωρίς κάρτα μέχρι να ξεκινήσετε."
 
 #: .\core\views.py:191
 msgid "Why 19% VAT?"
-msgstr ""
+msgstr "Γιατί 19% ΦΠΑ;"
 
 #: .\core\views.py:191
 #, python-format
@@ -331,292 +331,292 @@ msgid ""
 "We are VAT-registered in the EU. If you are in the EU and liable for VAT, "
 "19% is added at checkout (total €238/year). If you are outside the EU or VAT-"
 "exempt, the amount may differ."
-msgstr ""
+msgstr "Είμαστε εγγεγραμμένοι στον ΦΠΑ της ΕΕ. Στην ΕΕ και υπόχρεοι ΦΠΑ, 19% προστίθεται στο checkout (σύνολο €238/έτος). Εκτός ΕΕ ή εξαιρούμενοι, το ποσό διαφέρει."
 
 #: .\core\views.py:211 .\templates\partials\navbar.html:47
 msgid "AI Menu Import"
-msgstr ""
+msgstr "Εισαγωγή Μενού με AI"
 
 #: .\core\views.py:212
 msgid "Turn paper menus into digital menus in minutes."
-msgstr ""
+msgstr "Μετατρέψτε χάρτινα μενού σε ψηφιακά σε λεπτά."
 
 #: .\core\views.py:213
 msgid ""
 "Upload a photo or PDF and let AI extract dish names, descriptions, and "
 "prices automatically."
-msgstr ""
+msgstr "Ανεβάστε φωτογραφία ή PDF και η AI εξάγει αυτόματα ονόματα, περιγραφές και τιμές."
 
 #: .\core\views.py:216
 msgid "Save hours of manual typing"
-msgstr ""
+msgstr "Εξοικονομήστε ώρες πληκτρολόγησης"
 
 #: .\core\views.py:217
 msgid "Launch your QR menu faster"
-msgstr ""
+msgstr "Ξεκινήστε το QR μενού γρηγορότερα"
 
 #: .\core\views.py:218
 msgid "Reduce human data-entry errors"
-msgstr ""
+msgstr "Μειώστε τα ανθρώπινα λάθη εισαγωγής δεδομένων"
 
 #: .\core\views.py:223 .\templates\partials\navbar.html:48
 msgid "Customizable Themes"
-msgstr ""
+msgstr "Προσαρμόσιμα Θέματα"
 
 #: .\core\views.py:224
 msgid "Match your menu design to your restaurant brand."
-msgstr ""
+msgstr "Ταιριάξτε τον σχεδιασμό του μενού με το brand σας."
 
 #: .\core\views.py:225
 msgid ""
 "Choose from modern themes and customize colors, typography, and layout in a "
 "few clicks."
-msgstr ""
+msgstr "Επιλέξτε από σύγχρονα θέματα και προσαρμόστε χρώματα, τυπογραφία και διάταξη με λίγα κλικ."
 
 #: .\core\views.py:228
 msgid "Consistent brand identity"
-msgstr ""
+msgstr "Συνεπής ταυτότητα brand"
 
 #: .\core\views.py:229
 msgid "Better visual experience for guests"
-msgstr ""
+msgstr "Καλύτερη οπτική εμπειρία για επισκέπτες"
 
 #: .\core\views.py:230
 msgid "Faster edits with pre-built styles"
-msgstr ""
+msgstr "Ταχύτερες αλλαγές με έτοιμα στυλ"
 
 #: .\core\views.py:235 .\templates\partials\navbar.html:49
 msgid "Dedicated Support"
-msgstr ""
+msgstr "Αφοσιωμένη υποστήριξη"
 
 #: .\core\views.py:236
 msgid "Real help when you need it most."
-msgstr ""
+msgstr "Πραγματική βοήθεια όταν τη χρειάζεστε περισσότερο."
 
 #: .\core\views.py:237
 msgid ""
 "Our team helps with setup, menu updates, and optimization so your staff can "
 "focus on service."
-msgstr ""
+msgstr "Η ομάδα μας βοηθά με ρύθμιση, ενημερώσεις μενού και βελτιστοποίηση, ώστε το προσωπικό σας να εστιάζει στην εξυπηρέτηση."
 
 #: .\core\views.py:240
 msgid "Priority support for urgent issues"
-msgstr ""
+msgstr "Υποστήριξη προτεραιότητας για επείγοντα"
 
 #: .\core\views.py:241
 msgid "Faster onboarding for new branches"
-msgstr ""
+msgstr "Ταχύτερη έναρξη νέων υποκαταστημάτων"
 
 #: .\core\views.py:242
 msgid "Better uptime and smoother operations"
-msgstr ""
+msgstr "Καλύτερη διαθεσιμότητα και ομαλότερες λειτουργίες"
 
 #: .\core\views.py:247 .\templates\partials\navbar.html:50
 msgid "Menu Creation"
-msgstr ""
+msgstr "Δημιουργία μενού"
 
 #: .\core\views.py:248
 msgid "Build clean, organized menus your guests love."
-msgstr ""
+msgstr "Δημιουργήστε καθαρά, οργανωμένα μενού που θα λατρέψουν οι επισκέπτες."
 
 #: .\core\views.py:249
 msgid ""
 "Create categories, add dish photos, set prices, and reorder items with a "
 "simple dashboard."
-msgstr ""
+msgstr "Δημιουργήστε κατηγορίες, προσθέστε φωτογραφίες πιάτων, ορίστε τιμές και αναδιατάξτε από απλό πίνακα."
 
 #: .\core\views.py:252
 msgid "Unlimited menu items"
-msgstr ""
+msgstr "Απεριόριστα αντικείμενα μενού"
 
 #: .\core\views.py:253
 msgid "Quick editing for daily changes"
-msgstr ""
+msgstr "Γρήγορη επεξεργασία για καθημερινές αλλαγές"
 
 #: .\core\views.py:254
 msgid "Clear structure for better ordering"
-msgstr ""
+msgstr "Καθαρή δομή για καλύτερη παραγγελία"
 
 #: .\core\views.py:259 .\templates\partials\navbar.html:51
 msgid "Multi-Service Management"
-msgstr ""
+msgstr "Διαχείριση Πολλαπλών Υπηρεσιών"
 
 #: .\core\views.py:260
 msgid "Run dine-in, takeaway, and delivery from one panel."
-msgstr ""
+msgstr "Διαχειριστείτε στο κατάστημα, take-away και delivery από έναν πίνακα."
 
 #: .\core\views.py:261
 msgid ""
 "Manage service types, availability, and order flow in one place without "
 "switching tools."
-msgstr ""
+msgstr "Διαχειριστείτε τύπους υπηρεσιών, διαθεσιμότητα και ροή παραγγελιών σε ένα μέρος, χωρίς αλλαγή εργαλείου."
 
 #: .\core\views.py:264
 msgid "One dashboard for all channels"
-msgstr ""
+msgstr "Ένας πίνακας για όλα τα κανάλια"
 
 #: .\core\views.py:265
 msgid "Less staff confusion"
-msgstr ""
+msgstr "Λιγότερη σύγχυση στο προσωπικό"
 
 #: .\core\views.py:266
 msgid "Higher operational speed"
-msgstr ""
+msgstr "Υψηλότερη λειτουργική ταχύτητα"
 
 #: .\core\views.py:271 .\templates\partials\navbar.html:52
 msgid "Multilingual Support"
-msgstr ""
+msgstr "Πολύγλωσση υποστήριξη"
 
 #: .\core\views.py:272
 msgid "Serve local and international guests better."
-msgstr ""
+msgstr "Εξυπηρετήστε καλύτερα τοπικούς και ξένους επισκέπτες."
 
 #: .\core\views.py:273
 msgid ""
 "Offer your menu in multiple languages and let customers switch language "
 "instantly."
-msgstr ""
+msgstr "Προσφέρετε το μενού σε πολλές γλώσσες και οι πελάτες αλλάζουν άμεσα."
 
 #: .\core\views.py:276
 msgid "Better guest experience for tourists"
-msgstr ""
+msgstr "Καλύτερη εμπειρία για τουρίστες"
 
 #: .\core\views.py:277
 msgid "Fewer ordering mistakes"
-msgstr ""
+msgstr "Λιγότερα λάθη παραγγελίας"
 
 #: .\core\views.py:278
 msgid "Higher conversion on the menu page"
-msgstr ""
+msgstr "Υψηλότερη μετατροπή στη σελίδα μενού"
 
 #: .\core\views.py:283 .\templates\partials\navbar.html:53
 msgid "Online Ordering"
-msgstr ""
+msgstr "Online Παραγγελίες"
 
 #: .\core\views.py:284
 msgid "Take orders directly from the QR menu."
-msgstr ""
+msgstr "Λάβετε παραγγελίες απευθείας από το QR μενού."
 
 #: .\core\views.py:285
 msgid ""
 "Guests browse, add to cart, and checkout from their phone with a smooth "
 "mobile-first flow."
-msgstr ""
+msgstr "Οι επισκέπτες περιηγούνται, προσθέτουν και πληρώνουν από κινητό με ομαλή ροή mobile-first."
 
 #: .\core\views.py:288
 msgid "Increase average order value"
-msgstr ""
+msgstr "Αυξήστε τη μέση αξία παραγγελίας"
 
 #: .\core\views.py:289
 msgid "Reduce table waiting time"
-msgstr ""
+msgstr "Μειώστε τον χρόνο αναμονής στο τραπέζι"
 
 #: .\core\views.py:290
 msgid "Capture more takeaway orders"
-msgstr ""
+msgstr "Καταγράψτε περισσότερες παραγγελίες take-away"
 
 #: .\core\views.py:295 .\templates\partials\navbar.html:54
 msgid "PDF Export"
-msgstr ""
+msgstr "Εξαγωγή PDF"
 
 #: .\core\views.py:296
 msgid "Keep digital and printed menus in sync."
-msgstr ""
+msgstr "Κρατήστε ψηφιακά και έντυπα μενού συγχρονισμένα."
 
 #: .\core\views.py:297
 msgid ""
 "Export your latest menu as PDF for table cards, flyers, and offline sharing."
-msgstr ""
+msgstr "Εξάγετε το τελευταίο μενού σε PDF για καρτ τραπεζιού, φυλλάδια και offline κοινοποίηση."
 
 #: .\core\views.py:300
 msgid "Ready-to-print output"
-msgstr ""
+msgstr "Έτοιμο για εκτύπωση"
 
 #: .\core\views.py:301
 msgid "Consistent branding across channels"
-msgstr ""
+msgstr "Συνεπές branding σε όλα τα κανάλια"
 
 #: .\core\views.py:302
 msgid "Simple backup of menu data"
-msgstr ""
+msgstr "Απλό backup δεδομένων μενού"
 
 #: .\core\views.py:307 .\templates\partials\navbar.html:55
 msgid "Real-Time Updates"
-msgstr ""
+msgstr "Ενημερώσεις σε πραγματικό χρόνο"
 
 #: .\core\views.py:308
 msgid "Update prices and stock instantly."
-msgstr ""
+msgstr "Ενημερώστε τιμές και απόθεμα άμεσα."
 
 #: .\core\views.py:309
 msgid ""
 "Publish menu changes live in seconds so guests always see accurate "
 "information."
-msgstr ""
+msgstr "Δημοσιεύστε αλλαγές μενού σε δευτερόλεπτα ώστε οι επισκέπτες να βλέπουν πάντα ακριβείς πληροφορίες."
 
 #: .\core\views.py:312
 msgid "No stale menu data"
-msgstr ""
+msgstr "Κανένα ξεπερασμένο δεδομένο μενού"
 
 #: .\core\views.py:313
 msgid "Fewer customer complaints"
-msgstr ""
+msgstr "Λιγότερα παράπονα πελατών"
 
 #: .\core\views.py:314
 msgid "Faster reaction to peak-hour demand"
-msgstr ""
+msgstr "Ταχύτερη αντίδραση στη ζήτηση αιχμής"
 
 #: .\core\views.py:319 .\templates\partials\navbar.html:56
 msgid "Secure Payment Processing"
-msgstr ""
+msgstr "Ασφαλής επεξεργασία πληρωμών"
 
 #: .\core\views.py:320
 msgid "Accept payments safely and confidently."
-msgstr ""
+msgstr "Δεχτείτε πληρωμές με ασφάλεια και σιγουριά."
 
 #: .\core\views.py:321
 msgid ""
 "Support secure online checkout with trusted gateways and encrypted "
 "transaction flow."
-msgstr ""
+msgstr "Υποστηρίξτε ασφαλή online checkout με αξιόπιστες πύλες και κρυπτογραφημένη ροή συναλλαγής."
 
 #: .\core\views.py:324
 msgid "Safer transactions"
-msgstr ""
+msgstr "Ασφαλέστερες συναλλαγές"
 
 #: .\core\views.py:325
 msgid "More trust from customers"
-msgstr ""
+msgstr "Μεγαλύτερη εμπιστοσύνη πελατών"
 
 #: .\core\views.py:326
 msgid "Higher checkout completion"
-msgstr ""
+msgstr "Υψηλότερο ποσοστό ολοκλήρωσης checkout"
 
 #: .\core\views.py:331 .\templates\partials\navbar.html:57
 msgid "Smart Order Management"
-msgstr ""
+msgstr "Έξυπνη Διαχείριση Παραγγελιών"
 
 #: .\core\views.py:332
 msgid "Track every order in one clean queue."
-msgstr ""
+msgstr "Παρακολουθήστε κάθε παραγγελία σε μία καθαρή ουρά."
 
 #: .\core\views.py:333
 msgid ""
 "Filter by status, prioritize prep, and keep front-of-house and kitchen fully "
 "synchronized."
-msgstr ""
+msgstr "Φιλτράρετε ανά κατάσταση, δώστε προτεραιότητα στην προετοιμασία και κρατήστε αίθουσα και κουζίνα συγχρονισμένες."
 
 #: .\core\views.py:336
 msgid "Clear workflow for staff"
-msgstr ""
+msgstr "Καθαρή ροή εργασίας για το προσωπικό"
 
 #: .\core\views.py:337
 msgid "Faster fulfillment"
-msgstr ""
+msgstr "Ταχύτερη εκπλήρωση"
 
 #: .\core\views.py:338
 msgid "Improved customer satisfaction"
-msgstr ""
+msgstr "Βελτιωμένη ικανοποίηση πελατών"
 
 #: .\templates\admin\business_menu_section.html:11
 msgid "Model name"
@@ -1093,24 +1093,24 @@ msgstr ""
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
-msgstr ""
+msgstr "Πλήρες σύνολο χαρακτηριστικών για σύγχρονα εστιατόρια"
 
 #: .\templates\pages\features.html:11
 msgid ""
 "Everything you need to digitize your menu, run promotions, and grow orders."
-msgstr ""
+msgstr "Όλα όσα χρειάζεστε για να ψηφιοποιήσετε το μενού, να τρέξετε προσφορές και να αυξήσετε τις παραγγελίες."
 
 #: .\templates\pages\features.html:29
 msgid "Dashboard and analytics view"
-msgstr ""
+msgstr "Προβολή πίνακα και αναλυτικών"
 
 #: .\templates\pages\features.html:35
 msgid "One dashboard for menu, orders, and campaigns."
-msgstr ""
+msgstr "Ένας πίνακας για μενού, παραγγελίες και εκστρατείες."
 
 #: .\templates\pages\features.html:40
 msgid "Frequently asked questions"
-msgstr ""
+msgstr "Συχνές ερωτήσεις"
 
 #: .\templates\pages\features.html:52
 msgid "See pricing"
@@ -1126,23 +1126,23 @@ msgstr "Πώς λειτουργεί"
 msgid ""
 "Set up your menu, generate QR codes, and start receiving orders in three "
 "simple steps."
-msgstr ""
+msgstr "Ρυθμίστε το μενού, δημιουργήστε κωδικούς QR και ξεκινήστε να λαμβάνετε παραγγελίες σε τρία βήματα."
 
 #: .\templates\pages\how_it_works.html:11
 msgid "Get your digital menu live and start taking orders in minutes."
-msgstr ""
+msgstr "Ενεργοποιήστε το ψηφιακό σας μενού και λάβετε παραγγελίες σε λεπτά."
 
 #: .\templates\pages\how_it_works.html:30
 msgid "QR code and digital ordering"
-msgstr ""
+msgstr "QR κωδικός και ψηφιακή παραγγελία"
 
 #: .\templates\pages\how_it_works.html:36
 msgid "Scan, browse, order — no app download required."
-msgstr ""
+msgstr "Σαρώστε, δείτε, παραγγείλτε — χωρίς λήψη εφαρμογής."
 
 #: .\templates\pages\how_it_works.html:41
 msgid "Get started free"
-msgstr ""
+msgstr "Ξεκινήστε δωρεάν"
 
 #: .\templates\pages\landing.html:3
 msgid "QR Menu + Ordering"
@@ -1903,39 +1903,39 @@ msgstr "Τιμολόγηση"
 msgid ""
 "One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT "
 "(€238 total). Everything included."
-msgstr ""
+msgstr "Ένα απλό ετήσιο πλάνο: QR μενού και online παραγγελίες €200/έτος + 19% ΦΠΑ (σύνολο €238). Όλα περιλαμβάνονται."
 
 #: .\templates\pages\pricing.html:10
 msgid "Simple annual pricing"
-msgstr ""
+msgstr "Απλή ετήσια τιμολόγηση"
 
 #: .\templates\pages\pricing.html:11
 msgid ""
 "One plan. QR menu + online ordering. Everything you need to run digital "
 "dining—no per-order fees, no hidden costs."
-msgstr ""
+msgstr "Ένα πλάνο. QR μενού + online παραγγελίες. Ό,τι χρειάζεστε, χωρίς χρέωση ανά παραγγελία ή κρυφά κόστη."
 
 #: .\templates\pages\pricing.html:17
 msgid "Annual subscription"
-msgstr ""
+msgstr "Ετήσια συνδρομή"
 
 #: .\templates\pages\pricing.html:18
 msgid "QR menu & online ordering"
-msgstr ""
+msgstr "QR μενού και online παραγγελίες"
 
 #: .\templates\pages\pricing.html:19
 msgid "year"
-msgstr ""
+msgstr "έτος"
 
 #: .\templates\pages\pricing.html:20
 #, python-format
 msgid "plus 19%% VAT"
-msgstr ""
+msgstr "συν 19% ΦΠΑ"
 
 #: .\templates\pages\pricing.html:21
 #, python-format
 msgid "€%(total)s total per year"
-msgstr ""
+msgstr "%(total)s € συνολικά ανά έτος"
 
 #: .\templates\pages\pricing.html:22
 msgid "Get started"
@@ -1943,15 +1943,15 @@ msgstr "Ξεκινήστε"
 
 #: .\templates\pages\pricing.html:36
 msgid "Why restaurant owners choose us"
-msgstr ""
+msgstr "Γιατί μας επιλέγουν οι ιδιοκτήτες εστιατορίων"
 
 #: .\templates\pages\pricing.html:37
 msgid "One annual fee. No surprises. Built for real venues."
-msgstr ""
+msgstr "Μία ετήσια συνδρομή. Χωρίς εκπλήξεις. Φτιαγμένη για πραγματικά καταστήματα."
 
 #: .\templates\pages\pricing.html:49
 msgid "Pricing FAQ"
-msgstr ""
+msgstr "Συχνές ερωτήσεις τιμών"
 
 #: .\templates\pages\pricing.html:61
 msgid "Contact us"
@@ -1959,7 +1959,7 @@ msgstr "Επικοινωνήστε"
 
 #: .\templates\pages\pricing.html:67
 msgid "Get started — €200/year"
-msgstr ""
+msgstr "Ξεκίνα — €200/έτος"
 
 #: .\templates\pages\public_menu.html:3
 #: .\templates\pages\restaurant_menu.html:3
