@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Server Error | {{ theme.brand_name }}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Server Error" %} | {{ theme.brand_name }}{% endblock %}
 
 {% block content %}
 <section class="container mx-auto flex min-h-[70vh] flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
   <p class="text-sm font-semibold uppercase tracking-wider text-primary-600">500</p>
-  <h1 class="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Something went wrong</h1>
-  <p class="mt-4 max-w-md text-slate-600">We are working on the issue. Please try again in a few minutes.</p>
-  <a href="{% url 'landing' %}" class="btn-primary mt-8">Back to home</a>
+  <h1 class="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{% trans "Something went wrong" %}</h1>
+  <p class="mt-4 max-w-md text-slate-600">{% trans "We are working on the issue. Please try again in a few minutes." %}</p>
+  <a href="{% url 'landing' %}" class="btn-primary mt-8">{% trans "Back to home" %}</a>
 </section>
 {% endblock %}

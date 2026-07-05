@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}{{ restaurant.name }} | Menu{% endblock %}
+{% load static i18n %}
+{% block title %}{{ restaurant.name }} | {% trans "Menu" %}{% endblock %}
 {% block meta_description %}{{ restaurant.name }} — {{ restaurant.description|truncatewords:20|default:"" }}{% endblock %}
 
 {% block styles %}
@@ -36,7 +36,13 @@
       modalOpen: false,
       modalItem: {},
       toastOpen: false,
-      toastMsg: 'Added',
+      toastMsg: '{% trans "Added" %}',
+      T: {
+        addedToCart: '{% trans "Added to cart" %}',
+        tableRequired: '{% trans "Table number is required for Dine In" %}',
+        couldNotPlace: '{% trans "Could not place order" %}',
+        networkError: '{% trans "Network error" %}',
+      },
       restaurantId: {{ restaurant.id }},
       apiBase: '/api/business-menu',
       cartItems: JSON.parse(document.getElementById('initial-cart')?.textContent || '[]'),
@@ -91,7 +97,7 @@
         } else {
           this.cartItems = [...this.cartItems, { menu_item_id: menuItemId, name: name, price: String(price), quantity: qty }];
         }
-        this.toastMsg = 'Added to cart';
+        this.toastMsg = this.T.addedToCart;
         this.toastOpen = true;
         setTimeout(() => { this.toastOpen = false; }, 1300);
         try {
@@ -163,7 +169,7 @@
       async placeOrder() {
         this.orderError = '';
         if (this.serviceType === 'dine_in' && !this.tableNumber.trim()) {
-          this.orderError = 'Table number is required for Dine In';
+          this.orderError = this.T.tableRequired;
           return;
         }
         this.orderLoading = true;
@@ -203,10 +209,10 @@
             this.fetchOrderHistory();
           } else {
             const msg = data.detail || data.message;
-            this.orderError = (Array.isArray(msg) ? msg[0] : msg) || ('Could not place order (HTTP ' + r.status + ')');
+            this.orderError = (Array.isArray(msg) ? msg[0] : msg) || (this.T.couldNotPlace + ' (HTTP ' + r.status + ')');
           }
         } catch (e) {
-          this.orderError = 'Network error';
+          this.orderError = this.T.networkError;
         }
         this.orderLoading = false;
       }
@@ -215,13 +221,12 @@
   >
     <!-- Pending order warning when user is browsing menu (not in order panel) -->
     <div x-show="!orderPanelOpen && pendingOrderWarning" x-cloak class="sticky top-0 z-30 mx-4 mt-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 shadow-sm dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-200 sm:mx-6 lg:mx-8">
-      <p class="text-sm font-medium">You have order(s) pending or in progress. Check status and when it's ready in the Orders panel.</p>
-      <button @click="openOrderPanel()" class="mt-2 rounded-lg bg-amber-200 px-3 py-1.5 text-sm font-semibold text-amber-900 hover:bg-amber-300 dark:bg-amber-800 dark:text-amber-100 dark:hover:bg-amber-700">View orders</button>
+      <p class="text-sm font-medium">{% trans "You have order(s) pending or in progress. Check status and when it's ready in the Orders panel." %}</p>
+      <button @click="openOrderPanel()" class="mt-2 rounded-lg bg-amber-200 px-3 py-1.5 text-sm font-semibold text-amber-900 hover:bg-amber-300 dark:bg-amber-800 dark:text-amber-100 dark:hover:bg-amber-700">{% trans "View orders" %}</button>
     </div>
-    <!-- Restaurant closed: schedule for later -->
     <div x-show="!orderPanelOpen && !canOrderNow()" x-cloak class="sticky top-0 z-30 mx-4 mt-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 shadow-sm dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-200 sm:mx-6 lg:mx-8">
-      <p class="text-sm font-medium">Restaurant is currently closed. You can schedule your order for when we're open.</p>
-      <a :href="scheduleUrl" class="mt-2 inline-block rounded-lg bg-rose-200 px-3 py-1.5 text-sm font-semibold text-rose-900 hover:bg-rose-300 dark:bg-rose-800 dark:text-rose-100 dark:hover:bg-rose-700">Schedule for later</a>
+      <p class="text-sm font-medium">{% trans "Restaurant is currently closed. You can schedule your order for when we're open." %}</p>
+      <a :href="scheduleUrl" class="mt-2 inline-block rounded-lg bg-rose-200 px-3 py-1.5 text-sm font-semibold text-rose-900 hover:bg-rose-300 dark:bg-rose-800 dark:text-rose-100 dark:hover:bg-rose-700">{% trans "Schedule for later" %}</a>
     </div>
     <div class="grid gap-4 lg:grid-cols-[230px_1fr] min-w-0">
       <aside class="hidden lg:block min-w-0">
@@ -232,7 +237,7 @@
             :class="activeCategory === 'all' ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900' : 'border-slate-300 bg-white text-slate-800 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200'"
             class="w-full rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition"
           >
-            All Categories
+            {% trans "All Categories" %}
           </button>
           {% for cat in category_list %}
           <button
@@ -245,7 +250,7 @@
               <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-11 w-11 rounded-lg object-cover bg-slate-200 dark:bg-slate-700" loading="lazy" />
               <div class="min-w-0">
                 <p class="line-clamp-1 text-xs font-semibold text-slate-900 dark:text-white">{{ cat.name }}</p>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ cat.count }} items</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">{% blocktrans count counter=cat.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}</p>
               </div>
             </div>
           </button>
@@ -263,7 +268,7 @@
               localStorage.setItem('theme', isDark ? 'dark' : 'light');
             "
             class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            aria-label="Toggle night mode"
+            aria-label="{% trans 'Toggle night mode' %}"
           >
             <svg class="h-5 w-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
             <svg class="h-5 w-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
@@ -293,19 +298,19 @@
 
             <div class="mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
               {% if restaurant.address %}
-              <p><span class="font-semibold text-slate-900 dark:text-white">Address:</span> {{ restaurant.address }}</p>
+              <p><span class="font-semibold text-slate-900 dark:text-white">{% trans "Address:" %}</span> {{ restaurant.address }}</p>
               {% endif %}
               {% if restaurant.phone or restaurant.admin.phone %}
-              <p><span class="font-semibold text-slate-900 dark:text-white">Phone:</span> {{ restaurant.phone|default:restaurant.admin.phone }}</p>
+              <p><span class="font-semibold text-slate-900 dark:text-white">{% trans "Phone:" %}</span> {{ restaurant.phone|default:restaurant.admin.phone }}</p>
               {% endif %}
               {% if restaurant.admin.email %}
-              <p class="sm:col-span-2"><span class="font-semibold text-slate-900 dark:text-white">Email:</span> {{ restaurant.admin.email }}</p>
+              <p class="sm:col-span-2"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Email:" %}</span> {{ restaurant.admin.email }}</p>
               {% endif %}
             </div>
 
             <div class="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm dark:border-rose-900/50 dark:bg-rose-900/20">
-              <p class="font-semibold text-rose-800 dark:text-rose-200">Opening Hours</p>
-              <p class="mt-1 text-rose-700 dark:text-rose-300">{% if restaurant_hours %}{{ restaurant_hours }}{% else %}Not provided yet{% endif %}</p>
+              <p class="font-semibold text-rose-800 dark:text-rose-200">{% trans "Opening Hours" %}</p>
+              <p class="mt-1 text-rose-700 dark:text-rose-300">{% if restaurant_hours %}{{ restaurant_hours }}{% else %}{% trans "Not provided yet" %}{% endif %}</p>
             </div>
           </div>
         </header>
@@ -314,7 +319,7 @@
 
         <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card">
           <div class="relative">
-            <input x-model="search" type="search" placeholder="Search menu items..." class="w-full rounded-full border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 outline-none focus:border-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+            <input x-model="search" type="search" placeholder="{% trans 'Search menu items...' %}" class="w-full rounded-full border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 outline-none focus:border-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
             <svg class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
         </div>
@@ -322,7 +327,7 @@
         <div class="mt-4 flex gap-3 overflow-x-auto pb-1 lg:hidden">
           <button @click="setCategory('all')" :class="activeCategory === 'all' ? 'border-slate-900' : 'border-slate-300 dark:border-slate-600'" class="w-28 shrink-0 rounded-xl border bg-white p-2 text-left dark:bg-slate-900">
             <div class="h-12 rounded-lg bg-slate-200 dark:bg-slate-700"></div>
-            <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-900 dark:text-white">All</p>
+            <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-900 dark:text-white">{% trans "All" %}</p>
           </button>
           {% for cat in category_list %}
           <button @click="setCategory('{{ cat.id }}')" :class="activeCategory === '{{ cat.id }}' ? 'border-emerald-500' : 'border-slate-300 dark:border-slate-600'" class="w-28 shrink-0 rounded-xl border bg-white p-2 text-left dark:bg-slate-900">
@@ -335,7 +340,7 @@
         {% if packages %}
           <div class="mt-5 space-y-6">
             <section data-category-section="packages">
-              <div class="mb-3 rounded-xl bg-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 dark:bg-slate-700 dark:text-slate-100">Packages</div>
+              <div class="mb-3 rounded-xl bg-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 dark:bg-slate-700 dark:text-slate-100">{% trans "Packages" %}</div>
               <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {% for p in packages %}
                 <div class="rounded-xl border border-slate-300 bg-white p-3 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card">
@@ -356,7 +361,7 @@
 
         {% if not menu_cards %}
           <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-12 text-center dark:border-slate-600 dark:bg-slate-800">
-            <p class="text-slate-600 dark:text-slate-400">No menu items available.</p>
+            <p class="text-slate-600 dark:text-slate-400">{% trans "No menu items available." %}</p>
           </div>
         {% else %}
           <div class="mt-5 space-y-6">
@@ -382,8 +387,8 @@
                       {% if item.stock %}<p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ item.stock }}</p>{% endif %}
                       <div class="mt-3 flex items-center justify-between gap-2">
                         {% if not settings or settings.show_prices %}<p class="text-lg font-bold text-slate-900 dark:text-white">€ {{ item.price }}</p>{% endif %}
-                        <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="pointer-events-auto rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-black dark:bg-white dark:text-slate-900">Learn More</button>
-                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="pointer-events-auto rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 disabled:pointer-events-none">Add</button>
+                        <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="pointer-events-auto rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-black dark:bg-white dark:text-slate-900">{% trans "Learn More" %}</button>
+                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="pointer-events-auto rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 disabled:pointer-events-none">{% trans "Add" %}</button>
                       </div>
                     </div>
                   </div>
@@ -396,8 +401,8 @@
                         {% if item.stock %}<p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ item.stock }}</p>{% endif %}
                         {% if not settings or settings.show_prices %}<p class="mt-2 text-xl font-bold text-blue-600">€ {{ item.price }}</p>{% endif %}
                         <div class="mt-2 flex gap-2">
-                          <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900">Learn More</button>
-                          <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 disabled:pointer-events-none">Add</button>
+                          <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900">{% trans "Learn More" %}</button>
+                          <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 disabled:pointer-events-none">{% trans "Add" %}</button>
                         </div>
                       </div>
                       {% if not settings or settings.show_images %}
@@ -428,7 +433,7 @@
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-400" x-text="modalItem.description"></p>
         <div class="mt-4 flex items-center justify-between">
           <p class="text-xl font-bold text-slate-900 dark:text-white">£ <span x-text="modalItem.price"></span></p>
-          <button :disabled="!canOrderNow()" @click="addToCart(modalItem.id, modalItem.name, modalItem.price, 1)" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none">Add</button>
+          <button :disabled="!canOrderNow()" @click="addToCart(modalItem.id, modalItem.name, modalItem.price, 1)" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none">{% trans "Add" %}</button>
         </div>
       </div>
     </div>
@@ -436,7 +441,7 @@
     <div x-cloak x-show="toastOpen" class="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg" x-text="toastMsg"></div>
 
     {% csrf_token %}
-    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900" aria-label="Cart">
+    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900" aria-label="{% trans 'Cart' %}">
       <span class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-xs font-bold" x-text="cartCount()"></span>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
     </button>
@@ -444,16 +449,16 @@
     <div x-cloak x-show="orderPanelOpen" class="fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-slate-950" x-transition>
       <div class="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <div class="flex items-center gap-2">
-          <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Orders</h2>
+          <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{% trans "Orders" %}</h2>
           {% if order_options.reservation_enabled %}
-          <a href="{{ reservation_url }}" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">Reservation</a>
+          <a href="{{ reservation_url }}" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">{% trans "Reservation" %}</a>
           {% endif %}
         </div>
         <div class="flex items-center gap-2">
           {% if order_options.reservation_enabled %}
-          <a href="{{ reservation_url }}" target="_blank" rel="noopener" class="sm:hidden inline-flex items-center rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">Reservation</a>
+          <a href="{{ reservation_url }}" target="_blank" rel="noopener" class="sm:hidden inline-flex items-center rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">{% trans "Reservation" %}</a>
           {% endif %}
-          <button @click="orderPanelOpen = false" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Close</button>
+          <button @click="orderPanelOpen = false" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">{% trans "Close" %}</button>
         </div>
       </div>
 
@@ -474,9 +479,9 @@
           <div class="mx-auto w-full max-w-5xl grid grid-cols-2 gap-4 overflow-hidden">
             <div class="flex flex-col min-h-0 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
               <div class="flex-1 min-h-0 overflow-y-auto p-4">
-                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Cart Items</h3>
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Cart Items" %}</h3>
                 <template x-if="cartItems.length === 0">
-                  <p class="py-2 text-sm text-slate-500 dark:text-slate-400">Cart is empty.</p>
+                  <p class="py-2 text-sm text-slate-500 dark:text-slate-400">{% trans "Cart is empty." %}</p>
                 </template>
                 <template x-if="cartItems.length > 0">
                   <div class="space-y-2">
@@ -490,99 +495,99 @@
                           <button @click="updateQty(item.menu_item_id, -1)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">−</button>
                           <span class="min-w-[1.5rem] text-center text-sm font-semibold" x-text="item.quantity"></span>
                           <button @click="updateQty(item.menu_item_id, 1)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">+</button>
-                          <button @click="removeFromCart(item.menu_item_id)" class="rounded p-1.5 text-rose-500 dark:text-rose-400" aria-label="Remove"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                          <button @click="removeFromCart(item.menu_item_id)" class="rounded p-1.5 text-rose-500 dark:text-rose-400" aria-label="{% trans 'Remove' %}"<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                         </div>
                       </div>
                     </template>
-                    <p class="flex justify-between border-t border-slate-200 pt-2 text-sm dark:border-slate-700"><span class="text-slate-600 dark:text-slate-400">Total</span><span class="font-bold text-indigo-600 dark:text-indigo-400">€ <span x-text="cartSubtotal()"></span></span></p>
+                    <p class="flex justify-between border-t border-slate-200 pt-2 text-sm dark:border-slate-700"><span class="text-slate-600 dark:text-slate-400">{% trans "Total" %}</span><span class="font-bold text-indigo-600 dark:text-indigo-400">€ <span x-text="cartSubtotal()"></span></span></p>
                   </div>
                 </template>
               </div>
               <div class="border-t border-slate-200 p-4 dark:border-slate-700 space-y-3">
                 <div>
-                  <p class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Service Type</p>
+                  <p class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Service Type" %}</p>
                   <div class="flex flex-wrap gap-2">
-                    <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Dine In</button>
-                    <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Pickup</button>
+                    <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Dine In" %}</button>
+                    <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Pickup" %}</button>
                     <template x-if="orderOptions.has_delivery">
-                      <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Delivery</button>
+                      <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                     </template>
                     <template x-if="orderOptions.reservation_enabled">
-                      <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Reservation</button>
+                      <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Reservation" %}</button>
                     </template>
                   </div>
                   <template x-if="serviceType === 'dine_in'">
                     <div class="mt-2">
-                      <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">Table Number</label>
-                      <input type="text" x-model="tableNumber" placeholder="e.g. 22" class="mt-0.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                      <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">{% trans "Table Number" %}</label>
+                      <input type="text" x-model="tableNumber" placeholder="{% trans 'e.g. 22' %}" class="mt-0.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                     </div>
                   </template>
                   <template x-if="serviceType === 'reservation'">
                     <div class="mt-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-3 text-sm dark:border-indigo-800 dark:bg-indigo-900/20">
-                      <p class="font-medium text-indigo-800 dark:text-indigo-200">Reservation</p>
+                      <p class="font-medium text-indigo-800 dark:text-indigo-200">{% trans "Reservation" %}</p>
                       <p class="mt-1 text-indigo-700 dark:text-indigo-300">Choose a <strong>day and time</strong> within opening hours. Pay <strong>Cash</strong> on the day or <strong>Online</strong> now. If cancelled, online payment is refunded.</p>
-                      <a href="{{ reservation_url }}" class="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">Select date & time →</a>
+                      <a href="{{ reservation_url }}" class="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">{% trans "Select date & time →" %}</a>
                     </div>
                   </template>
                 </div>
                 <div>
-                  <p class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payment</p>
+                  <p class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Payment" %}</p>
                   <div class="flex flex-wrap gap-2">
                     <template x-if="orderOptions.allow_payment_cash">
-                      <button @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Cash</button>
+                      <button @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Cash" %}</button>
                     </template>
                     <template x-if="orderOptions.allow_payment_online">
-                      <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">Online</button>
+                      <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Online" %}</button>
                     </template>
                   </div>
                 </div>
                 <div>
-                  <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">Order Note</label>
-                  <input type="text" x-model="orderNote" placeholder="Special requests…" class="mt-0.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                  <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">{% trans "Order Note" %}</label>
+                  <input type="text" x-model="orderNote" placeholder="{% trans 'Special requests…' %}" class="mt-0.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                 </div>
               </div>
             </div>
             <div class="flex flex-col min-h-0 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Confirm Order</h3>
-              <p class="mb-3 text-sm text-slate-600 dark:text-slate-400" x-show="cartItems.length === 0 && !lastOrder">Add items and set options on the left.</p>
+              <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Confirm Order" %}</h3>
+              <p class="mb-3 text-sm text-slate-600 dark:text-slate-400" x-show="cartItems.length === 0 && !lastOrder">{% trans "Add items and set options on the left." %}</p>
               <template x-if="cartItems.length === 0 && lastOrder">
                 <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-                  <p class="font-semibold">Order placed successfully</p>
-                  <p class="mt-0.5">Your order is pending. Check status in Order history below.</p>
-                  <button @click="addMoreItems()" class="mt-2 w-full rounded-lg border border-emerald-300 bg-white py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">Add more items</button>
+                  <p class="font-semibold">{% trans "Order placed successfully" %}</p>
+                  <p class="mt-0.5">{% trans "Your order is pending. Check status in Order history below." %}</p>
+                  <button @click="addMoreItems()" class="mt-2 w-full rounded-lg border border-emerald-300 bg-white py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">{% trans "Add more items" %}</button>
                 </div>
               </template>
               <template x-if="cartItems.length > 0 && serviceType === 'reservation'">
                 <div class="flex flex-col flex-1">
-                  <p class="mb-3 text-xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-sm font-normal text-slate-500">total</span></p>
+                  <p class="mb-3 text-xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-sm font-normal text-slate-500">{% trans "total" %}</span></p>
                   <div class="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 text-sm dark:border-indigo-800 dark:bg-indigo-900/20">
-                    <p class="font-medium text-indigo-800 dark:text-indigo-200">Reservation with pre-order</p>
+                    <p class="font-medium text-indigo-800 dark:text-indigo-200">{% trans "Reservation with pre-order" %}</p>
                     <p class="mt-1 text-indigo-700 dark:text-indigo-300">Select a <strong>day and time</strong> (within opening hours), guests, and contact. Pay <strong>Cash</strong> on the day or <strong>Online</strong> now — if cancelled, online payment is refunded.</p>
-                    <a href="{{ reservation_url }}" class="mt-4 flex w-full items-center justify-center rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">Select date & time →</a>
+                    <a href="{{ reservation_url }}" class="mt-4 flex w-full items-center justify-center rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">{% trans "Select date & time →" %}</a>
                   </div>
                 </div>
               </template>
               <template x-if="cartItems.length > 0 && serviceType !== 'reservation'">
                 <div class="flex flex-col flex-1">
-                  <p class="mb-3 text-xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-sm font-normal text-slate-500">total</span></p>
+                  <p class="mb-3 text-xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-sm font-normal text-slate-500">{% trans "total" %}</span></p>
                   <p x-show="orderError" class="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="orderError"></p>
                   <button @click="placeOrder()" :disabled="orderLoading" class="mt-auto w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600">
-                    <span x-show="!orderLoading">Place Order</span>
-                    <span x-show="orderLoading">Placing…</span>
+                    <span x-show="!orderLoading">{% trans "Place Order" %}</span>
+                    <span x-show="orderLoading">{% trans "Placing…" %}</span>
                   </button>
                   <template x-if="lastOrder">
                     <div class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-                      <p class="font-semibold">Order placed successfully</p>
-                      <p class="mt-0.5">Your order is pending. Total € <span x-text="lastOrder.total_amount"></span>. Check status in Order history below.</p>
-                      <button @click="addMoreItems()" class="mt-2 w-full rounded-lg border border-emerald-300 bg-white py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">Add more items</button>
+                      <p class="font-semibold">{% trans "Order placed successfully" %}</p>
+                      <p class="mt-0.5">{% blocktrans %}Your order is pending. Total € <span x-text="lastOrder.total_amount"></span>. Check status in Order history below.{% endblocktrans %}</p>
+                      <button @click="addMoreItems()" class="mt-2 w-full rounded-lg border border-emerald-300 bg-white py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">{% trans "Add more items" %}</button>
                     </div>
                   </template>
                 </div>
               </template>
               <div class="mt-4 border-t border-slate-200 pt-4 dark:border-slate-700">
-                <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order history</h3>
+                <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Order history" %}</h3>
                 <template x-if="orderHistory.length === 0">
-                  <p class="text-sm text-slate-500 dark:text-slate-400">No orders yet. Place an order to see it here (pending → preparing → completed).</p>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">{% trans "No orders yet. Place an order to see it here (pending → preparing → completed)." %}</p>
                 </template>
                 <template x-if="orderHistory.length > 0">
                   <ul class="space-y-2 max-h-32 overflow-y-auto">
@@ -603,9 +608,9 @@
         <div class="lg:hidden">
           <div x-show="orderTab === 1" class="space-y-5">
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Cart Items</h3>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Cart Items" %}</h3>
               <template x-if="cartItems.length === 0">
-                <p class="py-4 text-center text-slate-500 dark:text-slate-400">Cart is empty.</p>
+                <p class="py-4 text-center text-slate-500 dark:text-slate-400">{% trans "Cart is empty." %}</p>
               </template>
               <template x-if="cartItems.length > 0">
                 <div class="space-y-3">
@@ -619,59 +624,59 @@
                         <button @click="updateQty(item.menu_item_id, -1)" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">−</button>
                         <span class="min-w-[2rem] text-center font-semibold" x-text="item.quantity"></span>
                         <button @click="updateQty(item.menu_item_id, 1)" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">+</button>
-                        <button @click="removeFromCart(item.menu_item_id)" class="rounded-lg p-2 text-rose-500 dark:text-rose-400" aria-label="Remove"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                        <button @click="removeFromCart(item.menu_item_id)" class="rounded-lg p-2 text-rose-500 dark:text-rose-400" aria-label="{% trans 'Remove' %}"<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                       </div>
                     </div>
                   </template>
-                  <p class="flex justify-between border-t border-slate-200 pt-3 font-semibold dark:border-slate-700"><span class="text-slate-600 dark:text-slate-400">Total</span><span class="text-indigo-600 dark:text-indigo-400">€ <span x-text="cartSubtotal()"></span></span></p>
+                  <p class="flex justify-between border-t border-slate-200 pt-3 font-semibold dark:border-slate-700"><span class="text-slate-600 dark:text-slate-400">{% trans "Total" %}</span><span class="text-indigo-600 dark:text-indigo-400">€ <span x-text="cartSubtotal()"></span></span></p>
                 </div>
               </template>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Service Type</h3>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Service Type" %}</h3>
               <div class="flex flex-wrap gap-2">
-                <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">Dine In</button>
-                <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">Pickup</button>
+                <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Dine In" %}</button>
+                <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Pickup" %}</button>
                 <template x-if="orderOptions.has_delivery">
-                  <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">Delivery</button>
+                  <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                 </template>
                 <template x-if="orderOptions.reservation_enabled">
-                  <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">Reservation</button>
+                  <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Reservation" %}</button>
                 </template>
               </div>
               <template x-if="serviceType === 'dine_in'">
                 <div class="mt-4">
-                  <label class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Table Number</label>
-                  <input type="text" x-model="tableNumber" placeholder="Table #" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                  <label class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Table Number" %}</label>
+                  <input type="text" x-model="tableNumber" placeholder="{% trans 'Table #' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                 </div>
               </template>
               <template x-if="serviceType === 'reservation'">
                 <div class="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/50 p-3 text-sm dark:border-indigo-800 dark:bg-indigo-900/20">
-                  <p class="font-medium text-indigo-800 dark:text-indigo-200">Reservation</p>
+                  <p class="font-medium text-indigo-800 dark:text-indigo-200">{% trans "Reservation" %}</p>
                   <p class="mt-1 text-indigo-700 dark:text-indigo-300">Pick <strong>day & time</strong> (opening hours). Pay <strong>Cash</strong> on the day or <strong>Online</strong> now — refund if cancelled.</p>
-                  <a href="{{ reservation_url }}" class="mt-3 flex w-full items-center justify-center rounded-xl bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Select date & time →</a>
+                  <a href="{{ reservation_url }}" class="mt-3 flex w-full items-center justify-center rounded-xl bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">{% trans "Select date & time →" %}</a>
                 </div>
               </template>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payment</h3>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Payment" %}</h3>
               <div class="flex gap-2">
                 <template x-if="orderOptions.allow_payment_cash">
-                  <button @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">Cash</button>
+                  <button @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Cash" %}</button>
                 </template>
                 <template x-if="orderOptions.allow_payment_online">
-                  <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">Online</button>
+                  <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Online" %}</button>
                 </template>
               </div>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <label class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Order Note</label>
-              <input type="text" x-model="orderNote" placeholder="Order Note" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+              <label class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Order Note" %}</label>
+              <input type="text" x-model="orderNote" placeholder="{% trans 'Order Note' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order history</h3>
+              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Order history" %}</h3>
               <template x-if="orderHistory.length === 0">
-                <p class="text-sm text-slate-500 dark:text-slate-400">No orders yet.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">{% trans "No orders yet." %}</p>
               </template>
               <template x-if="orderHistory.length > 0">
                 <ul class="space-y-2">
@@ -684,25 +689,25 @@
                 </ul>
               </template>
             </div>
-            <button @click="goToConfirmStep()" :disabled="!canGoToConfirm()" class="w-full rounded-xl py-4 text-base font-semibold transition disabled:opacity-50" :class="canGoToConfirm() ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'">Next →</button>
+            <button @click="goToConfirmStep()" :disabled="!canGoToConfirm()" class="w-full rounded-xl py-4 text-base font-semibold transition disabled:opacity-50" :class="canGoToConfirm() ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'">{% trans "Next →" %}</button>
           </div>
 
           <div x-show="orderTab === 2" class="space-y-5">
-            <button @click="orderTab = 1" class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">← Back</button>
+            <button @click="orderTab = 1" class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">← {% trans "Back" %}</button>
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Confirm Order</h3>
-              <p class="mb-4 text-2xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-base font-normal text-slate-500">total</span></p>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Confirm Order" %}</h3>
+              <p class="mb-4 text-2xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-base font-normal text-slate-500">{% trans "total" %}</span></p>
               <template x-if="serviceType === 'reservation'">
                 <div class="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 text-sm dark:border-indigo-800 dark:bg-indigo-900/20">
-                  <p class="font-medium text-indigo-800 dark:text-indigo-200">Reservation</p>
+                  <p class="font-medium text-indigo-800 dark:text-indigo-200">{% trans "Reservation" %}</p>
                   <p class="mt-1 text-indigo-700 dark:text-indigo-300">Select <strong>day & time</strong> (opening hours), guests, contact. Pay <strong>Cash</strong> on the day or <strong>Online</strong> now — refund if cancelled.</p>
-                  <a href="{{ reservation_url }}" class="mt-4 flex w-full items-center justify-center rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white hover:bg-indigo-700">Select date & time →</a>
+                  <a href="{{ reservation_url }}" class="mt-4 flex w-full items-center justify-center rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white hover:bg-indigo-700">{% trans "Select date & time →" %}</a>
                 </div>
               </template>
               <template x-if="serviceType !== 'reservation'">
                 <div>
                   <p x-show="orderError" class="mb-3 rounded-xl bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="orderError"></p>
-                  <button @click="placeOrder()" :disabled="orderLoading" class="w-full rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">Place Order</button>
+                  <button @click="placeOrder()" :disabled="orderLoading" class="w-full rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">{% trans "Place Order" %}</button>
                 </div>
               </template>
             </div>
@@ -710,23 +715,23 @@
 
           <div x-show="orderTab === 3" class="space-y-5">
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Order Summary</h3>
+              <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Order Summary" %}</h3>
               <template x-if="lastOrder">
                 <div class="space-y-3">
                   <template x-for="line in (lastOrder.items || [])" :key="line.menu_item_id + '-' + line.quantity">
                     <p class="flex justify-between text-sm text-slate-700 dark:text-slate-300"><span x-text="line.quantity"></span>× <span x-text="line.name"></span> — € <span x-text="(line.quantity * parseFloat(line.price)).toFixed(2)"></span></p>
                   </template>
-                  <p class="border-t border-slate-200 pt-3 font-semibold dark:border-slate-700">Total € <span x-text="lastOrder.total_amount"></span></p>
-                  <p class="text-sm text-slate-600 dark:text-slate-400">Service: <span x-text="lastOrder.service_type"></span> · Payment: <span x-text="lastOrder.payment_method"></span></p>
+                  <p class="border-t border-slate-200 pt-3 font-semibold dark:border-slate-700">{% trans "Total" %} € <span x-text="lastOrder.total_amount"></span></p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">{% trans "Service:" %} <span x-text="lastOrder.service_type"></span> · {% trans "Payment:" %} <span x-text="lastOrder.payment_method"></span></p>
                   <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-                    <p class="font-semibold">Order placed successfully</p>
-                    <p class="mt-1">Your order is pending. The restaurant will update the status (e.g. preparing, completed).</p>
-                    <button @click="addMoreItems()" class="mt-3 w-full rounded-lg border border-emerald-300 bg-white py-2.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">Add more items</button>
+                    <p class="font-semibold">{% trans "Order placed successfully" %}</p>
+                    <p class="mt-1">{% trans "Your order is pending. The restaurant will update the status (e.g. preparing, completed)." %}</p>
+                    <button @click="addMoreItems()" class="mt-3 w-full rounded-lg border border-emerald-300 bg-white py-2.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">{% trans "Add more items" %}</button>
                   </div>
                 </div>
               </template>
             </div>
-            <button @click="orderPanelOpen = false" class="w-full rounded-xl border border-slate-200 bg-white py-3 font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">Done</button>
+            <button @click="orderPanelOpen = false" class="w-full rounded-xl border border-slate-200 bg-white py-3 font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">{% trans "Done" %}</button>
           </div>
         </div>
       </div>

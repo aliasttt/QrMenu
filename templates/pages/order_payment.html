@@ -1,54 +1,54 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}Payment — {{ restaurant.name }}{% endblock %}
+{% load static i18n %}
+{% block title %}{% blocktrans with name=restaurant.name %}Payment — {{ name }}{% endblocktrans %}{% endblock %}
 {% block content %}
 <div class="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4">
   <div class="mx-auto max-w-lg">
     {% if error %}
     <div class="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-200">
       <p class="font-semibold">{{ error }}</p>
-      <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-4 inline-block rounded-xl bg-slate-200 px-4 py-2 text-sm font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200">Back to menu</a>
+      <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-4 inline-block rounded-xl bg-slate-200 px-4 py-2 text-sm font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200">{% trans "Back to menu" %}</a>
     </div>
     {% else %}
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <h1 class="text-xl font-bold text-slate-900 dark:text-white">Payment</h1>
-      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ restaurant.name }} — Order #{{ order.id }}</p>
+      <h1 class="text-xl font-bold text-slate-900 dark:text-white">{% trans "Payment" %}</h1>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{% blocktrans with name=restaurant.name id=order.id %}{{ name }} — Order #{{ id }}{% endblocktrans %}</p>
 
       <div class="mt-6 border-t border-slate-200 pt-4 dark:border-slate-700">
-        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Order summary</p>
+        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{% trans "Order summary" %}</p>
         <ul class="mt-2 space-y-1 text-slate-700 dark:text-slate-300">
           {% for line in order_items %}
           <li><span>{{ line.quantity }}×</span> {{ line.name }} — {{ currency }} {{ line.price }} × {{ line.quantity }}</li>
           {% endfor %}
         </ul>
-        <p class="mt-4 text-lg font-bold text-slate-900 dark:text-white">Total: {{ currency }} {{ total_amount }}</p>
+        <p class="mt-4 text-lg font-bold text-slate-900 dark:text-white">{% trans "Total:" %} {{ currency }} {{ total_amount }}</p>
       </div>
 
       <div class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
-        <p class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payment method</p>
+        <p class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Payment method" %}</p>
         {% if not stripe_connected or not stripe_configured %}
-        <p class="mt-2 text-slate-700 dark:text-slate-300">This restaurant does not accept online payment. Please pay by cash when you pick up or dine in.</p>
+        <p class="mt-2 text-slate-700 dark:text-slate-300">{% trans "This restaurant does not accept online payment. Please pay by cash when you pick up or dine in." %}</p>
         <div class="mt-6 flex flex-wrap gap-3">
-          <a href="/restaurants/{{ restaurant.id }}/menu/" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Back to menu</a>
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">{% trans "Back to menu" %}</a>
         </div>
         {% else %}
-        <p class="mt-2 text-slate-600 dark:text-slate-400">Pay with card. The payment goes to {{ restaurant.name }}.</p>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">{% blocktrans with name=restaurant.name %}Pay with card. The payment goes to {{ name }}.{% endblocktrans %}</p>
         <div id="payment-form-wrap" class="mt-4">
           <form id="payment-form" class="space-y-4">
             {% csrf_token %}
             <div id="card-element" class="rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-4 min-h-[44px"></div>
             <div id="card-errors" class="text-sm text-red-600 dark:text-red-400 hidden"></div>
             <button type="submit" id="submit-payment" class="w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50">
-              Pay {{ currency }} {{ total_amount }}
+              {% blocktrans with currency=currency total=total_amount %}Pay {{ currency }} {{ total }}{% endblocktrans %}
             </button>
           </form>
         </div>
         <div id="payment-success" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
-          <p class="font-semibold">Payment successful.</p>
-          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">Back to menu</a>
+          <p class="font-semibold">{% trans "Payment successful." %}</p>
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">{% trans "Back to menu" %}</a>
         </div>
         <div class="mt-6">
-          <a href="/restaurants/{{ restaurant.id }}/menu/" class="text-sm text-slate-600 dark:text-slate-400 hover:underline">Back to menu</a>
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="text-sm text-slate-600 dark:text-slate-400 hover:underline">{% trans "Back to menu" %}</a>
         </div>
         {% endif %}
       </div>
@@ -69,6 +69,11 @@
   var cardErrors = document.getElementById("card-errors");
   var formWrap = document.getElementById("payment-form-wrap");
   var successEl = document.getElementById("payment-success");
+  var T = {
+    couldNotStart: "{% trans 'Could not start payment.' %}",
+    paymentFailed: "{% trans 'Payment failed.' %}",
+    somethingWrong: "{% trans 'Something went wrong.' %}",
+  };
   if (!form || !publishableKey) return;
   var stripe = Stripe(publishableKey);
   var elements = stripe.elements();
@@ -97,7 +102,7 @@
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (!data.success || !data.client_secret) {
-        cardErrors.textContent = data.error || "Could not start payment.";
+        cardErrors.textContent = data.error || T.couldNotStart;
         cardErrors.classList.remove("hidden");
         submitBtn.disabled = false;
         return;
@@ -109,7 +114,7 @@
     .then(function(result) {
       if (!result) return;
       if (result.error) {
-        cardErrors.textContent = result.error.message || "Payment failed.";
+        cardErrors.textContent = result.error.message || T.paymentFailed;
         cardErrors.classList.remove("hidden");
         submitBtn.disabled = false;
         return;
@@ -121,7 +126,7 @@
       submitBtn.disabled = false;
     })
     .catch(function(err) {
-      cardErrors.textContent = err.message || "Something went wrong.";
+      cardErrors.textContent = err.message || T.somethingWrong;
       cardErrors.classList.remove("hidden");
       submitBtn.disabled = false;
     });

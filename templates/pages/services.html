@@ -1,14 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Services | {{ theme.brand_name }}{% endblock %}
-{% block meta_description %}Explore all QR Menu Pro services. Open a dedicated page for each service with details, visuals, and benefits.{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Services" %} | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}{% trans "Explore all QR Menu Pro services. Open a dedicated page for each service with details, visuals, and benefits." %}{% endblock %}
 
 {% block content %}
 <section class="py-14 md:py-20 lg:py-24">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <header class="mx-auto max-w-3xl text-center" data-reveal>
-      <h1 class="section-title text-slate-900 dark:text-white">Our Services</h1>
+      <h1 class="section-title text-slate-900 dark:text-white">{% trans "Our Services" %}</h1>
       <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">
-        Open each service to view a full, dedicated page with benefits, visuals, and practical use cases.
+        {% trans "Open each service to view a full, dedicated page with benefits, visuals, and practical use cases." %}
       </p>
     </header>
 
@@ -21,7 +22,7 @@
           <h2 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{{ item.title }}</h2>
           <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 line-clamp-3">{{ item.summary }}</p>
           <a href="{% url 'service_detail' item.slug %}" class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-orange-400 hover:underline">
-            Open service page
+            {% trans "Open service page" %}
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </a>
         </article>

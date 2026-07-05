@@ -1,25 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Pricing | {{ theme.brand_name }}{% endblock %}
-{% block meta_description %}One simple annual plan: QR menu and online ordering for €200/year + 19% VAT (€238 total). Everything included.{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Pricing" %} | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}{% trans "One simple annual plan: QR menu and online ordering for €200/year + 19% VAT (€238 total). Everything included." %}{% endblock %}
 
 {% block content %}
 <section class="py-16 md:py-20 lg:py-24">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <header class="mx-auto max-w-2xl text-center" data-reveal>
-      <h1 class="section-title text-slate-900 dark:text-white">Simple annual pricing</h1>
-      <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">One plan. QR menu + online ordering. Everything you need to run digital dining—no per-order fees, no hidden costs.</p>
+      <h1 class="section-title text-slate-900 dark:text-white">{% trans "Simple annual pricing" %}</h1>
+      <p class="section-subtitle mt-3 text-slate-600 dark:text-slate-400">{% trans "One plan. QR menu + online ordering. Everything you need to run digital dining—no per-order fees, no hidden costs." %}</p>
     </header>
 
-    <!-- Single plan card -->
     <div class="mx-auto mt-14 max-w-lg" data-reveal>
       <article class="rounded-2xl border-2 border-primary-200 dark:border-orange-500/40 bg-white dark:bg-slate-800 p-8 shadow-soft-lg transition hover:shadow-glow">
         <div class="text-center">
-          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Annual subscription</h2>
-          <p class="mt-1 text-slate-600 dark:text-slate-400">QR menu &amp; online ordering</p>
-          <p class="mt-6 text-4xl font-bold text-slate-900 dark:text-white">€{{ plan.price_eur }}<span class="text-lg font-normal text-slate-500 dark:text-slate-400">/year</span></p>
-          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">plus 19% VAT</p>
-          <p class="mt-3 rounded-xl bg-primary-50 dark:bg-orange-900/30 px-4 py-2 text-lg font-semibold text-primary-700 dark:text-orange-300">€{{ plan.price_with_vat_eur }} total per year</p>
-          <a href="{{ get_started_url }}" class="btn-primary mt-8 w-full text-center">Get started</a>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Annual subscription" %}</h2>
+          <p class="mt-1 text-slate-600 dark:text-slate-400">{% trans "QR menu & online ordering" %}</p>
+          <p class="mt-6 text-4xl font-bold text-slate-900 dark:text-white">€{{ plan.price_eur }}<span class="text-lg font-normal text-slate-500 dark:text-slate-400">/{% trans "year" %}</span></p>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{% trans "plus 19% VAT" %}</p>
+          <p class="mt-3 rounded-xl bg-primary-50 dark:bg-orange-900/30 px-4 py-2 text-lg font-semibold text-primary-700 dark:text-orange-300">{% blocktrans with total=plan.price_with_vat_eur %}€{{ total }} total per year{% endblocktrans %}</p>
+          <a href="{{ get_started_url }}" class="btn-primary mt-8 w-full text-center">{% trans "Get started" %}</a>
         </div>
         <ul class="mt-8 space-y-3 text-sm text-slate-600 dark:text-slate-400">
           {% for f in plan.features %}
@@ -32,10 +32,9 @@
       </article>
     </div>
 
-    <!-- Why restaurant owners choose us -->
     <div class="mt-20 mx-auto max-w-4xl" data-reveal>
-      <h2 class="section-title text-center text-slate-900 dark:text-white">Why restaurant owners choose us</h2>
-      <p class="section-subtitle mx-auto mt-2 text-center text-slate-600 dark:text-slate-400">One annual fee. No surprises. Built for real venues.</p>
+      <h2 class="section-title text-center text-slate-900 dark:text-white">{% trans "Why restaurant owners choose us" %}</h2>
+      <p class="section-subtitle mx-auto mt-2 text-center text-slate-600 dark:text-slate-400">{% trans "One annual fee. No surprises. Built for real venues." %}</p>
       <div class="mt-10 grid gap-6 sm:grid-cols-2">
         {% for b in benefits %}
           <div class="rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 shadow-soft">
@@ -46,9 +45,8 @@
       </div>
     </div>
 
-    <!-- FAQ -->
     <div class="mt-20 mx-auto max-w-2xl">
-      <h2 class="section-title text-center text-slate-900 dark:text-white">Pricing FAQ</h2>
+      <h2 class="section-title text-center text-slate-900 dark:text-white">{% trans "Pricing FAQ" %}</h2>
       <ul class="mt-8 space-y-4">
         {% for faq in faqs %}
           <li class="card-soft dark:bg-slate-800 dark:border-slate-600" data-reveal>
@@ -60,14 +58,13 @@
     </div>
 
     <p class="mt-14 text-center">
-      <a href="{% url 'contact' %}" class="btn-tertiary">Contact us</a>
+      <a href="{% url 'contact' %}" class="btn-tertiary">{% trans "Contact us" %}</a>
     </p>
   </div>
 </section>
 
-<!-- Sticky mobile CTA -->
 <div class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-100 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 p-4 backdrop-blur-md md:hidden">
-  <a href="{{ get_started_url }}" class="btn-primary block w-full text-center">Get started — €200/year</a>
+  <a href="{{ get_started_url }}" class="btn-primary block w-full text-center">{% trans "Get started — €200/year" %}</a>
 </div>
 <div class="h-20 md:hidden" aria-hidden="true"></div>
 {% endblock %}

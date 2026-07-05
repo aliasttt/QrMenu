@@ -1,38 +1,38 @@
-{% load static %}
+{% load static i18n %}
 <footer class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/70">
   <div class="container mx-auto grid gap-10 px-4 py-16 sm:px-6 lg:grid-cols-4 lg:px-8">
     <div>
       <a href="{% url 'landing' %}" class="inline-flex items-center gap-3 font-bold text-slate-900 dark:text-white">
         <img src="{% static 'img/qrmenulogo.jpg' %}" alt="{{ theme.brand_name }}" class="h-12 w-auto sm:h-14 md:h-16 rounded-lg drop-shadow-lg" loading="lazy">
       </a>
-      <p class="mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">SaaS platform for QR menus, online ordering, campaigns, and analytics.</p>
+      <p class="mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{% trans "SaaS platform for QR menus, online ordering, campaigns, and analytics." %}</p>
       <a
         href="https://apps.apple.com/tr/app/mybonusqrmenu/id6757697259"
         target="_blank"
         rel="noopener noreferrer"
         class="mt-5 inline-block transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800 rounded-md"
-        aria-label="Download on the App Store"
+        aria-label="{% trans 'Download on the App Store' %}"
       >
-        <img src="{% static 'img/app-store-badge.svg' %}" alt="Download on the App Store" class="h-10 w-auto sm:h-11" width="120" height="40" loading="lazy">
+        <img src="{% static 'img/app-store-badge.svg' %}" alt="{% trans 'Download on the App Store' %}" class="h-10 w-auto sm:h-11" width="120" height="40" loading="lazy">
       </a>
     </div>
     <div>
-      <h4 class="font-semibold text-slate-900 dark:text-white">Product</h4>
+      <h4 class="font-semibold text-slate-900 dark:text-white">{% trans "Product" %}</h4>
       <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
-        <li><a href="{% url 'features' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">Features</a></li>
-        <li><a href="{% url 'how_it_works' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">How it works</a></li>
-        <li><a href="{% url 'pricing' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">Pricing</a></li>
+        <li><a href="{% url 'features' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">{% trans "Features" %}</a></li>
+        <li><a href="{% url 'how_it_works' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">{% trans "How it works" %}</a></li>
+        <li><a href="{% url 'pricing' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">{% trans "Pricing" %}</a></li>
       </ul>
     </div>
     <div>
-      <h4 class="font-semibold text-slate-900 dark:text-white">Company</h4>
+      <h4 class="font-semibold text-slate-900 dark:text-white">{% trans "Company" %}</h4>
       <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
-        <li><a href="{% url 'contact' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">Contact</a></li>
-        <li><a href="{% url 'contact' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">About</a></li>
+        <li><a href="{% url 'contact' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">{% trans "Contact" %}</a></li>
+        <li><a href="{% url 'contact' %}" class="transition hover:text-primary-600 dark:hover:text-orange-400">{% trans "About" %}</a></li>
       </ul>
     </div>
     <div>
-      <h4 class="font-semibold text-slate-900 dark:text-white">Contact</h4>
+      <h4 class="font-semibold text-slate-900 dark:text-white">{% trans "Contact" %}</h4>
       <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
         <li><a href="mailto:qrmenu@mybonusberlin.com" class="transition hover:text-primary-600 dark:hover:text-orange-400">qrmenu@mybonusberlin.com</a></li>
         <li><a href="tel:+4915511422732" class="transition hover:text-primary-600 dark:hover:text-orange-400">+49 15511 422732</a></li>
@@ -40,9 +40,10 @@
     </div>
   </div>
   <div class="border-t border-slate-100 dark:border-slate-700 py-4">
-    <p class="container mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 sm:px-6 lg:px-8">© {% now "Y" %} {{ theme.brand_name }}. All rights reserved.</p>
+    {% now "Y" as current_year %}
+    <p class="container mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 sm:px-6 lg:px-8">{% blocktrans with year=current_year brand=theme.brand_name %}© {{ year }} {{ brand }}. All rights reserved.{% endblocktrans %}</p>
     <p class="container mx-auto mt-2 px-4 text-center text-xs text-slate-400 dark:text-slate-500 sm:px-6 lg:px-8">
-      This website was developed by <a href="https://angraweb.com/" target="_blank" rel="noopener noreferrer" class="text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500">Angraweb</a> — Professional Web Design &amp; Software Development.
+      {% blocktrans %}This website was developed by <a href="https://angraweb.com/" target="_blank" rel="noopener noreferrer" class="text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500">Angraweb</a> — Professional Web Design &amp; Software Development.{% endblocktrans %}
     </p>
   </div>
 </footer>

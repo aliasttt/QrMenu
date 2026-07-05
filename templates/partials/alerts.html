@@ -1,5 +1,6 @@
+{% load i18n %}
 {% if messages %}
-  <div class="space-y-2 pb-4" role="region" aria-label="Notifications">
+  <div class="space-y-2 pb-4" role="region" aria-label="{% trans 'Notifications' %}">
     {% for message in messages %}
       <div
         role="alert"

@@ -1,3 +1,4 @@
+{% load i18n %}
 <aside
   x-cloak
   x-show="cartOpen"
@@ -11,15 +12,15 @@
 >
   <div class="flex h-full flex-col">
     <div class="flex items-center justify-between border-b border-slate-100 px-4 py-4">
-      <h2 class="text-lg font-semibold text-slate-900">Your Cart</h2>
-      <button @click="cartOpen = false" class="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Close cart">
+      <h2 class="text-lg font-semibold text-slate-900">{% trans "Your Cart" %}</h2>
+      <button @click="cartOpen = false" class="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700" aria-label="{% trans 'Close cart' %}">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="flex-1 space-y-4 overflow-y-auto px-4 py-4">
       <template x-if="items.length === 0">
-        <p class="text-sm text-slate-500">Your cart is empty.</p>
+        <p class="text-sm text-slate-500">{% trans "Your cart is empty." %}</p>
       </template>
 
       <template x-for="item in items" :key="item.id">
@@ -30,10 +31,10 @@
               <p class="text-sm text-slate-500">$<span x-text="item.price.toFixed(2)"></span></p>
             </div>
             <div class="flex items-center gap-2">
-              <button @click="decreaseQty(item.id)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-white" aria-label="Decrease quantity">−</button>
+              <button @click="decreaseQty(item.id)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-white" aria-label="{% trans 'Decrease quantity' %}">−</button>
               <span class="w-6 text-center text-sm font-medium" x-text="item.qty"></span>
-              <button @click="increaseQty(item.id)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-white" aria-label="Increase quantity">+</button>
-              <button @click="removeItem(item.id)" class="rounded-lg px-2 py-1 text-xs font-medium text-rose-600 transition hover:bg-rose-50" aria-label="Remove item">Remove</button>
+              <button @click="increaseQty(item.id)" class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-white" aria-label="{% trans 'Increase quantity' %}">+</button>
+              <button @click="removeItem(item.id)" class="rounded-lg px-2 py-1 text-xs font-medium text-rose-600 transition hover:bg-rose-50" aria-label="{% trans 'Remove item' %}">{% trans "Remove" %}</button>
             </div>
           </div>
         </div>
@@ -42,10 +43,10 @@
 
     <div class="border-t border-slate-100 p-4">
       <div class="mb-4 flex items-center justify-between text-sm">
-        <span class="text-slate-600">Subtotal</span>
+        <span class="text-slate-600">{% trans "Subtotal" %}</span>
         <span class="font-semibold text-slate-900">$<span x-text="subtotal.toFixed(2)"></span></span>
       </div>
-      <a :href="checkoutUrl" class="btn-primary w-full">Proceed to Checkout</a>
+      <a :href="checkoutUrl" class="btn-primary w-full">{% trans "Proceed to Checkout" %}</a>
     </div>
   </div>
 </aside>

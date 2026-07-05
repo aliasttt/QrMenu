@@ -1,6 +1,8 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
 <!doctype html>
-<html lang="en" class="h-full" id="html-theme">
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %} class="h-full" id="html-theme">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +38,7 @@
 </head>
 <body class="h-full font-sans bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors">
   <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:shadow-soft focus:outline-none dark:focus:bg-slate-800">
-    Skip to main content
+    {% trans "Skip to main content" %}
   </a>
 
   <!-- Background layers -->

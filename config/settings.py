@@ -134,7 +134,24 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", "English"), ("de", "Deutsch")]
+LANGUAGES = [
+    ("en", "English"),
+    ("de", "Deutsch"),
+    ("es", "Español"),
+    ("ar", "العربية"),
+    ("tr", "Türkçe"),
+    ("it", "Italiano"),
+    ("fr", "Français"),
+    ("ru", "Русский"),
+    ("nl", "Nederlands"),
+    ("ja", "日本語"),
+    ("el", "Ελληνικά"),
+    ("cs", "Čeština"),
+    ("zh-hans", "中文"),
+    ("pt", "Português"),
+    ("ko", "한국어"),
+    ("pl", "Polski"),
+]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 TIME_ZONE = "Asia/Tehran"
 USE_I18N = True

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Register | {{ theme.brand_name }}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Register" %} | {{ theme.brand_name }}{% endblock %}
 {% block meta %}
 {{ block.super }}
 {% if recaptcha_site_key %}
@@ -12,48 +13,48 @@
   <div class="mx-auto max-w-md">
     <div class="card-soft" data-reveal>
       <div id="step-form">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h1>
-        <p class="mt-2 text-slate-600 dark:text-slate-400">Start your 12-day free trial. No payment required.</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Create your account" %}</h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Start your 12-day free trial. No payment required." %}</p>
         <form id="register-form" class="mt-6 space-y-4">
           {% csrf_token %}
-          {% include "partials/form_fields.html" with label="Restaurant name" name="restaurant_name" placeholder="Orange Bistro" %}
-          {% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="owner@restaurant.com" %}
-          {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+49 123 456789" %}
-          {% include "partials/form_fields.html" with label="Password" name="password" field_type="password" placeholder="••••••••" %}
+          {% include "partials/form_fields.html" with label=_("Restaurant name") name="restaurant_name" placeholder=_("Orange Bistro") %}
+          {% include "partials/form_fields.html" with label=_("Email") name="email" field_type="email" placeholder="owner@restaurant.com" %}
+          {% include "partials/form_fields.html" with label=_("Phone") name="phone" placeholder="+49 123 456789" %}
+          {% include "partials/form_fields.html" with label=_("Password") name="password" field_type="password" placeholder="••••••••" %}
           <div class="flex items-start gap-2">
             <input type="checkbox" id="accept_terms" name="accept_terms" required class="rounded border-slate-300 mt-1">
-            <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">I accept the terms and conditions</label>
+            <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">{% trans "I accept the terms and conditions" %}</label>
           </div>
           <div class="flex items-start gap-2">
             <input type="checkbox" id="b2b_confirmation" name="b2b_confirmation" required class="rounded border-slate-300 mt-1">
-            <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">I confirm I am acting as a business (B2B)</label>
+            <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">{% trans "I confirm I am acting as a business (B2B)" %}</label>
           </div>
           {% if recaptcha_site_key %}
           <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" id="recaptcha-el"></div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Please complete the "I'm not a robot" check.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">{% trans 'Please complete the "I''m not a robot" check.' %}</p>
           {% endif %}
           <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
-          <button type="submit" id="btn-submit" class="btn-primary w-full">Continue</button>
+          <button type="submit" id="btn-submit" class="btn-primary w-full">{% trans "Continue" %}</button>
         </form>
       </div>
       <div id="step-verify" class="hidden">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Verify your email</h1>
-        <p class="mt-2 text-slate-600 dark:text-slate-400">We sent a 6-digit code to <strong id="verify-email-display"></strong>. Enter it below to complete registration.</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Verify your email" %}</h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">{% blocktrans %}We sent a 6-digit code to <strong id="verify-email-display"></strong>. Enter it below to complete registration.{% endblocktrans %}</p>
         <form id="verify-form" class="mt-6 space-y-4">
           {% csrf_token %}
           <div>
-            <label for="email_verification_code" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Verification code</label>
+            <label for="email_verification_code" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{% trans "Verification code" %}</label>
             <input type="text" id="email_verification_code" name="email_verification_code" inputmode="numeric" pattern="[0-9]*" maxlength="6" minlength="6" placeholder="000000" required
               class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white text-center text-2xl tracking-[0.5em] font-mono">
           </div>
           <div id="verify-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
-          <button type="submit" id="btn-verify" class="btn-primary w-full">Complete registration</button>
+          <button type="submit" id="btn-verify" class="btn-primary w-full">{% trans "Complete registration" %}</button>
         </form>
         <p class="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
-          <button type="button" id="back-to-form" class="text-primary-600 hover:underline">Use a different email</button>
+          <button type="button" id="back-to-form" class="text-primary-600 hover:underline">{% trans "Use a different email" %}</button>
         </p>
       </div>
-      <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">Already have an account? <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">Login</a></p>
+      <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">{% trans "Already have an account?" %} <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">{% trans "Login" %}</a></p>
     </div>
   </div>
 </section>

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Campaigns | Panel{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Campaigns" %} | {% trans "Panel" %}{% endblock %}
 {% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 
@@ -7,17 +8,17 @@
 <section class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=campaigns_crumbs %}
   <div class="flex flex-wrap items-center justify-between gap-4">
-    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Campaigns</h1>
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">{% trans "Campaigns" %}</h1>
   </div>
 
   <div class="mt-8 grid gap-8 lg:grid-cols-3">
     <form class="card-panel space-y-4 lg:col-span-1">
-      <h2 class="text-lg font-semibold text-slate-900">Create Campaign</h2>
-      {% include "partials/form_fields.html" with label="Campaign Name" name="campaign_name" placeholder="Lunch Combo 20% Off" %}
-      {% include "partials/form_fields.html" with label="Discount (%)" name="discount" field_type="number" placeholder="20" %}
-      {% include "partials/form_fields.html" with label="Date Range" name="date_range" placeholder="Mar 1 - Mar 20" %}
-      {% include "partials/form_fields.html" with label="Target Categories" name="targets" placeholder="Main Dishes, Drinks" %}
-      <button class="btn-primary w-full" type="button">Create campaign</button>
+      <h2 class="text-lg font-semibold text-slate-900">{% trans "Create Campaign" %}</h2>
+      {% include "partials/form_fields.html" with label=_("Campaign Name") name="campaign_name" placeholder=_("Lunch Combo 20% Off") %}
+      {% include "partials/form_fields.html" with label=_("Discount (%)") name="discount" field_type="number" placeholder="20" %}
+      {% include "partials/form_fields.html" with label=_("Date Range") name="date_range" placeholder=_("Mar 1 - Mar 20") %}
+      {% include "partials/form_fields.html" with label=_("Target Categories") name="targets" placeholder=_("Main Dishes, Drinks") %}
+      <button class="btn-primary w-full" type="button">{% trans "Create campaign" %}</button>
     </form>
 
     <div class="space-y-4 lg:col-span-2">
@@ -29,7 +30,7 @@
               {{ campaign.status }}
             </span>
           </div>
-          <p class="mt-2 text-sm text-slate-600">{{ campaign.dates }} · {{ campaign.discount }} off · {{ campaign.target }}</p>
+          <p class="mt-2 text-sm text-slate-600">{{ campaign.dates }} · {{ campaign.discount }} {% trans "off" %} · {{ campaign.target }}</p>
         </article>
       {% endfor %}
     </div>

@@ -1,39 +1,40 @@
 {% extends "base.html" %}
-{% block title %}Login | {{ theme.brand_name }}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Login" %} | {{ theme.brand_name }}{% endblock %}
 
 {% block content %}
 <section class="container mx-auto px-4 py-16 sm:px-6">
   <div class="mx-auto max-w-md">
     <div class="card-soft" data-reveal>
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Welcome back</h1>
-      <p class="mt-2 text-slate-600 dark:text-slate-400">Sign in to manage your restaurant panel.</p>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Welcome back" %}</h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Sign in to manage your restaurant panel." %}</p>
       {% if error %}
       <div class="mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200">{{ error }}</div>
       {% endif %}
       {% if request.GET.registered %}
-      <p class="mt-4 text-sm text-green-700 dark:text-green-400">Registration successful. Sign in below.</p>
+      <p class="mt-4 text-sm text-green-700 dark:text-green-400">{% trans "Registration successful. Sign in below." %}</p>
       {% endif %}
       {% if request.GET.password_reset %}
-      <p class="mt-4 text-sm text-green-700 dark:text-green-400">Password updated. You can log in with your new password.</p>
+      <p class="mt-4 text-sm text-green-700 dark:text-green-400">{% trans "Password updated. You can log in with your new password." %}</p>
       {% endif %}
       <form method="post" action="/auth/login/" class="mt-6 space-y-4">
         {% csrf_token %}
         <div>
-          <label for="id_email" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
+          <label for="id_email" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{% trans "Email" %}</label>
           <input id="id_email" name="email" type="email" value="{{ email|default:'' }}" placeholder="owner@restaurant.com" required
             class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-slate-900 dark:text-white">
         </div>
         <div>
-          <label for="id_password" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
+          <label for="id_password" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{% trans "Password" %}</label>
           <input id="id_password" name="password" type="password" placeholder="••••••••" required
             class="input-field w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-slate-900 dark:text-white">
         </div>
-        <button type="submit" class="btn-primary w-full">Login</button>
+        <button type="submit" class="btn-primary w-full">{% trans "Login" %}</button>
         <p class="text-center text-sm text-slate-600 dark:text-slate-400">
-          <a href="{% url 'forgot_password' %}" class="font-medium text-primary-600 hover:underline">Forgot password?</a>
+          <a href="{% url 'forgot_password' %}" class="font-medium text-primary-600 hover:underline">{% trans "Forgot password?" %}</a>
         </p>
       </form>
-      <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">No account? <a href="{% url 'register' %}" class="font-semibold text-primary-600 hover:underline">Register</a></p>
+      <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">{% trans "No account?" %} <a href="{% url 'register' %}" class="font-semibold text-primary-600 hover:underline">{% trans "Register" %}</a></p>
     </div>
   </div>
 </section>

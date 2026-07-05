@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Menu Items | Panel{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Menu Items" %} | {% trans "Panel" %}{% endblock %}
 {% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 
@@ -7,14 +8,14 @@
 <section class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=menu_items_crumbs %}
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Menu Items</h1>
-    <a href="{% url 'panel_menu_item_new' %}" class="btn-primary">New item</a>
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">{% trans "Menu Items" %}</h1>
+    <a href="{% url 'panel_menu_item_new' %}" class="btn-primary">{% trans "New item" %}</a>
   </div>
 
   <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    <input class="input-field" placeholder="Search items...">
+    <input class="input-field" placeholder="{% trans 'Search items...' %}">
     <select class="input-field">
-      <option value="">All categories</option>
+      <option value="">{% trans "All categories" %}</option>
       {% for category in categories %}
         <option value="{{ category.slug }}">{{ category.name }}</option>
       {% endfor %}
@@ -28,8 +29,8 @@
         <h2 class="mt-4 font-semibold text-slate-900">{{ item.name }}</h2>
         <p class="text-sm text-slate-500">${{ item.price }} · {{ item.category_slug }}</p>
         <div class="mt-4 flex gap-2">
-          <a href="{% url 'panel_menu_item_edit' item.id %}" class="btn-secondary px-4 py-2">Edit</a>
-          <button class="btn-tertiary" type="button">Delete</button>
+          <a href="{% url 'panel_menu_item_edit' item.id %}" class="btn-secondary px-4 py-2">{% trans "Edit" %}</a>
+          <button class="btn-tertiary" type="button">{% trans "Delete" %}</button>
         </div>
       </article>
     {% endfor %}

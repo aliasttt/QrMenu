@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Checkout | {{ restaurant.name }}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Checkout" %} | {{ restaurant.name }}{% endblock %}
 {% block footer %}{% endblock %}
 
 {% block content %}
@@ -8,49 +9,49 @@
   class="container mx-auto px-4 py-10 sm:px-6 lg:px-8"
 >
   <header class="mb-8" data-reveal>
-    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Checkout</h1>
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">{% trans "Checkout" %}</h1>
     <p class="mt-2 text-slate-600">{{ restaurant.name }} · {{ restaurant.address }}</p>
   </header>
 
   <div class="grid gap-8 lg:grid-cols-3">
     <form class="space-y-6 lg:col-span-2">
       <div class="card-soft" data-reveal data-delay="50">
-        <h2 class="text-lg font-semibold text-slate-900">Customer Info</h2>
+        <h2 class="text-lg font-semibold text-slate-900">{% trans "Customer Info" %}</h2>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          {% include "partials/form_fields.html" with label="Full Name" name="full_name" placeholder="John Doe" %}
-          {% include "partials/form_fields.html" with label="Phone" name="phone" placeholder="+1 555 000 1122" %}
-          <div class="sm:col-span-2">{% include "partials/form_fields.html" with label="Email" name="email" field_type="email" placeholder="john@example.com" %}</div>
+          {% include "partials/form_fields.html" with label=_("Full Name") name="full_name" placeholder=_("John Doe") %}
+          {% include "partials/form_fields.html" with label=_("Phone") name="phone" placeholder="+1 555 000 1122" %}
+          <div class="sm:col-span-2">{% include "partials/form_fields.html" with label=_("Email") name="email" field_type="email" placeholder="john@example.com" %}</div>
         </div>
       </div>
 
       <div class="card-soft" data-reveal data-delay="100">
-        <h2 class="text-lg font-semibold text-slate-900">Address</h2>
+        <h2 class="text-lg font-semibold text-slate-900">{% trans "Address" %}</h2>
         <div class="mt-4 space-y-4">
-          {% include "partials/form_fields.html" with label="Street Address" name="street" placeholder="Street, building, unit" %}
+          {% include "partials/form_fields.html" with label=_("Street Address") name="street" placeholder=_("Street, building, unit") %}
           <div class="grid gap-4 sm:grid-cols-3">
-            {% include "partials/form_fields.html" with label="City" name="city" %}
-            {% include "partials/form_fields.html" with label="ZIP" name="zip" %}
-            {% include "partials/form_fields.html" with label="Country" name="country" value="USA" %}
+            {% include "partials/form_fields.html" with label=_("City") name="city" %}
+            {% include "partials/form_fields.html" with label=_("ZIP") name="zip" %}
+            {% include "partials/form_fields.html" with label=_("Country") name="country" value="USA" %}
           </div>
-          {% include "partials/form_fields.html" with label="Delivery Notes" name="notes" field_type="textarea" placeholder="Optional note for delivery driver" %}
+          {% include "partials/form_fields.html" with label=_("Delivery Notes") name="notes" field_type="textarea" placeholder=_("Optional note for delivery driver") %}
         </div>
       </div>
 
       <div class="card-soft" data-reveal data-delay="150">
-        <h2 class="text-lg font-semibold text-slate-900">Payment Method</h2>
+        <h2 class="text-lg font-semibold text-slate-900">{% trans "Payment Method" %}</h2>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          {% include "partials/form_fields.html" with label="Card Number" name="card_number" placeholder="4242 4242 4242 4242" %}
-          {% include "partials/form_fields.html" with label="Card Holder" name="card_holder" placeholder="Name on card" %}
-          {% include "partials/form_fields.html" with label="Expiry" name="expiry" placeholder="MM / YY" %}
-          {% include "partials/form_fields.html" with label="CVC" name="cvc" placeholder="123" %}
+          {% include "partials/form_fields.html" with label=_("Card Number") name="card_number" placeholder="4242 4242 4242 4242" %}
+          {% include "partials/form_fields.html" with label=_("Card Holder") name="card_holder" placeholder=_("Name on card") %}
+          {% include "partials/form_fields.html" with label=_("Expiry") name="expiry" placeholder="MM / YY" %}
+          {% include "partials/form_fields.html" with label=_("CVC") name="cvc" placeholder="123" %}
         </div>
       </div>
 
-      <button class="btn-primary w-full sm:w-auto" type="button">Place Order</button>
+      <button class="btn-primary w-full sm:w-auto" type="button">{% trans "Place Order" %}</button>
     </form>
 
     <aside class="card-soft h-fit lg:sticky lg:top-24" data-reveal data-delay="200">
-      <h2 class="text-lg font-semibold text-slate-900">Order Summary</h2>
+      <h2 class="text-lg font-semibold text-slate-900">{% trans "Order Summary" %}</h2>
       <ul class="mt-4 space-y-3">
         <template x-for="item in items" :key="item.id">
           <li class="flex items-center justify-between text-sm">
@@ -61,7 +62,7 @@
       </ul>
       <hr class="my-4 border-slate-200">
       <div class="flex items-center justify-between text-base font-semibold text-slate-900">
-        <span>Subtotal</span>
+        <span>{% trans "Subtotal" %}</span>
         <span>$<span x-text="subtotal.toFixed(2)"></span></span>
       </div>
     </aside>

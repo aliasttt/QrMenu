@@ -1,84 +1,83 @@
 {% extends "base.html" %}
-{% block title %}Panel | {{ restaurant_name|default:"Dashboard" }}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Panel" %} | {{ restaurant_name|default:_("Dashboard") }}{% endblock %}
 {% block navbar %}{% include "partials/panel_navbar_simple.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 
 {% block content %}
 <section class="container mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
   <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-    {% if restaurant_name %}{{ restaurant_name }}{% else %}Panel{% endif %}
+    {% if restaurant_name %}{{ restaurant_name }}{% else %}{% trans "Panel" %}{% endif %}
   </h1>
-  <p class="mt-1 text-slate-600 dark:text-slate-400">Payment, plan and app access. Use the app for orders, menu and settings.</p>
+  <p class="mt-1 text-slate-600 dark:text-slate-400">{% trans "Payment, plan and app access. Use the app for orders, menu and settings." %}</p>
 
   {% if not admin_id %}
   <div class="mt-8 rounded-2xl border-2 border-amber-300 bg-amber-50 p-6 dark:border-amber-600 dark:bg-amber-900/20">
-    <p class="text-amber-800 dark:text-amber-200">Open this page with your panel link (e.g. /panel/?admin_id=...) or log in from the app.</p>
-    <a href="{% url 'register' %}" class="btn-primary mt-4 inline-block rounded-xl px-4 py-2.5 font-medium">Register</a>
-    <a href="{% url 'login' %}" class="mt-4 ml-3 inline-block rounded-xl border-2 border-slate-400 bg-white px-4 py-2.5 font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Login</a>
+    <p class="text-amber-800 dark:text-amber-200">{% trans "Open this page with your panel link (e.g. /panel/?admin_id=...) or log in from the app." %}</p>
+    <a href="{% url 'register' %}" class="btn-primary mt-4 inline-block rounded-xl px-4 py-2.5 font-medium">{% trans "Register" %}</a>
+    <a href="{% url 'login' %}" class="mt-4 ml-3 inline-block rounded-xl border-2 border-slate-400 bg-white px-4 py-2.5 font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">{% trans "Login" %}</a>
   </div>
   {% else %}
 
-  <!-- Plan & Payment -->
   <div class="mt-8 space-y-6">
     <div class="rounded-2xl border-2 border-slate-300 bg-white p-6 shadow-sm dark:border-slate-600 dark:bg-slate-800/80">
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Plan & payment</h2>
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{% trans "Plan & payment" %}</h2>
       <div class="mt-4 space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-slate-600 dark:text-slate-400">Status</span>
+          <span class="text-slate-600 dark:text-slate-400">{% trans "Status" %}</span>
           {% if plan_active %}
-            <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900/40 dark:text-green-300">Active</span>
+            <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900/40 dark:text-green-300">{% trans "Active" %}</span>
           {% else %}
-            <span class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800 dark:bg-red-900/40 dark:text-red-300">Expired</span>
+            <span class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800 dark:bg-red-900/40 dark:text-red-300">{% trans "Expired" %}</span>
           {% endif %}
         </div>
         {% if trial_active %}
           <div class="flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400">Type</span>
-            <span class="text-slate-900 dark:text-white">Free trial</span>
+            <span class="text-slate-600 dark:text-slate-400">{% trans "Type" %}</span>
+            <span class="text-slate-900 dark:text-white">{% trans "Free trial" %}</span>
           </div>
         {% elif subscription_active %}
           <div class="flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400">Type</span>
-            <span class="text-slate-900 dark:text-white">Subscription</span>
+            <span class="text-slate-600 dark:text-slate-400">{% trans "Type" %}</span>
+            <span class="text-slate-900 dark:text-white">{% trans "Subscription" %}</span>
           </div>
         {% endif %}
         {% if expires_at %}
           <div class="flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400">Expires</span>
+            <span class="text-slate-600 dark:text-slate-400">{% trans "Expires" %}</span>
             <span class="text-slate-900 dark:text-white">{{ expires_at|date:"d M Y" }}</span>
           </div>
         {% endif %}
         {% if not plan_active and subscribe_url %}
-          <a href="{{ subscribe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">Subscribe to continue</a>
+          <a href="{{ subscribe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">{% trans "Subscribe to continue" %}</a>
         {% endif %}
       </div>
     </div>
 
     <div class="rounded-2xl border-2 border-slate-300 bg-white p-6 shadow-sm dark:border-slate-600 dark:bg-slate-800/80">
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Stripe</h2>
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{% trans "Stripe" %}</h2>
       <div class="mt-4">
         {% if stripe_connected %}
           <p class="flex items-center gap-2 text-green-700 dark:text-green-400">
             <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-            Connected – you can receive customer payments.
+            {% trans "Connected – you can receive customer payments." %}
           </p>
         {% elif subscription_active and connect_stripe_url %}
-          <p class="text-slate-600 dark:text-slate-400">To accept online payments from your digital menu, you need to connect Stripe. Click below to complete setup.</p>
-          <a href="{{ connect_stripe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">Connect Stripe</a>
+          <p class="text-slate-600 dark:text-slate-400">{% trans "To accept online payments from your digital menu, you need to connect Stripe. Click below to complete setup." %}</p>
+          <a href="{{ connect_stripe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">{% trans "Connect Stripe" %}</a>
         {% else %}
-          <p class="text-slate-600 dark:text-slate-400">If you want your customers' online payments to be processed from the digital menu, pay 200 Euros now to upgrade your plan.</p>
+          <p class="text-slate-600 dark:text-slate-400">{% trans "If you want your customers' online payments to be processed from the digital menu, pay 200 Euros now to upgrade your plan." %}</p>
           {% if subscribe_url %}
-            <a href="{{ subscribe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">Start Plan</a>
+            <a href="{{ subscribe_url }}" class="btn-primary mt-4 inline-block w-full rounded-xl px-4 py-3 text-center font-semibold">{% trans "Start Plan" %}</a>
           {% endif %}
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- App download -->
   <div class="mt-10 rounded-2xl border-2 border-slate-300 bg-slate-100 p-6 dark:border-slate-600 dark:bg-slate-800/50">
-    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Download the app</h2>
-    <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage orders, menu and settings from your phone.</p>
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{% trans "Download the app" %}</h2>
+    <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{% trans "Manage orders, menu and settings from your phone." %}</p>
     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
       {% if app_android_url %}
       <a href="{{ app_android_url }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-700 bg-slate-800 px-5 py-3.5 font-medium text-white hover:bg-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:hover:bg-slate-600">

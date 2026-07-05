@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}Settings | Panel{% endblock %}
+{% load static i18n %}
+{% block title %}{% trans "Settings" %} | {% trans "Panel" %}{% endblock %}
 {% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 
 {% block content %}
 <section class="container mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=settings_crumbs %}
-  <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Restaurant Settings</h1>
-  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Update your restaurant profile and map location. Changes are saved to your account.</p>
+  <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">{% trans "Restaurant Settings" %}</h1>
+  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{% trans "Update your restaurant profile and map location. Changes are saved to your account." %}</p>
 
   {% if not restaurant %}
   <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-100">
-    <p class="font-medium">No restaurant linked to this session.</p>
-    <p class="mt-2 text-sm opacity-90">Sign in with your restaurant owner account or open this page from your dashboard with a valid link.</p>
-    <a href="/auth/login/" class="mt-4 inline-flex rounded-lg bg-amber-800 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-900">Sign in</a>
+    <p class="font-medium">{% trans "No restaurant linked to this session." %}</p>
+    <p class="mt-2 text-sm opacity-90">{% trans "Sign in with your restaurant owner account or open this page from your dashboard with a valid link." %}</p>
+    <a href="/auth/login/" class="mt-4 inline-flex rounded-lg bg-amber-800 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-900">{% trans "Sign in" %}</a>
   </div>
   {% else %}
 
@@ -24,38 +24,38 @@
 
   <form id="restaurant-settings-form" class="mt-8 space-y-10" onsubmit="return false;">
     <div class="card-panel space-y-5">
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">General</h2>
-      {% include "partials/form_fields.html" with label="Restaurant name" name="settings-name" value=restaurant.name %}
-      {% include "partials/form_fields.html" with label="Phone" name="settings-phone" value=restaurant.phone %}
-      {% include "partials/form_fields.html" with label="Address" name="settings-address" value=restaurant.address %}
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{% trans "General" %}</h2>
+      {% include "partials/form_fields.html" with label=_("Restaurant name") name="settings-name" value=restaurant.name %}
+      {% include "partials/form_fields.html" with label=_("Phone") name="settings-phone" value=restaurant.phone %}
+      {% include "partials/form_fields.html" with label=_("Address") name="settings-address" value=restaurant.address %}
       <div class="grid gap-4 sm:grid-cols-2">
-        {% include "partials/form_fields.html" with label="City" name="settings-city" value=restaurant.city %}
-        {% include "partials/form_fields.html" with label="Postal code" name="settings-postal" value=restaurant.postal_code %}
+        {% include "partials/form_fields.html" with label=_("City") name="settings-city" value=restaurant.city %}
+        {% include "partials/form_fields.html" with label=_("Postal code") name="settings-postal" value=restaurant.postal_code %}
       </div>
-      {% include "partials/form_fields.html" with label="Country" name="settings-country" value=restaurant.country %}
+      {% include "partials/form_fields.html" with label=_("Country") name="settings-country" value=restaurant.country %}
     </div>
 
     <div class="card-panel space-y-4">
       <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Restaurant location</h2>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Search for an address or click the map to set your pin. Drag the marker to adjust.</p>
+          <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{% trans "Restaurant location" %}</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400">{% trans "Search for an address or click the map to set your pin. Drag the marker to adjust." %}</p>
         </div>
       </div>
 
       {% if not google_maps_api_key %}
       <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-900/20 dark:text-rose-200">
-        Google Maps is not configured. Set <code class="rounded bg-rose-100 px-1 dark:bg-rose-800">GOOGLE_MAPS_API_KEY</code> in the server environment to enable the map.
+        {% blocktrans %}Google Maps is not configured. Set <code class="rounded bg-rose-100 px-1 dark:bg-rose-800">GOOGLE_MAPS_API_KEY</code> in the server environment to enable the map.{% endblocktrans %}
       </div>
       {% endif %}
 
       <div class="relative">
-        <label for="location-search" class="label-field">Search address</label>
-        <input id="location-search" type="text" autocomplete="off" placeholder="Start typing an address…" class="input-field mt-1.5" {% if not google_maps_api_key %}disabled{% endif %}>
+        <label for="location-search" class="label-field">{% trans "Search address" %}</label>
+        <input id="location-search" type="text" autocomplete="off" placeholder="{% trans 'Start typing an address…' %}" class="input-field mt-1.5" {% if not google_maps_api_key %}disabled{% endif %}>
       </div>
 
       <div id="location-map-loading" class="flex min-h-[220px] items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 text-sm text-slate-500 dark:border-slate-600 dark:bg-slate-800 {% if google_maps_api_key %}flex{% else %}hidden{% endif %}">
-        Loading map…
+        {% trans "Loading map…" %}
       </div>
       <div id="location-map" class="{% if google_maps_api_key %}hidden{% else %}min-h-[120px]{% endif %} min-h-[280px] w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-600"></div>
       <p id="location-map-status" class="text-sm text-slate-500 dark:text-slate-400" role="status"></p>
@@ -64,20 +64,20 @@
 
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
-          <label for="id_latitude" class="label-field">Latitude</label>
+          <label for="id_latitude" class="label-field">{% trans "Latitude" %}</label>
           <input id="id_latitude" type="text" inputmode="decimal" readonly class="input-field mt-1.5 cursor-not-allowed bg-slate-50 dark:bg-slate-800/80" placeholder="—" value="{% if restaurant.latitude is not None %}{{ restaurant.latitude }}{% endif %}">
         </div>
         <div>
-          <label for="id_longitude" class="label-field">Longitude</label>
+          <label for="id_longitude" class="label-field">{% trans "Longitude" %}</label>
           <input id="id_longitude" type="text" inputmode="decimal" readonly class="input-field mt-1.5 cursor-not-allowed bg-slate-50 dark:bg-slate-800/80" placeholder="—" value="{% if restaurant.longitude is not None %}{{ restaurant.longitude }}{% endif %}">
         </div>
       </div>
 
       <div class="flex flex-wrap gap-2">
-        <button type="button" id="btn-use-marker" class="btn-secondary text-sm">Use current marker</button>
-        <button type="button" id="btn-geolocate" class="btn-secondary text-sm">Use my location</button>
-        <button type="button" id="btn-copy-coords" class="btn-secondary text-sm">Copy coordinates</button>
-        <button type="button" id="btn-clear-location" class="rounded-lg border border-rose-300 px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/30">Clear location</button>
+        <button type="button" id="btn-use-marker" class="btn-secondary text-sm">{% trans "Use current marker" %}</button>
+        <button type="button" id="btn-geolocate" class="btn-secondary text-sm">{% trans "Use my location" %}</button>
+        <button type="button" id="btn-copy-coords" class="btn-secondary text-sm">{% trans "Copy coordinates" %}</button>
+        <button type="button" id="btn-clear-location" class="rounded-lg border border-rose-300 px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-900/30">{% trans "Clear location" %}</button>
       </div>
     </div>
 
@@ -88,7 +88,7 @@
     ></div>
 
     <div class="flex flex-wrap items-center gap-3">
-      <button type="button" id="restaurant-settings-save" class="btn-primary">Save changes</button>
+      <button type="button" id="restaurant-settings-save" class="btn-primary">{% trans "Save changes" %}</button>
       <span id="settings-save-status" class="text-sm font-medium text-slate-500 dark:text-slate-400" aria-live="polite"></span>
     </div>
   </form>

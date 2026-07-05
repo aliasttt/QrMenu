@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Categories | Panel{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Categories" %} | {% trans "Panel" %}{% endblock %}
 {% block navbar %}{% include "partials/panel_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 
@@ -7,8 +8,8 @@
 <section x-data="{ showModal: false }" class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
   {% include "partials/breadcrumbs.html" with crumbs=categories_crumbs %}
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Categories</h1>
-    <button @click="showModal = true" class="btn-primary" type="button">New category</button>
+    <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">{% trans "Categories" %}</h1>
+    <button @click="showModal = true" class="btn-primary" type="button">{% trans "New category" %}</button>
   </div>
 
   {% if categories %}
@@ -16,9 +17,9 @@
       <table class="min-w-full text-sm">
         <thead class="bg-slate-50">
           <tr>
-            <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Name</th>
-            <th class="px-4 py-3.5 text-left font-semibold text-slate-700">Slug</th>
-            <th class="px-4 py-3.5 text-right font-semibold text-slate-700">Actions</th>
+            <th class="px-4 py-3.5 text-left font-semibold text-slate-700">{% trans "Name" %}</th>
+            <th class="px-4 py-3.5 text-left font-semibold text-slate-700">{% trans "Slug" %}</th>
+            <th class="px-4 py-3.5 text-right font-semibold text-slate-700">{% trans "Actions" %}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
@@ -26,16 +27,16 @@
             <tr class="transition hover:bg-slate-50/80">
               <td class="px-4 py-3.5 font-medium text-slate-900">{{ category.name }}</td>
               <td class="px-4 py-3.5 text-slate-500">{{ category.slug }}</td>
-              <td class="px-4 py-3.5 text-right"><button class="btn-tertiary" type="button">Delete</button></td>
+              <td class="px-4 py-3.5 text-right"><button class="btn-tertiary" type="button">{% trans "Delete" %}</button></td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   {% else %}
-    {% include "partials/empty_state.html" with title="No categories yet" description="Create your first category to organize menu items." cta_label="Create category" cta_url="#" %}
+    {% include "partials/empty_state.html" with title=_("No categories yet") description=_("Create your first category to organize menu items.") cta_label=_("Create category") cta_url="#" %}
   {% endif %}
 
-  {% include "partials/modal.html" with modal_title="Create category" modal_content="Use this Alpine-powered modal to add category creation form later." %}
+  {% include "partials/modal.html" with modal_title=_("Create category") modal_content=_("Use this Alpine-powered modal to add category creation form later.") %}
 </section>
 {% endblock %}
