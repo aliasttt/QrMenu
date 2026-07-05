@@ -29,7 +29,7 @@
 
 {% block content %}
 {{ cart_items|json_script:"initial-cart" }}
-<script id="order-options" type="application/json">{"has_delivery": {{ order_options.has_delivery|yesno:"true,false" }}, "allow_payment_cash": {{ order_options.allow_payment_cash|yesno:"true,false" }}, "allow_payment_online": {{ order_options.allow_payment_online|yesno:"true,false" }}, "is_within_hours": {{ is_within_hours|yesno:"true,false" }}, "reservation_enabled": {{ order_options.reservation_enabled|yesno:"true,false" }}}</script>
+<script id="order-options" type="application/json">{"has_delivery": {{ order_options.has_delivery|yesno:"true,false" }}, "allow_payment_cash": {{ order_options.allow_payment_cash|yesno:"true,false" }}, "allow_payment_online": {{ order_options.allow_payment_online|yesno:"true,false" }}, "online_ordering_enabled": {{ order_options.online_ordering_enabled|yesno:"true,false" }}, "is_within_hours": {{ is_within_hours|yesno:"true,false" }}, "reservation_enabled": {{ order_options.reservation_enabled|yesno:"true,false" }}}</script>
 <section class="restaurant-menu-page py-6 md:py-8 overflow-x-hidden max-w-full {% if theme_slug %}menu-root {{ theme_slug }}{% endif %}" data-restaurant-id="{{ restaurant.id }}" data-api-base="/api/business-menu" data-reservation-url="{{ reservation_url|default:'' }}" x-data="{
       activeCategory: 'all',
       search: '',
@@ -517,6 +517,9 @@
                     <template x-if="orderOptions.has_delivery && canOrderNow()">
                       <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                     </template>
+                    <template x-if="orderOptions.online_ordering_enabled && canOrderNow()">
+                      <button @click="serviceType = 'delivery'; paymentMethod = 'online'" :class="serviceType === 'delivery' && paymentMethod === 'online' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Online Ordering" %}</button>
+                    </template>
                     <template x-if="orderOptions.reservation_enabled">
                       <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Reservation" %}</button>
                     </template>
@@ -644,6 +647,9 @@
                 <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Pickup" %}</button>
                 <template x-if="orderOptions.has_delivery && canOrderNow()">
                   <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Delivery" %}</button>
+                </template>
+                <template x-if="orderOptions.online_ordering_enabled && canOrderNow()">
+                  <button @click="serviceType = 'delivery'; paymentMethod = 'online'" :class="serviceType === 'delivery' && paymentMethod === 'online' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Online Ordering" %}</button>
                 </template>
                 <template x-if="orderOptions.reservation_enabled">
                   <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Reservation" %}</button>

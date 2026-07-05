@@ -498,16 +498,21 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
     )
     admin = getattr(restaurant, "admin", None)
     stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
-    allow_online = (
+    configured_online = bool(
         getattr(settings_obj, "allow_payment_online", True)
-        and stripe_ok
-        and stripe_connected
+        or getattr(settings_obj, "online_payment_enabled", False)
+        or getattr(settings_obj, "card_payment_enabled", False)
     )
-    delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
+    allow_online = configured_online and stripe_ok and stripe_connected
+    delivery_enabled = bool(
+        getattr(settings_obj, "has_delivery", False)
+        or getattr(settings_obj, "delivery_enabled", False)
+    )
     order_options = {
         "has_delivery": delivery_enabled,
         "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
         "allow_payment_online": allow_online,
+        "online_ordering_enabled": bool(delivery_enabled and allow_online),
         "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
     }
     has_location = bool(getattr(restaurant, "has_map_location", False))

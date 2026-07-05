@@ -2348,14 +2348,27 @@ def menu_qr_display_view(request, token):
 
         restaurant_hours = getattr(settings_obj, "opening_hours", None) or getattr(restaurant, "hours", None) or ""
         is_within_hours = _is_within_opening_hours(settings_obj)
-        delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
+        delivery_enabled = bool(
+            getattr(settings_obj, "has_delivery", False)
+            or getattr(settings_obj, "delivery_enabled", False)
+        )
         admin = getattr(restaurant, "admin", None)
         stripe_ok = bool(getattr(settings, "STRIPE_SECRET_KEY", None) and getattr(settings, "STRIPE_PUBLISHABLE_KEY", None))
         stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+        allow_online = bool(
+            (
+                getattr(settings_obj, "allow_payment_online", True)
+                or getattr(settings_obj, "online_payment_enabled", False)
+                or getattr(settings_obj, "card_payment_enabled", False)
+            )
+            and stripe_ok
+            and stripe_connected
+        )
         order_options = {
             "has_delivery": delivery_enabled,
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
-            "allow_payment_online": bool(getattr(settings_obj, "allow_payment_online", True) and stripe_ok and stripe_connected),
+            "allow_payment_online": allow_online,
+            "online_ordering_enabled": bool(delivery_enabled and allow_online),
             "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
         }
         cart_items = list(request.session.get(_cart_key(restaurant.id), []))
@@ -2963,12 +2976,21 @@ class RestaurantOrderOptionsView(APIView):
             },
         )
         is_within_hours = _is_within_opening_hours(settings_obj)
-        delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
+        delivery_enabled = bool(
+            getattr(settings_obj, "has_delivery", False)
+            or getattr(settings_obj, "delivery_enabled", False)
+        )
+        allow_online = bool(
+            getattr(settings_obj, "allow_payment_online", True)
+            or getattr(settings_obj, "online_payment_enabled", False)
+            or getattr(settings_obj, "card_payment_enabled", False)
+        )
         return Response({
             "restaurant_id": restaurant.id,
             "has_delivery": delivery_enabled,
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
-            "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+            "allow_payment_online": allow_online,
+            "online_ordering_enabled": bool(delivery_enabled and allow_online),
             "is_within_hours": is_within_hours,
             "delivery_order_available": bool(delivery_enabled and is_within_hours),
             "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
@@ -3050,7 +3072,10 @@ class OrderCreateView(APIView):
                 {"detail": "Invalid service_type. Use dine_in, pickup, or delivery."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
+        delivery_enabled = bool(
+            getattr(settings_obj, "has_delivery", False)
+            or getattr(settings_obj, "delivery_enabled", False)
+        )
         if service_type == "delivery" and not delivery_enabled:
             return Response(
                 {"detail": "Delivery is not available for this restaurant."},
@@ -3066,7 +3091,12 @@ class OrderCreateView(APIView):
                 {"detail": "Cash payment is not allowed."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if payment_method == "online" and not getattr(settings_obj, "allow_payment_online", True):
+        allow_online = bool(
+            getattr(settings_obj, "allow_payment_online", True)
+            or getattr(settings_obj, "online_payment_enabled", False)
+            or getattr(settings_obj, "card_payment_enabled", False)
+        )
+        if payment_method == "online" and not allow_online:
             return Response(
                 {"detail": "Online payment is not allowed."},
                 status=status.HTTP_400_BAD_REQUEST,
