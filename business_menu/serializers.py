@@ -1165,6 +1165,9 @@ class OnlineOrderingSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = RestaurantSettings
         fields = (
+            "has_delivery",
+            "allow_payment_cash",
+            "allow_payment_online",
             "enabled",
             "min_order_amount",
             "estimated_delivery_time",
@@ -1187,3 +1190,44 @@ class OnlineOrderingSettingsSerializer(serializers.ModelSerializer):
             "card_payment_enabled",
             "cash_payment_enabled",
         )
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        update_fields = []
+
+        if "delivery_enabled" in validated_data and instance.has_delivery != instance.delivery_enabled:
+            instance.has_delivery = instance.delivery_enabled
+            update_fields.append("has_delivery")
+        if "online_payment_enabled" in validated_data and instance.allow_payment_online != instance.online_payment_enabled:
+            instance.allow_payment_online = instance.online_payment_enabled
+            update_fields.append("allow_payment_online")
+        if (
+            "card_payment_enabled" in validated_data
+            and "online_payment_enabled" not in validated_data
+            and "allow_payment_online" not in validated_data
+            and instance.allow_payment_online != instance.card_payment_enabled
+        ):
+            instance.allow_payment_online = instance.card_payment_enabled
+            update_fields.append("allow_payment_online")
+        if "cash_payment_enabled" in validated_data and instance.allow_payment_cash != instance.cash_payment_enabled:
+            instance.allow_payment_cash = instance.cash_payment_enabled
+            update_fields.append("allow_payment_cash")
+
+        if "has_delivery" in validated_data and instance.delivery_enabled != instance.has_delivery:
+            instance.delivery_enabled = instance.has_delivery
+            update_fields.append("delivery_enabled")
+        if "allow_payment_online" in validated_data:
+            if instance.online_payment_enabled != instance.allow_payment_online:
+                instance.online_payment_enabled = instance.allow_payment_online
+                update_fields.append("online_payment_enabled")
+            if instance.card_payment_enabled != instance.allow_payment_online:
+                instance.card_payment_enabled = instance.allow_payment_online
+                update_fields.append("card_payment_enabled")
+        if "allow_payment_cash" in validated_data and instance.cash_payment_enabled != instance.allow_payment_cash:
+            instance.cash_payment_enabled = instance.allow_payment_cash
+            update_fields.append("cash_payment_enabled")
+
+        if update_fields:
+            update_fields.append("updated_at")
+            instance.save(update_fields=list(dict.fromkeys(update_fields)))
+        return instance

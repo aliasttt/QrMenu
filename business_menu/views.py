@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.db import IntegrityError
+from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.password_validation import validate_password
@@ -66,6 +67,8 @@ from .models import (
     RestaurantSettings,
     ReservationSettings,
     Order,
+    Customer,
+    Payment,
     Reservation,
 )
 from accounts.models import PasswordResetCode
@@ -2343,7 +2346,19 @@ def menu_qr_display_view(request, token):
                 'image': package_image,
             })
 
-        restaurant_hours = getattr(restaurant, "hours", None) or ""
+        restaurant_hours = getattr(settings_obj, "opening_hours", None) or getattr(restaurant, "hours", None) or ""
+        is_within_hours = _is_within_opening_hours(settings_obj)
+        delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
+        admin = getattr(restaurant, "admin", None)
+        stripe_ok = bool(getattr(settings, "STRIPE_SECRET_KEY", None) and getattr(settings, "STRIPE_PUBLISHABLE_KEY", None))
+        stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+        order_options = {
+            "has_delivery": delivery_enabled,
+            "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
+            "allow_payment_online": bool(getattr(settings_obj, "allow_payment_online", True) and stripe_ok and stripe_connected),
+            "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
+        }
+        cart_items = list(request.session.get(_cart_key(restaurant.id), []))
         return render(
             request,
             'pages/restaurant_menu.html',
@@ -2357,6 +2372,12 @@ def menu_qr_display_view(request, token):
                 'theme_slug': theme_slug,
                 'settings': settings_obj,
                 'packages': packages_list,
+                'cart_items': cart_items,
+                'order_options': order_options,
+                'is_within_hours': is_within_hours,
+                'scheduled_for': "",
+                'schedule_url': f"/restaurants/{restaurant.id}/schedule/",
+                'reservation_url': f"/restaurants/{restaurant.id}/reservation/",
                 'is_qr_menu': True,
                 'token': token,
                 'menu_url': request.build_absolute_uri(request.path),
@@ -2941,11 +2962,15 @@ class RestaurantOrderOptionsView(APIView):
                 "max_guests_per_reservation": 10,
             },
         )
+        is_within_hours = _is_within_opening_hours(settings_obj)
+        delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
         return Response({
             "restaurant_id": restaurant.id,
-            "has_delivery": getattr(settings_obj, "has_delivery", False),
+            "has_delivery": delivery_enabled,
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
             "allow_payment_online": getattr(settings_obj, "allow_payment_online", True),
+            "is_within_hours": is_within_hours,
+            "delivery_order_available": bool(delivery_enabled and is_within_hours),
             "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
             "total_tables": getattr(settings_obj, "total_tables", 10),
             "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
@@ -3025,7 +3050,8 @@ class OrderCreateView(APIView):
                 {"detail": "Invalid service_type. Use dine_in, pickup, or delivery."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if service_type == "delivery" and not getattr(settings_obj, "has_delivery", False):
+        delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
+        if service_type == "delivery" and not delivery_enabled:
             return Response(
                 {"detail": "Delivery is not available for this restaurant."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -3155,6 +3181,108 @@ class OrderListView(APIView):
         return Response({"orders": out}, status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_exempt, name="dispatch")
+class FinalizePaidOrderView(APIView):
+    """
+    Final customer details step after Stripe succeeds.
+    The order becomes visible to the restaurant only after this step/webhook marks it paid.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+
+        data = request.data or {}
+        order_id = data.get("order_id")
+        payment_intent_id = (data.get("payment_intent_id") or "").strip()
+        first_name = (data.get("first_name") or "").strip()
+        last_name = (data.get("last_name") or "").strip()
+        address = (data.get("address") or "").strip()
+        phone = (data.get("phone") or "").strip()
+
+        if not all([order_id, payment_intent_id, first_name, last_name, address, phone]):
+            return Response(
+                {"detail": "order_id, payment_intent_id, first_name, last_name, address, and phone are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            order = Order.objects.get(
+                pk=int(order_id),
+                restaurant=restaurant,
+                payment_method=Order.PaymentMethod.ONLINE,
+                stripe_payment_intent_id=payment_intent_id,
+            )
+        except (Order.DoesNotExist, ValueError, TypeError):
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if str(order.service_type) != Order.ServiceType.DELIVERY:
+            return Response(
+                {"detail": "Customer delivery details are only required for delivery orders."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        payment_succeeded = str(order.status) == Order.Status.PAID
+        charge_id = ""
+        if getattr(settings, "STRIPE_SECRET_KEY", None):
+            try:
+                import stripe
+                stripe.api_key = settings.STRIPE_SECRET_KEY
+                pi = stripe.PaymentIntent.retrieve(payment_intent_id)
+                payment_succeeded = pi.get("status") == "succeeded"
+                latest_charge = pi.get("latest_charge")
+                charge_id = latest_charge if isinstance(latest_charge, str) else ""
+            except Exception as e:
+                logger.warning("Could not verify PaymentIntent %s: %s", payment_intent_id, e)
+
+        if not payment_succeeded:
+            return Response(
+                {"detail": "Payment has not been confirmed yet."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        full_name = " ".join([first_name, last_name]).strip()
+        with transaction.atomic():
+            customer, _ = Customer.objects.update_or_create(
+                restaurant=restaurant,
+                phone=phone,
+                defaults={
+                    "name": full_name,
+                    "notes": f"Delivery address: {address}",
+                },
+            )
+            original_notes = (order.notes or "").strip()
+            delivery_note = f"Customer: {full_name}\nPhone: {phone}\nDelivery address: {address}"
+            order.customer = customer
+            order.notes = f"{original_notes}\n\n{delivery_note}".strip() if original_notes else delivery_note
+            order.status = Order.Status.PAID
+            order.save(update_fields=["customer", "notes", "status", "updated_at"])
+            Payment.objects.update_or_create(
+                restaurant=restaurant,
+                order=order,
+                stripe_payment_intent_id=payment_intent_id,
+                defaults={
+                    "stripe_charge_id": charge_id or None,
+                    "amount": order.total_amount,
+                    "currency": order.currency or "EUR",
+                    "status": Payment.Status.SUCCEEDED,
+                },
+            )
+
+        return Response(
+            {
+                "order_id": order.id,
+                "status": order.status,
+                "total_amount": str(order.total_amount),
+                "currency": order.currency or "EUR",
+                "tracking_url": f"/restaurants/{restaurant.id}/menu/",
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class AdminOrderListView(APIView):
     """
     لیست سفارشات رستوران برای اپ پنل ادمین.
@@ -3176,7 +3304,11 @@ class AdminOrderListView(APIView):
                 {"detail": "Restaurant not found for this admin."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        orders = Order.objects.filter(restaurant=restaurant).order_by("-created_at")[:200]
+        orders = Order.objects.filter(restaurant=restaurant).exclude(
+            payment_method=Order.PaymentMethod.ONLINE,
+            service_type=Order.ServiceType.DELIVERY,
+            customer__isnull=True,
+        ).order_by("-created_at")[:200]
         out = []
         for o in orders:
             out.append({
@@ -3218,9 +3350,13 @@ class AdminOrderNewListView(APIView):
                 {"detail": "Restaurant not found for this admin."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        orders = Order.objects.filter(
-            restaurant=restaurant,
-            status=Order.Status.PENDING,
+        orders = Order.objects.filter(restaurant=restaurant).filter(
+            Q(status=Order.Status.PENDING, payment_method=Order.PaymentMethod.CASH)
+            | Q(status=Order.Status.PAID, payment_method=Order.PaymentMethod.ONLINE)
+        ).exclude(
+            payment_method=Order.PaymentMethod.ONLINE,
+            service_type=Order.ServiceType.DELIVERY,
+            customer__isnull=True,
         ).order_by("-created_at")[:100]
         out = []
         for o in orders:

@@ -160,6 +160,7 @@
       canGoToConfirm() {
         if (this.cartItems.length === 0) return false;
         if (this.serviceType === 'reservation') return true;
+        if (!this.canOrderNow()) return false;
         if (this.serviceType === 'dine_in' && !String(this.tableNumber || '').trim()) return false;
         return true;
       },
@@ -168,6 +169,10 @@
       },
       async placeOrder() {
         this.orderError = '';
+        if (!this.canOrderNow()) {
+          this.orderError = 'Ordering is only available during opening hours.';
+          return;
+        }
         if (this.serviceType === 'dine_in' && !this.tableNumber.trim()) {
           this.orderError = this.T.tableRequired;
           return;
@@ -509,7 +514,7 @@
                   <div class="flex flex-wrap gap-2">
                     <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Dine In" %}</button>
                     <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Pickup" %}</button>
-                    <template x-if="orderOptions.has_delivery">
+                    <template x-if="orderOptions.has_delivery && canOrderNow()">
                       <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                     </template>
                     <template x-if="orderOptions.reservation_enabled">
@@ -637,7 +642,7 @@
               <div class="flex flex-wrap gap-2">
                 <button @click="serviceType = 'dine_in'" :class="serviceType === 'dine_in' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Dine In" %}</button>
                 <button @click="serviceType = 'pickup'" :class="serviceType === 'pickup' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Pickup" %}</button>
-                <template x-if="orderOptions.has_delivery">
+                <template x-if="orderOptions.has_delivery && canOrderNow()">
                   <button @click="serviceType = 'delivery'" :class="serviceType === 'delivery' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                 </template>
                 <template x-if="orderOptions.reservation_enabled">

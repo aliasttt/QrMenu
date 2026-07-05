@@ -503,8 +503,9 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
         and stripe_ok
         and stripe_connected
     )
+    delivery_enabled = bool(getattr(settings_obj, "has_delivery", False))
     order_options = {
-        "has_delivery": getattr(settings_obj, "has_delivery", False),
+        "has_delivery": delivery_enabled,
         "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
         "allow_payment_online": allow_online,
         "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),

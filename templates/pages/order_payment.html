@@ -36,7 +36,7 @@
         <div id="payment-form-wrap" class="mt-4">
           <form id="payment-form" class="space-y-4">
             {% csrf_token %}
-            <div id="card-element" class="rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-4 min-h-[44px"></div>
+            <div id="card-element" class="rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-4 min-h-[44px]"></div>
             <div id="card-errors" class="text-sm text-red-600 dark:text-red-400 hidden"></div>
             <button type="submit" id="submit-payment" class="w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50">
               {% blocktrans with currency=currency total=total_amount %}Pay {{ currency }} {{ total }}{% endblocktrans %}
@@ -45,7 +45,43 @@
         </div>
         <div id="payment-success" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
           <p class="font-semibold">{% trans "Payment successful." %}</p>
-          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">{% trans "Back to menu" %}</a>
+          {% if order.service_type == "delivery" %}
+          <p class="mt-1 text-sm">{% trans "Please enter your delivery details so the restaurant can receive the order." %}</p>
+          {% else %}
+          <p class="mt-1 text-sm">{% trans "Your order has been sent to the restaurant." %}</p>
+          {% endif %}
+        </div>
+        {% if order.service_type == "delivery" %}
+        <form id="delivery-details-form" class="mt-4 hidden space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+          {% csrf_token %}
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "First name" %}</label>
+              <input name="first_name" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Last name" %}</label>
+              <input name="last_name" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            </div>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Address" %}</label>
+            <textarea name="address" required rows="3" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white"></textarea>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Phone" %}</label>
+            <input name="phone" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+          </div>
+          <p id="delivery-details-error" class="hidden rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+          <button type="submit" id="submit-delivery-details" class="w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50">
+            {% trans "Submit order" %}
+          </button>
+        </form>
+        {% endif %}
+        <div id="order-finalized" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
+          <p class="font-semibold">{% trans "Order sent to the restaurant." %}</p>
+          <p class="mt-1 text-sm">{% trans "You can follow the order status in order tracking." %}</p>
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">{% trans "Order tracking" %}</a>
         </div>
         <div class="mt-6">
           <a href="/restaurants/{{ restaurant.id }}/menu/" class="text-sm text-slate-600 dark:text-slate-400 hover:underline">{% trans "Back to menu" %}</a>
@@ -69,6 +105,10 @@
   var cardErrors = document.getElementById("card-errors");
   var formWrap = document.getElementById("payment-form-wrap");
   var successEl = document.getElementById("payment-success");
+  var detailsForm = document.getElementById("delivery-details-form");
+  var detailsError = document.getElementById("delivery-details-error");
+  var finalizedEl = document.getElementById("order-finalized");
+  var paidPaymentIntentId = "";
   var T = {
     couldNotStart: "{% trans 'Could not start payment.' %}",
     paymentFailed: "{% trans 'Payment failed.' %}",
@@ -120,8 +160,14 @@
         return;
       }
       if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+        paidPaymentIntentId = result.paymentIntent.id || "";
         if (formWrap) formWrap.classList.add("hidden");
         if (successEl) successEl.classList.remove("hidden");
+        if (detailsForm) {
+          detailsForm.classList.remove("hidden");
+        } else if (finalizedEl) {
+          finalizedEl.classList.remove("hidden");
+        }
       }
       submitBtn.disabled = false;
     })
@@ -131,6 +177,54 @@
       submitBtn.disabled = false;
     });
   });
+  if (detailsForm) {
+    detailsForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      var submitDetailsBtn = document.getElementById("submit-delivery-details");
+      if (!paidPaymentIntentId) return;
+      if (submitDetailsBtn) submitDetailsBtn.disabled = true;
+      if (detailsError) detailsError.classList.add("hidden");
+      var fd = new FormData(detailsForm);
+      fetch("/api/business-menu/orders/finalize-paid/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value || ""
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          order_id: orderId,
+          payment_intent_id: paidPaymentIntentId,
+          first_name: fd.get("first_name"),
+          last_name: fd.get("last_name"),
+          address: fd.get("address"),
+          phone: fd.get("phone")
+        })
+      })
+      .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+      .then(function(result) {
+        if (!result.ok) {
+          if (detailsError) {
+            detailsError.textContent = result.data.detail || T.somethingWrong;
+            detailsError.classList.remove("hidden");
+          }
+          if (submitDetailsBtn) submitDetailsBtn.disabled = false;
+          return;
+        }
+        detailsForm.classList.add("hidden");
+        if (successEl) successEl.classList.add("hidden");
+        if (finalizedEl) finalizedEl.classList.remove("hidden");
+      })
+      .catch(function(err) {
+        if (detailsError) {
+          detailsError.textContent = err.message || T.somethingWrong;
+          detailsError.classList.remove("hidden");
+        }
+        if (submitDetailsBtn) submitDetailsBtn.disabled = false;
+      });
+    });
+  }
 })();
 </script>
 {% endif %}
