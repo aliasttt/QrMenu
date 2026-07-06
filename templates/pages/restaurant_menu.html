@@ -162,7 +162,6 @@
         if (this.cartItems.length === 0) return false;
         if (this.serviceType === 'reservation') return true;
         if (!this.canOrderNow()) return false;
-        if (this.serviceType === 'delivery' && !this.orderOptions.allow_payment_online) return false;
         if (this.serviceType === 'dine_in' && !String(this.tableNumber || '').trim()) return false;
         return true;
       },
@@ -177,10 +176,6 @@
         }
         if (this.serviceType === 'delivery') {
           this.paymentMethod = 'online';
-          if (!this.orderOptions.allow_payment_online) {
-            this.orderError = 'Online payment is required for delivery.';
-            return;
-          }
         }
         if (this.serviceType === 'dine_in' && !this.tableNumber.trim()) {
           this.orderError = this.T.tableRequired;
@@ -560,6 +555,16 @@
                       <button @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Online" %}</button>
                     </template>
                   </div>
+                  <template x-if="paymentMethod === 'online' || serviceType === 'delivery'">
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                      <button type="button" @click="paymentProvider = 'stripe'" :class="paymentProvider === 'stripe' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200' : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border px-3 py-2 text-sm font-semibold transition">
+                        Stripe
+                      </button>
+                      <button type="button" @click="paymentProvider = 'paypal'" :class="paymentProvider === 'paypal' ? 'border-amber-400 bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200' : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border px-3 py-2 text-sm font-semibold transition">
+                        PayPal
+                      </button>
+                    </div>
+                  </template>
                 </div>
                 <div>
                   <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">{% trans "Order Note" %}</label>

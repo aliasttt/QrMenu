@@ -26,7 +26,7 @@
 
       <div class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
         <p class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Payment method" %}</p>
-        {% if not stripe_connected or not stripe_configured %}
+        {% if not stripe_accepts_order_payments %}
         <p class="mt-2 text-slate-700 dark:text-slate-300">{% trans "This restaurant does not accept online payment. Please pay by cash when you pick up or dine in." %}</p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a href="/restaurants/{{ restaurant.id }}/menu/" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">{% trans "Back to menu" %}</a>
@@ -60,7 +60,7 @@
     {% endif %}
   </div>
 </div>
-{% if stripe_connected and stripe_configured %}
+{% if stripe_accepts_order_payments %}
 <script>
 (function() {
   var createSessionUrl = "{{ create_checkout_session_url|default:'/api/business-menu/api/create-order-checkout-session/'|escapejs }}";

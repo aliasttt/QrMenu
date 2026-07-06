@@ -355,7 +355,7 @@ class CreateOrderPaymentIntentView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        if not _stripe_enabled():
+        if not getattr(settings, "STRIPE_SECRET_KEY", None):
             return Response(
                 {"success": False, "error": "Stripe is not configured."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -382,11 +382,7 @@ class CreateOrderPaymentIntentView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         admin = getattr(restaurant, "admin", None)
-        if not (admin and getattr(admin, "stripe_account_id", None)):
-            return Response(
-                {"success": False, "error": "This restaurant does not accept online payment."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        stripe_account_id = getattr(admin, "stripe_account_id", None) if admin else None
         if str(order.payment_method) != "online":
             return Response(
                 {"success": False, "error": "This order is not for online payment."},
@@ -407,13 +403,17 @@ class CreateOrderPaymentIntentView(APIView):
         currency = (getattr(order, "currency", None) or "eur").lower()[:3]
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        payment_intent_data = {
+            "metadata": {"order_id": str(order.id), "restaurant_id": str(restaurant.id)},
+        }
+        if stripe_account_id:
+            payment_intent_data["transfer_data"] = {"destination": stripe_account_id}
         try:
             pi = stripe.PaymentIntent.create(
                 amount=amount_cents,
                 currency=currency,
                 automatic_payment_methods={"enabled": True},
-                transfer_data={"destination": admin.stripe_account_id},
-                metadata={"order_id": str(order.id), "restaurant_id": str(restaurant.id)},
+                **payment_intent_data,
             )
         except Exception as e:
             logger.exception("PaymentIntent create failed: %s", e)
@@ -434,7 +434,7 @@ class CreateOrderCheckoutSessionView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        if not _stripe_enabled():
+        if not getattr(settings, "STRIPE_SECRET_KEY", None):
             return Response(
                 {"success": False, "error": "Stripe is not configured."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -459,11 +459,7 @@ class CreateOrderCheckoutSessionView(APIView):
             )
 
         admin = getattr(restaurant, "admin", None)
-        if not (admin and getattr(admin, "stripe_account_id", None)):
-            return Response(
-                {"success": False, "error": "This restaurant does not accept online payment."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        stripe_account_id = getattr(admin, "stripe_account_id", None) if admin else None
         if str(order.payment_method) != "online":
             return Response(
                 {"success": False, "error": "This order is not for online payment."},
@@ -489,6 +485,16 @@ class CreateOrderCheckoutSessionView(APIView):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         success_url = _absolute_url(request, f"/restaurants/{restaurant.id}/menu/?order_id={order.id}&payment=success")
         cancel_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={provider}&payment=cancel")
+        payment_intent_data = {
+            "metadata": {
+                "purpose": "order_payment",
+                "provider": provider,
+                "order_id": str(order.id),
+                "restaurant_id": str(restaurant.id),
+            },
+        }
+        if stripe_account_id:
+            payment_intent_data["transfer_data"] = {"destination": stripe_account_id}
         try:
             session = stripe.checkout.Session.create(
                 mode="payment",
@@ -505,15 +511,7 @@ class CreateOrderCheckoutSessionView(APIView):
                         "quantity": 1,
                     }
                 ],
-                payment_intent_data={
-                    "transfer_data": {"destination": admin.stripe_account_id},
-                    "metadata": {
-                        "purpose": "order_payment",
-                        "provider": provider,
-                        "order_id": str(order.id),
-                        "restaurant_id": str(restaurant.id),
-                    },
-                },
+                payment_intent_data=payment_intent_data,
                 metadata={
                     "purpose": "order_payment",
                     "provider": provider,

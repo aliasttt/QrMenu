@@ -2352,9 +2352,7 @@ def menu_qr_display_view(request, token):
             getattr(settings_obj, "has_delivery", False)
             or getattr(settings_obj, "delivery_enabled", False)
         )
-        admin = getattr(restaurant, "admin", None)
-        stripe_ok = bool(getattr(settings, "STRIPE_SECRET_KEY", None) and getattr(settings, "STRIPE_PUBLISHABLE_KEY", None))
-        stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+        stripe_ok = bool(getattr(settings, "STRIPE_SECRET_KEY", None))
         allow_online = bool(
             (
                 getattr(settings_obj, "allow_payment_online", True)
@@ -2362,7 +2360,6 @@ def menu_qr_display_view(request, token):
                 or getattr(settings_obj, "card_payment_enabled", False)
             )
             and stripe_ok
-            and stripe_connected
         )
         order_options = {
             "has_delivery": delivery_enabled,
@@ -2981,9 +2978,12 @@ class RestaurantOrderOptionsView(APIView):
             or getattr(settings_obj, "delivery_enabled", False)
         )
         allow_online = bool(
-            getattr(settings_obj, "allow_payment_online", True)
-            or getattr(settings_obj, "online_payment_enabled", False)
-            or getattr(settings_obj, "card_payment_enabled", False)
+            (
+                getattr(settings_obj, "allow_payment_online", True)
+                or getattr(settings_obj, "online_payment_enabled", False)
+                or getattr(settings_obj, "card_payment_enabled", False)
+            )
+            and getattr(settings, "STRIPE_SECRET_KEY", None)
         )
         return Response({
             "restaurant_id": restaurant.id,

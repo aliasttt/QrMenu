@@ -492,18 +492,13 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
     # سبد و گزینه‌های سفارش برای پنل Orders (همان کلید سشن business_menu)
     cart_key = f"cart_restaurant_{restaurant.id}"
     cart_items = list(request.session.get(cart_key, []))
-    stripe_ok = bool(
-        getattr(django_settings, "STRIPE_SECRET_KEY", None)
-        and getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", None)
-    )
-    admin = getattr(restaurant, "admin", None)
-    stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
+    stripe_ok = bool(getattr(django_settings, "STRIPE_SECRET_KEY", None))
     configured_online = bool(
         getattr(settings_obj, "allow_payment_online", True)
         or getattr(settings_obj, "online_payment_enabled", False)
         or getattr(settings_obj, "card_payment_enabled", False)
     )
-    allow_online = configured_online and stripe_ok and stripe_connected
+    allow_online = configured_online and stripe_ok
     delivery_enabled = bool(
         getattr(settings_obj, "has_delivery", False)
         or getattr(settings_obj, "delivery_enabled", False)
@@ -910,13 +905,8 @@ def restaurant_reservation(request, restaurant_id):
     cart_key = f"cart_restaurant_{restaurant.id}"
     cart_items = list(request.session.get(cart_key, []))
     cart_items_json = json.dumps(cart_items)
-    stripe_ok = bool(
-        getattr(django_settings, "STRIPE_SECRET_KEY", None)
-        and getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", None)
-    )
-    admin = getattr(restaurant, "admin", None)
-    stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
-    allow_online = getattr(settings_obj, "allow_payment_online", True) and stripe_ok and stripe_connected
+    stripe_ok = bool(getattr(django_settings, "STRIPE_SECRET_KEY", None))
+    allow_online = getattr(settings_obj, "allow_payment_online", True) and stripe_ok
     return render(
         request,
         "pages/restaurant_reservation.html",
@@ -958,10 +948,8 @@ def order_payment(request, restaurant_id, order_id):
         )
     admin = getattr(restaurant, "admin", None)
     stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
-    stripe_configured = bool(
-        getattr(django_settings, "STRIPE_SECRET_KEY", None)
-        and getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", None)
-    )
+    stripe_configured = bool(getattr(django_settings, "STRIPE_SECRET_KEY", None))
+    stripe_accepts_order_payments = stripe_configured
     return render(
         request,
         "pages/order_payment.html",
@@ -972,6 +960,7 @@ def order_payment(request, restaurant_id, order_id):
             "total_amount": order.total_amount,
             "currency": order.currency or "EUR",
             "stripe_connected": stripe_connected,
+            "stripe_accepts_order_payments": stripe_accepts_order_payments,
             "stripe_configured": stripe_configured,
             "stripe_publishable_key": getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", "") or "",
             "create_payment_intent_url": "/api/business-menu/api/create-order-payment-intent/",
