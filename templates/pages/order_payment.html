@@ -186,6 +186,7 @@
   var downloadInvoiceBtn = document.getElementById("download-invoice");
   var checkoutForm = document.getElementById("checkout-form");
   var params = new URLSearchParams(window.location.search);
+  var selectedProvider = params.get("provider") === "paypal" ? "paypal" : "stripe";
   var checkoutSessionId = params.get("session_id") || document.querySelector('[name="session_id"]')?.value || "";
   var initialInvoiceItems = [
     {% for line in order_items %}
@@ -245,7 +246,7 @@
         "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value || ""
       },
       credentials: "same-origin",
-      body: JSON.stringify({ restaurant_id: restaurantId, order_id: orderId, provider: "stripe" })
+      body: JSON.stringify({ restaurant_id: restaurantId, order_id: orderId, provider: selectedProvider })
     })
     .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
     .then(function(result) {
