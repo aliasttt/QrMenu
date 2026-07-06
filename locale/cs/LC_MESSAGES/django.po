@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 21:34+0330\n"
+"POT-Creation-Date: 2026-07-06 12:24+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -490,7 +490,9 @@ msgstr "Méně chyb v objednávkách"
 msgid "Higher conversion on the menu page"
 msgstr "Vyšší konverze na stránce menu"
 
-#: .\core\views.py:283 .\templates\partials\navbar.html:53
+#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
+#: .\templates\pages\restaurant_menu.html:661
+#: .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr "Online objednávky"
 
@@ -621,59 +623,59 @@ msgstr "Vyšší spokojenost zákazníků"
 
 #: .\templates\admin\business_menu_section.html:11
 msgid "Model name"
-msgstr ""
+msgstr "Název modelu"
 
 #: .\templates\admin\business_menu_section.html:12
 msgid "Add link"
-msgstr ""
+msgstr "Odkaz pro přidání"
 
 #: .\templates\admin\business_menu_section.html:13
 msgid "Change or view list link"
-msgstr ""
+msgstr "Odkaz na úpravu nebo zobrazení seznamu"
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:391
-#: .\templates\pages\restaurant_menu.html:405
-#: .\templates\pages\restaurant_menu.html:436
+#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:418
+#: .\templates\pages\restaurant_menu.html:449
 msgid "Add"
 msgstr "Přidat"
 
 #: .\templates\admin\business_menu_section.html:33
 msgid "View"
-msgstr ""
+msgstr "Zobrazit"
 
 #: .\templates\admin\business_menu_section.html:35
 msgid "Change"
-msgstr ""
+msgstr "Změnit"
 
 #: .\templates\admin\index.html:23
 msgid "Recent actions"
-msgstr ""
+msgstr "Nedávné akce"
 
 #: .\templates\admin\index.html:24
 msgid "My actions"
-msgstr ""
+msgstr "Mé akce"
 
 #: .\templates\admin\index.html:28
 msgid "None available"
-msgstr ""
+msgstr "Nic k dispozici"
 
 #: .\templates\admin\index.html:33
 msgid "Added:"
-msgstr ""
+msgstr "Přidáno:"
 
 #: .\templates\admin\index.html:33
 msgid "Changed:"
-msgstr ""
+msgstr "Změněno:"
 
 #: .\templates\admin\index.html:33
 msgid "Deleted:"
-msgstr ""
+msgstr "Smazáno:"
 
 #: .\templates\admin\index.html:43
 msgid "Unknown content"
-msgstr ""
+msgstr "Neznámý obsah"
 
 #: .\templates\base.html:41
 msgid "Skip to main content"
@@ -689,7 +691,7 @@ msgstr "Stránka nenalezena"
 
 #: .\templates\errors\404.html:9
 msgid "The page you are looking for does not exist or has been moved."
-msgstr ""
+msgstr "Hledaná stránka neexistuje nebo byla přesunuta."
 
 #: .\templates\errors\404.html:10 .\templates\errors\500.html:10
 #: .\templates\pages\restaurants_list.html:17
@@ -706,19 +708,19 @@ msgstr "Něco se pokazilo"
 
 #: .\templates\errors\500.html:9
 msgid "We are working on the issue. Please try again in a few minutes."
-msgstr ""
+msgstr "Pracujeme na problému. Zkuste to prosím za pár minut."
 
 #: .\templates\pages\auth\forgot_password.html:3
 msgid "Forgot password"
-msgstr ""
+msgstr "Zapomenuté heslo"
 
 #: .\templates\pages\auth\forgot_password.html:9
 msgid "Reset password"
-msgstr ""
+msgstr "Obnovit heslo"
 
 #: .\templates\pages\auth\forgot_password.html:12
 msgid "Enter your email and we'll send you a 6-digit code."
-msgstr ""
+msgstr "Zadejte e-mail a pošleme vám 6místný kód."
 
 #: .\templates\pages\auth\forgot_password.html:16
 #: .\templates\pages\auth\login.html:23 .\templates\pages\auth\register.html:21
@@ -732,56 +734,56 @@ msgstr "E-mail"
 #: .\templates\pages\auth\forgot_password.html:21
 #: .\templates\pages\auth\forgot_password.html:83
 msgid "Send code"
-msgstr ""
+msgstr "Odeslat kód"
 
 #: .\templates\pages\auth\forgot_password.html:26
 msgid ""
 "We sent a 6-digit code to <strong id=\"code-email\"></strong>. Enter it "
 "below."
-msgstr ""
+msgstr "Poslali jsme 6místný kód na <strong id=\"code-email\"></strong>. Zadejte ho níže."
 
 #: .\templates\pages\auth\forgot_password.html:27
 msgid "Code expires in 10 minutes."
-msgstr ""
+msgstr "Kód vyprší za 10 minut."
 
 #: .\templates\pages\auth\forgot_password.html:32
 #: .\templates\pages\auth\register.html:46
 msgid "Verification code"
-msgstr ""
+msgstr "Ověřovací kód"
 
 #: .\templates\pages\auth\forgot_password.html:37
 msgid "Resend code in <span id=\"resend-timer\">60</span>s"
-msgstr ""
+msgstr "Znovu odeslat za <span id=\"resend-timer\">60</span> s"
 
 #: .\templates\pages\auth\forgot_password.html:38
 msgid "Resend"
-msgstr ""
+msgstr "Znovu odeslat"
 
 #: .\templates\pages\auth\forgot_password.html:41
 #: .\templates\pages\auth\forgot_password.html:85
 msgid "Verify code"
-msgstr ""
+msgstr "Ověřit kód"
 
 #: .\templates\pages\auth\forgot_password.html:46
 msgid "Enter your new password."
-msgstr ""
+msgstr "Zadejte nové heslo."
 
 #: .\templates\pages\auth\forgot_password.html:52
 msgid "New password"
-msgstr ""
+msgstr "Nové heslo"
 
 #: .\templates\pages\auth\forgot_password.html:57
 msgid "Confirm new password"
-msgstr ""
+msgstr "Potvrdit nové heslo"
 
 #: .\templates\pages\auth\forgot_password.html:62
 #: .\templates\pages\auth\forgot_password.html:87
 msgid "Update password"
-msgstr ""
+msgstr "Aktualizovat heslo"
 
 #: .\templates\pages\auth\forgot_password.html:67
 msgid "Back to login"
-msgstr ""
+msgstr "Zpět na přihlášení"
 
 #: .\templates\pages\auth\forgot_password.html:82
 #: .\templates\pages\restaurant_reservation.html:177
@@ -790,31 +792,31 @@ msgstr "Odesílání…"
 
 #: .\templates\pages\auth\forgot_password.html:84
 msgid "Verifying…"
-msgstr ""
+msgstr "Ověřování…"
 
 #: .\templates\pages\auth\forgot_password.html:86
 msgid "Updating…"
-msgstr ""
+msgstr "Aktualizace…"
 
 #: .\templates\pages\auth\forgot_password.html:88
 msgid "Failed to send code. Check your email."
-msgstr ""
+msgstr "Nepodařilo se odeslat kód. Zkontrolujte e-mail."
 
 #: .\templates\pages\auth\forgot_password.html:89
 msgid "Invalid or expired code."
-msgstr ""
+msgstr "Neplatný nebo prošlý kód."
 
 #: .\templates\pages\auth\forgot_password.html:90
 msgid "Passwords do not match."
-msgstr ""
+msgstr "Hesla se neshodují."
 
 #: .\templates\pages\auth\forgot_password.html:91
 msgid "Failed to update password."
-msgstr ""
+msgstr "Aktualizace hesla se nezdařila."
 
 #: .\templates\pages\auth\forgot_password.html:92
 msgid "Network error. Try again."
-msgstr ""
+msgstr "Chyba sítě. Zkuste to znovu."
 
 #: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:32
 #: .\templates\pages\auth\register.html:57
@@ -825,19 +827,19 @@ msgstr "Přihlásit"
 
 #: .\templates\pages\auth\login.html:9
 msgid "Welcome back"
-msgstr ""
+msgstr "Vítejte zpět"
 
 #: .\templates\pages\auth\login.html:10
 msgid "Sign in to manage your restaurant panel."
-msgstr ""
+msgstr "Přihlaste se pro správu panelu restaurace."
 
 #: .\templates\pages\auth\login.html:15
 msgid "Registration successful. Sign in below."
-msgstr ""
+msgstr "Registrace úspěšná. Přihlaste se níže."
 
 #: .\templates\pages\auth\login.html:18
 msgid "Password updated. You can log in with your new password."
-msgstr ""
+msgstr "Heslo bylo aktualizováno. Přihlaste se novým heslem."
 
 #: .\templates\pages\auth\login.html:28 .\templates\pages\auth\register.html:23
 msgid "Password"
@@ -845,11 +847,11 @@ msgstr "Heslo"
 
 #: .\templates\pages\auth\login.html:34
 msgid "Forgot password?"
-msgstr ""
+msgstr "Zapomněli jste heslo?"
 
 #: .\templates\pages\auth\login.html:37
 msgid "No account?"
-msgstr ""
+msgstr "Nemáte účet?"
 
 #: .\templates\pages\auth\login.html:37 .\templates\pages\auth\register.html:3
 #: .\templates\pages\panel\dashboard_simple.html:17
@@ -858,22 +860,23 @@ msgstr "Registrace"
 
 #: .\templates\pages\auth\register.html:16
 msgid "Create your account"
-msgstr ""
+msgstr "Vytvořte si účet"
 
 #: .\templates\pages\auth\register.html:17
 msgid "Start your 12-day free trial. No payment required."
-msgstr ""
+msgstr "Začněte 12denní bezplatnou zkušební verzi. Žádná platba."
 
 #: .\templates\pages\auth\register.html:20
 #: .\templates\pages\panel\settings.html:28
 msgid "Restaurant name"
-msgstr ""
+msgstr "Název restaurace"
 
 #: .\templates\pages\auth\register.html:20
 msgid "Orange Bistro"
-msgstr ""
+msgstr "Orange Bistro"
 
 #: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:72
 #: .\templates\pages\panel\settings.html:29
 #: .\templates\pages\restaurant_reservation.html:142
 #: .\templates\pages\restaurant_reservation.html:143
@@ -882,15 +885,15 @@ msgstr "Telefon"
 
 #: .\templates\pages\auth\register.html:26
 msgid "I accept the terms and conditions"
-msgstr ""
+msgstr "Souhlasím s podmínkami"
 
 #: .\templates\pages\auth\register.html:30
 msgid "I confirm I am acting as a business (B2B)"
-msgstr ""
+msgstr "Potvrzuji, že jednám jako podnikatel (B2B)."
 
 #: .\templates\pages\auth\register.html:34
 msgid "Please complete the \"I"
-msgstr ""
+msgstr "Dokončete ověření \"Nejsem robot\"."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
@@ -898,53 +901,54 @@ msgstr "Pokračovat"
 
 #: .\templates\pages\auth\register.html:41
 msgid "Verify your email"
-msgstr ""
+msgstr "Ověřte svůj e-mail"
 
 #: .\templates\pages\auth\register.html:42
 msgid ""
 "We sent a 6-digit code to <strong id=\"verify-email-display\"></strong>. "
 "Enter it below to complete registration."
-msgstr ""
+msgstr "Poslali jsme 6místný kód na <strong id=\"verify-email-display\"></strong>. Zadejte ho pro dokončení registrace."
 
 #: .\templates\pages\auth\register.html:51
 msgid "Complete registration"
-msgstr ""
+msgstr "Dokončit registraci"
 
 #: .\templates\pages\auth\register.html:54
 msgid "Use a different email"
-msgstr ""
+msgstr "Použít jiný e-mail"
 
 #: .\templates\pages\auth\register.html:57
 msgid "Already have an account?"
-msgstr ""
+msgstr "Máte již účet?"
 
 #: .\templates\pages\checkout.html:3 .\templates\pages\checkout.html:12
 msgid "Checkout"
-msgstr ""
+msgstr "Pokladna"
 
 #: .\templates\pages\checkout.html:19
 msgid "Customer Info"
-msgstr ""
+msgstr "Údaje zákazníka"
 
 #: .\templates\pages\checkout.html:21
 msgid "Full Name"
-msgstr ""
+msgstr "Celé jméno"
 
 #: .\templates\pages\checkout.html:21
 msgid "John Doe"
-msgstr ""
+msgstr "Jan Novák"
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\panel\settings.html:30
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\panel\settings.html:30
 msgid "Address"
 msgstr "Adresa"
 
 #: .\templates\pages\checkout.html:30
 msgid "Street Address"
-msgstr ""
+msgstr "Ulice a číslo"
 
 #: .\templates\pages\checkout.html:30
 msgid "Street, building, unit"
-msgstr ""
+msgstr "Ulice, budova, jednotka"
 
 #: .\templates\pages\checkout.html:32 .\templates\pages\panel\settings.html:32
 msgid "City"
@@ -952,7 +956,7 @@ msgstr "Město"
 
 #: .\templates\pages\checkout.html:33
 msgid "ZIP"
-msgstr ""
+msgstr "PSČ"
 
 #: .\templates\pages\checkout.html:34 .\templates\pages\panel\settings.html:35
 msgid "Country"
@@ -960,11 +964,11 @@ msgstr "Země"
 
 #: .\templates\pages\checkout.html:36
 msgid "Delivery Notes"
-msgstr ""
+msgstr "Poznámky k doručení"
 
 #: .\templates\pages\checkout.html:36
 msgid "Optional note for delivery driver"
-msgstr ""
+msgstr "Volitelná poznámka pro kurýra"
 
 #: .\templates\pages\checkout.html:41
 msgid "Payment Method"
@@ -972,32 +976,32 @@ msgstr "Způsob platby"
 
 #: .\templates\pages\checkout.html:43
 msgid "Card Number"
-msgstr ""
+msgstr "Číslo karty"
 
 #: .\templates\pages\checkout.html:44
 msgid "Card Holder"
-msgstr ""
+msgstr "Držitel karty"
 
 #: .\templates\pages\checkout.html:44
 msgid "Name on card"
-msgstr ""
+msgstr "Jméno na kartě"
 
 #: .\templates\pages\checkout.html:45
 msgid "Expiry"
-msgstr ""
+msgstr "Platnost"
 
 #: .\templates\pages\checkout.html:46
 msgid "CVC"
-msgstr ""
+msgstr "CVC"
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:575
-#: .\templates\pages\restaurant_menu.html:710
+#: .\templates\pages\restaurant_menu.html:591
+#: .\templates\pages\restaurant_menu.html:731
 msgid "Place Order"
 msgstr "Odeslat objednávku"
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:741
 msgid "Order Summary"
 msgstr "Souhrn objednávky"
 
@@ -1015,7 +1019,7 @@ msgstr "Kontakt"
 msgid ""
 "Get in touch for support, sales, or partnerships. Email, phone, and "
 "WhatsApp. We reply within 24 hours."
-msgstr ""
+msgstr "Napište nám ohledně podpory, prodeje nebo partnerství. E-mail, telefon a WhatsApp. Odpovídáme do 24 hodin."
 
 #: .\templates\pages\contact.html:10
 msgid "Get in touch"
@@ -1023,27 +1027,27 @@ msgstr "Kontaktujte nás"
 
 #: .\templates\pages\contact.html:11
 msgid "Support, sales, or partnerships. We reply within 24 hours."
-msgstr ""
+msgstr "Podpora, prodej nebo partnerství. Odpovídáme do 24 hodin."
 
 #: .\templates\pages\contact.html:17
 msgid "Contact & Support"
-msgstr ""
+msgstr "Kontakt a podpora"
 
 #: .\templates\pages\contact.html:24
 msgid "Phone / Support"
-msgstr ""
+msgstr "Telefon / podpora"
 
 #: .\templates\pages\contact.html:28
 msgid "WhatsApp"
-msgstr ""
+msgstr "WhatsApp"
 
 #: .\templates\pages\contact.html:31
 msgid "Chat on WhatsApp"
-msgstr ""
+msgstr "Chat na WhatsApp"
 
 #: .\templates\pages\contact.html:40
 msgid "Send a message"
-msgstr ""
+msgstr "Odeslat zprávu"
 
 #: .\templates\pages\contact.html:42 .\templates\pages\panel\categories.html:20
 #: .\templates\pages\panel\menu_item_form.html:13
@@ -1053,11 +1057,11 @@ msgstr "Jméno"
 
 #: .\templates\pages\contact.html:42
 msgid "Your name"
-msgstr ""
+msgstr "Vaše jméno"
 
 #: .\templates\pages\contact.html:43
 msgid "you@example.com"
-msgstr ""
+msgstr "vy@priklad.cz"
 
 #: .\templates\pages\contact.html:44
 msgid "Subject"
@@ -1065,7 +1069,7 @@ msgstr "Předmět"
 
 #: .\templates\pages\contact.html:44
 msgid "How can we help?"
-msgstr ""
+msgstr "Jak vám můžeme pomoci?"
 
 #: .\templates\pages\contact.html:45
 msgid "Message"
@@ -1073,7 +1077,7 @@ msgstr "Zpráva"
 
 #: .\templates\pages\contact.html:45
 msgid "Your message"
-msgstr ""
+msgstr "Vaše zpráva"
 
 #: .\templates\pages\contact.html:46
 msgid "Send message"
@@ -1090,7 +1094,7 @@ msgstr "Funkce"
 msgid ""
 "Explore all features: QR menu, online ordering, campaigns, analytics, multi-"
 "language support, and more."
-msgstr ""
+msgstr "Prozkoumejte všechny funkce: QR menu, online objednávky, kampaně, analytiku, vícejazyčnou podporu a další."
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
@@ -1147,21 +1151,21 @@ msgstr "Začít zdarma"
 
 #: .\templates\pages\landing.html:3
 msgid "QR Menu + Ordering"
-msgstr ""
+msgstr "QR menu + objednávky"
 
 #: .\templates\pages\landing.html:4
 msgid ""
 "Launch your branded QR menu, run campaigns, and receive online orders from "
 "one dashboard. Built for modern restaurants."
-msgstr ""
+msgstr "Spusťte značkové QR menu, provozujte kampaně a přijímejte online objednávky z jedné nástěnky. Pro moderní restaurace."
 
 #: .\templates\pages\landing.html:31
 msgid "My Bonus QR Menu"
-msgstr ""
+msgstr "My Bonus QR Menu"
 
 #: .\templates\pages\landing.html:32
 msgid "Smart menu experience"
-msgstr ""
+msgstr "Chytré menu"
 
 #: .\templates\pages\landing.html:37
 msgid "Simple QR Code,"
@@ -1175,7 +1179,7 @@ msgstr "Vyšší tržby."
 msgid ""
 "Grow your revenue with a professional QR menu, online ordering, and a "
 "stunning mobile experience."
-msgstr ""
+msgstr "Zvyšte tržby díky profesionálnímu QR menu, online objednávkám a působivému mobilnímu zážitku."
 
 #: .\templates\pages\landing.html:45 .\templates\pages\landing.html:311
 #: .\templates\partials\navbar.html:125 .\templates\partials\navbar.html:171
@@ -1189,211 +1193,211 @@ msgstr "Zobrazit příklad"
 #: .\templates\pages\landing.html:53 .\templates\pages\landing.html:55
 #: .\templates\partials\footer.html:14 .\templates\partials\footer.html:16
 msgid "Download on the App Store"
-msgstr ""
+msgstr "Stáhnout v App Store"
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:452
+#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
 msgid "Orders"
 msgstr "Objednávky"
 
 #: .\templates\pages\landing.html:65
 msgid "Live Menu"
-msgstr ""
+msgstr "Živé menu"
 
 #: .\templates\pages\landing.html:68
 msgid "2 min"
-msgstr ""
+msgstr "2 min"
 
 #: .\templates\pages\landing.html:69
 msgid "Setup"
-msgstr ""
+msgstr "Nastavení"
 
 #: .\templates\pages\landing.html:79
 msgid "Tablet menu preview"
-msgstr ""
+msgstr "Náhled menu na tabletu"
 
 #: .\templates\pages\landing.html:90 .\templates\pages\landing.html:111
 msgid "Phone menu"
-msgstr ""
+msgstr "Menu na telefonu"
 
 #: .\templates\pages\landing.html:101
 msgid "Phone menu analytics"
-msgstr ""
+msgstr "Analytika menu na telefonu"
 
 #: .\templates\pages\landing.html:116
 msgid "Phone analytics"
-msgstr ""
+msgstr "Analytika telefonu"
 
 #: .\templates\pages\landing.html:122
 msgid "Open Live Menu"
-msgstr ""
+msgstr "Otevřít živé menu"
 
 #: .\templates\pages\landing.html:132
 msgid "Premium Experiences for Every Guest"
-msgstr ""
+msgstr "Prémiové zážitky pro každého hosta"
 
 #: .\templates\pages\landing.html:133
 msgid ""
 "Modern UI components, strong visual hierarchy, and smooth animations for a "
 "luxury digital dining brand."
-msgstr ""
+msgstr "Moderní UI komponenty, silná vizuální hierarchie a plynulé animace pro luxusní digitální gastro značku."
 
 #: .\templates\pages\landing.html:137
 msgid "Live Menu Sync"
-msgstr ""
+msgstr "Živá synchronizace menu"
 
 #: .\templates\pages\landing.html:138
 msgid "Change prices, stock, and offers instantly."
-msgstr ""
+msgstr "Okamžitě měňte ceny, zásoby a nabídky."
 
 #: .\templates\pages\landing.html:141
 msgid "Multilingual Menus"
-msgstr ""
+msgstr "Vícejazyčná menu"
 
 #: .\templates\pages\landing.html:142
 msgid "One tap language switch for tourists."
-msgstr ""
+msgstr "Přepnutí jazyka jedním klepnutím pro turisty."
 
 #: .\templates\pages\landing.html:145
 msgid "Campaign Engine"
-msgstr ""
+msgstr "Modul kampaní"
 
 #: .\templates\pages\landing.html:146
 msgid "Upsell combos and seasonal promos."
-msgstr ""
+msgstr "Upsell komb a sezónní akce."
 
 #: .\templates\pages\landing.html:149
 msgid "Realtime Insights"
-msgstr ""
+msgstr "Real-time přehledy"
 
 #: .\templates\pages\landing.html:150
 msgid "See hot items and conversion trends."
-msgstr ""
+msgstr "Podívejte se na hity a trendy konverze."
 
 #: .\templates\pages\landing.html:160
 msgid "Interactive Visual Showcase"
-msgstr ""
+msgstr "Interaktivní vizuální ukázka"
 
 #: .\templates\pages\landing.html:161
 msgid ""
 "Beautiful sections that feel alive and premium, built for conversion and wow "
 "effect."
-msgstr ""
+msgstr "Krásné sekce působící živě a prémiově, vytvořené pro konverzi a wow efekt."
 
 #: .\templates\pages\landing.html:165
 msgid "Uptime"
-msgstr ""
+msgstr "Uptime"
 
 #: .\templates\pages\landing.html:169
 msgid "Menus Served"
-msgstr ""
+msgstr "Obsloužená menu"
 
 #: .\templates\pages\landing.html:173
 msgid "Guest Rating"
-msgstr ""
+msgstr "Hodnocení hostů"
 
 #: .\templates\pages\landing.html:177
 msgid "Avg. Basket"
-msgstr ""
+msgstr "Průměrný košík"
 
 #: .\templates\pages\landing.html:182
 msgid "Why teams switch to us"
-msgstr ""
+msgstr "Proč týmy přecházejí k nám"
 
 #: .\templates\pages\landing.html:184
 msgid "No app install needed for guests."
-msgstr ""
+msgstr "Hosté nemusí instalovat aplikaci."
 
 #: .\templates\pages\landing.html:185
 msgid "Manage all branches in one place."
-msgstr ""
+msgstr "Spravujte všechny pobočky na jednom místě."
 
 #: .\templates\pages\landing.html:186
 msgid "Fast mobile experience with elegant UI."
-msgstr ""
+msgstr "Rychlý mobilní zážitek s elegantním UI."
 
 #: .\templates\pages\landing.html:187
 msgid "Promotions, QR, and ordering fully integrated."
-msgstr ""
+msgstr "Akce, QR a objednávky plně integrované."
 
 #: .\templates\pages\landing.html:203
 msgid "Table Intent"
-msgstr ""
+msgstr "Záměr stolu"
 
 #: .\templates\pages\landing.html:206
 msgid "Menu Action"
-msgstr ""
+msgstr "Akce menu"
 
 #: .\templates\pages\landing.html:210
 msgid "Premium phone mockup"
-msgstr ""
+msgstr "Premium mockup telefonu"
 
 #: .\templates\pages\landing.html:215
 msgid "Immersive Mobile"
-msgstr ""
+msgstr "Vtahující mobilní zážitek"
 
 #: .\templates\pages\landing.html:216
 msgid "From scan to order in one beautiful flow."
-msgstr ""
+msgstr "Od skenování k objednávce v jednom krásném toku."
 
 #: .\templates\pages\landing.html:218
 msgid ""
 "Elevate guest experience with cinematic visuals, smooth motion, and ultra-"
 "clean interaction patterns crafted for QR Menu."
-msgstr ""
+msgstr "Pozdvihněte zážitek hostů kinematickými vizuály, plynulým pohybem a ultra čistými interakcemi navrženými pro QR menu."
 
 #: .\templates\pages\landing.html:220
 msgid "Explore Demo Menus"
-msgstr ""
+msgstr "Prohlédnout demo menu"
 
 #: .\templates\pages\landing.html:229
 msgid "Menu Over Matter<br>Energy in Motion"
-msgstr ""
+msgstr "Menu nad hmotou<br>Energie v pohybu"
 
 #: .\templates\pages\landing.html:234
 msgid "Restaurant lifestyle"
-msgstr ""
+msgstr "Restaurační lifestyle"
 
 #: .\templates\pages\landing.html:239
 msgid "Smart QR cards guide guests naturally from discovery to checkout."
-msgstr ""
+msgstr "Chytré QR karty přirozeně vedou hosty od objevení k platbě."
 
 #: .\templates\pages\landing.html:240
 msgid "Motion and hierarchy improve readability and increase item conversion."
-msgstr ""
+msgstr "Pohyb a hierarchie zlepšují čitelnost a zvyšují konverzi položek."
 
 #: .\templates\pages\landing.html:241
 msgid "Every section is built to feel premium while staying lightweight."
-msgstr ""
+msgstr "Každá sekce působí prémiově a přitom zůstává lehká."
 
 #: .\templates\pages\landing.html:243
 msgid "More About QR Menu"
-msgstr ""
+msgstr "Více o QR menu"
 
 #: .\templates\pages\landing.html:246
 msgid "Color portrait style"
-msgstr ""
+msgstr "Barevný portrétní styl"
 
 #: .\templates\pages\landing.html:261 .\templates\pages\landing.html:275
 msgid "There is more<br>to this menu world"
-msgstr ""
+msgstr "V tomto světě menu<br>je toho víc"
 
 #: .\templates\pages\landing.html:269 .\templates\pages\landing.html:283
 msgid "Than meets<br>the eye"
-msgstr ""
+msgstr "Než se zdá na první pohled"
 
 #: .\templates\pages\landing.html:292
 msgid "Loved by Restaurant Teams"
-msgstr ""
+msgstr "Milované restauračními týmy"
 
 #: .\templates\pages\landing.html:308
 msgid "Make visitors say “wow” from first second."
-msgstr ""
+msgstr "Nechte návštěvníky říct „wow“ hned od první vteřiny."
 
 #: .\templates\pages\landing.html:309
 msgid ""
 "A long, professional landing experience with beautiful sections, fluid "
 "animation, and premium orange branding."
-msgstr ""
+msgstr "Dlouhý profesionální landing s krásnými sekcemi, plynulou animací a prémiovým oranžovým brandingem."
 
 #: .\templates\pages\landing.html:312
 msgid "See Menus"
@@ -1402,12 +1406,11 @@ msgstr "Prohlédnout menu"
 #: .\templates\pages\order_payment.html:3
 #, python-format
 msgid "Payment — %(name)s"
-msgstr ""
+msgstr "Platba — %(name)s"
 
 #: .\templates\pages\order_payment.html:10
 #: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:48
-#: .\templates\pages\order_payment.html:51
+#: .\templates\pages\order_payment.html:87
 #: .\templates\pages\restaurant_reservation.html:108
 #: .\templates\pages\restaurant_reservation.html:182
 #: .\templates\pages\restaurant_schedule.html:34
@@ -1415,8 +1418,8 @@ msgid "Back to menu"
 msgstr "Zpět na menu"
 
 #: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:534
-#: .\templates\pages\restaurant_menu.html:662
+#: .\templates\pages\restaurant_menu.html:550
+#: .\templates\pages\restaurant_menu.html:682
 #: .\templates\pages\restaurant_reservation.html:163
 msgid "Payment"
 msgstr "Platba"
@@ -1424,51 +1427,90 @@ msgstr "Platba"
 #: .\templates\pages\order_payment.html:15
 #, python-format
 msgid "%(name)s — Order #%(id)s"
-msgstr ""
+msgstr "%(name)s — objednávka č. %(id)s"
 
 #: .\templates\pages\order_payment.html:18
 msgid "Order summary"
-msgstr ""
+msgstr "Souhrn objednávky"
 
 #: .\templates\pages\order_payment.html:24
 msgid "Total:"
-msgstr ""
+msgstr "Celkem:"
 
 #: .\templates\pages\order_payment.html:28
 msgid "Payment method"
-msgstr ""
+msgstr "Způsob platby"
 
 #: .\templates\pages\order_payment.html:30
 msgid ""
 "This restaurant does not accept online payment. Please pay by cash when you "
 "pick up or dine in."
-msgstr ""
+msgstr "Tato restaurace nepřijímá online platbu. Prosím zaplaťte hotově při vyzvednutí nebo na místě."
 
 #: .\templates\pages\order_payment.html:35
 #, python-format
 msgid "Pay with card. The payment goes to %(name)s."
-msgstr ""
+msgstr "Zaplaťte kartou. Platba jde k %(name)s."
 
 #: .\templates\pages\order_payment.html:42
 #, python-format
 msgid "Pay %(currency)s %(total)s"
-msgstr ""
+msgstr "Zaplatit %(currency)s %(total)s"
 
 #: .\templates\pages\order_payment.html:47
 msgid "Payment successful."
-msgstr ""
+msgstr "Platba proběhla úspěšně."
 
-#: .\templates\pages\order_payment.html:73
+#: .\templates\pages\order_payment.html:49
+msgid ""
+"Please enter your delivery details so the restaurant can receive the order."
+msgstr "Zadejte prosím údaje pro doručení, aby restaurace mohla přijmout objednávku."
+
+#: .\templates\pages\order_payment.html:51
+msgid "Your order has been sent to the restaurant."
+msgstr "Vaše objednávka byla odeslána do restaurace."
+
+#: .\templates\pages\order_payment.html:59
+msgid "First name"
+msgstr "Křestní jméno"
+
+#: .\templates\pages\order_payment.html:63
+msgid "Last name"
+msgstr "Příjmení"
+
+#: .\templates\pages\order_payment.html:77
+#, fuzzy
+#| msgid "View orders"
+msgid "Submit order"
+msgstr "Odeslat objednávku"
+
+#: .\templates\pages\order_payment.html:82
+#, fuzzy
+#| msgid "Full feature set for modern restaurants"
+msgid "Order sent to the restaurant."
+msgstr "Objednávka byla odeslána do restaurace."
+
+#: .\templates\pages\order_payment.html:83
+msgid "You can follow the order status in order tracking."
+msgstr "Stav objednávky můžete sledovat v sekci sledování."
+
+#: .\templates\pages\order_payment.html:84
+#, fuzzy
+#| msgid "Order management"
+msgid "Order tracking"
+msgstr "Sledování objednávky"
+
+#: .\templates\pages\order_payment.html:113
 msgid "Could not start payment."
-msgstr ""
+msgstr "Platbu se nepodařilo spustit."
 
-#: .\templates\pages\order_payment.html:74
+#: .\templates\pages\order_payment.html:114
 msgid "Payment failed."
-msgstr ""
+msgstr "Platba se nezdařila."
 
-#: .\templates\pages\order_payment.html:75
+#: .\templates\pages\order_payment.html:115
 msgid "Something went wrong."
-msgstr ""
+msgstr "Něco se pokazilo."
 
 #: .\templates\pages\panel\campaigns.html:3
 #: .\templates\pages\panel\campaigns.html:11
@@ -1493,44 +1535,44 @@ msgstr "Panel"
 
 #: .\templates\pages\panel\campaigns.html:16
 msgid "Create Campaign"
-msgstr ""
+msgstr "Vytvořit kampaň"
 
 #: .\templates\pages\panel\campaigns.html:17
 msgid "Campaign Name"
-msgstr ""
+msgstr "Název kampaně"
 
 #: .\templates\pages\panel\campaigns.html:17
 msgid "Lunch Combo 20% Off"
-msgstr ""
+msgstr "Obědový combo -20 %"
 
 #: .\templates\pages\panel\campaigns.html:18
 msgid "Discount (%)"
-msgstr ""
+msgstr "Sleva (%)"
 
 #: .\templates\pages\panel\campaigns.html:19
 msgid "Date Range"
-msgstr ""
+msgstr "Rozsah dat"
 
 #: .\templates\pages\panel\campaigns.html:19
 msgid "Mar 1 - Mar 20"
-msgstr ""
+msgstr "1. bře - 20. bře"
 
 #: .\templates\pages\panel\campaigns.html:20
 msgid "Target Categories"
-msgstr ""
+msgstr "Cílové kategorie"
 
 #: .\templates\pages\panel\campaigns.html:20
 msgid "Main Dishes, Drinks"
-msgstr ""
+msgstr "Hlavní jídla, nápoje"
 
 #: .\templates\pages\panel\campaigns.html:21
 #: .\templates\pages\panel\dashboard.html:64
 msgid "Create campaign"
-msgstr ""
+msgstr "Vytvořit kampaň"
 
 #: .\templates\pages\panel\campaigns.html:33
 msgid "off"
-msgstr ""
+msgstr "sleva"
 
 #: .\templates\pages\panel\categories.html:3
 #: .\templates\pages\panel\categories.html:11
@@ -1542,15 +1584,15 @@ msgstr "Kategorie"
 
 #: .\templates\pages\panel\categories.html:12
 msgid "New category"
-msgstr ""
+msgstr "Nová kategorie"
 
 #: .\templates\pages\panel\categories.html:21
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
 #: .\templates\pages\panel\categories.html:22
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #: .\templates\pages\panel\categories.html:30
 #: .\templates\pages\panel\menu_items_list.html:33
@@ -1559,20 +1601,20 @@ msgstr "Smazat"
 
 #: .\templates\pages\panel\categories.html:37
 msgid "No categories yet"
-msgstr ""
+msgstr "Zatím žádné kategorie"
 
 #: .\templates\pages\panel\categories.html:37
 msgid "Create your first category to organize menu items."
-msgstr ""
+msgstr "Vytvořte první kategorii pro uspořádání položek menu."
 
 #: .\templates\pages\panel\categories.html:37
 #: .\templates\pages\panel\categories.html:40
 msgid "Create category"
-msgstr ""
+msgstr "Vytvořit kategorii"
 
 #: .\templates\pages\panel\categories.html:40
 msgid "Use this Alpine-powered modal to add category creation form later."
-msgstr ""
+msgstr "Použijte tento modal na Alpine pro pozdější přidání formuláře pro vytvoření kategorie."
 
 #: .\templates\pages\panel\dashboard.html:3
 #: .\templates\pages\panel\dashboard.html:10
@@ -1585,7 +1627,7 @@ msgstr "Nástěnka"
 
 #: .\templates\pages\panel\dashboard.html:29
 msgid "Recent Orders"
-msgstr ""
+msgstr "Nedávné objednávky"
 
 #: .\templates\pages\panel\dashboard.html:34
 msgid "Order"
@@ -1593,147 +1635,147 @@ msgstr "Objednávka"
 
 #: .\templates\pages\panel\dashboard.html:35
 msgid "Customer"
-msgstr ""
+msgstr "Zákazník"
 
 #: .\templates\pages\panel\dashboard.html:36
 msgid "Amount"
-msgstr ""
+msgstr "Částka"
 
 #: .\templates\pages\panel\dashboard.html:37
 #: .\templates\pages\panel\dashboard_simple.html:27
 msgid "Status"
-msgstr ""
+msgstr "Stav"
 
 #: .\templates\pages\panel\dashboard.html:56
 msgid "Quick Actions"
-msgstr ""
+msgstr "Rychlé akce"
 
 #: .\templates\pages\panel\dashboard.html:60
 msgid "Add menu item"
-msgstr ""
+msgstr "Přidat položku menu"
 
 #: .\templates\pages\panel\dashboard.html:68
 msgid "Generate QR"
-msgstr ""
+msgstr "Vytvořit QR"
 
 #: .\templates\pages\panel\dashboard_simple.html:12
 msgid ""
 "Payment, plan and app access. Use the app for orders, menu and settings."
-msgstr ""
+msgstr "Platba, plán a přístup do aplikace. Pro objednávky, menu a nastavení použijte aplikaci."
 
 #: .\templates\pages\panel\dashboard_simple.html:16
 msgid ""
 "Open this page with your panel link (e.g. /panel/?admin_id=...) or log in "
 "from the app."
-msgstr ""
+msgstr "Otevřete tuto stránku odkazem panelu (např. /panel/?admin_id=...) nebo se přihlaste z aplikace."
 
 #: .\templates\pages\panel\dashboard_simple.html:24
 msgid "Plan & payment"
-msgstr ""
+msgstr "Plán a platba"
 
 #: .\templates\pages\panel\dashboard_simple.html:29
 msgid "Active"
-msgstr ""
+msgstr "Aktivní"
 
 #: .\templates\pages\panel\dashboard_simple.html:31
 msgid "Expired"
-msgstr ""
+msgstr "Vypršelo"
 
 #: .\templates\pages\panel\dashboard_simple.html:36
 #: .\templates\pages\panel\dashboard_simple.html:41
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: .\templates\pages\panel\dashboard_simple.html:37
 msgid "Free trial"
-msgstr ""
+msgstr "Bezplatná zkušební verze"
 
 #: .\templates\pages\panel\dashboard_simple.html:42
 msgid "Subscription"
-msgstr ""
+msgstr "Předplatné"
 
 #: .\templates\pages\panel\dashboard_simple.html:47
 msgid "Expires"
-msgstr ""
+msgstr "Vyprší"
 
 #: .\templates\pages\panel\dashboard_simple.html:52
 #: .\templates_bonusweb\business_menu\subscribe.html:7
 msgid "Subscribe to continue"
-msgstr ""
+msgstr "Předplaťte si pro pokračování"
 
 #: .\templates\pages\panel\dashboard_simple.html:58
 msgid "Stripe"
-msgstr ""
+msgstr "Stripe"
 
 #: .\templates\pages\panel\dashboard_simple.html:63
 msgid "Connected – you can receive customer payments."
-msgstr ""
+msgstr "Připojeno – můžete přijímat platby zákazníků."
 
 #: .\templates\pages\panel\dashboard_simple.html:66
 msgid ""
 "To accept online payments from your digital menu, you need to connect "
 "Stripe. Click below to complete setup."
-msgstr ""
+msgstr "Pro přijímání online plateb z digitálního menu je nutné připojit Stripe. Klikněte níže pro dokončení."
 
 #: .\templates\pages\panel\dashboard_simple.html:67
 #: .\templates_bonusweb\business_menu\connect.html:3
 msgid "Connect Stripe"
-msgstr ""
+msgstr "Připojit Stripe"
 
 #: .\templates\pages\panel\dashboard_simple.html:69
 msgid ""
 "If you want your customers' online payments to be processed from the digital "
 "menu, pay 200 Euros now to upgrade your plan."
-msgstr ""
+msgstr "Pokud chcete zpracovávat online platby zákazníků z digitálního menu, zaplaťte nyní 200 EUR pro upgrade plánu."
 
 #: .\templates\pages\panel\dashboard_simple.html:71
 #: .\templates_bonusweb\business_menu\subscribe.html:13
 #: .\templates_bonusweb\business_menu\subscribe.html:35
 #: .\templates_bonusweb\business_menu\subscribe.html:39
 msgid "Start Plan"
-msgstr ""
+msgstr "Spustit plán"
 
 #: .\templates\pages\panel\dashboard_simple.html:79
 msgid "Download the app"
-msgstr ""
+msgstr "Stáhnout aplikaci"
 
 #: .\templates\pages\panel\dashboard_simple.html:80
 msgid "Manage orders, menu and settings from your phone."
-msgstr ""
+msgstr "Spravujte objednávky, menu a nastavení z telefonu."
 
 #: .\templates\pages\panel\menu_item_form.html:3
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Edit Menu Item"
-msgstr ""
+msgstr "Upravit položku menu"
 
 #: .\templates\pages\panel\menu_item_form.html:3
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Create Menu Item"
-msgstr ""
+msgstr "Vytvořit položku menu"
 
 #: .\templates\pages\panel\menu_item_form.html:14
 msgid "Price"
-msgstr ""
+msgstr "Cena"
 
 #: .\templates\pages\panel\menu_item_form.html:15
 msgid "Image URL"
-msgstr ""
+msgstr "URL obrázku"
 
 #: .\templates\pages\panel\menu_item_form.html:18
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 #: .\templates\pages\panel\menu_item_form.html:25
 msgid "Tags (comma separated)"
-msgstr ""
+msgstr "Tagy (oddělené čárkou)"
 
 #: .\templates\pages\panel\menu_item_form.html:25
 msgid "Popular, Spicy"
-msgstr ""
+msgstr "Oblíbené, Pálivé"
 
 #: .\templates\pages\panel\menu_item_form.html:28
 msgid "Save item"
-msgstr ""
+msgstr "Uložit položku"
 
 #: .\templates\pages\panel\menu_item_form.html:29
 msgid "Cancel"
@@ -1748,11 +1790,11 @@ msgstr "Položky menu"
 
 #: .\templates\pages\panel\menu_items_list.html:12
 msgid "New item"
-msgstr ""
+msgstr "Nová položka"
 
 #: .\templates\pages\panel\menu_items_list.html:16
 msgid "Search items..."
-msgstr ""
+msgstr "Hledat položky..."
 
 #: .\templates\pages\panel\menu_items_list.html:18
 msgid "All categories"
@@ -1770,31 +1812,31 @@ msgstr "Nastavení"
 
 #: .\templates\pages\panel\settings.html:10
 msgid "Restaurant Settings"
-msgstr ""
+msgstr "Nastavení restaurace"
 
 #: .\templates\pages\panel\settings.html:11
 msgid ""
 "Update your restaurant profile and map location. Changes are saved to your "
 "account."
-msgstr ""
+msgstr "Aktualizujte profil restaurace a polohu na mapě. Změny se ukládají do vašeho účtu."
 
 #: .\templates\pages\panel\settings.html:15
 msgid "No restaurant linked to this session."
-msgstr ""
+msgstr "K této relaci není přiřazena restaurace."
 
 #: .\templates\pages\panel\settings.html:16
 msgid ""
 "Sign in with your restaurant owner account or open this page from your "
 "dashboard with a valid link."
-msgstr ""
+msgstr "Přihlaste se účtem majitele restaurace nebo otevřete tuto stránku z nástěnky platným odkazem."
 
 #: .\templates\pages\panel\settings.html:17
 msgid "Sign in"
-msgstr ""
+msgstr "Přihlásit"
 
 #: .\templates\pages\panel\settings.html:27
 msgid "General"
-msgstr ""
+msgstr "Obecné"
 
 #: .\templates\pages\panel\settings.html:33
 msgid "Postal code"
@@ -1802,56 +1844,56 @@ msgstr "PSČ"
 
 #: .\templates\pages\panel\settings.html:41
 msgid "Restaurant location"
-msgstr ""
+msgstr "Poloha restaurace"
 
 #: .\templates\pages\panel\settings.html:42
 msgid ""
 "Search for an address or click the map to set your pin. Drag the marker to "
 "adjust."
-msgstr ""
+msgstr "Vyhledejte adresu nebo klikněte na mapu pro nastavení špendlíku. Přetáhněte značku pro doladění."
 
 #: .\templates\pages\panel\settings.html:48
 msgid ""
 "Google Maps is not configured. Set <code class=\"rounded bg-rose-100 px-1 "
 "dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in the server environment to "
 "enable the map."
-msgstr ""
+msgstr "Google Maps není nakonfigurován. Nastavte <code class=\"rounded bg-rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> v prostředí serveru pro aktivaci mapy."
 
 #: .\templates\pages\panel\settings.html:53
 msgid "Search address"
-msgstr ""
+msgstr "Hledat adresu"
 
 #: .\templates\pages\panel\settings.html:54
 msgid "Start typing an address…"
-msgstr ""
+msgstr "Začněte psát adresu…"
 
 #: .\templates\pages\panel\settings.html:58
 msgid "Loading map…"
-msgstr ""
+msgstr "Načítání mapy…"
 
 #: .\templates\pages\panel\settings.html:67
 msgid "Latitude"
-msgstr ""
+msgstr "Zeměpisná šířka"
 
 #: .\templates\pages\panel\settings.html:71
 msgid "Longitude"
-msgstr ""
+msgstr "Zeměpisná délka"
 
 #: .\templates\pages\panel\settings.html:77
 msgid "Use current marker"
-msgstr ""
+msgstr "Použít aktuální značku"
 
 #: .\templates\pages\panel\settings.html:78
 msgid "Use my location"
-msgstr ""
+msgstr "Použít mou polohu"
 
 #: .\templates\pages\panel\settings.html:79
 msgid "Copy coordinates"
-msgstr ""
+msgstr "Zkopírovat souřadnice"
 
 #: .\templates\pages\panel\settings.html:80
 msgid "Clear location"
-msgstr ""
+msgstr "Vymazat polohu"
 
 #: .\templates\pages\panel\settings.html:91
 msgid "Save changes"
@@ -1866,12 +1908,12 @@ msgstr "Platba zrušena"
 
 #: .\templates\pages\payment_cancel.html:7
 msgid "No charge was made. You can try again anytime from your admin panel."
-msgstr ""
+msgstr "Nebyla provedena žádná platba. Můžete kdykoli zkusit znovu z admin panelu."
 
 #: .\templates\pages\payment_cancel.html:9
 #: .\templates\pages\payment_success.html:9
 msgid "Go to Admin Panel"
-msgstr ""
+msgstr "Přejít na admin panel"
 
 #: .\templates\pages\payment_cancel.html:10
 #: .\templates\pages\payment_success.html:10
@@ -1890,7 +1932,7 @@ msgstr "Platba proběhla úspěšně"
 msgid ""
 "Your plan has been upgraded. To accept online payments from your digital "
 "menu, go to your admin panel and connect Stripe."
-msgstr ""
+msgstr "Váš plán byl aktualizován. Pro přijímání online plateb připojte Stripe v administraci."
 
 #: .\templates\pages\pricing.html:3 .\templates\partials\footer.html:24
 #: .\templates\partials\navbar.html:69 .\templates\partials\navbar.html:148
@@ -1974,25 +2016,25 @@ msgstr "QR menu"
 
 #: .\templates\pages\public_menu.html:37
 msgid "Menu categories"
-msgstr ""
+msgstr "Kategorie menu"
 
 #: .\templates\pages\public_menu.html:48
 #, python-format
 msgid "Filter by %(name)s"
-msgstr ""
+msgstr "Filtrovat podle %(name)s"
 
 #: .\templates\pages\public_menu.html:111
 #, python-format
 msgid "Add %(name)s to cart"
-msgstr ""
+msgstr "Přidat %(name)s do košíku"
 
 #: .\templates\pages\public_menu.html:126
 msgid "Open cart"
-msgstr ""
+msgstr "Otevřít košík"
 
 #: .\templates\pages\restaurant_menu.html:39
 msgid "Added"
-msgstr ""
+msgstr "Přidáno"
 
 #: .\templates\pages\restaurant_menu.html:41
 msgid "Added to cart"
@@ -2000,305 +2042,312 @@ msgstr "Přidáno do košíku"
 
 #: .\templates\pages\restaurant_menu.html:42
 msgid "Table number is required for Dine In"
-msgstr ""
+msgstr "Číslo stolu je vyžadováno pro V restauraci"
 
 #: .\templates\pages\restaurant_menu.html:43
 msgid "Could not place order"
-msgstr ""
+msgstr "Objednávku se nepodařilo odeslat"
 
 #: .\templates\pages\restaurant_menu.html:44
 msgid "Network error"
-msgstr ""
+msgstr "Chyba sítě"
 
-#: .\templates\pages\restaurant_menu.html:224
+#: .\templates\pages\restaurant_menu.html:237
 msgid ""
 "You have order(s) pending or in progress. Check status and when it's ready "
 "in the Orders panel."
-msgstr ""
+msgstr "Máte objednávky čekající nebo v přípravě. Zkontrolujte stav v panelu Objednávky."
 
-#: .\templates\pages\restaurant_menu.html:225
+#: .\templates\pages\restaurant_menu.html:238
 msgid "View orders"
 msgstr "Zobrazit objednávky"
 
-#: .\templates\pages\restaurant_menu.html:228
+#: .\templates\pages\restaurant_menu.html:241
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
-msgstr ""
+msgstr "Restaurace je nyní zavřená. Objednávku můžete naplánovat na otevírací dobu."
 
-#: .\templates\pages\restaurant_menu.html:229
+#: .\templates\pages\restaurant_menu.html:242
 msgid "Schedule for later"
-msgstr ""
+msgstr "Naplánovat na později"
 
-#: .\templates\pages\restaurant_menu.html:240
+#: .\templates\pages\restaurant_menu.html:253
 msgid "All Categories"
 msgstr "Všechny kategorie"
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:266
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\pages\restaurant_menu.html:271
+#: .\templates\pages\restaurant_menu.html:284
 msgid "Toggle night mode"
-msgstr ""
+msgstr "Přepnout noční režim"
 
-#: .\templates\pages\restaurant_menu.html:301
+#: .\templates\pages\restaurant_menu.html:314
 msgid "Address:"
-msgstr ""
+msgstr "Adresa:"
 
-#: .\templates\pages\restaurant_menu.html:304
+#: .\templates\pages\restaurant_menu.html:317
 msgid "Phone:"
-msgstr ""
+msgstr "Telefon:"
 
-#: .\templates\pages\restaurant_menu.html:307
+#: .\templates\pages\restaurant_menu.html:320
 msgid "Email:"
-msgstr ""
+msgstr "E-mail:"
 
-#: .\templates\pages\restaurant_menu.html:312
+#: .\templates\pages\restaurant_menu.html:325
 msgid "Opening Hours"
 msgstr "Otevírací doba"
 
-#: .\templates\pages\restaurant_menu.html:313
+#: .\templates\pages\restaurant_menu.html:326
 msgid "Not provided yet"
-msgstr ""
+msgstr "Zatím neuvedeno"
 
-#: .\templates\pages\restaurant_menu.html:322
+#: .\templates\pages\restaurant_menu.html:335
 msgid "Search menu items..."
 msgstr "Hledat v menu..."
 
-#: .\templates\pages\restaurant_menu.html:330
+#: .\templates\pages\restaurant_menu.html:343
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr "Vše"
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:356
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
-msgstr ""
+msgstr "Balíčky"
 
-#: .\templates\pages\restaurant_menu.html:364
+#: .\templates\pages\restaurant_menu.html:377
 msgid "No menu items available."
-msgstr ""
+msgstr "Žádné položky menu nejsou dostupné."
 
-#: .\templates\pages\restaurant_menu.html:390
-#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:417
 msgid "Learn More"
 msgstr "Zjistit více"
 
-#: .\templates\pages\restaurant_menu.html:444
+#: .\templates\pages\restaurant_menu.html:457
 msgid "Cart"
 msgstr "Košík"
 
-#: .\templates\pages\restaurant_menu.html:454
-#: .\templates\pages\restaurant_menu.html:459
-#: .\templates\pages\restaurant_menu.html:516
-#: .\templates\pages\restaurant_menu.html:527
-#: .\templates\pages\restaurant_menu.html:644
-#: .\templates\pages\restaurant_menu.html:655
-#: .\templates\pages\restaurant_menu.html:702
+#: .\templates\pages\restaurant_menu.html:467
+#: .\templates\pages\restaurant_menu.html:472
+#: .\templates\pages\restaurant_menu.html:532
+#: .\templates\pages\restaurant_menu.html:543
+#: .\templates\pages\restaurant_menu.html:664
+#: .\templates\pages\restaurant_menu.html:675
+#: .\templates\pages\restaurant_menu.html:722
 msgid "Reservation"
 msgstr "Rezervace"
 
-#: .\templates\pages\restaurant_menu.html:461
+#: .\templates\pages\restaurant_menu.html:474
 msgid "Close"
 msgstr "Zavřít"
 
-#: .\templates\pages\restaurant_menu.html:482
-#: .\templates\pages\restaurant_menu.html:611
+#: .\templates\pages\restaurant_menu.html:495
+#: .\templates\pages\restaurant_menu.html:628
 msgid "Cart Items"
-msgstr ""
+msgstr "Položky košíku"
 
-#: .\templates\pages\restaurant_menu.html:484
-#: .\templates\pages\restaurant_menu.html:613
+#: .\templates\pages\restaurant_menu.html:497
+#: .\templates\pages\restaurant_menu.html:630
 msgid "Cart is empty."
 msgstr "Košík je prázdný."
 
-#: .\templates\pages\restaurant_menu.html:498
-#: .\templates\pages\restaurant_menu.html:627
+#: .\templates\pages\restaurant_menu.html:511
+#: .\templates\pages\restaurant_menu.html:644
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr "Odebrat"
 
-#: .\templates\pages\restaurant_menu.html:502
-#: .\templates\pages\restaurant_menu.html:631
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:515
+#: .\templates\pages\restaurant_menu.html:648
+#: .\templates\pages\restaurant_menu.html:747
 msgid "Total"
 msgstr "Celkem"
 
-#: .\templates\pages\restaurant_menu.html:508
-#: .\templates\pages\restaurant_menu.html:636
+#: .\templates\pages\restaurant_menu.html:521
+#: .\templates\pages\restaurant_menu.html:653
 msgid "Service Type"
 msgstr "Typ služby"
 
-#: .\templates\pages\restaurant_menu.html:510
-#: .\templates\pages\restaurant_menu.html:638
+#: .\templates\pages\restaurant_menu.html:523
+#: .\templates\pages\restaurant_menu.html:655
 msgid "Dine In"
 msgstr "V restauraci"
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:639
+#: .\templates\pages\restaurant_menu.html:524
+#: .\templates\pages\restaurant_menu.html:656
 msgid "Pickup"
 msgstr "Vyzvednutí"
 
-#: .\templates\pages\restaurant_menu.html:513
-#: .\templates\pages\restaurant_menu.html:641
+#: .\templates\pages\restaurant_menu.html:526
+#: .\templates\pages\restaurant_menu.html:658
 msgid "Delivery"
 msgstr "Doručení"
 
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:649
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_menu.html:669
 msgid "Table Number"
 msgstr "Číslo stolu"
 
-#: .\templates\pages\restaurant_menu.html:522
+#: .\templates\pages\restaurant_menu.html:538
 msgid "e.g. 22"
-msgstr ""
+msgstr "např. 22"
 
-#: .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:566
-#: .\templates\pages\restaurant_menu.html:657
-#: .\templates\pages\restaurant_menu.html:704
+#: .\templates\pages\restaurant_menu.html:545
+#: .\templates\pages\restaurant_menu.html:582
+#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:724
 msgid "Select date & time →"
-msgstr ""
+msgstr "Vybrat datum a čas →"
 
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:665
+#: .\templates\pages\restaurant_menu.html:553
+#: .\templates\pages\restaurant_menu.html:685
 msgid "Cash"
 msgstr "Hotově"
 
-#: .\templates\pages\restaurant_menu.html:540
-#: .\templates\pages\restaurant_menu.html:668
+#: .\templates\pages\restaurant_menu.html:556
+#: .\templates\pages\restaurant_menu.html:688
 msgid "Online"
 msgstr "Online"
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:673
-#: .\templates\pages\restaurant_menu.html:674
+#: .\templates\pages\restaurant_menu.html:561
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:694
 msgid "Order Note"
-msgstr ""
+msgstr "Poznámka k objednávce"
 
-#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_reservation.html:151
 msgid "Special requests…"
-msgstr ""
+msgstr "Zvláštní přání…"
 
-#: .\templates\pages\restaurant_menu.html:551
-#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:567
+#: .\templates\pages\restaurant_menu.html:718
 msgid "Confirm Order"
 msgstr "Potvrdit objednávku"
 
-#: .\templates\pages\restaurant_menu.html:552
+#: .\templates\pages\restaurant_menu.html:568
 msgid "Add items and set options on the left."
-msgstr ""
+msgstr "Přidejte položky a nastavte možnosti vlevo."
 
-#: .\templates\pages\restaurant_menu.html:555
-#: .\templates\pages\restaurant_menu.html:580
-#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_menu.html:571
+#: .\templates\pages\restaurant_menu.html:597
+#: .\templates\pages\restaurant_menu.html:750
 msgid "Order placed successfully"
-msgstr ""
+msgstr "Objednávka byla úspěšně odeslána"
 
-#: .\templates\pages\restaurant_menu.html:556
-msgid "Your order is pending. Check status in Order history below."
-msgstr ""
-
-#: .\templates\pages\restaurant_menu.html:557
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:729
-msgid "Add more items"
-msgstr ""
-
-#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_menu.html:572
-#: .\templates\pages\restaurant_menu.html:699
+msgid "Your order is pending. Check status in Order history below."
+msgstr "Vaše objednávka čeká. Stav zjistíte v historii objednávek níže."
+
+#: .\templates\pages\restaurant_menu.html:573
+#: .\templates\pages\restaurant_menu.html:599
+#: .\templates\pages\restaurant_menu.html:752
+msgid "Add more items"
+msgstr "Přidat další položky"
+
+#: .\templates\pages\restaurant_menu.html:578
+#: .\templates\pages\restaurant_menu.html:588
+#: .\templates\pages\restaurant_menu.html:719
 msgid "total"
 msgstr "celkem"
 
-#: .\templates\pages\restaurant_menu.html:564
+#: .\templates\pages\restaurant_menu.html:580
 msgid "Reservation with pre-order"
-msgstr ""
+msgstr "Rezervace s předobjednávkou"
 
-#: .\templates\pages\restaurant_menu.html:576
+#: .\templates\pages\restaurant_menu.html:592
+#: .\templates\pages\restaurant_menu.html:732
+#, fuzzy
+#| msgid "Online"
+msgid "Pay Online"
+msgstr "Online"
+
+#: .\templates\pages\restaurant_menu.html:593
 msgid "Placing…"
-msgstr ""
+msgstr "Odesílání…"
 
-#: .\templates\pages\restaurant_menu.html:581
+#: .\templates\pages\restaurant_menu.html:598
 msgid ""
 "Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
 "span>. Check status in Order history below."
-msgstr ""
+msgstr "Vaše objednávka čeká. Celkem € <span x-text=\"lastOrder.total_amount\"></span>. Stav v historii níže."
 
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:605
+#: .\templates\pages\restaurant_menu.html:697
 msgid "Order history"
-msgstr ""
+msgstr "Historie objednávek"
 
-#: .\templates\pages\restaurant_menu.html:590
+#: .\templates\pages\restaurant_menu.html:607
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
-msgstr ""
+msgstr "Zatím žádné objednávky. Zadejte objednávku a uvidíte ji zde (čeká → připravuje se → dokončeno)."
 
-#: .\templates\pages\restaurant_menu.html:650
+#: .\templates\pages\restaurant_menu.html:670
 msgid "Table #"
-msgstr ""
+msgstr "Stůl č."
 
-#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:699
 msgid "No orders yet."
-msgstr ""
+msgstr "Zatím žádné objednávky."
 
-#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:712
 msgid "Next →"
-msgstr ""
+msgstr "Další →"
 
-#: .\templates\pages\restaurant_menu.html:696
+#: .\templates\pages\restaurant_menu.html:716
 msgid "Back"
 msgstr "Zpět"
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Service:"
-msgstr ""
+msgstr "Služba:"
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Payment:"
-msgstr ""
+msgstr "Platba:"
 
-#: .\templates\pages\restaurant_menu.html:728
+#: .\templates\pages\restaurant_menu.html:751
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
-msgstr ""
+msgstr "Vaše objednávka čeká. Restaurace aktualizuje stav (např. připravuje se, dokončeno)."
 
-#: .\templates\pages\restaurant_menu.html:734
+#: .\templates\pages\restaurant_menu.html:757
 msgid "Done"
 msgstr "Hotovo"
 
 #: .\templates\pages\restaurant_reservation.html:3
 #, python-format
 msgid "Reservation — %(name)s"
-msgstr ""
+msgstr "Rezervace — %(name)s"
 
 #: .\templates\pages\restaurant_reservation.html:26
 msgid "Name is required."
-msgstr ""
+msgstr "Jméno je povinné."
 
 #: .\templates\pages\restaurant_reservation.html:27
 msgid "Please select a date."
-msgstr ""
+msgstr "Vyberte prosím datum."
 
 #: .\templates\pages\restaurant_reservation.html:28
 msgid "Please select a time."
-msgstr ""
+msgstr "Vyberte prosím čas."
 
 #: .\templates\pages\restaurant_reservation.html:29
 msgid "Request failed."
-msgstr ""
+msgstr "Požadavek se nezdařil."
 
 #: .\templates\pages\restaurant_reservation.html:30
 msgid "Network error. Please try again."
-msgstr ""
+msgstr "Chyba sítě. Zkuste to prosím znovu."
 
 #: .\templates\pages\restaurant_reservation.html:98
 msgid "Table reservation"
@@ -2311,7 +2360,7 @@ msgstr "Otevírací doba:"
 
 #: .\templates\pages\restaurant_reservation.html:106
 msgid "Reservation request sent"
-msgstr ""
+msgstr "Žádost o rezervaci odeslána"
 
 #: .\templates\pages\restaurant_reservation.html:107
 msgid ""
@@ -2319,7 +2368,7 @@ msgid ""
 "span> at <span x-text=\"successReservation.requested_time\"></span> (<span x-"
 "text=\"successReservation.guests_count\"></span> guests) is pending. The "
 "restaurant will confirm by email."
-msgstr ""
+msgstr "Vaše rezervace na <span x-text=\"successReservation.requested_date\"></span> v <span x-text=\"successReservation.requested_time\"></span> (<span x-text=\"successReservation.guests_count\"></span> hostů) čeká. Restaurace potvrdí e-mailem."
 
 #: .\templates\pages\restaurant_reservation.html:115
 msgid "Date"
@@ -2331,11 +2380,11 @@ msgstr "Čas"
 
 #: .\templates\pages\restaurant_reservation.html:124
 msgid "This day is fully booked. Please choose another date."
-msgstr ""
+msgstr "Tento den je zcela rezervovaný. Vyberte jiný."
 
 #: .\templates\pages\restaurant_reservation.html:126
 msgid "Select time"
-msgstr ""
+msgstr "Vyberte čas"
 
 #: .\templates\pages\restaurant_reservation.html:131
 msgid "Loading…"
@@ -2347,7 +2396,7 @@ msgstr "Počet hostů"
 
 #: .\templates\pages\restaurant_reservation.html:138
 msgid "Your name *"
-msgstr ""
+msgstr "Vaše jméno *"
 
 #: .\templates\pages\restaurant_reservation.html:150
 msgid "Notes"
@@ -2355,58 +2404,58 @@ msgstr "Poznámky"
 
 #: .\templates\pages\restaurant_reservation.html:155
 msgid "Pre-order (from cart)"
-msgstr ""
+msgstr "Předobjednávka (z košíku)"
 
 #: .\templates\pages\restaurant_reservation.html:161
 msgid "Subtotal:"
-msgstr ""
+msgstr "Mezisoučet:"
 
 #: .\templates\pages\restaurant_reservation.html:164
 msgid ""
 "Cash = pay on the day. Online = pay now; refunded if reservation is "
 "cancelled."
-msgstr ""
+msgstr "Hotově = platba v den rezervace. Online = platba nyní; při zrušení vratka."
 
 #: .\templates\pages\restaurant_reservation.html:166
 msgid "Cash (on the day)"
-msgstr ""
+msgstr "Hotově (v den rezervace)"
 
 #: .\templates\pages\restaurant_reservation.html:168
 msgid "Online (refund if cancelled)"
-msgstr ""
+msgstr "Online (vratka při zrušení)"
 
 #: .\templates\pages\restaurant_reservation.html:176
 msgid "Request reservation"
-msgstr ""
+msgstr "Požádat o rezervaci"
 
 #: .\templates\pages\restaurant_schedule.html:3
 #, python-format
 msgid "Schedule your order — %(name)s"
-msgstr ""
+msgstr "Naplánujte objednávku — %(name)s"
 
 #: .\templates\pages\restaurant_schedule.html:8
 msgid "Schedule your order"
-msgstr ""
+msgstr "Naplánujte objednávku"
 
 #: .\templates\pages\restaurant_schedule.html:16
 msgid "No opening hours set"
-msgstr ""
+msgstr "Otevírací doba není nastavena"
 
 #: .\templates\pages\restaurant_schedule.html:17
 msgid ""
 "The restaurant has not set specific opening times. You can place an order "
 "from the menu."
-msgstr ""
+msgstr "Restaurace nemá nastavené konkrétní časy. Objednávku můžete zadat z menu."
 
 #: .\templates\pages\restaurant_schedule.html:18
 msgid "Go to menu"
-msgstr ""
+msgstr "Přejít na menu"
 
 #: .\templates\pages\restaurant_schedule.html:21
 msgid ""
 "Choose a date and time for your order. You will then go to the menu to add "
 "items and place the order for that time."
-msgstr ""
+msgstr "Vyberte datum a čas objednávky. Poté přejdete do menu, přidáte položky a objednáte na daný čas."
 
 #: .\templates\pages\restaurants_list.html:3
 #: .\templates\pages\restaurants_list.html:10
@@ -2416,15 +2465,15 @@ msgstr "Restaurace a kavárny"
 
 #: .\templates\pages\restaurants_list.html:4
 msgid "Browse our partner restaurants and cafes. Open a menu and order online."
-msgstr ""
+msgstr "Prohlédněte si naše partnerské restaurace a kavárny. Otevřete menu a objednávejte online."
 
 #: .\templates\pages\restaurants_list.html:11
 msgid "Choose a place and open its menu."
-msgstr ""
+msgstr "Vyberte místo a otevřete jeho menu."
 
 #: .\templates\pages\restaurants_list.html:16
 msgid "No restaurants yet. Check back later."
-msgstr ""
+msgstr "Zatím žádné restaurace. Zkontrolujte to později."
 
 #: .\templates\pages\restaurants_list.html:40
 msgid "View menu"
@@ -2438,64 +2487,64 @@ msgstr "Služby"
 
 #: .\templates\pages\service_detail.html:18
 msgid "Service"
-msgstr ""
+msgstr "Služba"
 
 #: .\templates\pages\service_detail.html:26
 msgid "Get pricing"
-msgstr ""
+msgstr "Získat ceník"
 
 #: .\templates\pages\service_detail.html:27
 msgid "Talk to us"
-msgstr ""
+msgstr "Promluvme si"
 
 #: .\templates\pages\service_detail.html:36
 msgid "Built for restaurants"
-msgstr ""
+msgstr "Vytvořeno pro restaurace"
 
 #: .\templates\pages\service_detail.html:37
 msgid "Fast setup • Mobile-first • Conversion-focused"
-msgstr ""
+msgstr "Rychlé nastavení • Mobile-first • Zaměřeno na konverzi"
 
 #: .\templates\pages\service_detail.html:54
 #, python-format
 msgid "Want to activate %(title)s for your restaurant?"
-msgstr ""
+msgstr "Chcete pro svou restauraci aktivovat %(title)s?"
 
 #: .\templates\pages\service_detail.html:55
 msgid "Start your annual plan and go live with QR menu + online ordering."
-msgstr ""
+msgstr "Spusťte roční plán a naostro QR menu + online objednávky."
 
 #: .\templates\pages\service_detail.html:56
 msgid "View annual plan"
-msgstr ""
+msgstr "Zobrazit roční plán"
 
 #: .\templates\pages\service_detail.html:60
 msgid "More services"
-msgstr ""
+msgstr "Další služby"
 
 #: .\templates\pages\services.html:4
 msgid ""
 "Explore all QR Menu Pro services. Open a dedicated page for each service "
 "with details, visuals, and benefits."
-msgstr ""
+msgstr "Prozkoumejte všechny služby QR Menu Pro. Otevřete stránku každé služby s detaily, vizuály a přínosy."
 
 #: .\templates\pages\services.html:10
 msgid "Our Services"
-msgstr ""
+msgstr "Naše služby"
 
 #: .\templates\pages\services.html:12
 msgid ""
 "Open each service to view a full, dedicated page with benefits, visuals, and "
 "practical use cases."
-msgstr ""
+msgstr "Otevřete každou službu pro plnou stránku s výhodami, vizuály a použitími."
 
 #: .\templates\pages\services.html:25
 msgid "Open service page"
-msgstr ""
+msgstr "Otevřít stránku služby"
 
 #: .\templates\partials\alerts.html:3
 msgid "Notifications"
-msgstr ""
+msgstr "Oznámení"
 
 #: .\templates\partials\cart_drawer.html:15
 msgid "Your Cart"
@@ -2503,7 +2552,7 @@ msgstr "Váš košík"
 
 #: .\templates\partials\cart_drawer.html:16
 msgid "Close cart"
-msgstr ""
+msgstr "Zavřít košík"
 
 #: .\templates\partials\cart_drawer.html:23
 msgid "Your cart is empty."
@@ -2511,23 +2560,23 @@ msgstr "Váš košík je prázdný."
 
 #: .\templates\partials\cart_drawer.html:34
 msgid "Decrease quantity"
-msgstr ""
+msgstr "Snížit množství"
 
 #: .\templates\partials\cart_drawer.html:36
 msgid "Increase quantity"
-msgstr ""
+msgstr "Zvýšit množství"
 
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove item"
-msgstr ""
+msgstr "Odstranit položku"
 
 #: .\templates\partials\cart_drawer.html:49
 msgid "Proceed to Checkout"
-msgstr ""
+msgstr "Přejít k pokladně"
 
 #: .\templates\partials\footer.html:8
 msgid "SaaS platform for QR menus, online ordering, campaigns, and analytics."
-msgstr ""
+msgstr "SaaS platforma pro QR menu, online objednávky, kampaně a analytiku."
 
 #: .\templates\partials\footer.html:20
 msgid "Product"
@@ -2544,7 +2593,7 @@ msgstr "O nás"
 #: .\templates\partials\footer.html:44
 #, python-format
 msgid "© %(year)s %(brand)s. All rights reserved."
-msgstr ""
+msgstr "© %(year)s %(brand)s. Všechna práva vyhrazena."
 
 #: .\templates\partials\footer.html:46
 msgid ""
@@ -2554,11 +2603,11 @@ msgid ""
 "transition underline decoration-slate-300 dark:decoration-slate-600 "
 "hover:decoration-primary-500\">Angraweb</a> — Professional Web Design &amp; "
 "Software Development."
-msgstr ""
+msgstr "Tento web vytvořila <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500\">Angraweb</a> — profesionální webdesign a vývoj softwaru."
 
 #: .\templates\partials\navbar.html:45
 msgid "All Services"
-msgstr ""
+msgstr "Všechny služby"
 
 #: .\templates\partials\navbar.html:89
 msgid "Change language"
@@ -2592,306 +2641,306 @@ msgstr "Jazyk"
 
 #: .\templates\partials\panel_navbar.html:6
 msgid "Restaurant Panel"
-msgstr ""
+msgstr "Panel restaurace"
 
 #: .\templates\partials\panel_navbar.html:26
 #: .\templates\partials\panel_navbar.html:39
 msgid "Public Site"
-msgstr ""
+msgstr "Veřejný web"
 
 #: .\templates\partials\panel_navbar_simple.html:5
 msgid "Back to site"
-msgstr ""
+msgstr "Zpět na web"
 
 #: .\templates\partials\panel_navbar_simple.html:21
 msgid "Site"
-msgstr ""
+msgstr "Web"
 
 #: .\templates_bonusweb\base.html:199 .\templates_bonusweb\base.html:276
 #: .\templates_bonusweb\base.html:335
 msgid "Use Cases"
-msgstr ""
+msgstr "Případy použití"
 
 #: .\templates_bonusweb\base.html:207 .\templates_bonusweb\base.html:284
 #: .\templates_bonusweb\base.html:337
 msgid "Businesses"
-msgstr ""
+msgstr "Firmy"
 
 #: .\templates_bonusweb\base.html:211 .\templates_bonusweb\base.html:288
 #: .\templates_bonusweb\base.html:338
 msgid "How It Works"
-msgstr ""
+msgstr "Jak to funguje"
 
 #: .\templates_bonusweb\base.html:219 .\templates_bonusweb\base.html:296
 #: .\templates_bonusweb\base.html:341
 msgid "Download"
-msgstr ""
+msgstr "Stáhnout"
 
 #: .\templates_bonusweb\base.html:259
 msgid "Admin Login"
-msgstr ""
+msgstr "Přihlášení administrátora"
 
 #: .\templates_bonusweb\base.html:314
 msgid ""
 "Bonus helps local businesses run QR menus, loyalty points, rewards, and "
 "customer reviews — all in one place."
-msgstr ""
+msgstr "Bonus pomáhá lokálním podnikům s QR menu, věrnostními body, odměnami a recenzemi — vše na jednom místě."
 
 #: .\templates_bonusweb\base.html:317
 msgid "Website"
-msgstr ""
+msgstr "Webové stránky"
 
 #: .\templates_bonusweb\base.html:320
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: .\templates_bonusweb\base.html:323
 msgid "X (Twitter)"
-msgstr ""
+msgstr "X (Twitter)"
 
 #: .\templates_bonusweb\base.html:326
 msgid "LinkedIn"
-msgstr ""
+msgstr "LinkedIn"
 
 #: .\templates_bonusweb\base.html:332
 msgid "Platform"
-msgstr ""
+msgstr "Platforma"
 
 #: .\templates_bonusweb\base.html:339
 msgid "Integrations"
-msgstr ""
+msgstr "Integrace"
 
 #: .\templates_bonusweb\base.html:345
 msgid "For Businesses"
-msgstr ""
+msgstr "Pro firmy"
 
 #: .\templates_bonusweb\base.html:347
 msgid "Business Admin Panel"
-msgstr ""
+msgstr "Panel firemního administrátora"
 
 #: .\templates_bonusweb\base.html:348
 msgid "Service Agreement"
-msgstr ""
+msgstr "Smlouva o službě"
 
 #: .\templates_bonusweb\base.html:349
 msgid "Bonus Registration"
-msgstr ""
+msgstr "Registrace Bonus"
 
 #: .\templates_bonusweb\base.html:351 .\templates_bonusweb\base.html:356
 msgid "QR Code Generator"
-msgstr ""
+msgstr "Generátor QR kódů"
 
 #: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
 msgid "Manage Products"
-msgstr ""
+msgstr "Spravovat produkty"
 
 #: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
 msgid "Customer Reviews"
-msgstr ""
+msgstr "Recenze zákazníků"
 
 #: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
 msgid "Send Notification"
-msgstr ""
+msgstr "Odeslat oznámení"
 
 #: .\templates_bonusweb\base.html:364
 msgid "Legal"
-msgstr ""
+msgstr "Právní informace"
 
 #: .\templates_bonusweb\base.html:366
 msgid "Terms & Conditions"
-msgstr ""
+msgstr "Podmínky"
 
 #: .\templates_bonusweb\base.html:370
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Zásady ochrany osobních údajů"
 
 #: .\templates_bonusweb\base.html:371
 msgid "Account & Data Deletion"
-msgstr ""
+msgstr "Smazání účtu a dat"
 
 #: .\templates_bonusweb\base.html:373
 msgid "API Docs"
-msgstr ""
+msgstr "API dokumentace"
 
 #: .\templates_bonusweb\base.html:379
 msgid "All rights reserved"
-msgstr ""
+msgstr "Všechna práva vyhrazena"
 
 #: .\templates_bonusweb\base.html:381
 msgid "This website was designed by"
-msgstr ""
+msgstr "Tento web navrhla"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:3
 #: .\templates_bonusweb\business_menu\connect_done.html:6
 msgid "Stripe connected"
-msgstr ""
+msgstr "Stripe připojen"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:7
 msgid "You can now receive customer payments."
-msgstr ""
+msgstr "Nyní můžete přijímat platby zákazníků."
 
 #: .\templates_bonusweb\business_menu\connect_done.html:9
 #: .\templates_bonusweb\business_menu\connect_done.html:11
 msgid "Back to panel"
-msgstr ""
+msgstr "Zpět na panel"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:34
 msgid "Prices"
-msgstr ""
+msgstr "Ceny"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:65
 msgid "Previous"
-msgstr ""
+msgstr "Předchozí"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:78
 msgid "Next"
-msgstr ""
+msgstr "Další"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:92
 msgid "Special offers"
-msgstr ""
+msgstr "Speciální nabídky"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:139
 msgid "items"
-msgstr ""
+msgstr "položek"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:154
 msgid "Previous image"
-msgstr ""
+msgstr "Předchozí obrázek"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:157
 msgid "Next image"
-msgstr ""
+msgstr "Další obrázek"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:208
 msgid "No items in this category yet."
-msgstr ""
+msgstr "V této kategorii zatím nejsou žádné položky."
 
 #: .\templates_bonusweb\business_menu\menu_display.html:220
 msgid "No menu items available"
-msgstr ""
+msgstr "Žádné položky menu"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:221
 msgid "This restaurant hasn't added any menu items yet."
-msgstr ""
+msgstr "Tato restaurace zatím nepřidala položky menu."
 
 #: .\templates_bonusweb\business_menu\menu_display.html:226
 msgid "Download our apps for a better experience."
-msgstr ""
+msgstr "Stáhněte si naše aplikace pro lepší zážitek."
 
 #: .\templates_bonusweb\business_menu\menu_display.html:229
 msgid "Download Apps"
-msgstr ""
+msgstr "Stáhnout aplikace"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:3
 #: .\templates_bonusweb\business_menu\menu_not_found.html:9
 msgid "Menu Not Found"
-msgstr ""
+msgstr "Menu nenalezeno"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:10
 msgid "The menu you're looking for doesn't exist or has been removed."
-msgstr ""
+msgstr "Hledané menu neexistuje nebo bylo odstraněno."
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:12
 msgid "Go Home"
-msgstr ""
+msgstr "Domů"
 
 #: .\templates_bonusweb\business_menu\payment.html:4
 msgid "Complete Registration - Payment"
-msgstr ""
+msgstr "Dokončit registraci — platba"
 
 #: .\templates_bonusweb\business_menu\payment.html:8
 msgid "Complete Registration"
-msgstr ""
+msgstr "Dokončit registraci"
 
 #: .\templates_bonusweb\business_menu\payment.html:9
 msgid "Please complete the payment to finish your registration"
-msgstr ""
+msgstr "Dokončete platbu pro dokončení registrace."
 
 #: .\templates_bonusweb\business_menu\payment.html:15
 msgid "Scan QR Code to Pay"
-msgstr ""
+msgstr "Naskenujte QR kód pro platbu"
 
 #: .\templates_bonusweb\business_menu\payment.html:31
 msgid "Your browser does not support PDFs. "
-msgstr ""
+msgstr "Váš prohlížeč PDF nepodporuje. "
 
 #: .\templates_bonusweb\business_menu\payment.html:33
 msgid "Download the PDF"
-msgstr ""
+msgstr "Stáhnout PDF"
 
 #: .\templates_bonusweb\business_menu\payment.html:45
 msgid ""
 "To complete the registration process, please scan this QR code. After "
 "payment, contact support."
-msgstr ""
+msgstr "Pro dokončení registrace naskenujte tento QR kód. Po platbě kontaktujte podporu."
 
 #: .\templates_bonusweb\business_menu\payment.html:53
 msgid "Need help? "
-msgstr ""
+msgstr "Potřebujete pomoc? "
 
 #: .\templates_bonusweb\business_menu\payment.html:54
 msgid "Contact Support"
-msgstr ""
+msgstr "Kontaktovat podporu"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:3
 msgid "Subscribe"
-msgstr ""
+msgstr "Předplatit"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:8
 msgid ""
 "Your trial has ended. Complete your subscription to keep using the service."
-msgstr ""
+msgstr "Zkušební období skončilo. Dokončete předplatné a používejte službu dál."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:11
 msgid ""
 "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
 "Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
 "other methods."
-msgstr ""
+msgstr "Zaplaťte 200 eur pro upgrade plánu. Budete přesměrováni do Stripe Checkoutu, kde můžete platit kartou, PayPalem, Google Pay, Apple Pay atd."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:15
 msgid "You will be redirected to Stripe to complete payment."
-msgstr ""
+msgstr "Budete přesměrováni do Stripe pro dokončení platby."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:25
 msgid "Redirecting..."
-msgstr ""
+msgstr "Přesměrování…"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:40
 msgid "Request failed. Try again."
-msgstr ""
+msgstr "Požadavek selhal. Zkuste to znovu."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:7
 msgid ""
 "You cancelled the payment. No charge was made. You can try again anytime to "
 "upgrade your plan and enable online payments from your digital menu."
-msgstr ""
+msgstr "Zrušili jste platbu. Nebylo nic strženo. Můžete to kdykoli zkusit znovu pro upgrade a aktivaci online plateb."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:10
 msgid "Try again – Start Plan"
-msgstr ""
+msgstr "Zkusit znovu – Spustit plán"
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:12
 #: .\templates_bonusweb\business_menu\subscribe_success.html:11
 #: .\templates_bonusweb\business_menu\subscribe_success.html:13
 msgid "Back to Dashboard"
-msgstr ""
+msgstr "Zpět na nástěnku"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:3
 msgid "Subscription complete"
-msgstr ""
+msgstr "Předplatné dokončeno"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:6
 msgid "Thank you!"
-msgstr ""
+msgstr "Děkujeme!"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:7
 msgid ""
 "Your subscription is active. You can now use the app and connect your Stripe "
 "account to receive customer payments."
-msgstr ""
+msgstr "Vaše předplatné je aktivní. Nyní můžete používat aplikaci a připojit Stripe pro přijímání plateb."
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
-msgstr ""
+msgstr "Připojit Stripe pro přijímání plateb"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 21:34+0330\n"
+"POT-Creation-Date: 2026-07-06 12:24+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -490,7 +490,9 @@ msgstr "Menos errores al pedir"
 msgid "Higher conversion on the menu page"
 msgstr "Mayor conversión en la página del menú"
 
-#: .\core\views.py:283 .\templates\partials\navbar.html:53
+#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
+#: .\templates\pages\restaurant_menu.html:661
+#: .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr "Pedidos en línea"
 
@@ -621,59 +623,59 @@ msgstr "Mayor satisfacción del cliente"
 
 #: .\templates\admin\business_menu_section.html:11
 msgid "Model name"
-msgstr ""
+msgstr "Nombre del modelo"
 
 #: .\templates\admin\business_menu_section.html:12
 msgid "Add link"
-msgstr ""
+msgstr "Enlace para añadir"
 
 #: .\templates\admin\business_menu_section.html:13
 msgid "Change or view list link"
-msgstr ""
+msgstr "Enlace para cambiar o ver la lista"
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:391
-#: .\templates\pages\restaurant_menu.html:405
-#: .\templates\pages\restaurant_menu.html:436
+#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:418
+#: .\templates\pages\restaurant_menu.html:449
 msgid "Add"
 msgstr "Añadir"
 
 #: .\templates\admin\business_menu_section.html:33
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: .\templates\admin\business_menu_section.html:35
 msgid "Change"
-msgstr ""
+msgstr "Cambiar"
 
 #: .\templates\admin\index.html:23
 msgid "Recent actions"
-msgstr ""
+msgstr "Acciones recientes"
 
 #: .\templates\admin\index.html:24
 msgid "My actions"
-msgstr ""
+msgstr "Mis acciones"
 
 #: .\templates\admin\index.html:28
 msgid "None available"
-msgstr ""
+msgstr "Ninguno disponible"
 
 #: .\templates\admin\index.html:33
 msgid "Added:"
-msgstr ""
+msgstr "Añadido:"
 
 #: .\templates\admin\index.html:33
 msgid "Changed:"
-msgstr ""
+msgstr "Modificado:"
 
 #: .\templates\admin\index.html:33
 msgid "Deleted:"
-msgstr ""
+msgstr "Eliminado:"
 
 #: .\templates\admin\index.html:43
 msgid "Unknown content"
-msgstr ""
+msgstr "Contenido desconocido"
 
 #: .\templates\base.html:41
 msgid "Skip to main content"
@@ -689,7 +691,7 @@ msgstr "Página no encontrada"
 
 #: .\templates\errors\404.html:9
 msgid "The page you are looking for does not exist or has been moved."
-msgstr ""
+msgstr "La página que buscas no existe o ha sido movida."
 
 #: .\templates\errors\404.html:10 .\templates\errors\500.html:10
 #: .\templates\pages\restaurants_list.html:17
@@ -706,19 +708,19 @@ msgstr "Algo salió mal"
 
 #: .\templates\errors\500.html:9
 msgid "We are working on the issue. Please try again in a few minutes."
-msgstr ""
+msgstr "Estamos trabajando en el problema. Vuelve a intentarlo en unos minutos."
 
 #: .\templates\pages\auth\forgot_password.html:3
 msgid "Forgot password"
-msgstr ""
+msgstr "Olvidé mi contraseña"
 
 #: .\templates\pages\auth\forgot_password.html:9
 msgid "Reset password"
-msgstr ""
+msgstr "Restablecer contraseña"
 
 #: .\templates\pages\auth\forgot_password.html:12
 msgid "Enter your email and we'll send you a 6-digit code."
-msgstr ""
+msgstr "Introduce tu correo y te enviaremos un código de 6 dígitos."
 
 #: .\templates\pages\auth\forgot_password.html:16
 #: .\templates\pages\auth\login.html:23 .\templates\pages\auth\register.html:21
@@ -732,56 +734,56 @@ msgstr "Correo electrónico"
 #: .\templates\pages\auth\forgot_password.html:21
 #: .\templates\pages\auth\forgot_password.html:83
 msgid "Send code"
-msgstr ""
+msgstr "Enviar código"
 
 #: .\templates\pages\auth\forgot_password.html:26
 msgid ""
 "We sent a 6-digit code to <strong id=\"code-email\"></strong>. Enter it "
 "below."
-msgstr ""
+msgstr "Enviamos un código de 6 dígitos a <strong id=\"code-email\"></strong>. Introdúcelo abajo."
 
 #: .\templates\pages\auth\forgot_password.html:27
 msgid "Code expires in 10 minutes."
-msgstr ""
+msgstr "El código caduca en 10 minutos."
 
 #: .\templates\pages\auth\forgot_password.html:32
 #: .\templates\pages\auth\register.html:46
 msgid "Verification code"
-msgstr ""
+msgstr "Código de verificación"
 
 #: .\templates\pages\auth\forgot_password.html:37
 msgid "Resend code in <span id=\"resend-timer\">60</span>s"
-msgstr ""
+msgstr "Reenviar en <span id=\"resend-timer\">60</span>s"
 
 #: .\templates\pages\auth\forgot_password.html:38
 msgid "Resend"
-msgstr ""
+msgstr "Reenviar"
 
 #: .\templates\pages\auth\forgot_password.html:41
 #: .\templates\pages\auth\forgot_password.html:85
 msgid "Verify code"
-msgstr ""
+msgstr "Verificar código"
 
 #: .\templates\pages\auth\forgot_password.html:46
 msgid "Enter your new password."
-msgstr ""
+msgstr "Introduce tu nueva contraseña."
 
 #: .\templates\pages\auth\forgot_password.html:52
 msgid "New password"
-msgstr ""
+msgstr "Nueva contraseña"
 
 #: .\templates\pages\auth\forgot_password.html:57
 msgid "Confirm new password"
-msgstr ""
+msgstr "Confirmar nueva contraseña"
 
 #: .\templates\pages\auth\forgot_password.html:62
 #: .\templates\pages\auth\forgot_password.html:87
 msgid "Update password"
-msgstr ""
+msgstr "Actualizar contraseña"
 
 #: .\templates\pages\auth\forgot_password.html:67
 msgid "Back to login"
-msgstr ""
+msgstr "Volver a iniciar sesión"
 
 #: .\templates\pages\auth\forgot_password.html:82
 #: .\templates\pages\restaurant_reservation.html:177
@@ -790,31 +792,31 @@ msgstr "Enviando…"
 
 #: .\templates\pages\auth\forgot_password.html:84
 msgid "Verifying…"
-msgstr ""
+msgstr "Verificando…"
 
 #: .\templates\pages\auth\forgot_password.html:86
 msgid "Updating…"
-msgstr ""
+msgstr "Actualizando…"
 
 #: .\templates\pages\auth\forgot_password.html:88
 msgid "Failed to send code. Check your email."
-msgstr ""
+msgstr "No se pudo enviar el código. Comprueba tu correo."
 
 #: .\templates\pages\auth\forgot_password.html:89
 msgid "Invalid or expired code."
-msgstr ""
+msgstr "Código inválido o expirado."
 
 #: .\templates\pages\auth\forgot_password.html:90
 msgid "Passwords do not match."
-msgstr ""
+msgstr "Las contraseñas no coinciden."
 
 #: .\templates\pages\auth\forgot_password.html:91
 msgid "Failed to update password."
-msgstr ""
+msgstr "No se pudo actualizar la contraseña."
 
 #: .\templates\pages\auth\forgot_password.html:92
 msgid "Network error. Try again."
-msgstr ""
+msgstr "Error de red. Inténtalo de nuevo."
 
 #: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:32
 #: .\templates\pages\auth\register.html:57
@@ -825,19 +827,19 @@ msgstr "Iniciar sesión"
 
 #: .\templates\pages\auth\login.html:9
 msgid "Welcome back"
-msgstr ""
+msgstr "Bienvenido/a de nuevo"
 
 #: .\templates\pages\auth\login.html:10
 msgid "Sign in to manage your restaurant panel."
-msgstr ""
+msgstr "Inicia sesión para gestionar el panel de tu restaurante."
 
 #: .\templates\pages\auth\login.html:15
 msgid "Registration successful. Sign in below."
-msgstr ""
+msgstr "Registro exitoso. Inicia sesión abajo."
 
 #: .\templates\pages\auth\login.html:18
 msgid "Password updated. You can log in with your new password."
-msgstr ""
+msgstr "Contraseña actualizada. Puedes iniciar sesión con la nueva."
 
 #: .\templates\pages\auth\login.html:28 .\templates\pages\auth\register.html:23
 msgid "Password"
@@ -845,11 +847,11 @@ msgstr "Contraseña"
 
 #: .\templates\pages\auth\login.html:34
 msgid "Forgot password?"
-msgstr ""
+msgstr "¿Olvidaste tu contraseña?"
 
 #: .\templates\pages\auth\login.html:37
 msgid "No account?"
-msgstr ""
+msgstr "¿No tienes cuenta?"
 
 #: .\templates\pages\auth\login.html:37 .\templates\pages\auth\register.html:3
 #: .\templates\pages\panel\dashboard_simple.html:17
@@ -858,22 +860,23 @@ msgstr "Registrarse"
 
 #: .\templates\pages\auth\register.html:16
 msgid "Create your account"
-msgstr ""
+msgstr "Crea tu cuenta"
 
 #: .\templates\pages\auth\register.html:17
 msgid "Start your 12-day free trial. No payment required."
-msgstr ""
+msgstr "Empieza tu prueba gratuita de 12 días. Sin pago."
 
 #: .\templates\pages\auth\register.html:20
 #: .\templates\pages\panel\settings.html:28
 msgid "Restaurant name"
-msgstr ""
+msgstr "Nombre del restaurante"
 
 #: .\templates\pages\auth\register.html:20
 msgid "Orange Bistro"
-msgstr ""
+msgstr "Orange Bistro"
 
 #: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:72
 #: .\templates\pages\panel\settings.html:29
 #: .\templates\pages\restaurant_reservation.html:142
 #: .\templates\pages\restaurant_reservation.html:143
@@ -882,15 +885,15 @@ msgstr "Teléfono"
 
 #: .\templates\pages\auth\register.html:26
 msgid "I accept the terms and conditions"
-msgstr ""
+msgstr "Acepto los términos y condiciones"
 
 #: .\templates\pages\auth\register.html:30
 msgid "I confirm I am acting as a business (B2B)"
-msgstr ""
+msgstr "Confirmo que actúo como empresa (B2B)."
 
 #: .\templates\pages\auth\register.html:34
 msgid "Please complete the \"I"
-msgstr ""
+msgstr "Completa la verificación «No soy un robot»."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
@@ -898,53 +901,54 @@ msgstr "Continuar"
 
 #: .\templates\pages\auth\register.html:41
 msgid "Verify your email"
-msgstr ""
+msgstr "Verifica tu correo"
 
 #: .\templates\pages\auth\register.html:42
 msgid ""
 "We sent a 6-digit code to <strong id=\"verify-email-display\"></strong>. "
 "Enter it below to complete registration."
-msgstr ""
+msgstr "Enviamos un código de 6 dígitos a <strong id=\"verify-email-display\"></strong>. Introdúcelo para completar el registro."
 
 #: .\templates\pages\auth\register.html:51
 msgid "Complete registration"
-msgstr ""
+msgstr "Completar registro"
 
 #: .\templates\pages\auth\register.html:54
 msgid "Use a different email"
-msgstr ""
+msgstr "Usar otro correo"
 
 #: .\templates\pages\auth\register.html:57
 msgid "Already have an account?"
-msgstr ""
+msgstr "¿Ya tienes cuenta?"
 
 #: .\templates\pages\checkout.html:3 .\templates\pages\checkout.html:12
 msgid "Checkout"
-msgstr ""
+msgstr "Pago"
 
 #: .\templates\pages\checkout.html:19
 msgid "Customer Info"
-msgstr ""
+msgstr "Datos del cliente"
 
 #: .\templates\pages\checkout.html:21
 msgid "Full Name"
-msgstr ""
+msgstr "Nombre completo"
 
 #: .\templates\pages\checkout.html:21
 msgid "John Doe"
-msgstr ""
+msgstr "Juan Pérez"
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\panel\settings.html:30
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\panel\settings.html:30
 msgid "Address"
 msgstr "Dirección"
 
 #: .\templates\pages\checkout.html:30
 msgid "Street Address"
-msgstr ""
+msgstr "Dirección"
 
 #: .\templates\pages\checkout.html:30
 msgid "Street, building, unit"
-msgstr ""
+msgstr "Calle, edificio, unidad"
 
 #: .\templates\pages\checkout.html:32 .\templates\pages\panel\settings.html:32
 msgid "City"
@@ -952,7 +956,7 @@ msgstr "Ciudad"
 
 #: .\templates\pages\checkout.html:33
 msgid "ZIP"
-msgstr ""
+msgstr "CP"
 
 #: .\templates\pages\checkout.html:34 .\templates\pages\panel\settings.html:35
 msgid "Country"
@@ -960,11 +964,11 @@ msgstr "País"
 
 #: .\templates\pages\checkout.html:36
 msgid "Delivery Notes"
-msgstr ""
+msgstr "Notas de entrega"
 
 #: .\templates\pages\checkout.html:36
 msgid "Optional note for delivery driver"
-msgstr ""
+msgstr "Nota opcional para el repartidor"
 
 #: .\templates\pages\checkout.html:41
 msgid "Payment Method"
@@ -972,32 +976,32 @@ msgstr "Método de pago"
 
 #: .\templates\pages\checkout.html:43
 msgid "Card Number"
-msgstr ""
+msgstr "Número de tarjeta"
 
 #: .\templates\pages\checkout.html:44
 msgid "Card Holder"
-msgstr ""
+msgstr "Titular de la tarjeta"
 
 #: .\templates\pages\checkout.html:44
 msgid "Name on card"
-msgstr ""
+msgstr "Nombre en la tarjeta"
 
 #: .\templates\pages\checkout.html:45
 msgid "Expiry"
-msgstr ""
+msgstr "Caducidad"
 
 #: .\templates\pages\checkout.html:46
 msgid "CVC"
-msgstr ""
+msgstr "CVC"
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:575
-#: .\templates\pages\restaurant_menu.html:710
+#: .\templates\pages\restaurant_menu.html:591
+#: .\templates\pages\restaurant_menu.html:731
 msgid "Place Order"
 msgstr "Realizar pedido"
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:741
 msgid "Order Summary"
 msgstr "Resumen del pedido"
 
@@ -1015,7 +1019,7 @@ msgstr "Contacto"
 msgid ""
 "Get in touch for support, sales, or partnerships. Email, phone, and "
 "WhatsApp. We reply within 24 hours."
-msgstr ""
+msgstr "Contáctanos para soporte, ventas o alianzas. Email, teléfono y WhatsApp. Respondemos en menos de 24 horas."
 
 #: .\templates\pages\contact.html:10
 msgid "Get in touch"
@@ -1023,27 +1027,27 @@ msgstr "Ponte en contacto"
 
 #: .\templates\pages\contact.html:11
 msgid "Support, sales, or partnerships. We reply within 24 hours."
-msgstr ""
+msgstr "Soporte, ventas o alianzas. Respondemos en menos de 24 horas."
 
 #: .\templates\pages\contact.html:17
 msgid "Contact & Support"
-msgstr ""
+msgstr "Contacto y soporte"
 
 #: .\templates\pages\contact.html:24
 msgid "Phone / Support"
-msgstr ""
+msgstr "Teléfono / Soporte"
 
 #: .\templates\pages\contact.html:28
 msgid "WhatsApp"
-msgstr ""
+msgstr "WhatsApp"
 
 #: .\templates\pages\contact.html:31
 msgid "Chat on WhatsApp"
-msgstr ""
+msgstr "Chatear por WhatsApp"
 
 #: .\templates\pages\contact.html:40
 msgid "Send a message"
-msgstr ""
+msgstr "Enviar un mensaje"
 
 #: .\templates\pages\contact.html:42 .\templates\pages\panel\categories.html:20
 #: .\templates\pages\panel\menu_item_form.html:13
@@ -1053,11 +1057,11 @@ msgstr "Nombre"
 
 #: .\templates\pages\contact.html:42
 msgid "Your name"
-msgstr ""
+msgstr "Tu nombre"
 
 #: .\templates\pages\contact.html:43
 msgid "you@example.com"
-msgstr ""
+msgstr "tu@ejemplo.com"
 
 #: .\templates\pages\contact.html:44
 msgid "Subject"
@@ -1065,7 +1069,7 @@ msgstr "Asunto"
 
 #: .\templates\pages\contact.html:44
 msgid "How can we help?"
-msgstr ""
+msgstr "¿Cómo podemos ayudar?"
 
 #: .\templates\pages\contact.html:45
 msgid "Message"
@@ -1073,7 +1077,7 @@ msgstr "Mensaje"
 
 #: .\templates\pages\contact.html:45
 msgid "Your message"
-msgstr ""
+msgstr "Tu mensaje"
 
 #: .\templates\pages\contact.html:46
 msgid "Send message"
@@ -1090,7 +1094,7 @@ msgstr "Funciones"
 msgid ""
 "Explore all features: QR menu, online ordering, campaigns, analytics, multi-"
 "language support, and more."
-msgstr ""
+msgstr "Explora todas las funciones: menú QR, pedidos en línea, campañas, analítica, multilenguaje y más."
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
@@ -1147,21 +1151,21 @@ msgstr "Empieza gratis"
 
 #: .\templates\pages\landing.html:3
 msgid "QR Menu + Ordering"
-msgstr ""
+msgstr "Menú QR + pedidos"
 
 #: .\templates\pages\landing.html:4
 msgid ""
 "Launch your branded QR menu, run campaigns, and receive online orders from "
 "one dashboard. Built for modern restaurants."
-msgstr ""
+msgstr "Lanza tu menú QR con tu marca, lanza campañas y recibe pedidos online desde un panel. Pensado para restaurantes modernos."
 
 #: .\templates\pages\landing.html:31
 msgid "My Bonus QR Menu"
-msgstr ""
+msgstr "Mi Bonus QR Menú"
 
 #: .\templates\pages\landing.html:32
 msgid "Smart menu experience"
-msgstr ""
+msgstr "Experiencia de menú inteligente"
 
 #: .\templates\pages\landing.html:37
 msgid "Simple QR Code,"
@@ -1175,7 +1179,7 @@ msgstr "Más ingresos."
 msgid ""
 "Grow your revenue with a professional QR menu, online ordering, and a "
 "stunning mobile experience."
-msgstr ""
+msgstr "Haz crecer tus ingresos con un menú QR profesional, pedidos en línea y una experiencia móvil impresionante."
 
 #: .\templates\pages\landing.html:45 .\templates\pages\landing.html:311
 #: .\templates\partials\navbar.html:125 .\templates\partials\navbar.html:171
@@ -1189,211 +1193,211 @@ msgstr "Ver ejemplo"
 #: .\templates\pages\landing.html:53 .\templates\pages\landing.html:55
 #: .\templates\partials\footer.html:14 .\templates\partials\footer.html:16
 msgid "Download on the App Store"
-msgstr ""
+msgstr "Descargar en la App Store"
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:452
+#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
 msgid "Orders"
 msgstr "Pedidos"
 
 #: .\templates\pages\landing.html:65
 msgid "Live Menu"
-msgstr ""
+msgstr "Menú en vivo"
 
 #: .\templates\pages\landing.html:68
 msgid "2 min"
-msgstr ""
+msgstr "2 min"
 
 #: .\templates\pages\landing.html:69
 msgid "Setup"
-msgstr ""
+msgstr "Configuración"
 
 #: .\templates\pages\landing.html:79
 msgid "Tablet menu preview"
-msgstr ""
+msgstr "Vista previa del menú en tablet"
 
 #: .\templates\pages\landing.html:90 .\templates\pages\landing.html:111
 msgid "Phone menu"
-msgstr ""
+msgstr "Menú en móvil"
 
 #: .\templates\pages\landing.html:101
 msgid "Phone menu analytics"
-msgstr ""
+msgstr "Analítica del menú en móvil"
 
 #: .\templates\pages\landing.html:116
 msgid "Phone analytics"
-msgstr ""
+msgstr "Analítica en móvil"
 
 #: .\templates\pages\landing.html:122
 msgid "Open Live Menu"
-msgstr ""
+msgstr "Abrir menú en vivo"
 
 #: .\templates\pages\landing.html:132
 msgid "Premium Experiences for Every Guest"
-msgstr ""
+msgstr "Experiencias premium para cada cliente"
 
 #: .\templates\pages\landing.html:133
 msgid ""
 "Modern UI components, strong visual hierarchy, and smooth animations for a "
 "luxury digital dining brand."
-msgstr ""
+msgstr "Componentes de UI modernos, fuerte jerarquía visual y animaciones suaves para una marca gastronómica digital de lujo."
 
 #: .\templates\pages\landing.html:137
 msgid "Live Menu Sync"
-msgstr ""
+msgstr "Sincronización de menú en vivo"
 
 #: .\templates\pages\landing.html:138
 msgid "Change prices, stock, and offers instantly."
-msgstr ""
+msgstr "Cambia precios, stock y ofertas al instante."
 
 #: .\templates\pages\landing.html:141
 msgid "Multilingual Menus"
-msgstr ""
+msgstr "Menús multilingües"
 
 #: .\templates\pages\landing.html:142
 msgid "One tap language switch for tourists."
-msgstr ""
+msgstr "Cambio de idioma con un solo toque para turistas."
 
 #: .\templates\pages\landing.html:145
 msgid "Campaign Engine"
-msgstr ""
+msgstr "Motor de campañas"
 
 #: .\templates\pages\landing.html:146
 msgid "Upsell combos and seasonal promos."
-msgstr ""
+msgstr "Ventas cruzadas de combos y promos de temporada."
 
 #: .\templates\pages\landing.html:149
 msgid "Realtime Insights"
-msgstr ""
+msgstr "Información en tiempo real"
 
 #: .\templates\pages\landing.html:150
 msgid "See hot items and conversion trends."
-msgstr ""
+msgstr "Descubre los productos calientes y tendencias de conversión."
 
 #: .\templates\pages\landing.html:160
 msgid "Interactive Visual Showcase"
-msgstr ""
+msgstr "Vitrina visual interactiva"
 
 #: .\templates\pages\landing.html:161
 msgid ""
 "Beautiful sections that feel alive and premium, built for conversion and wow "
 "effect."
-msgstr ""
+msgstr "Secciones bellas que se sienten vivas y premium, diseñadas para conversión y efecto wow."
 
 #: .\templates\pages\landing.html:165
 msgid "Uptime"
-msgstr ""
+msgstr "Tiempo activo"
 
 #: .\templates\pages\landing.html:169
 msgid "Menus Served"
-msgstr ""
+msgstr "Menús servidos"
 
 #: .\templates\pages\landing.html:173
 msgid "Guest Rating"
-msgstr ""
+msgstr "Valoración del cliente"
 
 #: .\templates\pages\landing.html:177
 msgid "Avg. Basket"
-msgstr ""
+msgstr "Cesta media"
 
 #: .\templates\pages\landing.html:182
 msgid "Why teams switch to us"
-msgstr ""
+msgstr "Por qué los equipos se pasan a nosotros"
 
 #: .\templates\pages\landing.html:184
 msgid "No app install needed for guests."
-msgstr ""
+msgstr "Sin instalación de app para los clientes."
 
 #: .\templates\pages\landing.html:185
 msgid "Manage all branches in one place."
-msgstr ""
+msgstr "Gestiona todas las sucursales en un solo lugar."
 
 #: .\templates\pages\landing.html:186
 msgid "Fast mobile experience with elegant UI."
-msgstr ""
+msgstr "Experiencia móvil rápida con una UI elegante."
 
 #: .\templates\pages\landing.html:187
 msgid "Promotions, QR, and ordering fully integrated."
-msgstr ""
+msgstr "Promociones, QR y pedidos totalmente integrados."
 
 #: .\templates\pages\landing.html:203
 msgid "Table Intent"
-msgstr ""
+msgstr "Intención de mesa"
 
 #: .\templates\pages\landing.html:206
 msgid "Menu Action"
-msgstr ""
+msgstr "Acción del menú"
 
 #: .\templates\pages\landing.html:210
 msgid "Premium phone mockup"
-msgstr ""
+msgstr "Mockup premium de móvil"
 
 #: .\templates\pages\landing.html:215
 msgid "Immersive Mobile"
-msgstr ""
+msgstr "Móvil inmersivo"
 
 #: .\templates\pages\landing.html:216
 msgid "From scan to order in one beautiful flow."
-msgstr ""
+msgstr "Del escaneo al pedido en un flujo hermoso."
 
 #: .\templates\pages\landing.html:218
 msgid ""
 "Elevate guest experience with cinematic visuals, smooth motion, and ultra-"
 "clean interaction patterns crafted for QR Menu."
-msgstr ""
+msgstr "Eleva la experiencia del cliente con visuales cinematográficos, movimiento suave y patrones de interacción ultra-limpios para el menú QR."
 
 #: .\templates\pages\landing.html:220
 msgid "Explore Demo Menus"
-msgstr ""
+msgstr "Explora menús demo"
 
 #: .\templates\pages\landing.html:229
 msgid "Menu Over Matter<br>Energy in Motion"
-msgstr ""
+msgstr "Menú sobre la materia<br>Energía en movimiento"
 
 #: .\templates\pages\landing.html:234
 msgid "Restaurant lifestyle"
-msgstr ""
+msgstr "Estilo de vida gastronómico"
 
 #: .\templates\pages\landing.html:239
 msgid "Smart QR cards guide guests naturally from discovery to checkout."
-msgstr ""
+msgstr "Tarjetas QR inteligentes guían a los clientes de forma natural del descubrimiento al pago."
 
 #: .\templates\pages\landing.html:240
 msgid "Motion and hierarchy improve readability and increase item conversion."
-msgstr ""
+msgstr "Movimiento y jerarquía mejoran la legibilidad y aumentan la conversión."
 
 #: .\templates\pages\landing.html:241
 msgid "Every section is built to feel premium while staying lightweight."
-msgstr ""
+msgstr "Cada sección se siente premium sin dejar de ser ligera."
 
 #: .\templates\pages\landing.html:243
 msgid "More About QR Menu"
-msgstr ""
+msgstr "Más sobre menú QR"
 
 #: .\templates\pages\landing.html:246
 msgid "Color portrait style"
-msgstr ""
+msgstr "Estilo retrato a color"
 
 #: .\templates\pages\landing.html:261 .\templates\pages\landing.html:275
 msgid "There is more<br>to this menu world"
-msgstr ""
+msgstr "Hay más<br>en este mundo de menús"
 
 #: .\templates\pages\landing.html:269 .\templates\pages\landing.html:283
 msgid "Than meets<br>the eye"
-msgstr ""
+msgstr "De lo que ves a simple vista"
 
 #: .\templates\pages\landing.html:292
 msgid "Loved by Restaurant Teams"
-msgstr ""
+msgstr "Adorado por equipos de restaurantes"
 
 #: .\templates\pages\landing.html:308
 msgid "Make visitors say “wow” from first second."
-msgstr ""
+msgstr "Haz que tus visitantes digan «wow» desde el primer segundo."
 
 #: .\templates\pages\landing.html:309
 msgid ""
 "A long, professional landing experience with beautiful sections, fluid "
 "animation, and premium orange branding."
-msgstr ""
+msgstr "Una experiencia de landing extensa y profesional con secciones bellas, animación fluida y branding naranja premium."
 
 #: .\templates\pages\landing.html:312
 msgid "See Menus"
@@ -1402,12 +1406,11 @@ msgstr "Ver menús"
 #: .\templates\pages\order_payment.html:3
 #, python-format
 msgid "Payment — %(name)s"
-msgstr ""
+msgstr "Pago — %(name)s"
 
 #: .\templates\pages\order_payment.html:10
 #: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:48
-#: .\templates\pages\order_payment.html:51
+#: .\templates\pages\order_payment.html:87
 #: .\templates\pages\restaurant_reservation.html:108
 #: .\templates\pages\restaurant_reservation.html:182
 #: .\templates\pages\restaurant_schedule.html:34
@@ -1415,8 +1418,8 @@ msgid "Back to menu"
 msgstr "Volver al menú"
 
 #: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:534
-#: .\templates\pages\restaurant_menu.html:662
+#: .\templates\pages\restaurant_menu.html:550
+#: .\templates\pages\restaurant_menu.html:682
 #: .\templates\pages\restaurant_reservation.html:163
 msgid "Payment"
 msgstr "Pago"
@@ -1424,51 +1427,90 @@ msgstr "Pago"
 #: .\templates\pages\order_payment.html:15
 #, python-format
 msgid "%(name)s — Order #%(id)s"
-msgstr ""
+msgstr "%(name)s — Pedido n.º %(id)s"
 
 #: .\templates\pages\order_payment.html:18
 msgid "Order summary"
-msgstr ""
+msgstr "Resumen del pedido"
 
 #: .\templates\pages\order_payment.html:24
 msgid "Total:"
-msgstr ""
+msgstr "Total:"
 
 #: .\templates\pages\order_payment.html:28
 msgid "Payment method"
-msgstr ""
+msgstr "Método de pago"
 
 #: .\templates\pages\order_payment.html:30
 msgid ""
 "This restaurant does not accept online payment. Please pay by cash when you "
 "pick up or dine in."
-msgstr ""
+msgstr "Este restaurante no acepta pago en línea. Paga en efectivo al recoger o al comer en el local."
 
 #: .\templates\pages\order_payment.html:35
 #, python-format
 msgid "Pay with card. The payment goes to %(name)s."
-msgstr ""
+msgstr "Paga con tarjeta. El pago se envía a %(name)s."
 
 #: .\templates\pages\order_payment.html:42
 #, python-format
 msgid "Pay %(currency)s %(total)s"
-msgstr ""
+msgstr "Pagar %(currency)s %(total)s"
 
 #: .\templates\pages\order_payment.html:47
 msgid "Payment successful."
-msgstr ""
+msgstr "Pago exitoso."
 
-#: .\templates\pages\order_payment.html:73
+#: .\templates\pages\order_payment.html:49
+msgid ""
+"Please enter your delivery details so the restaurant can receive the order."
+msgstr "Introduce tus datos de entrega para que el restaurante reciba el pedido."
+
+#: .\templates\pages\order_payment.html:51
+msgid "Your order has been sent to the restaurant."
+msgstr "Tu pedido se ha enviado al restaurante."
+
+#: .\templates\pages\order_payment.html:59
+msgid "First name"
+msgstr "Nombre"
+
+#: .\templates\pages\order_payment.html:63
+msgid "Last name"
+msgstr "Apellido"
+
+#: .\templates\pages\order_payment.html:77
+#, fuzzy
+#| msgid "View orders"
+msgid "Submit order"
+msgstr "Enviar pedido"
+
+#: .\templates\pages\order_payment.html:82
+#, fuzzy
+#| msgid "Full feature set for modern restaurants"
+msgid "Order sent to the restaurant."
+msgstr "Pedido enviado al restaurante."
+
+#: .\templates\pages\order_payment.html:83
+msgid "You can follow the order status in order tracking."
+msgstr "Puedes seguir el estado del pedido en el seguimiento."
+
+#: .\templates\pages\order_payment.html:84
+#, fuzzy
+#| msgid "Order management"
+msgid "Order tracking"
+msgstr "Seguimiento del pedido"
+
+#: .\templates\pages\order_payment.html:113
 msgid "Could not start payment."
-msgstr ""
+msgstr "No se pudo iniciar el pago."
 
-#: .\templates\pages\order_payment.html:74
+#: .\templates\pages\order_payment.html:114
 msgid "Payment failed."
-msgstr ""
+msgstr "El pago falló."
 
-#: .\templates\pages\order_payment.html:75
+#: .\templates\pages\order_payment.html:115
 msgid "Something went wrong."
-msgstr ""
+msgstr "Algo salió mal."
 
 #: .\templates\pages\panel\campaigns.html:3
 #: .\templates\pages\panel\campaigns.html:11
@@ -1493,44 +1535,44 @@ msgstr "Panel"
 
 #: .\templates\pages\panel\campaigns.html:16
 msgid "Create Campaign"
-msgstr ""
+msgstr "Crear campaña"
 
 #: .\templates\pages\panel\campaigns.html:17
 msgid "Campaign Name"
-msgstr ""
+msgstr "Nombre de la campaña"
 
 #: .\templates\pages\panel\campaigns.html:17
 msgid "Lunch Combo 20% Off"
-msgstr ""
+msgstr "Combo de comida 20 % dto."
 
 #: .\templates\pages\panel\campaigns.html:18
 msgid "Discount (%)"
-msgstr ""
+msgstr "Descuento (%)"
 
 #: .\templates\pages\panel\campaigns.html:19
 msgid "Date Range"
-msgstr ""
+msgstr "Rango de fechas"
 
 #: .\templates\pages\panel\campaigns.html:19
 msgid "Mar 1 - Mar 20"
-msgstr ""
+msgstr "1 mar - 20 mar"
 
 #: .\templates\pages\panel\campaigns.html:20
 msgid "Target Categories"
-msgstr ""
+msgstr "Categorías objetivo"
 
 #: .\templates\pages\panel\campaigns.html:20
 msgid "Main Dishes, Drinks"
-msgstr ""
+msgstr "Platos principales, bebidas"
 
 #: .\templates\pages\panel\campaigns.html:21
 #: .\templates\pages\panel\dashboard.html:64
 msgid "Create campaign"
-msgstr ""
+msgstr "Crear campaña"
 
 #: .\templates\pages\panel\campaigns.html:33
 msgid "off"
-msgstr ""
+msgstr "de descuento"
 
 #: .\templates\pages\panel\categories.html:3
 #: .\templates\pages\panel\categories.html:11
@@ -1542,15 +1584,15 @@ msgstr "Categorías"
 
 #: .\templates\pages\panel\categories.html:12
 msgid "New category"
-msgstr ""
+msgstr "Nueva categoría"
 
 #: .\templates\pages\panel\categories.html:21
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
 #: .\templates\pages\panel\categories.html:22
 msgid "Actions"
-msgstr ""
+msgstr "Acciones"
 
 #: .\templates\pages\panel\categories.html:30
 #: .\templates\pages\panel\menu_items_list.html:33
@@ -1559,20 +1601,20 @@ msgstr "Eliminar"
 
 #: .\templates\pages\panel\categories.html:37
 msgid "No categories yet"
-msgstr ""
+msgstr "Aún no hay categorías"
 
 #: .\templates\pages\panel\categories.html:37
 msgid "Create your first category to organize menu items."
-msgstr ""
+msgstr "Crea tu primera categoría para organizar los artículos."
 
 #: .\templates\pages\panel\categories.html:37
 #: .\templates\pages\panel\categories.html:40
 msgid "Create category"
-msgstr ""
+msgstr "Crear categoría"
 
 #: .\templates\pages\panel\categories.html:40
 msgid "Use this Alpine-powered modal to add category creation form later."
-msgstr ""
+msgstr "Usa este modal (basado en Alpine) para añadir un formulario de creación de categorías más adelante."
 
 #: .\templates\pages\panel\dashboard.html:3
 #: .\templates\pages\panel\dashboard.html:10
@@ -1585,7 +1627,7 @@ msgstr "Panel"
 
 #: .\templates\pages\panel\dashboard.html:29
 msgid "Recent Orders"
-msgstr ""
+msgstr "Pedidos recientes"
 
 #: .\templates\pages\panel\dashboard.html:34
 msgid "Order"
@@ -1593,147 +1635,147 @@ msgstr "Pedido"
 
 #: .\templates\pages\panel\dashboard.html:35
 msgid "Customer"
-msgstr ""
+msgstr "Cliente"
 
 #: .\templates\pages\panel\dashboard.html:36
 msgid "Amount"
-msgstr ""
+msgstr "Importe"
 
 #: .\templates\pages\panel\dashboard.html:37
 #: .\templates\pages\panel\dashboard_simple.html:27
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: .\templates\pages\panel\dashboard.html:56
 msgid "Quick Actions"
-msgstr ""
+msgstr "Acciones rápidas"
 
 #: .\templates\pages\panel\dashboard.html:60
 msgid "Add menu item"
-msgstr ""
+msgstr "Añadir artículo"
 
 #: .\templates\pages\panel\dashboard.html:68
 msgid "Generate QR"
-msgstr ""
+msgstr "Generar QR"
 
 #: .\templates\pages\panel\dashboard_simple.html:12
 msgid ""
 "Payment, plan and app access. Use the app for orders, menu and settings."
-msgstr ""
+msgstr "Pago, plan y acceso a la app. Usa la app para pedidos, menú y ajustes."
 
 #: .\templates\pages\panel\dashboard_simple.html:16
 msgid ""
 "Open this page with your panel link (e.g. /panel/?admin_id=...) or log in "
 "from the app."
-msgstr ""
+msgstr "Abre esta página con tu enlace de panel (p. ej. /panel/?admin_id=...) o inicia sesión desde la app."
 
 #: .\templates\pages\panel\dashboard_simple.html:24
 msgid "Plan & payment"
-msgstr ""
+msgstr "Plan y pago"
 
 #: .\templates\pages\panel\dashboard_simple.html:29
 msgid "Active"
-msgstr ""
+msgstr "Activo"
 
 #: .\templates\pages\panel\dashboard_simple.html:31
 msgid "Expired"
-msgstr ""
+msgstr "Caducado"
 
 #: .\templates\pages\panel\dashboard_simple.html:36
 #: .\templates\pages\panel\dashboard_simple.html:41
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: .\templates\pages\panel\dashboard_simple.html:37
 msgid "Free trial"
-msgstr ""
+msgstr "Prueba gratuita"
 
 #: .\templates\pages\panel\dashboard_simple.html:42
 msgid "Subscription"
-msgstr ""
+msgstr "Suscripción"
 
 #: .\templates\pages\panel\dashboard_simple.html:47
 msgid "Expires"
-msgstr ""
+msgstr "Caduca"
 
 #: .\templates\pages\panel\dashboard_simple.html:52
 #: .\templates_bonusweb\business_menu\subscribe.html:7
 msgid "Subscribe to continue"
-msgstr ""
+msgstr "Suscríbete para continuar"
 
 #: .\templates\pages\panel\dashboard_simple.html:58
 msgid "Stripe"
-msgstr ""
+msgstr "Stripe"
 
 #: .\templates\pages\panel\dashboard_simple.html:63
 msgid "Connected – you can receive customer payments."
-msgstr ""
+msgstr "Conectado: puedes recibir pagos de clientes."
 
 #: .\templates\pages\panel\dashboard_simple.html:66
 msgid ""
 "To accept online payments from your digital menu, you need to connect "
 "Stripe. Click below to complete setup."
-msgstr ""
+msgstr "Para aceptar pagos en línea desde tu menú digital, conecta Stripe. Haz clic abajo para finalizar la configuración."
 
 #: .\templates\pages\panel\dashboard_simple.html:67
 #: .\templates_bonusweb\business_menu\connect.html:3
 msgid "Connect Stripe"
-msgstr ""
+msgstr "Conectar Stripe"
 
 #: .\templates\pages\panel\dashboard_simple.html:69
 msgid ""
 "If you want your customers' online payments to be processed from the digital "
 "menu, pay 200 Euros now to upgrade your plan."
-msgstr ""
+msgstr "Si quieres procesar los pagos en línea de tus clientes desde el menú digital, paga 200 euros para actualizar el plan."
 
 #: .\templates\pages\panel\dashboard_simple.html:71
 #: .\templates_bonusweb\business_menu\subscribe.html:13
 #: .\templates_bonusweb\business_menu\subscribe.html:35
 #: .\templates_bonusweb\business_menu\subscribe.html:39
 msgid "Start Plan"
-msgstr ""
+msgstr "Iniciar plan"
 
 #: .\templates\pages\panel\dashboard_simple.html:79
 msgid "Download the app"
-msgstr ""
+msgstr "Descarga la app"
 
 #: .\templates\pages\panel\dashboard_simple.html:80
 msgid "Manage orders, menu and settings from your phone."
-msgstr ""
+msgstr "Gestiona pedidos, menú y ajustes desde tu móvil."
 
 #: .\templates\pages\panel\menu_item_form.html:3
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Edit Menu Item"
-msgstr ""
+msgstr "Editar artículo"
 
 #: .\templates\pages\panel\menu_item_form.html:3
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Create Menu Item"
-msgstr ""
+msgstr "Crear artículo"
 
 #: .\templates\pages\panel\menu_item_form.html:14
 msgid "Price"
-msgstr ""
+msgstr "Precio"
 
 #: .\templates\pages\panel\menu_item_form.html:15
 msgid "Image URL"
-msgstr ""
+msgstr "URL de la imagen"
 
 #: .\templates\pages\panel\menu_item_form.html:18
 msgid "Category"
-msgstr ""
+msgstr "Categoría"
 
 #: .\templates\pages\panel\menu_item_form.html:25
 msgid "Tags (comma separated)"
-msgstr ""
+msgstr "Etiquetas (separadas por comas)"
 
 #: .\templates\pages\panel\menu_item_form.html:25
 msgid "Popular, Spicy"
-msgstr ""
+msgstr "Popular, Picante"
 
 #: .\templates\pages\panel\menu_item_form.html:28
 msgid "Save item"
-msgstr ""
+msgstr "Guardar artículo"
 
 #: .\templates\pages\panel\menu_item_form.html:29
 msgid "Cancel"
@@ -1748,11 +1790,11 @@ msgstr "Elementos del menú"
 
 #: .\templates\pages\panel\menu_items_list.html:12
 msgid "New item"
-msgstr ""
+msgstr "Nuevo artículo"
 
 #: .\templates\pages\panel\menu_items_list.html:16
 msgid "Search items..."
-msgstr ""
+msgstr "Buscar artículos..."
 
 #: .\templates\pages\panel\menu_items_list.html:18
 msgid "All categories"
@@ -1770,31 +1812,31 @@ msgstr "Ajustes"
 
 #: .\templates\pages\panel\settings.html:10
 msgid "Restaurant Settings"
-msgstr ""
+msgstr "Ajustes del restaurante"
 
 #: .\templates\pages\panel\settings.html:11
 msgid ""
 "Update your restaurant profile and map location. Changes are saved to your "
 "account."
-msgstr ""
+msgstr "Actualiza el perfil de tu restaurante y la ubicación en el mapa. Los cambios se guardan en tu cuenta."
 
 #: .\templates\pages\panel\settings.html:15
 msgid "No restaurant linked to this session."
-msgstr ""
+msgstr "No hay ningún restaurante vinculado a esta sesión."
 
 #: .\templates\pages\panel\settings.html:16
 msgid ""
 "Sign in with your restaurant owner account or open this page from your "
 "dashboard with a valid link."
-msgstr ""
+msgstr "Inicia sesión con la cuenta del dueño del restaurante o abre esta página desde el panel con un enlace válido."
 
 #: .\templates\pages\panel\settings.html:17
 msgid "Sign in"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: .\templates\pages\panel\settings.html:27
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: .\templates\pages\panel\settings.html:33
 msgid "Postal code"
@@ -1802,56 +1844,56 @@ msgstr "Código postal"
 
 #: .\templates\pages\panel\settings.html:41
 msgid "Restaurant location"
-msgstr ""
+msgstr "Ubicación del restaurante"
 
 #: .\templates\pages\panel\settings.html:42
 msgid ""
 "Search for an address or click the map to set your pin. Drag the marker to "
 "adjust."
-msgstr ""
+msgstr "Busca una dirección o haz clic en el mapa para colocar el pin. Arrastra el marcador para ajustar."
 
 #: .\templates\pages\panel\settings.html:48
 msgid ""
 "Google Maps is not configured. Set <code class=\"rounded bg-rose-100 px-1 "
 "dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in the server environment to "
 "enable the map."
-msgstr ""
+msgstr "Google Maps no está configurado. Establece <code class=\"rounded bg-rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> en el servidor para activar el mapa."
 
 #: .\templates\pages\panel\settings.html:53
 msgid "Search address"
-msgstr ""
+msgstr "Buscar dirección"
 
 #: .\templates\pages\panel\settings.html:54
 msgid "Start typing an address…"
-msgstr ""
+msgstr "Empieza a escribir una dirección…"
 
 #: .\templates\pages\panel\settings.html:58
 msgid "Loading map…"
-msgstr ""
+msgstr "Cargando mapa…"
 
 #: .\templates\pages\panel\settings.html:67
 msgid "Latitude"
-msgstr ""
+msgstr "Latitud"
 
 #: .\templates\pages\panel\settings.html:71
 msgid "Longitude"
-msgstr ""
+msgstr "Longitud"
 
 #: .\templates\pages\panel\settings.html:77
 msgid "Use current marker"
-msgstr ""
+msgstr "Usar marcador actual"
 
 #: .\templates\pages\panel\settings.html:78
 msgid "Use my location"
-msgstr ""
+msgstr "Usar mi ubicación"
 
 #: .\templates\pages\panel\settings.html:79
 msgid "Copy coordinates"
-msgstr ""
+msgstr "Copiar coordenadas"
 
 #: .\templates\pages\panel\settings.html:80
 msgid "Clear location"
-msgstr ""
+msgstr "Borrar ubicación"
 
 #: .\templates\pages\panel\settings.html:91
 msgid "Save changes"
@@ -1866,12 +1908,12 @@ msgstr "Pago cancelado"
 
 #: .\templates\pages\payment_cancel.html:7
 msgid "No charge was made. You can try again anytime from your admin panel."
-msgstr ""
+msgstr "No se realizó ningún cargo. Puedes intentarlo cuando quieras desde el panel."
 
 #: .\templates\pages\payment_cancel.html:9
 #: .\templates\pages\payment_success.html:9
 msgid "Go to Admin Panel"
-msgstr ""
+msgstr "Ir al panel de administración"
 
 #: .\templates\pages\payment_cancel.html:10
 #: .\templates\pages\payment_success.html:10
@@ -1890,7 +1932,7 @@ msgstr "Pago exitoso"
 msgid ""
 "Your plan has been upgraded. To accept online payments from your digital "
 "menu, go to your admin panel and connect Stripe."
-msgstr ""
+msgstr "Tu plan se ha actualizado. Para aceptar pagos en línea desde tu menú digital, ve al panel y conecta Stripe."
 
 #: .\templates\pages\pricing.html:3 .\templates\partials\footer.html:24
 #: .\templates\partials\navbar.html:69 .\templates\partials\navbar.html:148
@@ -1974,25 +2016,25 @@ msgstr "Menú QR"
 
 #: .\templates\pages\public_menu.html:37
 msgid "Menu categories"
-msgstr ""
+msgstr "Categorías del menú"
 
 #: .\templates\pages\public_menu.html:48
 #, python-format
 msgid "Filter by %(name)s"
-msgstr ""
+msgstr "Filtrar por %(name)s"
 
 #: .\templates\pages\public_menu.html:111
 #, python-format
 msgid "Add %(name)s to cart"
-msgstr ""
+msgstr "Añadir %(name)s al carrito"
 
 #: .\templates\pages\public_menu.html:126
 msgid "Open cart"
-msgstr ""
+msgstr "Abrir carrito"
 
 #: .\templates\pages\restaurant_menu.html:39
 msgid "Added"
-msgstr ""
+msgstr "Añadido"
 
 #: .\templates\pages\restaurant_menu.html:41
 msgid "Added to cart"
@@ -2000,305 +2042,312 @@ msgstr "Añadido al carrito"
 
 #: .\templates\pages\restaurant_menu.html:42
 msgid "Table number is required for Dine In"
-msgstr ""
+msgstr "El número de mesa es obligatorio para en el local"
 
 #: .\templates\pages\restaurant_menu.html:43
 msgid "Could not place order"
-msgstr ""
+msgstr "No se pudo realizar el pedido"
 
 #: .\templates\pages\restaurant_menu.html:44
 msgid "Network error"
-msgstr ""
+msgstr "Error de red"
 
-#: .\templates\pages\restaurant_menu.html:224
+#: .\templates\pages\restaurant_menu.html:237
 msgid ""
 "You have order(s) pending or in progress. Check status and when it's ready "
 "in the Orders panel."
-msgstr ""
+msgstr "Tienes pedidos pendientes o en curso. Consulta el estado en el panel de pedidos."
 
-#: .\templates\pages\restaurant_menu.html:225
+#: .\templates\pages\restaurant_menu.html:238
 msgid "View orders"
 msgstr "Ver pedidos"
 
-#: .\templates\pages\restaurant_menu.html:228
+#: .\templates\pages\restaurant_menu.html:241
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
-msgstr ""
+msgstr "El restaurante está cerrado. Puedes programar tu pedido para cuando abramos."
 
-#: .\templates\pages\restaurant_menu.html:229
+#: .\templates\pages\restaurant_menu.html:242
 msgid "Schedule for later"
-msgstr ""
+msgstr "Programar para más tarde"
 
-#: .\templates\pages\restaurant_menu.html:240
+#: .\templates\pages\restaurant_menu.html:253
 msgid "All Categories"
 msgstr "Todas las categorías"
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:266
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\pages\restaurant_menu.html:271
+#: .\templates\pages\restaurant_menu.html:284
 msgid "Toggle night mode"
-msgstr ""
+msgstr "Alternar modo noche"
 
-#: .\templates\pages\restaurant_menu.html:301
+#: .\templates\pages\restaurant_menu.html:314
 msgid "Address:"
-msgstr ""
+msgstr "Dirección:"
 
-#: .\templates\pages\restaurant_menu.html:304
+#: .\templates\pages\restaurant_menu.html:317
 msgid "Phone:"
-msgstr ""
+msgstr "Teléfono:"
 
-#: .\templates\pages\restaurant_menu.html:307
+#: .\templates\pages\restaurant_menu.html:320
 msgid "Email:"
-msgstr ""
+msgstr "Correo:"
 
-#: .\templates\pages\restaurant_menu.html:312
+#: .\templates\pages\restaurant_menu.html:325
 msgid "Opening Hours"
 msgstr "Horario de apertura"
 
-#: .\templates\pages\restaurant_menu.html:313
+#: .\templates\pages\restaurant_menu.html:326
 msgid "Not provided yet"
-msgstr ""
+msgstr "Aún no proporcionado"
 
-#: .\templates\pages\restaurant_menu.html:322
+#: .\templates\pages\restaurant_menu.html:335
 msgid "Search menu items..."
 msgstr "Buscar artículos..."
 
-#: .\templates\pages\restaurant_menu.html:330
+#: .\templates\pages\restaurant_menu.html:343
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr "Todo"
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:356
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
-msgstr ""
+msgstr "Paquetes"
 
-#: .\templates\pages\restaurant_menu.html:364
+#: .\templates\pages\restaurant_menu.html:377
 msgid "No menu items available."
-msgstr ""
+msgstr "No hay artículos disponibles."
 
-#: .\templates\pages\restaurant_menu.html:390
-#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:417
 msgid "Learn More"
 msgstr "Saber más"
 
-#: .\templates\pages\restaurant_menu.html:444
+#: .\templates\pages\restaurant_menu.html:457
 msgid "Cart"
 msgstr "Carrito"
 
-#: .\templates\pages\restaurant_menu.html:454
-#: .\templates\pages\restaurant_menu.html:459
-#: .\templates\pages\restaurant_menu.html:516
-#: .\templates\pages\restaurant_menu.html:527
-#: .\templates\pages\restaurant_menu.html:644
-#: .\templates\pages\restaurant_menu.html:655
-#: .\templates\pages\restaurant_menu.html:702
+#: .\templates\pages\restaurant_menu.html:467
+#: .\templates\pages\restaurant_menu.html:472
+#: .\templates\pages\restaurant_menu.html:532
+#: .\templates\pages\restaurant_menu.html:543
+#: .\templates\pages\restaurant_menu.html:664
+#: .\templates\pages\restaurant_menu.html:675
+#: .\templates\pages\restaurant_menu.html:722
 msgid "Reservation"
 msgstr "Reserva"
 
-#: .\templates\pages\restaurant_menu.html:461
+#: .\templates\pages\restaurant_menu.html:474
 msgid "Close"
 msgstr "Cerrar"
 
-#: .\templates\pages\restaurant_menu.html:482
-#: .\templates\pages\restaurant_menu.html:611
+#: .\templates\pages\restaurant_menu.html:495
+#: .\templates\pages\restaurant_menu.html:628
 msgid "Cart Items"
-msgstr ""
+msgstr "Artículos del carrito"
 
-#: .\templates\pages\restaurant_menu.html:484
-#: .\templates\pages\restaurant_menu.html:613
+#: .\templates\pages\restaurant_menu.html:497
+#: .\templates\pages\restaurant_menu.html:630
 msgid "Cart is empty."
 msgstr "El carrito está vacío."
 
-#: .\templates\pages\restaurant_menu.html:498
-#: .\templates\pages\restaurant_menu.html:627
+#: .\templates\pages\restaurant_menu.html:511
+#: .\templates\pages\restaurant_menu.html:644
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr "Quitar"
 
-#: .\templates\pages\restaurant_menu.html:502
-#: .\templates\pages\restaurant_menu.html:631
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:515
+#: .\templates\pages\restaurant_menu.html:648
+#: .\templates\pages\restaurant_menu.html:747
 msgid "Total"
 msgstr "Total"
 
-#: .\templates\pages\restaurant_menu.html:508
-#: .\templates\pages\restaurant_menu.html:636
+#: .\templates\pages\restaurant_menu.html:521
+#: .\templates\pages\restaurant_menu.html:653
 msgid "Service Type"
 msgstr "Tipo de servicio"
 
-#: .\templates\pages\restaurant_menu.html:510
-#: .\templates\pages\restaurant_menu.html:638
+#: .\templates\pages\restaurant_menu.html:523
+#: .\templates\pages\restaurant_menu.html:655
 msgid "Dine In"
 msgstr "En el local"
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:639
+#: .\templates\pages\restaurant_menu.html:524
+#: .\templates\pages\restaurant_menu.html:656
 msgid "Pickup"
 msgstr "Recogida"
 
-#: .\templates\pages\restaurant_menu.html:513
-#: .\templates\pages\restaurant_menu.html:641
+#: .\templates\pages\restaurant_menu.html:526
+#: .\templates\pages\restaurant_menu.html:658
 msgid "Delivery"
 msgstr "Entrega"
 
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:649
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_menu.html:669
 msgid "Table Number"
 msgstr "Número de mesa"
 
-#: .\templates\pages\restaurant_menu.html:522
+#: .\templates\pages\restaurant_menu.html:538
 msgid "e.g. 22"
-msgstr ""
+msgstr "ej. 22"
 
-#: .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:566
-#: .\templates\pages\restaurant_menu.html:657
-#: .\templates\pages\restaurant_menu.html:704
+#: .\templates\pages\restaurant_menu.html:545
+#: .\templates\pages\restaurant_menu.html:582
+#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:724
 msgid "Select date & time →"
-msgstr ""
+msgstr "Elegir fecha y hora →"
 
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:665
+#: .\templates\pages\restaurant_menu.html:553
+#: .\templates\pages\restaurant_menu.html:685
 msgid "Cash"
 msgstr "Efectivo"
 
-#: .\templates\pages\restaurant_menu.html:540
-#: .\templates\pages\restaurant_menu.html:668
+#: .\templates\pages\restaurant_menu.html:556
+#: .\templates\pages\restaurant_menu.html:688
 msgid "Online"
 msgstr "En línea"
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:673
-#: .\templates\pages\restaurant_menu.html:674
+#: .\templates\pages\restaurant_menu.html:561
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:694
 msgid "Order Note"
-msgstr ""
+msgstr "Nota del pedido"
 
-#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_reservation.html:151
 msgid "Special requests…"
-msgstr ""
+msgstr "Peticiones especiales…"
 
-#: .\templates\pages\restaurant_menu.html:551
-#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:567
+#: .\templates\pages\restaurant_menu.html:718
 msgid "Confirm Order"
 msgstr "Confirmar pedido"
 
-#: .\templates\pages\restaurant_menu.html:552
+#: .\templates\pages\restaurant_menu.html:568
 msgid "Add items and set options on the left."
-msgstr ""
+msgstr "Añade artículos y configura las opciones a la izquierda."
 
-#: .\templates\pages\restaurant_menu.html:555
-#: .\templates\pages\restaurant_menu.html:580
-#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_menu.html:571
+#: .\templates\pages\restaurant_menu.html:597
+#: .\templates\pages\restaurant_menu.html:750
 msgid "Order placed successfully"
-msgstr ""
+msgstr "Pedido realizado correctamente"
 
-#: .\templates\pages\restaurant_menu.html:556
-msgid "Your order is pending. Check status in Order history below."
-msgstr ""
-
-#: .\templates\pages\restaurant_menu.html:557
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:729
-msgid "Add more items"
-msgstr ""
-
-#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_menu.html:572
-#: .\templates\pages\restaurant_menu.html:699
+msgid "Your order is pending. Check status in Order history below."
+msgstr "Tu pedido está pendiente. Consulta el estado en el historial más abajo."
+
+#: .\templates\pages\restaurant_menu.html:573
+#: .\templates\pages\restaurant_menu.html:599
+#: .\templates\pages\restaurant_menu.html:752
+msgid "Add more items"
+msgstr "Añadir más artículos"
+
+#: .\templates\pages\restaurant_menu.html:578
+#: .\templates\pages\restaurant_menu.html:588
+#: .\templates\pages\restaurant_menu.html:719
 msgid "total"
 msgstr "total"
 
-#: .\templates\pages\restaurant_menu.html:564
+#: .\templates\pages\restaurant_menu.html:580
 msgid "Reservation with pre-order"
-msgstr ""
+msgstr "Reserva con pedido anticipado"
 
-#: .\templates\pages\restaurant_menu.html:576
+#: .\templates\pages\restaurant_menu.html:592
+#: .\templates\pages\restaurant_menu.html:732
+#, fuzzy
+#| msgid "Online"
+msgid "Pay Online"
+msgstr "En línea"
+
+#: .\templates\pages\restaurant_menu.html:593
 msgid "Placing…"
-msgstr ""
+msgstr "Realizando…"
 
-#: .\templates\pages\restaurant_menu.html:581
+#: .\templates\pages\restaurant_menu.html:598
 msgid ""
 "Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
 "span>. Check status in Order history below."
-msgstr ""
+msgstr "Tu pedido está pendiente. Total € <span x-text=\"lastOrder.total_amount\"></span>. Consulta el estado en el historial."
 
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:605
+#: .\templates\pages\restaurant_menu.html:697
 msgid "Order history"
-msgstr ""
+msgstr "Historial de pedidos"
 
-#: .\templates\pages\restaurant_menu.html:590
+#: .\templates\pages\restaurant_menu.html:607
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
-msgstr ""
+msgstr "Aún no hay pedidos. Realiza uno para verlo aquí (pendiente → en preparación → completado)."
 
-#: .\templates\pages\restaurant_menu.html:650
+#: .\templates\pages\restaurant_menu.html:670
 msgid "Table #"
-msgstr ""
+msgstr "Mesa n.º"
 
-#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:699
 msgid "No orders yet."
-msgstr ""
+msgstr "Aún no hay pedidos."
 
-#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:712
 msgid "Next →"
-msgstr ""
+msgstr "Siguiente →"
 
-#: .\templates\pages\restaurant_menu.html:696
+#: .\templates\pages\restaurant_menu.html:716
 msgid "Back"
 msgstr "Atrás"
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Service:"
-msgstr ""
+msgstr "Servicio:"
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Payment:"
-msgstr ""
+msgstr "Pago:"
 
-#: .\templates\pages\restaurant_menu.html:728
+#: .\templates\pages\restaurant_menu.html:751
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
-msgstr ""
+msgstr "Tu pedido está pendiente. El restaurante actualizará el estado (p. ej. en preparación, completado)."
 
-#: .\templates\pages\restaurant_menu.html:734
+#: .\templates\pages\restaurant_menu.html:757
 msgid "Done"
 msgstr "Listo"
 
 #: .\templates\pages\restaurant_reservation.html:3
 #, python-format
 msgid "Reservation — %(name)s"
-msgstr ""
+msgstr "Reserva — %(name)s"
 
 #: .\templates\pages\restaurant_reservation.html:26
 msgid "Name is required."
-msgstr ""
+msgstr "El nombre es obligatorio."
 
 #: .\templates\pages\restaurant_reservation.html:27
 msgid "Please select a date."
-msgstr ""
+msgstr "Selecciona una fecha."
 
 #: .\templates\pages\restaurant_reservation.html:28
 msgid "Please select a time."
-msgstr ""
+msgstr "Selecciona una hora."
 
 #: .\templates\pages\restaurant_reservation.html:29
 msgid "Request failed."
-msgstr ""
+msgstr "La solicitud falló."
 
 #: .\templates\pages\restaurant_reservation.html:30
 msgid "Network error. Please try again."
-msgstr ""
+msgstr "Error de red. Vuelve a intentarlo."
 
 #: .\templates\pages\restaurant_reservation.html:98
 msgid "Table reservation"
@@ -2311,7 +2360,7 @@ msgstr "Horario de apertura:"
 
 #: .\templates\pages\restaurant_reservation.html:106
 msgid "Reservation request sent"
-msgstr ""
+msgstr "Solicitud de reserva enviada"
 
 #: .\templates\pages\restaurant_reservation.html:107
 msgid ""
@@ -2319,7 +2368,7 @@ msgid ""
 "span> at <span x-text=\"successReservation.requested_time\"></span> (<span x-"
 "text=\"successReservation.guests_count\"></span> guests) is pending. The "
 "restaurant will confirm by email."
-msgstr ""
+msgstr "Tu reserva para el <span x-text=\"successReservation.requested_date\"></span> a las <span x-text=\"successReservation.requested_time\"></span> (<span x-text=\"successReservation.guests_count\"></span> invitados) está pendiente. El restaurante confirmará por correo."
 
 #: .\templates\pages\restaurant_reservation.html:115
 msgid "Date"
@@ -2331,11 +2380,11 @@ msgstr "Hora"
 
 #: .\templates\pages\restaurant_reservation.html:124
 msgid "This day is fully booked. Please choose another date."
-msgstr ""
+msgstr "Este día está completo. Elige otra fecha."
 
 #: .\templates\pages\restaurant_reservation.html:126
 msgid "Select time"
-msgstr ""
+msgstr "Seleccionar hora"
 
 #: .\templates\pages\restaurant_reservation.html:131
 msgid "Loading…"
@@ -2347,7 +2396,7 @@ msgstr "Número de invitados"
 
 #: .\templates\pages\restaurant_reservation.html:138
 msgid "Your name *"
-msgstr ""
+msgstr "Tu nombre *"
 
 #: .\templates\pages\restaurant_reservation.html:150
 msgid "Notes"
@@ -2355,58 +2404,58 @@ msgstr "Notas"
 
 #: .\templates\pages\restaurant_reservation.html:155
 msgid "Pre-order (from cart)"
-msgstr ""
+msgstr "Pedido anticipado (del carrito)"
 
 #: .\templates\pages\restaurant_reservation.html:161
 msgid "Subtotal:"
-msgstr ""
+msgstr "Subtotal:"
 
 #: .\templates\pages\restaurant_reservation.html:164
 msgid ""
 "Cash = pay on the day. Online = pay now; refunded if reservation is "
 "cancelled."
-msgstr ""
+msgstr "Efectivo = pagas el día. Online = pagas ahora; se reembolsa si se cancela la reserva."
 
 #: .\templates\pages\restaurant_reservation.html:166
 msgid "Cash (on the day)"
-msgstr ""
+msgstr "Efectivo (el día)"
 
 #: .\templates\pages\restaurant_reservation.html:168
 msgid "Online (refund if cancelled)"
-msgstr ""
+msgstr "Online (reembolso si se cancela)"
 
 #: .\templates\pages\restaurant_reservation.html:176
 msgid "Request reservation"
-msgstr ""
+msgstr "Solicitar reserva"
 
 #: .\templates\pages\restaurant_schedule.html:3
 #, python-format
 msgid "Schedule your order — %(name)s"
-msgstr ""
+msgstr "Programa tu pedido — %(name)s"
 
 #: .\templates\pages\restaurant_schedule.html:8
 msgid "Schedule your order"
-msgstr ""
+msgstr "Programar tu pedido"
 
 #: .\templates\pages\restaurant_schedule.html:16
 msgid "No opening hours set"
-msgstr ""
+msgstr "Sin horario de apertura definido"
 
 #: .\templates\pages\restaurant_schedule.html:17
 msgid ""
 "The restaurant has not set specific opening times. You can place an order "
 "from the menu."
-msgstr ""
+msgstr "El restaurante no ha definido un horario específico. Puedes hacer tu pedido desde el menú."
 
 #: .\templates\pages\restaurant_schedule.html:18
 msgid "Go to menu"
-msgstr ""
+msgstr "Ir al menú"
 
 #: .\templates\pages\restaurant_schedule.html:21
 msgid ""
 "Choose a date and time for your order. You will then go to the menu to add "
 "items and place the order for that time."
-msgstr ""
+msgstr "Elige fecha y hora para tu pedido. Después irás al menú para añadir artículos y hacer el pedido para esa hora."
 
 #: .\templates\pages\restaurants_list.html:3
 #: .\templates\pages\restaurants_list.html:10
@@ -2416,15 +2465,15 @@ msgstr "Restaurantes y cafés"
 
 #: .\templates\pages\restaurants_list.html:4
 msgid "Browse our partner restaurants and cafes. Open a menu and order online."
-msgstr ""
+msgstr "Explora nuestros restaurantes y cafés asociados. Abre un menú y pide en línea."
 
 #: .\templates\pages\restaurants_list.html:11
 msgid "Choose a place and open its menu."
-msgstr ""
+msgstr "Elige un lugar y abre su menú."
 
 #: .\templates\pages\restaurants_list.html:16
 msgid "No restaurants yet. Check back later."
-msgstr ""
+msgstr "Aún no hay restaurantes. Vuelve más tarde."
 
 #: .\templates\pages\restaurants_list.html:40
 msgid "View menu"
@@ -2438,64 +2487,64 @@ msgstr "Servicios"
 
 #: .\templates\pages\service_detail.html:18
 msgid "Service"
-msgstr ""
+msgstr "Servicio"
 
 #: .\templates\pages\service_detail.html:26
 msgid "Get pricing"
-msgstr ""
+msgstr "Obtener precios"
 
 #: .\templates\pages\service_detail.html:27
 msgid "Talk to us"
-msgstr ""
+msgstr "Habla con nosotros"
 
 #: .\templates\pages\service_detail.html:36
 msgid "Built for restaurants"
-msgstr ""
+msgstr "Diseñado para restaurantes"
 
 #: .\templates\pages\service_detail.html:37
 msgid "Fast setup • Mobile-first • Conversion-focused"
-msgstr ""
+msgstr "Configuración rápida • Mobile-first • Enfoque en conversión"
 
 #: .\templates\pages\service_detail.html:54
 #, python-format
 msgid "Want to activate %(title)s for your restaurant?"
-msgstr ""
+msgstr "¿Quieres activar %(title)s para tu restaurante?"
 
 #: .\templates\pages\service_detail.html:55
 msgid "Start your annual plan and go live with QR menu + online ordering."
-msgstr ""
+msgstr "Empieza tu plan anual y ponte en marcha con menú QR y pedidos en línea."
 
 #: .\templates\pages\service_detail.html:56
 msgid "View annual plan"
-msgstr ""
+msgstr "Ver plan anual"
 
 #: .\templates\pages\service_detail.html:60
 msgid "More services"
-msgstr ""
+msgstr "Más servicios"
 
 #: .\templates\pages\services.html:4
 msgid ""
 "Explore all QR Menu Pro services. Open a dedicated page for each service "
 "with details, visuals, and benefits."
-msgstr ""
+msgstr "Explora todos los servicios de QR Menu Pro. Abre una página dedicada a cada servicio con detalles, visuales y beneficios."
 
 #: .\templates\pages\services.html:10
 msgid "Our Services"
-msgstr ""
+msgstr "Nuestros servicios"
 
 #: .\templates\pages\services.html:12
 msgid ""
 "Open each service to view a full, dedicated page with benefits, visuals, and "
 "practical use cases."
-msgstr ""
+msgstr "Abre cada servicio para ver una página completa con beneficios, visuales y casos de uso."
 
 #: .\templates\pages\services.html:25
 msgid "Open service page"
-msgstr ""
+msgstr "Abrir página del servicio"
 
 #: .\templates\partials\alerts.html:3
 msgid "Notifications"
-msgstr ""
+msgstr "Notificaciones"
 
 #: .\templates\partials\cart_drawer.html:15
 msgid "Your Cart"
@@ -2503,7 +2552,7 @@ msgstr "Tu carrito"
 
 #: .\templates\partials\cart_drawer.html:16
 msgid "Close cart"
-msgstr ""
+msgstr "Cerrar carrito"
 
 #: .\templates\partials\cart_drawer.html:23
 msgid "Your cart is empty."
@@ -2511,23 +2560,23 @@ msgstr "Tu carrito está vacío."
 
 #: .\templates\partials\cart_drawer.html:34
 msgid "Decrease quantity"
-msgstr ""
+msgstr "Reducir cantidad"
 
 #: .\templates\partials\cart_drawer.html:36
 msgid "Increase quantity"
-msgstr ""
+msgstr "Aumentar cantidad"
 
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove item"
-msgstr ""
+msgstr "Quitar artículo"
 
 #: .\templates\partials\cart_drawer.html:49
 msgid "Proceed to Checkout"
-msgstr ""
+msgstr "Ir a pagar"
 
 #: .\templates\partials\footer.html:8
 msgid "SaaS platform for QR menus, online ordering, campaigns, and analytics."
-msgstr ""
+msgstr "Plataforma SaaS para menús QR, pedidos en línea, campañas y analítica."
 
 #: .\templates\partials\footer.html:20
 msgid "Product"
@@ -2544,7 +2593,7 @@ msgstr "Acerca de"
 #: .\templates\partials\footer.html:44
 #, python-format
 msgid "© %(year)s %(brand)s. All rights reserved."
-msgstr ""
+msgstr "© %(year)s %(brand)s. Todos los derechos reservados."
 
 #: .\templates\partials\footer.html:46
 msgid ""
@@ -2554,11 +2603,11 @@ msgid ""
 "transition underline decoration-slate-300 dark:decoration-slate-600 "
 "hover:decoration-primary-500\">Angraweb</a> — Professional Web Design &amp; "
 "Software Development."
-msgstr ""
+msgstr "Este sitio ha sido desarrollado por <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500\">Angraweb</a> — Diseño web profesional y desarrollo de software."
 
 #: .\templates\partials\navbar.html:45
 msgid "All Services"
-msgstr ""
+msgstr "Todos los servicios"
 
 #: .\templates\partials\navbar.html:89
 msgid "Change language"
@@ -2592,306 +2641,306 @@ msgstr "Idioma"
 
 #: .\templates\partials\panel_navbar.html:6
 msgid "Restaurant Panel"
-msgstr ""
+msgstr "Panel del restaurante"
 
 #: .\templates\partials\panel_navbar.html:26
 #: .\templates\partials\panel_navbar.html:39
 msgid "Public Site"
-msgstr ""
+msgstr "Sitio público"
 
 #: .\templates\partials\panel_navbar_simple.html:5
 msgid "Back to site"
-msgstr ""
+msgstr "Volver al sitio"
 
 #: .\templates\partials\panel_navbar_simple.html:21
 msgid "Site"
-msgstr ""
+msgstr "Sitio"
 
 #: .\templates_bonusweb\base.html:199 .\templates_bonusweb\base.html:276
 #: .\templates_bonusweb\base.html:335
 msgid "Use Cases"
-msgstr ""
+msgstr "Casos de uso"
 
 #: .\templates_bonusweb\base.html:207 .\templates_bonusweb\base.html:284
 #: .\templates_bonusweb\base.html:337
 msgid "Businesses"
-msgstr ""
+msgstr "Empresas"
 
 #: .\templates_bonusweb\base.html:211 .\templates_bonusweb\base.html:288
 #: .\templates_bonusweb\base.html:338
 msgid "How It Works"
-msgstr ""
+msgstr "Cómo funciona"
 
 #: .\templates_bonusweb\base.html:219 .\templates_bonusweb\base.html:296
 #: .\templates_bonusweb\base.html:341
 msgid "Download"
-msgstr ""
+msgstr "Descargar"
 
 #: .\templates_bonusweb\base.html:259
 msgid "Admin Login"
-msgstr ""
+msgstr "Iniciar sesión (Admin)"
 
 #: .\templates_bonusweb\base.html:314
 msgid ""
 "Bonus helps local businesses run QR menus, loyalty points, rewards, and "
 "customer reviews — all in one place."
-msgstr ""
+msgstr "Bonus ayuda a negocios locales con menús QR, puntos de fidelidad, recompensas y reseñas: todo en un lugar."
 
 #: .\templates_bonusweb\base.html:317
 msgid "Website"
-msgstr ""
+msgstr "Sitio web"
 
 #: .\templates_bonusweb\base.html:320
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: .\templates_bonusweb\base.html:323
 msgid "X (Twitter)"
-msgstr ""
+msgstr "X (Twitter)"
 
 #: .\templates_bonusweb\base.html:326
 msgid "LinkedIn"
-msgstr ""
+msgstr "LinkedIn"
 
 #: .\templates_bonusweb\base.html:332
 msgid "Platform"
-msgstr ""
+msgstr "Plataforma"
 
 #: .\templates_bonusweb\base.html:339
 msgid "Integrations"
-msgstr ""
+msgstr "Integraciones"
 
 #: .\templates_bonusweb\base.html:345
 msgid "For Businesses"
-msgstr ""
+msgstr "Para empresas"
 
 #: .\templates_bonusweb\base.html:347
 msgid "Business Admin Panel"
-msgstr ""
+msgstr "Panel de administración"
 
 #: .\templates_bonusweb\base.html:348
 msgid "Service Agreement"
-msgstr ""
+msgstr "Acuerdo de servicio"
 
 #: .\templates_bonusweb\base.html:349
 msgid "Bonus Registration"
-msgstr ""
+msgstr "Registro en Bonus"
 
 #: .\templates_bonusweb\base.html:351 .\templates_bonusweb\base.html:356
 msgid "QR Code Generator"
-msgstr ""
+msgstr "Generador de códigos QR"
 
 #: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
 msgid "Manage Products"
-msgstr ""
+msgstr "Gestionar productos"
 
 #: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
 msgid "Customer Reviews"
-msgstr ""
+msgstr "Reseñas de clientes"
 
 #: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
 msgid "Send Notification"
-msgstr ""
+msgstr "Enviar notificación"
 
 #: .\templates_bonusweb\base.html:364
 msgid "Legal"
-msgstr ""
+msgstr "Legal"
 
 #: .\templates_bonusweb\base.html:366
 msgid "Terms & Conditions"
-msgstr ""
+msgstr "Términos y condiciones"
 
 #: .\templates_bonusweb\base.html:370
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Política de privacidad"
 
 #: .\templates_bonusweb\base.html:371
 msgid "Account & Data Deletion"
-msgstr ""
+msgstr "Eliminación de cuenta y datos"
 
 #: .\templates_bonusweb\base.html:373
 msgid "API Docs"
-msgstr ""
+msgstr "Documentación API"
 
 #: .\templates_bonusweb\base.html:379
 msgid "All rights reserved"
-msgstr ""
+msgstr "Todos los derechos reservados"
 
 #: .\templates_bonusweb\base.html:381
 msgid "This website was designed by"
-msgstr ""
+msgstr "Este sitio web fue diseñado por"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:3
 #: .\templates_bonusweb\business_menu\connect_done.html:6
 msgid "Stripe connected"
-msgstr ""
+msgstr "Stripe conectado"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:7
 msgid "You can now receive customer payments."
-msgstr ""
+msgstr "Ahora puedes recibir pagos de clientes."
 
 #: .\templates_bonusweb\business_menu\connect_done.html:9
 #: .\templates_bonusweb\business_menu\connect_done.html:11
 msgid "Back to panel"
-msgstr ""
+msgstr "Volver al panel"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:34
 msgid "Prices"
-msgstr ""
+msgstr "Precios"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:65
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:78
 msgid "Next"
-msgstr ""
+msgstr "Siguiente"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:92
 msgid "Special offers"
-msgstr ""
+msgstr "Ofertas especiales"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:139
 msgid "items"
-msgstr ""
+msgstr "artículos"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:154
 msgid "Previous image"
-msgstr ""
+msgstr "Imagen anterior"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:157
 msgid "Next image"
-msgstr ""
+msgstr "Imagen siguiente"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:208
 msgid "No items in this category yet."
-msgstr ""
+msgstr "Aún no hay artículos en esta categoría."
 
 #: .\templates_bonusweb\business_menu\menu_display.html:220
 msgid "No menu items available"
-msgstr ""
+msgstr "No hay artículos disponibles"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:221
 msgid "This restaurant hasn't added any menu items yet."
-msgstr ""
+msgstr "Este restaurante aún no ha añadido artículos."
 
 #: .\templates_bonusweb\business_menu\menu_display.html:226
 msgid "Download our apps for a better experience."
-msgstr ""
+msgstr "Descarga nuestras apps para una mejor experiencia."
 
 #: .\templates_bonusweb\business_menu\menu_display.html:229
 msgid "Download Apps"
-msgstr ""
+msgstr "Descargar apps"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:3
 #: .\templates_bonusweb\business_menu\menu_not_found.html:9
 msgid "Menu Not Found"
-msgstr ""
+msgstr "Menú no encontrado"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:10
 msgid "The menu you're looking for doesn't exist or has been removed."
-msgstr ""
+msgstr "El menú que buscas no existe o fue eliminado."
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:12
 msgid "Go Home"
-msgstr ""
+msgstr "Ir a inicio"
 
 #: .\templates_bonusweb\business_menu\payment.html:4
 msgid "Complete Registration - Payment"
-msgstr ""
+msgstr "Completar registro — Pago"
 
 #: .\templates_bonusweb\business_menu\payment.html:8
 msgid "Complete Registration"
-msgstr ""
+msgstr "Completar registro"
 
 #: .\templates_bonusweb\business_menu\payment.html:9
 msgid "Please complete the payment to finish your registration"
-msgstr ""
+msgstr "Completa el pago para finalizar tu registro."
 
 #: .\templates_bonusweb\business_menu\payment.html:15
 msgid "Scan QR Code to Pay"
-msgstr ""
+msgstr "Escanea el código QR para pagar"
 
 #: .\templates_bonusweb\business_menu\payment.html:31
 msgid "Your browser does not support PDFs. "
-msgstr ""
+msgstr "Tu navegador no admite PDF. "
 
 #: .\templates_bonusweb\business_menu\payment.html:33
 msgid "Download the PDF"
-msgstr ""
+msgstr "Descargar el PDF"
 
 #: .\templates_bonusweb\business_menu\payment.html:45
 msgid ""
 "To complete the registration process, please scan this QR code. After "
 "payment, contact support."
-msgstr ""
+msgstr "Para completar el registro, escanea este código QR. Tras el pago, contacta con soporte."
 
 #: .\templates_bonusweb\business_menu\payment.html:53
 msgid "Need help? "
-msgstr ""
+msgstr "¿Necesitas ayuda? "
 
 #: .\templates_bonusweb\business_menu\payment.html:54
 msgid "Contact Support"
-msgstr ""
+msgstr "Contactar con soporte"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:3
 msgid "Subscribe"
-msgstr ""
+msgstr "Suscribirse"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:8
 msgid ""
 "Your trial has ended. Complete your subscription to keep using the service."
-msgstr ""
+msgstr "Tu prueba ha finalizado. Completa la suscripción para seguir usando el servicio."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:11
 msgid ""
 "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
 "Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
 "other methods."
-msgstr ""
+msgstr "Paga 200 euros para mejorar tu plan. Serás redirigido a Stripe Checkout donde puedes pagar con tarjeta, PayPal, Google Pay, Apple Pay y otros métodos."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:15
 msgid "You will be redirected to Stripe to complete payment."
-msgstr ""
+msgstr "Serás redirigido a Stripe para completar el pago."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:25
 msgid "Redirecting..."
-msgstr ""
+msgstr "Redirigiendo…"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:40
 msgid "Request failed. Try again."
-msgstr ""
+msgstr "La solicitud falló. Vuelve a intentarlo."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:7
 msgid ""
 "You cancelled the payment. No charge was made. You can try again anytime to "
 "upgrade your plan and enable online payments from your digital menu."
-msgstr ""
+msgstr "Cancelaste el pago. No se realizó ningún cargo. Puedes intentarlo cuando quieras para mejorar tu plan y activar pagos online."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:10
 msgid "Try again – Start Plan"
-msgstr ""
+msgstr "Intentar de nuevo – Iniciar plan"
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:12
 #: .\templates_bonusweb\business_menu\subscribe_success.html:11
 #: .\templates_bonusweb\business_menu\subscribe_success.html:13
 msgid "Back to Dashboard"
-msgstr ""
+msgstr "Volver al panel"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:3
 msgid "Subscription complete"
-msgstr ""
+msgstr "Suscripción completada"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:6
 msgid "Thank you!"
-msgstr ""
+msgstr "¡Gracias!"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:7
 msgid ""
 "Your subscription is active. You can now use the app and connect your Stripe "
 "account to receive customer payments."
-msgstr ""
+msgstr "Tu suscripción está activa. Ahora puedes usar la app y conectar tu cuenta de Stripe para recibir pagos de clientes."
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
-msgstr ""
+msgstr "Conectar Stripe para recibir pagos"

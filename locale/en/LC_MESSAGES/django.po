@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 21:34+0330\n"
+"POT-Creation-Date: 2026-07-06 12:24+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -489,7 +489,9 @@ msgstr ""
 msgid "Higher conversion on the menu page"
 msgstr ""
 
-#: .\core\views.py:283 .\templates\partials\navbar.html:53
+#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
+#: .\templates\pages\restaurant_menu.html:661
+#: .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr ""
 
@@ -632,9 +634,9 @@ msgstr ""
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:391
-#: .\templates\pages\restaurant_menu.html:405
-#: .\templates\pages\restaurant_menu.html:436
+#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:418
+#: .\templates\pages\restaurant_menu.html:449
 msgid "Add"
 msgstr ""
 
@@ -873,6 +875,7 @@ msgid "Orange Bistro"
 msgstr ""
 
 #: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:72
 #: .\templates\pages\panel\settings.html:29
 #: .\templates\pages\restaurant_reservation.html:142
 #: .\templates\pages\restaurant_reservation.html:143
@@ -933,7 +936,8 @@ msgstr ""
 msgid "John Doe"
 msgstr ""
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\panel\settings.html:30
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\panel\settings.html:30
 msgid "Address"
 msgstr ""
 
@@ -990,13 +994,13 @@ msgid "CVC"
 msgstr ""
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:575
-#: .\templates\pages\restaurant_menu.html:710
+#: .\templates\pages\restaurant_menu.html:591
+#: .\templates\pages\restaurant_menu.html:731
 msgid "Place Order"
 msgstr ""
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:741
 msgid "Order Summary"
 msgstr ""
 
@@ -1190,7 +1194,7 @@ msgstr ""
 msgid "Download on the App Store"
 msgstr ""
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:452
+#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
 msgid "Orders"
 msgstr ""
 
@@ -1405,8 +1409,7 @@ msgstr ""
 
 #: .\templates\pages\order_payment.html:10
 #: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:48
-#: .\templates\pages\order_payment.html:51
+#: .\templates\pages\order_payment.html:87
 #: .\templates\pages\restaurant_reservation.html:108
 #: .\templates\pages\restaurant_reservation.html:182
 #: .\templates\pages\restaurant_schedule.html:34
@@ -1414,8 +1417,8 @@ msgid "Back to menu"
 msgstr ""
 
 #: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:534
-#: .\templates\pages\restaurant_menu.html:662
+#: .\templates\pages\restaurant_menu.html:550
+#: .\templates\pages\restaurant_menu.html:682
 #: .\templates\pages\restaurant_reservation.html:163
 msgid "Payment"
 msgstr ""
@@ -1457,15 +1460,48 @@ msgstr ""
 msgid "Payment successful."
 msgstr ""
 
-#: .\templates\pages\order_payment.html:73
+#: .\templates\pages\order_payment.html:49
+msgid ""
+"Please enter your delivery details so the restaurant can receive the order."
+msgstr ""
+
+#: .\templates\pages\order_payment.html:51
+msgid "Your order has been sent to the restaurant."
+msgstr ""
+
+#: .\templates\pages\order_payment.html:59
+msgid "First name"
+msgstr ""
+
+#: .\templates\pages\order_payment.html:63
+msgid "Last name"
+msgstr ""
+
+#: .\templates\pages\order_payment.html:77
+msgid "Submit order"
+msgstr ""
+
+#: .\templates\pages\order_payment.html:82
+msgid "Order sent to the restaurant."
+msgstr ""
+
+#: .\templates\pages\order_payment.html:83
+msgid "You can follow the order status in order tracking."
+msgstr ""
+
+#: .\templates\pages\order_payment.html:84
+msgid "Order tracking"
+msgstr ""
+
+#: .\templates\pages\order_payment.html:113
 msgid "Could not start payment."
 msgstr ""
 
-#: .\templates\pages\order_payment.html:74
+#: .\templates\pages\order_payment.html:114
 msgid "Payment failed."
 msgstr ""
 
-#: .\templates\pages\order_payment.html:75
+#: .\templates\pages\order_payment.html:115
 msgid "Something went wrong."
 msgstr ""
 
@@ -2009,268 +2045,273 @@ msgstr ""
 msgid "Network error"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:224
+#: .\templates\pages\restaurant_menu.html:237
 msgid ""
 "You have order(s) pending or in progress. Check status and when it's ready "
 "in the Orders panel."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:225
+#: .\templates\pages\restaurant_menu.html:238
 msgid "View orders"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:228
+#: .\templates\pages\restaurant_menu.html:241
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:229
+#: .\templates\pages\restaurant_menu.html:242
 msgid "Schedule for later"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:240
+#: .\templates\pages\restaurant_menu.html:253
 msgid "All Categories"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:266
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\pages\restaurant_menu.html:271
+#: .\templates\pages\restaurant_menu.html:284
 msgid "Toggle night mode"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:301
+#: .\templates\pages\restaurant_menu.html:314
 msgid "Address:"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:304
+#: .\templates\pages\restaurant_menu.html:317
 msgid "Phone:"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:307
+#: .\templates\pages\restaurant_menu.html:320
 msgid "Email:"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:312
+#: .\templates\pages\restaurant_menu.html:325
 msgid "Opening Hours"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:313
+#: .\templates\pages\restaurant_menu.html:326
 msgid "Not provided yet"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:322
+#: .\templates\pages\restaurant_menu.html:335
 msgid "Search menu items..."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:330
+#: .\templates\pages\restaurant_menu.html:343
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:356
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:364
+#: .\templates\pages\restaurant_menu.html:377
 msgid "No menu items available."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:390
-#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:417
 msgid "Learn More"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:444
+#: .\templates\pages\restaurant_menu.html:457
 msgid "Cart"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:454
-#: .\templates\pages\restaurant_menu.html:459
-#: .\templates\pages\restaurant_menu.html:516
-#: .\templates\pages\restaurant_menu.html:527
-#: .\templates\pages\restaurant_menu.html:644
-#: .\templates\pages\restaurant_menu.html:655
-#: .\templates\pages\restaurant_menu.html:702
+#: .\templates\pages\restaurant_menu.html:467
+#: .\templates\pages\restaurant_menu.html:472
+#: .\templates\pages\restaurant_menu.html:532
+#: .\templates\pages\restaurant_menu.html:543
+#: .\templates\pages\restaurant_menu.html:664
+#: .\templates\pages\restaurant_menu.html:675
+#: .\templates\pages\restaurant_menu.html:722
 msgid "Reservation"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:461
+#: .\templates\pages\restaurant_menu.html:474
 msgid "Close"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:482
-#: .\templates\pages\restaurant_menu.html:611
+#: .\templates\pages\restaurant_menu.html:495
+#: .\templates\pages\restaurant_menu.html:628
 msgid "Cart Items"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:484
-#: .\templates\pages\restaurant_menu.html:613
+#: .\templates\pages\restaurant_menu.html:497
+#: .\templates\pages\restaurant_menu.html:630
 msgid "Cart is empty."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:498
-#: .\templates\pages\restaurant_menu.html:627
+#: .\templates\pages\restaurant_menu.html:511
+#: .\templates\pages\restaurant_menu.html:644
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:502
-#: .\templates\pages\restaurant_menu.html:631
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:515
+#: .\templates\pages\restaurant_menu.html:648
+#: .\templates\pages\restaurant_menu.html:747
 msgid "Total"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:508
-#: .\templates\pages\restaurant_menu.html:636
+#: .\templates\pages\restaurant_menu.html:521
+#: .\templates\pages\restaurant_menu.html:653
 msgid "Service Type"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:510
-#: .\templates\pages\restaurant_menu.html:638
+#: .\templates\pages\restaurant_menu.html:523
+#: .\templates\pages\restaurant_menu.html:655
 msgid "Dine In"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:639
+#: .\templates\pages\restaurant_menu.html:524
+#: .\templates\pages\restaurant_menu.html:656
 msgid "Pickup"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:513
-#: .\templates\pages\restaurant_menu.html:641
+#: .\templates\pages\restaurant_menu.html:526
+#: .\templates\pages\restaurant_menu.html:658
 msgid "Delivery"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:649
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_menu.html:669
 msgid "Table Number"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:522
+#: .\templates\pages\restaurant_menu.html:538
 msgid "e.g. 22"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:566
-#: .\templates\pages\restaurant_menu.html:657
-#: .\templates\pages\restaurant_menu.html:704
+#: .\templates\pages\restaurant_menu.html:545
+#: .\templates\pages\restaurant_menu.html:582
+#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:724
 msgid "Select date & time →"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:665
+#: .\templates\pages\restaurant_menu.html:553
+#: .\templates\pages\restaurant_menu.html:685
 msgid "Cash"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:540
-#: .\templates\pages\restaurant_menu.html:668
+#: .\templates\pages\restaurant_menu.html:556
+#: .\templates\pages\restaurant_menu.html:688
 msgid "Online"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:673
-#: .\templates\pages\restaurant_menu.html:674
+#: .\templates\pages\restaurant_menu.html:561
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:694
 msgid "Order Note"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_reservation.html:151
 msgid "Special requests…"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:551
-#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:567
+#: .\templates\pages\restaurant_menu.html:718
 msgid "Confirm Order"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:552
+#: .\templates\pages\restaurant_menu.html:568
 msgid "Add items and set options on the left."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:555
-#: .\templates\pages\restaurant_menu.html:580
-#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_menu.html:571
+#: .\templates\pages\restaurant_menu.html:597
+#: .\templates\pages\restaurant_menu.html:750
 msgid "Order placed successfully"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:556
+#: .\templates\pages\restaurant_menu.html:572
 msgid "Your order is pending. Check status in Order history below."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:557
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:729
+#: .\templates\pages\restaurant_menu.html:573
+#: .\templates\pages\restaurant_menu.html:599
+#: .\templates\pages\restaurant_menu.html:752
 msgid "Add more items"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:562
-#: .\templates\pages\restaurant_menu.html:572
-#: .\templates\pages\restaurant_menu.html:699
+#: .\templates\pages\restaurant_menu.html:578
+#: .\templates\pages\restaurant_menu.html:588
+#: .\templates\pages\restaurant_menu.html:719
 msgid "total"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:564
+#: .\templates\pages\restaurant_menu.html:580
 msgid "Reservation with pre-order"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:576
+#: .\templates\pages\restaurant_menu.html:592
+#: .\templates\pages\restaurant_menu.html:732
+msgid "Pay Online"
+msgstr ""
+
+#: .\templates\pages\restaurant_menu.html:593
 msgid "Placing…"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:581
+#: .\templates\pages\restaurant_menu.html:598
 msgid ""
 "Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
 "span>. Check status in Order history below."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:605
+#: .\templates\pages\restaurant_menu.html:697
 msgid "Order history"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:590
+#: .\templates\pages\restaurant_menu.html:607
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:650
+#: .\templates\pages\restaurant_menu.html:670
 msgid "Table #"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:699
 msgid "No orders yet."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:712
 msgid "Next →"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:696
+#: .\templates\pages\restaurant_menu.html:716
 msgid "Back"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Service:"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Payment:"
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:728
+#: .\templates\pages\restaurant_menu.html:751
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
 msgstr ""
 
-#: .\templates\pages\restaurant_menu.html:734
+#: .\templates\pages\restaurant_menu.html:757
 msgid "Done"
 msgstr ""
 

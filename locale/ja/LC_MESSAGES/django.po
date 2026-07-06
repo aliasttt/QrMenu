@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 21:34+0330\n"
+"POT-Creation-Date: 2026-07-06 12:24+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -489,7 +489,9 @@ msgstr "注文ミスの減少"
 msgid "Higher conversion on the menu page"
 msgstr "メニューページのコンバージョン向上"
 
-#: .\core\views.py:283 .\templates\partials\navbar.html:53
+#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
+#: .\templates\pages\restaurant_menu.html:661
+#: .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr "オンライン注文"
 
@@ -620,59 +622,59 @@ msgstr "顧客満足度の向上"
 
 #: .\templates\admin\business_menu_section.html:11
 msgid "Model name"
-msgstr ""
+msgstr "モデル名"
 
 #: .\templates\admin\business_menu_section.html:12
 msgid "Add link"
-msgstr ""
+msgstr "追加リンク"
 
 #: .\templates\admin\business_menu_section.html:13
 msgid "Change or view list link"
-msgstr ""
+msgstr "変更またはリスト表示のリンク"
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:391
-#: .\templates\pages\restaurant_menu.html:405
-#: .\templates\pages\restaurant_menu.html:436
+#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:418
+#: .\templates\pages\restaurant_menu.html:449
 msgid "Add"
 msgstr "追加"
 
 #: .\templates\admin\business_menu_section.html:33
 msgid "View"
-msgstr ""
+msgstr "表示"
 
 #: .\templates\admin\business_menu_section.html:35
 msgid "Change"
-msgstr ""
+msgstr "変更"
 
 #: .\templates\admin\index.html:23
 msgid "Recent actions"
-msgstr ""
+msgstr "最近の操作"
 
 #: .\templates\admin\index.html:24
 msgid "My actions"
-msgstr ""
+msgstr "自分の操作"
 
 #: .\templates\admin\index.html:28
 msgid "None available"
-msgstr ""
+msgstr "利用可能なものはありません"
 
 #: .\templates\admin\index.html:33
 msgid "Added:"
-msgstr ""
+msgstr "追加:"
 
 #: .\templates\admin\index.html:33
 msgid "Changed:"
-msgstr ""
+msgstr "変更:"
 
 #: .\templates\admin\index.html:33
 msgid "Deleted:"
-msgstr ""
+msgstr "削除:"
 
 #: .\templates\admin\index.html:43
 msgid "Unknown content"
-msgstr ""
+msgstr "不明なコンテンツ"
 
 #: .\templates\base.html:41
 msgid "Skip to main content"
@@ -688,7 +690,7 @@ msgstr "ページが見つかりません"
 
 #: .\templates\errors\404.html:9
 msgid "The page you are looking for does not exist or has been moved."
-msgstr ""
+msgstr "お探しのページは存在しないか、移動されました。"
 
 #: .\templates\errors\404.html:10 .\templates\errors\500.html:10
 #: .\templates\pages\restaurants_list.html:17
@@ -705,19 +707,19 @@ msgstr "問題が発生しました"
 
 #: .\templates\errors\500.html:9
 msgid "We are working on the issue. Please try again in a few minutes."
-msgstr ""
+msgstr "問題を対応中です。数分後にもう一度お試しください。"
 
 #: .\templates\pages\auth\forgot_password.html:3
 msgid "Forgot password"
-msgstr ""
+msgstr "パスワードをお忘れですか"
 
 #: .\templates\pages\auth\forgot_password.html:9
 msgid "Reset password"
-msgstr ""
+msgstr "パスワードをリセット"
 
 #: .\templates\pages\auth\forgot_password.html:12
 msgid "Enter your email and we'll send you a 6-digit code."
-msgstr ""
+msgstr "メールアドレスを入力すると、6桁のコードをお送りします。"
 
 #: .\templates\pages\auth\forgot_password.html:16
 #: .\templates\pages\auth\login.html:23 .\templates\pages\auth\register.html:21
@@ -731,56 +733,56 @@ msgstr "メール"
 #: .\templates\pages\auth\forgot_password.html:21
 #: .\templates\pages\auth\forgot_password.html:83
 msgid "Send code"
-msgstr ""
+msgstr "コードを送信"
 
 #: .\templates\pages\auth\forgot_password.html:26
 msgid ""
 "We sent a 6-digit code to <strong id=\"code-email\"></strong>. Enter it "
 "below."
-msgstr ""
+msgstr "<strong id=\"code-email\"></strong> に6桁のコードを送信しました。下に入力してください。"
 
 #: .\templates\pages\auth\forgot_password.html:27
 msgid "Code expires in 10 minutes."
-msgstr ""
+msgstr "コードは10分後に期限切れになります。"
 
 #: .\templates\pages\auth\forgot_password.html:32
 #: .\templates\pages\auth\register.html:46
 msgid "Verification code"
-msgstr ""
+msgstr "認証コード"
 
 #: .\templates\pages\auth\forgot_password.html:37
 msgid "Resend code in <span id=\"resend-timer\">60</span>s"
-msgstr ""
+msgstr "<span id=\"resend-timer\">60</span>秒後に再送信"
 
 #: .\templates\pages\auth\forgot_password.html:38
 msgid "Resend"
-msgstr ""
+msgstr "再送信"
 
 #: .\templates\pages\auth\forgot_password.html:41
 #: .\templates\pages\auth\forgot_password.html:85
 msgid "Verify code"
-msgstr ""
+msgstr "コードを確認"
 
 #: .\templates\pages\auth\forgot_password.html:46
 msgid "Enter your new password."
-msgstr ""
+msgstr "新しいパスワードを入力してください。"
 
 #: .\templates\pages\auth\forgot_password.html:52
 msgid "New password"
-msgstr ""
+msgstr "新しいパスワード"
 
 #: .\templates\pages\auth\forgot_password.html:57
 msgid "Confirm new password"
-msgstr ""
+msgstr "新しいパスワードを確認"
 
 #: .\templates\pages\auth\forgot_password.html:62
 #: .\templates\pages\auth\forgot_password.html:87
 msgid "Update password"
-msgstr ""
+msgstr "パスワードを更新"
 
 #: .\templates\pages\auth\forgot_password.html:67
 msgid "Back to login"
-msgstr ""
+msgstr "ログインに戻る"
 
 #: .\templates\pages\auth\forgot_password.html:82
 #: .\templates\pages\restaurant_reservation.html:177
@@ -789,31 +791,31 @@ msgstr "送信中…"
 
 #: .\templates\pages\auth\forgot_password.html:84
 msgid "Verifying…"
-msgstr ""
+msgstr "確認中…"
 
 #: .\templates\pages\auth\forgot_password.html:86
 msgid "Updating…"
-msgstr ""
+msgstr "更新中…"
 
 #: .\templates\pages\auth\forgot_password.html:88
 msgid "Failed to send code. Check your email."
-msgstr ""
+msgstr "コードを送信できませんでした。メールを確認してください。"
 
 #: .\templates\pages\auth\forgot_password.html:89
 msgid "Invalid or expired code."
-msgstr ""
+msgstr "無効または期限切れのコード。"
 
 #: .\templates\pages\auth\forgot_password.html:90
 msgid "Passwords do not match."
-msgstr ""
+msgstr "パスワードが一致しません。"
 
 #: .\templates\pages\auth\forgot_password.html:91
 msgid "Failed to update password."
-msgstr ""
+msgstr "パスワードを更新できませんでした。"
 
 #: .\templates\pages\auth\forgot_password.html:92
 msgid "Network error. Try again."
-msgstr ""
+msgstr "ネットワークエラー。もう一度お試しください。"
 
 #: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:32
 #: .\templates\pages\auth\register.html:57
@@ -824,19 +826,19 @@ msgstr "ログイン"
 
 #: .\templates\pages\auth\login.html:9
 msgid "Welcome back"
-msgstr ""
+msgstr "おかえりなさい"
 
 #: .\templates\pages\auth\login.html:10
 msgid "Sign in to manage your restaurant panel."
-msgstr ""
+msgstr "レストランパネルを管理するにはサインインしてください。"
 
 #: .\templates\pages\auth\login.html:15
 msgid "Registration successful. Sign in below."
-msgstr ""
+msgstr "登録に成功しました。下からサインインしてください。"
 
 #: .\templates\pages\auth\login.html:18
 msgid "Password updated. You can log in with your new password."
-msgstr ""
+msgstr "パスワードを更新しました。新しいパスワードでログインできます。"
 
 #: .\templates\pages\auth\login.html:28 .\templates\pages\auth\register.html:23
 msgid "Password"
@@ -844,11 +846,11 @@ msgstr "パスワード"
 
 #: .\templates\pages\auth\login.html:34
 msgid "Forgot password?"
-msgstr ""
+msgstr "パスワードをお忘れですか？"
 
 #: .\templates\pages\auth\login.html:37
 msgid "No account?"
-msgstr ""
+msgstr "アカウントをお持ちではありませんか？"
 
 #: .\templates\pages\auth\login.html:37 .\templates\pages\auth\register.html:3
 #: .\templates\pages\panel\dashboard_simple.html:17
@@ -857,22 +859,23 @@ msgstr "登録"
 
 #: .\templates\pages\auth\register.html:16
 msgid "Create your account"
-msgstr ""
+msgstr "アカウントを作成"
 
 #: .\templates\pages\auth\register.html:17
 msgid "Start your 12-day free trial. No payment required."
-msgstr ""
+msgstr "12日間の無料トライアルを開始。お支払い不要。"
 
 #: .\templates\pages\auth\register.html:20
 #: .\templates\pages\panel\settings.html:28
 msgid "Restaurant name"
-msgstr ""
+msgstr "レストラン名"
 
 #: .\templates\pages\auth\register.html:20
 msgid "Orange Bistro"
-msgstr ""
+msgstr "Orange Bistro"
 
 #: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:72
 #: .\templates\pages\panel\settings.html:29
 #: .\templates\pages\restaurant_reservation.html:142
 #: .\templates\pages\restaurant_reservation.html:143
@@ -881,15 +884,15 @@ msgstr "電話"
 
 #: .\templates\pages\auth\register.html:26
 msgid "I accept the terms and conditions"
-msgstr ""
+msgstr "利用規約に同意します"
 
 #: .\templates\pages\auth\register.html:30
 msgid "I confirm I am acting as a business (B2B)"
-msgstr ""
+msgstr "法人（B2B）として利用することを確認します。"
 
 #: .\templates\pages\auth\register.html:34
 msgid "Please complete the \"I"
-msgstr ""
+msgstr "「私はロボットではありません」を完了してください。"
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
@@ -897,53 +900,54 @@ msgstr "続行"
 
 #: .\templates\pages\auth\register.html:41
 msgid "Verify your email"
-msgstr ""
+msgstr "メールを確認してください"
 
 #: .\templates\pages\auth\register.html:42
 msgid ""
 "We sent a 6-digit code to <strong id=\"verify-email-display\"></strong>. "
 "Enter it below to complete registration."
-msgstr ""
+msgstr "<strong id=\"verify-email-display\"></strong> に6桁のコードを送信しました。登録を完了するには下に入力してください。"
 
 #: .\templates\pages\auth\register.html:51
 msgid "Complete registration"
-msgstr ""
+msgstr "登録を完了"
 
 #: .\templates\pages\auth\register.html:54
 msgid "Use a different email"
-msgstr ""
+msgstr "別のメールを使用"
 
 #: .\templates\pages\auth\register.html:57
 msgid "Already have an account?"
-msgstr ""
+msgstr "すでにアカウントをお持ちですか？"
 
 #: .\templates\pages\checkout.html:3 .\templates\pages\checkout.html:12
 msgid "Checkout"
-msgstr ""
+msgstr "チェックアウト"
 
 #: .\templates\pages\checkout.html:19
 msgid "Customer Info"
-msgstr ""
+msgstr "お客様情報"
 
 #: .\templates\pages\checkout.html:21
 msgid "Full Name"
-msgstr ""
+msgstr "氏名"
 
 #: .\templates\pages\checkout.html:21
 msgid "John Doe"
-msgstr ""
+msgstr "山田太郎"
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\panel\settings.html:30
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\panel\settings.html:30
 msgid "Address"
 msgstr "住所"
 
 #: .\templates\pages\checkout.html:30
 msgid "Street Address"
-msgstr ""
+msgstr "住所（番地）"
 
 #: .\templates\pages\checkout.html:30
 msgid "Street, building, unit"
-msgstr ""
+msgstr "通り、建物、部屋番号"
 
 #: .\templates\pages\checkout.html:32 .\templates\pages\panel\settings.html:32
 msgid "City"
@@ -951,7 +955,7 @@ msgstr "市"
 
 #: .\templates\pages\checkout.html:33
 msgid "ZIP"
-msgstr ""
+msgstr "郵便番号"
 
 #: .\templates\pages\checkout.html:34 .\templates\pages\panel\settings.html:35
 msgid "Country"
@@ -959,11 +963,11 @@ msgstr "国"
 
 #: .\templates\pages\checkout.html:36
 msgid "Delivery Notes"
-msgstr ""
+msgstr "配達メモ"
 
 #: .\templates\pages\checkout.html:36
 msgid "Optional note for delivery driver"
-msgstr ""
+msgstr "配達員へのメモ（任意）"
 
 #: .\templates\pages\checkout.html:41
 msgid "Payment Method"
@@ -971,32 +975,32 @@ msgstr "支払い方法"
 
 #: .\templates\pages\checkout.html:43
 msgid "Card Number"
-msgstr ""
+msgstr "カード番号"
 
 #: .\templates\pages\checkout.html:44
 msgid "Card Holder"
-msgstr ""
+msgstr "カード名義人"
 
 #: .\templates\pages\checkout.html:44
 msgid "Name on card"
-msgstr ""
+msgstr "カード記載名"
 
 #: .\templates\pages\checkout.html:45
 msgid "Expiry"
-msgstr ""
+msgstr "有効期限"
 
 #: .\templates\pages\checkout.html:46
 msgid "CVC"
-msgstr ""
+msgstr "CVC"
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:575
-#: .\templates\pages\restaurant_menu.html:710
+#: .\templates\pages\restaurant_menu.html:591
+#: .\templates\pages\restaurant_menu.html:731
 msgid "Place Order"
-msgstr "注文する"
+msgstr "注文を確定"
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:741
 msgid "Order Summary"
 msgstr "注文概要"
 
@@ -1014,7 +1018,7 @@ msgstr "お問い合わせ"
 msgid ""
 "Get in touch for support, sales, or partnerships. Email, phone, and "
 "WhatsApp. We reply within 24 hours."
-msgstr ""
+msgstr "サポート、営業、提携についてお問い合わせください。メール、電話、WhatsApp。24時間以内に返信します。"
 
 #: .\templates\pages\contact.html:10
 msgid "Get in touch"
@@ -1022,27 +1026,27 @@ msgstr "お問い合わせ"
 
 #: .\templates\pages\contact.html:11
 msgid "Support, sales, or partnerships. We reply within 24 hours."
-msgstr ""
+msgstr "サポート、営業、提携について。24時間以内にご返信します。"
 
 #: .\templates\pages\contact.html:17
 msgid "Contact & Support"
-msgstr ""
+msgstr "お問い合わせとサポート"
 
 #: .\templates\pages\contact.html:24
 msgid "Phone / Support"
-msgstr ""
+msgstr "電話 / サポート"
 
 #: .\templates\pages\contact.html:28
 msgid "WhatsApp"
-msgstr ""
+msgstr "WhatsApp"
 
 #: .\templates\pages\contact.html:31
 msgid "Chat on WhatsApp"
-msgstr ""
+msgstr "WhatsApp でチャット"
 
 #: .\templates\pages\contact.html:40
 msgid "Send a message"
-msgstr ""
+msgstr "メッセージを送る"
 
 #: .\templates\pages\contact.html:42 .\templates\pages\panel\categories.html:20
 #: .\templates\pages\panel\menu_item_form.html:13
@@ -1052,11 +1056,11 @@ msgstr "名前"
 
 #: .\templates\pages\contact.html:42
 msgid "Your name"
-msgstr ""
+msgstr "お名前"
 
 #: .\templates\pages\contact.html:43
 msgid "you@example.com"
-msgstr ""
+msgstr "you@example.com"
 
 #: .\templates\pages\contact.html:44
 msgid "Subject"
@@ -1064,7 +1068,7 @@ msgstr "件名"
 
 #: .\templates\pages\contact.html:44
 msgid "How can we help?"
-msgstr ""
+msgstr "何かお手伝いできますか？"
 
 #: .\templates\pages\contact.html:45
 msgid "Message"
@@ -1072,7 +1076,7 @@ msgstr "メッセージ"
 
 #: .\templates\pages\contact.html:45
 msgid "Your message"
-msgstr ""
+msgstr "メッセージ"
 
 #: .\templates\pages\contact.html:46
 msgid "Send message"
@@ -1089,7 +1093,7 @@ msgstr "機能"
 msgid ""
 "Explore all features: QR menu, online ordering, campaigns, analytics, multi-"
 "language support, and more."
-msgstr ""
+msgstr "すべての機能を見る：QRメニュー、オンライン注文、キャンペーン、分析、多言語対応など。"
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
@@ -1146,21 +1150,21 @@ msgstr "無料で始める"
 
 #: .\templates\pages\landing.html:3
 msgid "QR Menu + Ordering"
-msgstr ""
+msgstr "QRメニュー＋注文"
 
 #: .\templates\pages\landing.html:4
 msgid ""
 "Launch your branded QR menu, run campaigns, and receive online orders from "
 "one dashboard. Built for modern restaurants."
-msgstr ""
+msgstr "ブランド化したQRメニューを公開、キャンペーンを実施し、1つのダッシュボードでオンライン注文を受付。モダンレストラン向け。"
 
 #: .\templates\pages\landing.html:31
 msgid "My Bonus QR Menu"
-msgstr ""
+msgstr "マイボーナスQRメニュー"
 
 #: .\templates\pages\landing.html:32
 msgid "Smart menu experience"
-msgstr ""
+msgstr "スマートなメニュー体験"
 
 #: .\templates\pages\landing.html:37
 msgid "Simple QR Code,"
@@ -1174,7 +1178,7 @@ msgstr "収益アップ。"
 msgid ""
 "Grow your revenue with a professional QR menu, online ordering, and a "
 "stunning mobile experience."
-msgstr ""
+msgstr "プロフェッショナルなQRメニュー、オンライン注文、印象的なモバイル体験で売上を伸ばそう。"
 
 #: .\templates\pages\landing.html:45 .\templates\pages\landing.html:311
 #: .\templates\partials\navbar.html:125 .\templates\partials\navbar.html:171
@@ -1188,211 +1192,211 @@ msgstr "例を見る"
 #: .\templates\pages\landing.html:53 .\templates\pages\landing.html:55
 #: .\templates\partials\footer.html:14 .\templates\partials\footer.html:16
 msgid "Download on the App Store"
-msgstr ""
+msgstr "App Store でダウンロード"
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:452
+#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
 msgid "Orders"
 msgstr "注文"
 
 #: .\templates\pages\landing.html:65
 msgid "Live Menu"
-msgstr ""
+msgstr "ライブメニュー"
 
 #: .\templates\pages\landing.html:68
 msgid "2 min"
-msgstr ""
+msgstr "2分"
 
 #: .\templates\pages\landing.html:69
 msgid "Setup"
-msgstr ""
+msgstr "セットアップ"
 
 #: .\templates\pages\landing.html:79
 msgid "Tablet menu preview"
-msgstr ""
+msgstr "タブレットのメニュープレビュー"
 
 #: .\templates\pages\landing.html:90 .\templates\pages\landing.html:111
 msgid "Phone menu"
-msgstr ""
+msgstr "スマホメニュー"
 
 #: .\templates\pages\landing.html:101
 msgid "Phone menu analytics"
-msgstr ""
+msgstr "スマホメニュー分析"
 
 #: .\templates\pages\landing.html:116
 msgid "Phone analytics"
-msgstr ""
+msgstr "スマホ分析"
 
 #: .\templates\pages\landing.html:122
 msgid "Open Live Menu"
-msgstr ""
+msgstr "ライブメニューを開く"
 
 #: .\templates\pages\landing.html:132
 msgid "Premium Experiences for Every Guest"
-msgstr ""
+msgstr "すべてのゲストに極上の体験"
 
 #: .\templates\pages\landing.html:133
 msgid ""
 "Modern UI components, strong visual hierarchy, and smooth animations for a "
 "luxury digital dining brand."
-msgstr ""
+msgstr "モダンなUIコンポーネント、強い視覚階層、なめらかなアニメーションで高級デジタルダイニングブランドを演出。"
 
 #: .\templates\pages\landing.html:137
 msgid "Live Menu Sync"
-msgstr ""
+msgstr "ライブメニュー同期"
 
 #: .\templates\pages\landing.html:138
 msgid "Change prices, stock, and offers instantly."
-msgstr ""
+msgstr "価格、在庫、オファーを即座に変更。"
 
 #: .\templates\pages\landing.html:141
 msgid "Multilingual Menus"
-msgstr ""
+msgstr "多言語メニュー"
 
 #: .\templates\pages\landing.html:142
 msgid "One tap language switch for tourists."
-msgstr ""
+msgstr "旅行者向けにワンタップで言語切替。"
 
 #: .\templates\pages\landing.html:145
 msgid "Campaign Engine"
-msgstr ""
+msgstr "キャンペーンエンジン"
 
 #: .\templates\pages\landing.html:146
 msgid "Upsell combos and seasonal promos."
-msgstr ""
+msgstr "コンボのアップセルと季節限定プロモ。"
 
 #: .\templates\pages\landing.html:149
 msgid "Realtime Insights"
-msgstr ""
+msgstr "リアルタイムインサイト"
 
 #: .\templates\pages\landing.html:150
 msgid "See hot items and conversion trends."
-msgstr ""
+msgstr "人気商品とコンバージョン傾向を確認。"
 
 #: .\templates\pages\landing.html:160
 msgid "Interactive Visual Showcase"
-msgstr ""
+msgstr "インタラクティブなビジュアルショーケース"
 
 #: .\templates\pages\landing.html:161
 msgid ""
 "Beautiful sections that feel alive and premium, built for conversion and wow "
 "effect."
-msgstr ""
+msgstr "ライブ感とプレミアム感のある美しいセクション。コンバージョンとワオ効果のために構築。"
 
 #: .\templates\pages\landing.html:165
 msgid "Uptime"
-msgstr ""
+msgstr "稼働率"
 
 #: .\templates\pages\landing.html:169
 msgid "Menus Served"
-msgstr ""
+msgstr "提供メニュー数"
 
 #: .\templates\pages\landing.html:173
 msgid "Guest Rating"
-msgstr ""
+msgstr "ゲスト評価"
 
 #: .\templates\pages\landing.html:177
 msgid "Avg. Basket"
-msgstr ""
+msgstr "平均カート"
 
 #: .\templates\pages\landing.html:182
 msgid "Why teams switch to us"
-msgstr ""
+msgstr "チームが乗り換える理由"
 
 #: .\templates\pages\landing.html:184
 msgid "No app install needed for guests."
-msgstr ""
+msgstr "ゲストのアプリインストール不要。"
 
 #: .\templates\pages\landing.html:185
 msgid "Manage all branches in one place."
-msgstr ""
+msgstr "すべての支店を1箇所で管理。"
 
 #: .\templates\pages\landing.html:186
 msgid "Fast mobile experience with elegant UI."
-msgstr ""
+msgstr "エレガントなUIによる高速モバイル体験。"
 
 #: .\templates\pages\landing.html:187
 msgid "Promotions, QR, and ordering fully integrated."
-msgstr ""
+msgstr "プロモーション、QR、注文を完全統合。"
 
 #: .\templates\pages\landing.html:203
 msgid "Table Intent"
-msgstr ""
+msgstr "テーブルの意図"
 
 #: .\templates\pages\landing.html:206
 msgid "Menu Action"
-msgstr ""
+msgstr "メニュー操作"
 
 #: .\templates\pages\landing.html:210
 msgid "Premium phone mockup"
-msgstr ""
+msgstr "プレミアムスマホモックアップ"
 
 #: .\templates\pages\landing.html:215
 msgid "Immersive Mobile"
-msgstr ""
+msgstr "没入型モバイル"
 
 #: .\templates\pages\landing.html:216
 msgid "From scan to order in one beautiful flow."
-msgstr ""
+msgstr "スキャンから注文まで一気通貫の美しい流れ。"
 
 #: .\templates\pages\landing.html:218
 msgid ""
 "Elevate guest experience with cinematic visuals, smooth motion, and ultra-"
 "clean interaction patterns crafted for QR Menu."
-msgstr ""
+msgstr "映画のようなビジュアル、なめらかな動き、超クリーンなインタラクションでQRメニューのゲスト体験を向上。"
 
 #: .\templates\pages\landing.html:220
 msgid "Explore Demo Menus"
-msgstr ""
+msgstr "デモメニューを見る"
 
 #: .\templates\pages\landing.html:229
 msgid "Menu Over Matter<br>Energy in Motion"
-msgstr ""
+msgstr "メニュー・オーバー・マター<br>エネルギー・イン・モーション"
 
 #: .\templates\pages\landing.html:234
 msgid "Restaurant lifestyle"
-msgstr ""
+msgstr "レストランのライフスタイル"
 
 #: .\templates\pages\landing.html:239
 msgid "Smart QR cards guide guests naturally from discovery to checkout."
-msgstr ""
+msgstr "スマートQRカードが発見から決済まで自然に案内。"
 
 #: .\templates\pages\landing.html:240
 msgid "Motion and hierarchy improve readability and increase item conversion."
-msgstr ""
+msgstr "動きと階層が可読性とアイテムのコンバージョンを向上。"
 
 #: .\templates\pages\landing.html:241
 msgid "Every section is built to feel premium while staying lightweight."
-msgstr ""
+msgstr "各セクションはプレミアム感を保ちつつ軽量。"
 
 #: .\templates\pages\landing.html:243
 msgid "More About QR Menu"
-msgstr ""
+msgstr "QRメニューについてもっと知る"
 
 #: .\templates\pages\landing.html:246
 msgid "Color portrait style"
-msgstr ""
+msgstr "カラー・ポートレート・スタイル"
 
 #: .\templates\pages\landing.html:261 .\templates\pages\landing.html:275
 msgid "There is more<br>to this menu world"
-msgstr ""
+msgstr "このメニューの世界には<br>もっとがある"
 
 #: .\templates\pages\landing.html:269 .\templates\pages\landing.html:283
 msgid "Than meets<br>the eye"
-msgstr ""
+msgstr "見た目以上に"
 
 #: .\templates\pages\landing.html:292
 msgid "Loved by Restaurant Teams"
-msgstr ""
+msgstr "レストランチームに愛されて"
 
 #: .\templates\pages\landing.html:308
 msgid "Make visitors say “wow” from first second."
-msgstr ""
+msgstr "訪問者に最初の1秒で「わお」と言わせよう。"
 
 #: .\templates\pages\landing.html:309
 msgid ""
 "A long, professional landing experience with beautiful sections, fluid "
 "animation, and premium orange branding."
-msgstr ""
+msgstr "美しいセクション、流麗なアニメーション、プレミアムなオレンジブランディングによる長編プロフェッショナルなランディング体験。"
 
 #: .\templates\pages\landing.html:312
 msgid "See Menus"
@@ -1401,12 +1405,11 @@ msgstr "メニューを見る"
 #: .\templates\pages\order_payment.html:3
 #, python-format
 msgid "Payment — %(name)s"
-msgstr ""
+msgstr "支払い — %(name)s"
 
 #: .\templates\pages\order_payment.html:10
 #: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:48
-#: .\templates\pages\order_payment.html:51
+#: .\templates\pages\order_payment.html:87
 #: .\templates\pages\restaurant_reservation.html:108
 #: .\templates\pages\restaurant_reservation.html:182
 #: .\templates\pages\restaurant_schedule.html:34
@@ -1414,8 +1417,8 @@ msgid "Back to menu"
 msgstr "メニューへ戻る"
 
 #: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:534
-#: .\templates\pages\restaurant_menu.html:662
+#: .\templates\pages\restaurant_menu.html:550
+#: .\templates\pages\restaurant_menu.html:682
 #: .\templates\pages\restaurant_reservation.html:163
 msgid "Payment"
 msgstr "支払い"
@@ -1423,51 +1426,90 @@ msgstr "支払い"
 #: .\templates\pages\order_payment.html:15
 #, python-format
 msgid "%(name)s — Order #%(id)s"
-msgstr ""
+msgstr "%(name)s — 注文 #%(id)s"
 
 #: .\templates\pages\order_payment.html:18
 msgid "Order summary"
-msgstr ""
+msgstr "注文の概要"
 
 #: .\templates\pages\order_payment.html:24
 msgid "Total:"
-msgstr ""
+msgstr "合計:"
 
 #: .\templates\pages\order_payment.html:28
 msgid "Payment method"
-msgstr ""
+msgstr "支払い方法"
 
 #: .\templates\pages\order_payment.html:30
 msgid ""
 "This restaurant does not accept online payment. Please pay by cash when you "
 "pick up or dine in."
-msgstr ""
+msgstr "この店はオンライン決済に対応していません。受取時または店内でのお支払いは現金でお願いします。"
 
 #: .\templates\pages\order_payment.html:35
 #, python-format
 msgid "Pay with card. The payment goes to %(name)s."
-msgstr ""
+msgstr "カードで支払います。支払いは %(name)s へ送られます。"
 
 #: .\templates\pages\order_payment.html:42
 #, python-format
 msgid "Pay %(currency)s %(total)s"
-msgstr ""
+msgstr "%(currency)s %(total)s を支払う"
 
 #: .\templates\pages\order_payment.html:47
 msgid "Payment successful."
-msgstr ""
+msgstr "支払いが完了しました。"
 
-#: .\templates\pages\order_payment.html:73
+#: .\templates\pages\order_payment.html:49
+msgid ""
+"Please enter your delivery details so the restaurant can receive the order."
+msgstr "レストランが注文を受け取れるよう、配達情報を入力してください。"
+
+#: .\templates\pages\order_payment.html:51
+msgid "Your order has been sent to the restaurant."
+msgstr "ご注文をレストランに送信しました。"
+
+#: .\templates\pages\order_payment.html:59
+msgid "First name"
+msgstr "名"
+
+#: .\templates\pages\order_payment.html:63
+msgid "Last name"
+msgstr "姓"
+
+#: .\templates\pages\order_payment.html:77
+#, fuzzy
+#| msgid "View orders"
+msgid "Submit order"
+msgstr "注文を送信"
+
+#: .\templates\pages\order_payment.html:82
+#, fuzzy
+#| msgid "Full feature set for modern restaurants"
+msgid "Order sent to the restaurant."
+msgstr "注文をレストランに送信しました。"
+
+#: .\templates\pages\order_payment.html:83
+msgid "You can follow the order status in order tracking."
+msgstr "注文追跡で注文状況を確認できます。"
+
+#: .\templates\pages\order_payment.html:84
+#, fuzzy
+#| msgid "Order management"
+msgid "Order tracking"
+msgstr "注文追跡"
+
+#: .\templates\pages\order_payment.html:113
 msgid "Could not start payment."
-msgstr ""
+msgstr "支払いを開始できませんでした。"
 
-#: .\templates\pages\order_payment.html:74
+#: .\templates\pages\order_payment.html:114
 msgid "Payment failed."
-msgstr ""
+msgstr "支払いに失敗しました。"
 
-#: .\templates\pages\order_payment.html:75
+#: .\templates\pages\order_payment.html:115
 msgid "Something went wrong."
-msgstr ""
+msgstr "問題が発生しました。"
 
 #: .\templates\pages\panel\campaigns.html:3
 #: .\templates\pages\panel\campaigns.html:11
@@ -1492,44 +1534,44 @@ msgstr "パネル"
 
 #: .\templates\pages\panel\campaigns.html:16
 msgid "Create Campaign"
-msgstr ""
+msgstr "キャンペーンを作成"
 
 #: .\templates\pages\panel\campaigns.html:17
 msgid "Campaign Name"
-msgstr ""
+msgstr "キャンペーン名"
 
 #: .\templates\pages\panel\campaigns.html:17
 msgid "Lunch Combo 20% Off"
-msgstr ""
+msgstr "ランチコンボ20％オフ"
 
 #: .\templates\pages\panel\campaigns.html:18
 msgid "Discount (%)"
-msgstr ""
+msgstr "割引 (%)"
 
 #: .\templates\pages\panel\campaigns.html:19
 msgid "Date Range"
-msgstr ""
+msgstr "期間"
 
 #: .\templates\pages\panel\campaigns.html:19
 msgid "Mar 1 - Mar 20"
-msgstr ""
+msgstr "3月1日 - 3月20日"
 
 #: .\templates\pages\panel\campaigns.html:20
 msgid "Target Categories"
-msgstr ""
+msgstr "対象カテゴリー"
 
 #: .\templates\pages\panel\campaigns.html:20
 msgid "Main Dishes, Drinks"
-msgstr ""
+msgstr "メイン料理、ドリンク"
 
 #: .\templates\pages\panel\campaigns.html:21
 #: .\templates\pages\panel\dashboard.html:64
 msgid "Create campaign"
-msgstr ""
+msgstr "キャンペーンを作成"
 
 #: .\templates\pages\panel\campaigns.html:33
 msgid "off"
-msgstr ""
+msgstr "オフ"
 
 #: .\templates\pages\panel\categories.html:3
 #: .\templates\pages\panel\categories.html:11
@@ -1541,15 +1583,15 @@ msgstr "カテゴリー"
 
 #: .\templates\pages\panel\categories.html:12
 msgid "New category"
-msgstr ""
+msgstr "新しいカテゴリー"
 
 #: .\templates\pages\panel\categories.html:21
 msgid "Slug"
-msgstr ""
+msgstr "スラッグ"
 
 #: .\templates\pages\panel\categories.html:22
 msgid "Actions"
-msgstr ""
+msgstr "アクション"
 
 #: .\templates\pages\panel\categories.html:30
 #: .\templates\pages\panel\menu_items_list.html:33
@@ -1558,20 +1600,20 @@ msgstr "削除"
 
 #: .\templates\pages\panel\categories.html:37
 msgid "No categories yet"
-msgstr ""
+msgstr "まだカテゴリーはありません"
 
 #: .\templates\pages\panel\categories.html:37
 msgid "Create your first category to organize menu items."
-msgstr ""
+msgstr "最初のカテゴリーを作成してメニュー項目を整理しましょう。"
 
 #: .\templates\pages\panel\categories.html:37
 #: .\templates\pages\panel\categories.html:40
 msgid "Create category"
-msgstr ""
+msgstr "カテゴリーを作成"
 
 #: .\templates\pages\panel\categories.html:40
 msgid "Use this Alpine-powered modal to add category creation form later."
-msgstr ""
+msgstr "Alpineベースのこのモーダルで、後からカテゴリー作成フォームを追加できます。"
 
 #: .\templates\pages\panel\dashboard.html:3
 #: .\templates\pages\panel\dashboard.html:10
@@ -1584,7 +1626,7 @@ msgstr "ダッシュボード"
 
 #: .\templates\pages\panel\dashboard.html:29
 msgid "Recent Orders"
-msgstr ""
+msgstr "最近の注文"
 
 #: .\templates\pages\panel\dashboard.html:34
 msgid "Order"
@@ -1592,147 +1634,147 @@ msgstr "注文"
 
 #: .\templates\pages\panel\dashboard.html:35
 msgid "Customer"
-msgstr ""
+msgstr "顧客"
 
 #: .\templates\pages\panel\dashboard.html:36
 msgid "Amount"
-msgstr ""
+msgstr "金額"
 
 #: .\templates\pages\panel\dashboard.html:37
 #: .\templates\pages\panel\dashboard_simple.html:27
 msgid "Status"
-msgstr ""
+msgstr "ステータス"
 
 #: .\templates\pages\panel\dashboard.html:56
 msgid "Quick Actions"
-msgstr ""
+msgstr "クイックアクション"
 
 #: .\templates\pages\panel\dashboard.html:60
 msgid "Add menu item"
-msgstr ""
+msgstr "メニュー項目を追加"
 
 #: .\templates\pages\panel\dashboard.html:68
 msgid "Generate QR"
-msgstr ""
+msgstr "QRを生成"
 
 #: .\templates\pages\panel\dashboard_simple.html:12
 msgid ""
 "Payment, plan and app access. Use the app for orders, menu and settings."
-msgstr ""
+msgstr "支払い、プラン、アプリアクセス。注文、メニュー、設定にはアプリをご利用ください。"
 
 #: .\templates\pages\panel\dashboard_simple.html:16
 msgid ""
 "Open this page with your panel link (e.g. /panel/?admin_id=...) or log in "
 "from the app."
-msgstr ""
+msgstr "パネルのリンク（例：/panel/?admin_id=...）でこのページを開くか、アプリからログインしてください。"
 
 #: .\templates\pages\panel\dashboard_simple.html:24
 msgid "Plan & payment"
-msgstr ""
+msgstr "プランと支払い"
 
 #: .\templates\pages\panel\dashboard_simple.html:29
 msgid "Active"
-msgstr ""
+msgstr "アクティブ"
 
 #: .\templates\pages\panel\dashboard_simple.html:31
 msgid "Expired"
-msgstr ""
+msgstr "有効期限切れ"
 
 #: .\templates\pages\panel\dashboard_simple.html:36
 #: .\templates\pages\panel\dashboard_simple.html:41
 msgid "Type"
-msgstr ""
+msgstr "タイプ"
 
 #: .\templates\pages\panel\dashboard_simple.html:37
 msgid "Free trial"
-msgstr ""
+msgstr "無料トライアル"
 
 #: .\templates\pages\panel\dashboard_simple.html:42
 msgid "Subscription"
-msgstr ""
+msgstr "サブスクリプション"
 
 #: .\templates\pages\panel\dashboard_simple.html:47
 msgid "Expires"
-msgstr ""
+msgstr "有効期限"
 
 #: .\templates\pages\panel\dashboard_simple.html:52
 #: .\templates_bonusweb\business_menu\subscribe.html:7
 msgid "Subscribe to continue"
-msgstr ""
+msgstr "続けるにはサブスクライブしてください"
 
 #: .\templates\pages\panel\dashboard_simple.html:58
 msgid "Stripe"
-msgstr ""
+msgstr "Stripe"
 
 #: .\templates\pages\panel\dashboard_simple.html:63
 msgid "Connected – you can receive customer payments."
-msgstr ""
+msgstr "接続済み — お客様の支払いを受け付けられます。"
 
 #: .\templates\pages\panel\dashboard_simple.html:66
 msgid ""
 "To accept online payments from your digital menu, you need to connect "
 "Stripe. Click below to complete setup."
-msgstr ""
+msgstr "デジタルメニューでオンライン決済を受け付けるには Stripe に接続してください。下をクリックして設定を完了。"
 
 #: .\templates\pages\panel\dashboard_simple.html:67
 #: .\templates_bonusweb\business_menu\connect.html:3
 msgid "Connect Stripe"
-msgstr ""
+msgstr "Stripe を接続"
 
 #: .\templates\pages\panel\dashboard_simple.html:69
 msgid ""
 "If you want your customers' online payments to be processed from the digital "
 "menu, pay 200 Euros now to upgrade your plan."
-msgstr ""
+msgstr "デジタルメニュー経由でお客様のオンライン決済を処理するには、今 200 ユーロを支払ってプランをアップグレードしてください。"
 
 #: .\templates\pages\panel\dashboard_simple.html:71
 #: .\templates_bonusweb\business_menu\subscribe.html:13
 #: .\templates_bonusweb\business_menu\subscribe.html:35
 #: .\templates_bonusweb\business_menu\subscribe.html:39
 msgid "Start Plan"
-msgstr ""
+msgstr "プラン開始"
 
 #: .\templates\pages\panel\dashboard_simple.html:79
 msgid "Download the app"
-msgstr ""
+msgstr "アプリをダウンロード"
 
 #: .\templates\pages\panel\dashboard_simple.html:80
 msgid "Manage orders, menu and settings from your phone."
-msgstr ""
+msgstr "注文、メニュー、設定をスマホから管理。"
 
 #: .\templates\pages\panel\menu_item_form.html:3
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Edit Menu Item"
-msgstr ""
+msgstr "メニュー項目を編集"
 
 #: .\templates\pages\panel\menu_item_form.html:3
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Create Menu Item"
-msgstr ""
+msgstr "メニュー項目を作成"
 
 #: .\templates\pages\panel\menu_item_form.html:14
 msgid "Price"
-msgstr ""
+msgstr "価格"
 
 #: .\templates\pages\panel\menu_item_form.html:15
 msgid "Image URL"
-msgstr ""
+msgstr "画像URL"
 
 #: .\templates\pages\panel\menu_item_form.html:18
 msgid "Category"
-msgstr ""
+msgstr "カテゴリー"
 
 #: .\templates\pages\panel\menu_item_form.html:25
 msgid "Tags (comma separated)"
-msgstr ""
+msgstr "タグ（カンマ区切り）"
 
 #: .\templates\pages\panel\menu_item_form.html:25
 msgid "Popular, Spicy"
-msgstr ""
+msgstr "人気、辛口"
 
 #: .\templates\pages\panel\menu_item_form.html:28
 msgid "Save item"
-msgstr ""
+msgstr "項目を保存"
 
 #: .\templates\pages\panel\menu_item_form.html:29
 msgid "Cancel"
@@ -1747,11 +1789,11 @@ msgstr "メニュー項目"
 
 #: .\templates\pages\panel\menu_items_list.html:12
 msgid "New item"
-msgstr ""
+msgstr "新規項目"
 
 #: .\templates\pages\panel\menu_items_list.html:16
 msgid "Search items..."
-msgstr ""
+msgstr "項目を検索..."
 
 #: .\templates\pages\panel\menu_items_list.html:18
 msgid "All categories"
@@ -1769,31 +1811,31 @@ msgstr "設定"
 
 #: .\templates\pages\panel\settings.html:10
 msgid "Restaurant Settings"
-msgstr ""
+msgstr "レストラン設定"
 
 #: .\templates\pages\panel\settings.html:11
 msgid ""
 "Update your restaurant profile and map location. Changes are saved to your "
 "account."
-msgstr ""
+msgstr "レストランのプロフィールと地図の位置を更新します。変更はアカウントに保存されます。"
 
 #: .\templates\pages\panel\settings.html:15
 msgid "No restaurant linked to this session."
-msgstr ""
+msgstr "このセッションに紐付いたレストランはありません。"
 
 #: .\templates\pages\panel\settings.html:16
 msgid ""
 "Sign in with your restaurant owner account or open this page from your "
 "dashboard with a valid link."
-msgstr ""
+msgstr "レストランオーナーのアカウントでサインインするか、有効なリンクからダッシュボードでこのページを開いてください。"
 
 #: .\templates\pages\panel\settings.html:17
 msgid "Sign in"
-msgstr ""
+msgstr "サインイン"
 
 #: .\templates\pages\panel\settings.html:27
 msgid "General"
-msgstr ""
+msgstr "全般"
 
 #: .\templates\pages\panel\settings.html:33
 msgid "Postal code"
@@ -1801,56 +1843,56 @@ msgstr "郵便番号"
 
 #: .\templates\pages\panel\settings.html:41
 msgid "Restaurant location"
-msgstr ""
+msgstr "レストランの所在地"
 
 #: .\templates\pages\panel\settings.html:42
 msgid ""
 "Search for an address or click the map to set your pin. Drag the marker to "
 "adjust."
-msgstr ""
+msgstr "住所を検索するか、地図をクリックしてピンを置きます。マーカーをドラッグして調整。"
 
 #: .\templates\pages\panel\settings.html:48
 msgid ""
 "Google Maps is not configured. Set <code class=\"rounded bg-rose-100 px-1 "
 "dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in the server environment to "
 "enable the map."
-msgstr ""
+msgstr "Google Maps が未設定です。地図を有効にするにはサーバーの <code class=\"rounded bg-rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> を設定してください。"
 
 #: .\templates\pages\panel\settings.html:53
 msgid "Search address"
-msgstr ""
+msgstr "住所を検索"
 
 #: .\templates\pages\panel\settings.html:54
 msgid "Start typing an address…"
-msgstr ""
+msgstr "住所を入力してください…"
 
 #: .\templates\pages\panel\settings.html:58
 msgid "Loading map…"
-msgstr ""
+msgstr "地図を読み込み中…"
 
 #: .\templates\pages\panel\settings.html:67
 msgid "Latitude"
-msgstr ""
+msgstr "緯度"
 
 #: .\templates\pages\panel\settings.html:71
 msgid "Longitude"
-msgstr ""
+msgstr "経度"
 
 #: .\templates\pages\panel\settings.html:77
 msgid "Use current marker"
-msgstr ""
+msgstr "現在のマーカーを使用"
 
 #: .\templates\pages\panel\settings.html:78
 msgid "Use my location"
-msgstr ""
+msgstr "現在地を使用"
 
 #: .\templates\pages\panel\settings.html:79
 msgid "Copy coordinates"
-msgstr ""
+msgstr "座標をコピー"
 
 #: .\templates\pages\panel\settings.html:80
 msgid "Clear location"
-msgstr ""
+msgstr "位置をクリア"
 
 #: .\templates\pages\panel\settings.html:91
 msgid "Save changes"
@@ -1865,12 +1907,12 @@ msgstr "支払いキャンセル"
 
 #: .\templates\pages\payment_cancel.html:7
 msgid "No charge was made. You can try again anytime from your admin panel."
-msgstr ""
+msgstr "課金は発生していません。いつでも管理パネルから再試行できます。"
 
 #: .\templates\pages\payment_cancel.html:9
 #: .\templates\pages\payment_success.html:9
 msgid "Go to Admin Panel"
-msgstr ""
+msgstr "管理パネルへ"
 
 #: .\templates\pages\payment_cancel.html:10
 #: .\templates\pages\payment_success.html:10
@@ -1889,7 +1931,7 @@ msgstr "支払い完了"
 msgid ""
 "Your plan has been upgraded. To accept online payments from your digital "
 "menu, go to your admin panel and connect Stripe."
-msgstr ""
+msgstr "プランがアップグレードされました。デジタルメニューでオンライン決済を受け付けるには、管理パネルで Stripe に接続してください。"
 
 #: .\templates\pages\pricing.html:3 .\templates\partials\footer.html:24
 #: .\templates\partials\navbar.html:69 .\templates\partials\navbar.html:148
@@ -1973,25 +2015,25 @@ msgstr "QRメニュー"
 
 #: .\templates\pages\public_menu.html:37
 msgid "Menu categories"
-msgstr ""
+msgstr "メニューカテゴリー"
 
 #: .\templates\pages\public_menu.html:48
 #, python-format
 msgid "Filter by %(name)s"
-msgstr ""
+msgstr "%(name)s で絞り込み"
 
 #: .\templates\pages\public_menu.html:111
 #, python-format
 msgid "Add %(name)s to cart"
-msgstr ""
+msgstr "%(name)s をカートに追加"
 
 #: .\templates\pages\public_menu.html:126
 msgid "Open cart"
-msgstr ""
+msgstr "カートを開く"
 
 #: .\templates\pages\restaurant_menu.html:39
 msgid "Added"
-msgstr ""
+msgstr "追加しました"
 
 #: .\templates\pages\restaurant_menu.html:41
 msgid "Added to cart"
@@ -1999,305 +2041,312 @@ msgstr "カートに追加しました"
 
 #: .\templates\pages\restaurant_menu.html:42
 msgid "Table number is required for Dine In"
-msgstr ""
+msgstr "店内飲食にはテーブル番号が必要です"
 
 #: .\templates\pages\restaurant_menu.html:43
 msgid "Could not place order"
-msgstr ""
+msgstr "注文を確定できませんでした"
 
 #: .\templates\pages\restaurant_menu.html:44
 msgid "Network error"
-msgstr ""
+msgstr "ネットワークエラー"
 
-#: .\templates\pages\restaurant_menu.html:224
+#: .\templates\pages\restaurant_menu.html:237
 msgid ""
 "You have order(s) pending or in progress. Check status and when it's ready "
 "in the Orders panel."
-msgstr ""
+msgstr "保留中または進行中の注文があります。注文パネルでステータスを確認してください。"
 
-#: .\templates\pages\restaurant_menu.html:225
+#: .\templates\pages\restaurant_menu.html:238
 msgid "View orders"
 msgstr "注文を見る"
 
-#: .\templates\pages\restaurant_menu.html:228
+#: .\templates\pages\restaurant_menu.html:241
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
-msgstr ""
+msgstr "現在レストランは閉店中です。営業時間に合わせて注文を予約できます。"
 
-#: .\templates\pages\restaurant_menu.html:229
+#: .\templates\pages\restaurant_menu.html:242
 msgid "Schedule for later"
-msgstr ""
+msgstr "後で予約"
 
-#: .\templates\pages\restaurant_menu.html:240
+#: .\templates\pages\restaurant_menu.html:253
 msgid "All Categories"
 msgstr "全カテゴリ"
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:266
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\pages\restaurant_menu.html:271
+#: .\templates\pages\restaurant_menu.html:284
 msgid "Toggle night mode"
-msgstr ""
+msgstr "ナイトモード切替"
 
-#: .\templates\pages\restaurant_menu.html:301
+#: .\templates\pages\restaurant_menu.html:314
 msgid "Address:"
-msgstr ""
+msgstr "住所："
 
-#: .\templates\pages\restaurant_menu.html:304
+#: .\templates\pages\restaurant_menu.html:317
 msgid "Phone:"
-msgstr ""
+msgstr "電話："
 
-#: .\templates\pages\restaurant_menu.html:307
+#: .\templates\pages\restaurant_menu.html:320
 msgid "Email:"
-msgstr ""
+msgstr "メール："
 
-#: .\templates\pages\restaurant_menu.html:312
+#: .\templates\pages\restaurant_menu.html:325
 msgid "Opening Hours"
 msgstr "営業時間"
 
-#: .\templates\pages\restaurant_menu.html:313
+#: .\templates\pages\restaurant_menu.html:326
 msgid "Not provided yet"
-msgstr ""
+msgstr "未提供"
 
-#: .\templates\pages\restaurant_menu.html:322
+#: .\templates\pages\restaurant_menu.html:335
 msgid "Search menu items..."
 msgstr "メニューを検索..."
 
-#: .\templates\pages\restaurant_menu.html:330
+#: .\templates\pages\restaurant_menu.html:343
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr "全て"
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:356
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
-msgstr ""
+msgstr "パッケージ"
 
-#: .\templates\pages\restaurant_menu.html:364
+#: .\templates\pages\restaurant_menu.html:377
 msgid "No menu items available."
-msgstr ""
+msgstr "利用可能なメニューがありません。"
 
-#: .\templates\pages\restaurant_menu.html:390
-#: .\templates\pages\restaurant_menu.html:404
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:417
 msgid "Learn More"
 msgstr "詳細を見る"
 
-#: .\templates\pages\restaurant_menu.html:444
+#: .\templates\pages\restaurant_menu.html:457
 msgid "Cart"
 msgstr "カート"
 
-#: .\templates\pages\restaurant_menu.html:454
-#: .\templates\pages\restaurant_menu.html:459
-#: .\templates\pages\restaurant_menu.html:516
-#: .\templates\pages\restaurant_menu.html:527
-#: .\templates\pages\restaurant_menu.html:644
-#: .\templates\pages\restaurant_menu.html:655
-#: .\templates\pages\restaurant_menu.html:702
+#: .\templates\pages\restaurant_menu.html:467
+#: .\templates\pages\restaurant_menu.html:472
+#: .\templates\pages\restaurant_menu.html:532
+#: .\templates\pages\restaurant_menu.html:543
+#: .\templates\pages\restaurant_menu.html:664
+#: .\templates\pages\restaurant_menu.html:675
+#: .\templates\pages\restaurant_menu.html:722
 msgid "Reservation"
 msgstr "予約"
 
-#: .\templates\pages\restaurant_menu.html:461
+#: .\templates\pages\restaurant_menu.html:474
 msgid "Close"
 msgstr "閉じる"
 
-#: .\templates\pages\restaurant_menu.html:482
-#: .\templates\pages\restaurant_menu.html:611
+#: .\templates\pages\restaurant_menu.html:495
+#: .\templates\pages\restaurant_menu.html:628
 msgid "Cart Items"
-msgstr ""
+msgstr "カート内アイテム"
 
-#: .\templates\pages\restaurant_menu.html:484
-#: .\templates\pages\restaurant_menu.html:613
+#: .\templates\pages\restaurant_menu.html:497
+#: .\templates\pages\restaurant_menu.html:630
 msgid "Cart is empty."
 msgstr "カートは空です。"
 
-#: .\templates\pages\restaurant_menu.html:498
-#: .\templates\pages\restaurant_menu.html:627
+#: .\templates\pages\restaurant_menu.html:511
+#: .\templates\pages\restaurant_menu.html:644
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr "削除"
 
-#: .\templates\pages\restaurant_menu.html:502
-#: .\templates\pages\restaurant_menu.html:631
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:515
+#: .\templates\pages\restaurant_menu.html:648
+#: .\templates\pages\restaurant_menu.html:747
 msgid "Total"
 msgstr "合計"
 
-#: .\templates\pages\restaurant_menu.html:508
-#: .\templates\pages\restaurant_menu.html:636
+#: .\templates\pages\restaurant_menu.html:521
+#: .\templates\pages\restaurant_menu.html:653
 msgid "Service Type"
 msgstr "サービスタイプ"
 
-#: .\templates\pages\restaurant_menu.html:510
-#: .\templates\pages\restaurant_menu.html:638
+#: .\templates\pages\restaurant_menu.html:523
+#: .\templates\pages\restaurant_menu.html:655
 msgid "Dine In"
 msgstr "店内飲食"
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:639
+#: .\templates\pages\restaurant_menu.html:524
+#: .\templates\pages\restaurant_menu.html:656
 msgid "Pickup"
 msgstr "テイクアウト"
 
-#: .\templates\pages\restaurant_menu.html:513
-#: .\templates\pages\restaurant_menu.html:641
+#: .\templates\pages\restaurant_menu.html:526
+#: .\templates\pages\restaurant_menu.html:658
 msgid "Delivery"
 msgstr "配達"
 
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:649
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_menu.html:669
 msgid "Table Number"
 msgstr "テーブル番号"
 
-#: .\templates\pages\restaurant_menu.html:522
+#: .\templates\pages\restaurant_menu.html:538
 msgid "e.g. 22"
-msgstr ""
+msgstr "例: 22"
 
-#: .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:566
-#: .\templates\pages\restaurant_menu.html:657
-#: .\templates\pages\restaurant_menu.html:704
+#: .\templates\pages\restaurant_menu.html:545
+#: .\templates\pages\restaurant_menu.html:582
+#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:724
 msgid "Select date & time →"
-msgstr ""
+msgstr "日付と時間を選択 →"
 
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:665
+#: .\templates\pages\restaurant_menu.html:553
+#: .\templates\pages\restaurant_menu.html:685
 msgid "Cash"
 msgstr "現金"
 
-#: .\templates\pages\restaurant_menu.html:540
-#: .\templates\pages\restaurant_menu.html:668
+#: .\templates\pages\restaurant_menu.html:556
+#: .\templates\pages\restaurant_menu.html:688
 msgid "Online"
 msgstr "オンライン"
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:673
-#: .\templates\pages\restaurant_menu.html:674
+#: .\templates\pages\restaurant_menu.html:561
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:694
 msgid "Order Note"
-msgstr ""
+msgstr "注文メモ"
 
-#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_reservation.html:151
 msgid "Special requests…"
-msgstr ""
+msgstr "特別なご要望…"
 
-#: .\templates\pages\restaurant_menu.html:551
-#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:567
+#: .\templates\pages\restaurant_menu.html:718
 msgid "Confirm Order"
 msgstr "注文確認"
 
-#: .\templates\pages\restaurant_menu.html:552
+#: .\templates\pages\restaurant_menu.html:568
 msgid "Add items and set options on the left."
-msgstr ""
+msgstr "左側でアイテムを追加し、オプションを設定してください。"
 
-#: .\templates\pages\restaurant_menu.html:555
-#: .\templates\pages\restaurant_menu.html:580
-#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_menu.html:571
+#: .\templates\pages\restaurant_menu.html:597
+#: .\templates\pages\restaurant_menu.html:750
 msgid "Order placed successfully"
-msgstr ""
+msgstr "注文が正常に確定しました"
 
-#: .\templates\pages\restaurant_menu.html:556
-msgid "Your order is pending. Check status in Order history below."
-msgstr ""
-
-#: .\templates\pages\restaurant_menu.html:557
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:729
-msgid "Add more items"
-msgstr ""
-
-#: .\templates\pages\restaurant_menu.html:562
 #: .\templates\pages\restaurant_menu.html:572
-#: .\templates\pages\restaurant_menu.html:699
+msgid "Your order is pending. Check status in Order history below."
+msgstr "注文は保留中です。下記の注文履歴でステータスを確認してください。"
+
+#: .\templates\pages\restaurant_menu.html:573
+#: .\templates\pages\restaurant_menu.html:599
+#: .\templates\pages\restaurant_menu.html:752
+msgid "Add more items"
+msgstr "アイテムを追加する"
+
+#: .\templates\pages\restaurant_menu.html:578
+#: .\templates\pages\restaurant_menu.html:588
+#: .\templates\pages\restaurant_menu.html:719
 msgid "total"
 msgstr "合計"
 
-#: .\templates\pages\restaurant_menu.html:564
+#: .\templates\pages\restaurant_menu.html:580
 msgid "Reservation with pre-order"
-msgstr ""
+msgstr "事前注文付き予約"
 
-#: .\templates\pages\restaurant_menu.html:576
+#: .\templates\pages\restaurant_menu.html:592
+#: .\templates\pages\restaurant_menu.html:732
+#, fuzzy
+#| msgid "Online"
+msgid "Pay Online"
+msgstr "オンライン"
+
+#: .\templates\pages\restaurant_menu.html:593
 msgid "Placing…"
-msgstr ""
+msgstr "処理中…"
 
-#: .\templates\pages\restaurant_menu.html:581
+#: .\templates\pages\restaurant_menu.html:598
 msgid ""
 "Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
 "span>. Check status in Order history below."
-msgstr ""
+msgstr "注文は保留中です。合計 € <span x-text=\"lastOrder.total_amount\"></span>。下記の注文履歴を確認してください。"
 
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:677
+#: .\templates\pages\restaurant_menu.html:605
+#: .\templates\pages\restaurant_menu.html:697
 msgid "Order history"
-msgstr ""
+msgstr "注文履歴"
 
-#: .\templates\pages\restaurant_menu.html:590
+#: .\templates\pages\restaurant_menu.html:607
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
-msgstr ""
+msgstr "まだ注文はありません。注文するとここに表示されます（保留中 → 準備中 → 完了）。"
 
-#: .\templates\pages\restaurant_menu.html:650
+#: .\templates\pages\restaurant_menu.html:670
 msgid "Table #"
-msgstr ""
+msgstr "テーブル番号"
 
-#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:699
 msgid "No orders yet."
-msgstr ""
+msgstr "まだ注文はありません。"
 
-#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:712
 msgid "Next →"
-msgstr ""
+msgstr "次へ →"
 
-#: .\templates\pages\restaurant_menu.html:696
+#: .\templates\pages\restaurant_menu.html:716
 msgid "Back"
 msgstr "戻る"
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Service:"
-msgstr ""
+msgstr "サービス:"
 
-#: .\templates\pages\restaurant_menu.html:725
+#: .\templates\pages\restaurant_menu.html:748
 msgid "Payment:"
-msgstr ""
+msgstr "支払い:"
 
-#: .\templates\pages\restaurant_menu.html:728
+#: .\templates\pages\restaurant_menu.html:751
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
-msgstr ""
+msgstr "注文は保留中です。レストランがステータスを更新します（例：準備中、完了）。"
 
-#: .\templates\pages\restaurant_menu.html:734
+#: .\templates\pages\restaurant_menu.html:757
 msgid "Done"
 msgstr "完了"
 
 #: .\templates\pages\restaurant_reservation.html:3
 #, python-format
 msgid "Reservation — %(name)s"
-msgstr ""
+msgstr "予約 — %(name)s"
 
 #: .\templates\pages\restaurant_reservation.html:26
 msgid "Name is required."
-msgstr ""
+msgstr "名前は必須です。"
 
 #: .\templates\pages\restaurant_reservation.html:27
 msgid "Please select a date."
-msgstr ""
+msgstr "日付を選択してください。"
 
 #: .\templates\pages\restaurant_reservation.html:28
 msgid "Please select a time."
-msgstr ""
+msgstr "時間を選択してください。"
 
 #: .\templates\pages\restaurant_reservation.html:29
 msgid "Request failed."
-msgstr ""
+msgstr "リクエストに失敗しました。"
 
 #: .\templates\pages\restaurant_reservation.html:30
 msgid "Network error. Please try again."
-msgstr ""
+msgstr "ネットワークエラー。もう一度お試しください。"
 
 #: .\templates\pages\restaurant_reservation.html:98
 msgid "Table reservation"
@@ -2310,7 +2359,7 @@ msgstr "営業時間:"
 
 #: .\templates\pages\restaurant_reservation.html:106
 msgid "Reservation request sent"
-msgstr ""
+msgstr "予約リクエストを送信しました"
 
 #: .\templates\pages\restaurant_reservation.html:107
 msgid ""
@@ -2318,7 +2367,7 @@ msgid ""
 "span> at <span x-text=\"successReservation.requested_time\"></span> (<span x-"
 "text=\"successReservation.guests_count\"></span> guests) is pending. The "
 "restaurant will confirm by email."
-msgstr ""
+msgstr "<span x-text=\"successReservation.requested_date\"></span> の <span x-text=\"successReservation.requested_time\"></span>（ <span x-text=\"successReservation.guests_count\"></span> 名）のご予約は保留中です。レストランがメールで確認します。"
 
 #: .\templates\pages\restaurant_reservation.html:115
 msgid "Date"
@@ -2330,11 +2379,11 @@ msgstr "時間"
 
 #: .\templates\pages\restaurant_reservation.html:124
 msgid "This day is fully booked. Please choose another date."
-msgstr ""
+msgstr "この日は満席です。別の日を選んでください。"
 
 #: .\templates\pages\restaurant_reservation.html:126
 msgid "Select time"
-msgstr ""
+msgstr "時間を選択"
 
 #: .\templates\pages\restaurant_reservation.html:131
 msgid "Loading…"
@@ -2346,7 +2395,7 @@ msgstr "ゲストの人数"
 
 #: .\templates\pages\restaurant_reservation.html:138
 msgid "Your name *"
-msgstr ""
+msgstr "お名前 *"
 
 #: .\templates\pages\restaurant_reservation.html:150
 msgid "Notes"
@@ -2354,58 +2403,58 @@ msgstr "メモ"
 
 #: .\templates\pages\restaurant_reservation.html:155
 msgid "Pre-order (from cart)"
-msgstr ""
+msgstr "事前注文（カートから）"
 
 #: .\templates\pages\restaurant_reservation.html:161
 msgid "Subtotal:"
-msgstr ""
+msgstr "小計:"
 
 #: .\templates\pages\restaurant_reservation.html:164
 msgid ""
 "Cash = pay on the day. Online = pay now; refunded if reservation is "
 "cancelled."
-msgstr ""
+msgstr "現金＝当日払い。オンライン＝今すぐ支払い（キャンセル時は返金）。"
 
 #: .\templates\pages\restaurant_reservation.html:166
 msgid "Cash (on the day)"
-msgstr ""
+msgstr "現金（当日）"
 
 #: .\templates\pages\restaurant_reservation.html:168
 msgid "Online (refund if cancelled)"
-msgstr ""
+msgstr "オンライン（キャンセル時に返金）"
 
 #: .\templates\pages\restaurant_reservation.html:176
 msgid "Request reservation"
-msgstr ""
+msgstr "予約をリクエスト"
 
 #: .\templates\pages\restaurant_schedule.html:3
 #, python-format
 msgid "Schedule your order — %(name)s"
-msgstr ""
+msgstr "注文の予約 — %(name)s"
 
 #: .\templates\pages\restaurant_schedule.html:8
 msgid "Schedule your order"
-msgstr ""
+msgstr "注文の予約"
 
 #: .\templates\pages\restaurant_schedule.html:16
 msgid "No opening hours set"
-msgstr ""
+msgstr "営業時間が未設定"
 
 #: .\templates\pages\restaurant_schedule.html:17
 msgid ""
 "The restaurant has not set specific opening times. You can place an order "
 "from the menu."
-msgstr ""
+msgstr "レストランは特定の営業時間を設定していません。メニューから注文できます。"
 
 #: .\templates\pages\restaurant_schedule.html:18
 msgid "Go to menu"
-msgstr ""
+msgstr "メニューへ"
 
 #: .\templates\pages\restaurant_schedule.html:21
 msgid ""
 "Choose a date and time for your order. You will then go to the menu to add "
 "items and place the order for that time."
-msgstr ""
+msgstr "注文の日時を選択してください。その後メニューでアイテムを追加し、その時刻の注文を確定します。"
 
 #: .\templates\pages\restaurants_list.html:3
 #: .\templates\pages\restaurants_list.html:10
@@ -2415,15 +2464,15 @@ msgstr "レストラン＆カフェ"
 
 #: .\templates\pages\restaurants_list.html:4
 msgid "Browse our partner restaurants and cafes. Open a menu and order online."
-msgstr ""
+msgstr "提携レストラン・カフェを閲覧。メニューを開いてオンライン注文できます。"
 
 #: .\templates\pages\restaurants_list.html:11
 msgid "Choose a place and open its menu."
-msgstr ""
+msgstr "お店を選んでメニューを開いてください。"
 
 #: .\templates\pages\restaurants_list.html:16
 msgid "No restaurants yet. Check back later."
-msgstr ""
+msgstr "まだレストランはありません。後でご確認ください。"
 
 #: .\templates\pages\restaurants_list.html:40
 msgid "View menu"
@@ -2437,64 +2486,64 @@ msgstr "サービス"
 
 #: .\templates\pages\service_detail.html:18
 msgid "Service"
-msgstr ""
+msgstr "サービス"
 
 #: .\templates\pages\service_detail.html:26
 msgid "Get pricing"
-msgstr ""
+msgstr "料金を確認"
 
 #: .\templates\pages\service_detail.html:27
 msgid "Talk to us"
-msgstr ""
+msgstr "お問い合わせください"
 
 #: .\templates\pages\service_detail.html:36
 msgid "Built for restaurants"
-msgstr ""
+msgstr "レストランのために構築"
 
 #: .\templates\pages\service_detail.html:37
 msgid "Fast setup • Mobile-first • Conversion-focused"
-msgstr ""
+msgstr "簡単セットアップ • モバイルファースト • コンバージョン重視"
 
 #: .\templates\pages\service_detail.html:54
 #, python-format
 msgid "Want to activate %(title)s for your restaurant?"
-msgstr ""
+msgstr "%(title)s をあなたのレストランで有効にしますか？"
 
 #: .\templates\pages\service_detail.html:55
 msgid "Start your annual plan and go live with QR menu + online ordering."
-msgstr ""
+msgstr "年額プランを始めて、QRメニューとオンライン注文を公開しましょう。"
 
 #: .\templates\pages\service_detail.html:56
 msgid "View annual plan"
-msgstr ""
+msgstr "年額プランを見る"
 
 #: .\templates\pages\service_detail.html:60
 msgid "More services"
-msgstr ""
+msgstr "その他のサービス"
 
 #: .\templates\pages\services.html:4
 msgid ""
 "Explore all QR Menu Pro services. Open a dedicated page for each service "
 "with details, visuals, and benefits."
-msgstr ""
+msgstr "QR Menu Pro のすべてのサービスをご覧ください。詳細・ビジュアル・メリットが揃った専用ページを開けます。"
 
 #: .\templates\pages\services.html:10
 msgid "Our Services"
-msgstr ""
+msgstr "サービス一覧"
 
 #: .\templates\pages\services.html:12
 msgid ""
 "Open each service to view a full, dedicated page with benefits, visuals, and "
 "practical use cases."
-msgstr ""
+msgstr "各サービスを開くと、メリット・ビジュアル・活用事例をまとめた専用ページを閲覧できます。"
 
 #: .\templates\pages\services.html:25
 msgid "Open service page"
-msgstr ""
+msgstr "サービスページを開く"
 
 #: .\templates\partials\alerts.html:3
 msgid "Notifications"
-msgstr ""
+msgstr "通知"
 
 #: .\templates\partials\cart_drawer.html:15
 msgid "Your Cart"
@@ -2502,7 +2551,7 @@ msgstr "あなたのカート"
 
 #: .\templates\partials\cart_drawer.html:16
 msgid "Close cart"
-msgstr ""
+msgstr "カートを閉じる"
 
 #: .\templates\partials\cart_drawer.html:23
 msgid "Your cart is empty."
@@ -2510,23 +2559,23 @@ msgstr "カートは空です。"
 
 #: .\templates\partials\cart_drawer.html:34
 msgid "Decrease quantity"
-msgstr ""
+msgstr "数量を減らす"
 
 #: .\templates\partials\cart_drawer.html:36
 msgid "Increase quantity"
-msgstr ""
+msgstr "数量を増やす"
 
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove item"
-msgstr ""
+msgstr "アイテムを削除"
 
 #: .\templates\partials\cart_drawer.html:49
 msgid "Proceed to Checkout"
-msgstr ""
+msgstr "チェックアウトへ進む"
 
 #: .\templates\partials\footer.html:8
 msgid "SaaS platform for QR menus, online ordering, campaigns, and analytics."
-msgstr ""
+msgstr "QRメニュー、オンライン注文、キャンペーン、分析のためのSaaSプラットフォーム。"
 
 #: .\templates\partials\footer.html:20
 msgid "Product"
@@ -2543,7 +2592,7 @@ msgstr "会社概要"
 #: .\templates\partials\footer.html:44
 #, python-format
 msgid "© %(year)s %(brand)s. All rights reserved."
-msgstr ""
+msgstr "© %(year)s %(brand)s. 無断転載を禁じます。"
 
 #: .\templates\partials\footer.html:46
 msgid ""
@@ -2553,11 +2602,11 @@ msgid ""
 "transition underline decoration-slate-300 dark:decoration-slate-600 "
 "hover:decoration-primary-500\">Angraweb</a> — Professional Web Design &amp; "
 "Software Development."
-msgstr ""
+msgstr "本ウェブサイトは <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500\">Angraweb</a> により開発されました — プロフェッショナルなウェブデザイン &amp; ソフトウェア開発。"
 
 #: .\templates\partials\navbar.html:45
 msgid "All Services"
-msgstr ""
+msgstr "すべてのサービス"
 
 #: .\templates\partials\navbar.html:89
 msgid "Change language"
@@ -2591,306 +2640,306 @@ msgstr "言語"
 
 #: .\templates\partials\panel_navbar.html:6
 msgid "Restaurant Panel"
-msgstr ""
+msgstr "レストランパネル"
 
 #: .\templates\partials\panel_navbar.html:26
 #: .\templates\partials\panel_navbar.html:39
 msgid "Public Site"
-msgstr ""
+msgstr "公開サイト"
 
 #: .\templates\partials\panel_navbar_simple.html:5
 msgid "Back to site"
-msgstr ""
+msgstr "サイトへ戻る"
 
 #: .\templates\partials\panel_navbar_simple.html:21
 msgid "Site"
-msgstr ""
+msgstr "サイト"
 
 #: .\templates_bonusweb\base.html:199 .\templates_bonusweb\base.html:276
 #: .\templates_bonusweb\base.html:335
 msgid "Use Cases"
-msgstr ""
+msgstr "活用事例"
 
 #: .\templates_bonusweb\base.html:207 .\templates_bonusweb\base.html:284
 #: .\templates_bonusweb\base.html:337
 msgid "Businesses"
-msgstr ""
+msgstr "ビジネス"
 
 #: .\templates_bonusweb\base.html:211 .\templates_bonusweb\base.html:288
 #: .\templates_bonusweb\base.html:338
 msgid "How It Works"
-msgstr ""
+msgstr "使い方"
 
 #: .\templates_bonusweb\base.html:219 .\templates_bonusweb\base.html:296
 #: .\templates_bonusweb\base.html:341
 msgid "Download"
-msgstr ""
+msgstr "ダウンロード"
 
 #: .\templates_bonusweb\base.html:259
 msgid "Admin Login"
-msgstr ""
+msgstr "管理者ログイン"
 
 #: .\templates_bonusweb\base.html:314
 msgid ""
 "Bonus helps local businesses run QR menus, loyalty points, rewards, and "
 "customer reviews — all in one place."
-msgstr ""
+msgstr "Bonus は QRメニュー、ロイヤルティポイント、リワード、レビューを一元管理し、ローカルビジネスを支援します。"
 
 #: .\templates_bonusweb\base.html:317
 msgid "Website"
-msgstr ""
+msgstr "ウェブサイト"
 
 #: .\templates_bonusweb\base.html:320
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: .\templates_bonusweb\base.html:323
 msgid "X (Twitter)"
-msgstr ""
+msgstr "X (旧Twitter)"
 
 #: .\templates_bonusweb\base.html:326
 msgid "LinkedIn"
-msgstr ""
+msgstr "LinkedIn"
 
 #: .\templates_bonusweb\base.html:332
 msgid "Platform"
-msgstr ""
+msgstr "プラットフォーム"
 
 #: .\templates_bonusweb\base.html:339
 msgid "Integrations"
-msgstr ""
+msgstr "連携"
 
 #: .\templates_bonusweb\base.html:345
 msgid "For Businesses"
-msgstr ""
+msgstr "ビジネス向け"
 
 #: .\templates_bonusweb\base.html:347
 msgid "Business Admin Panel"
-msgstr ""
+msgstr "ビジネス管理パネル"
 
 #: .\templates_bonusweb\base.html:348
 msgid "Service Agreement"
-msgstr ""
+msgstr "サービス契約"
 
 #: .\templates_bonusweb\base.html:349
 msgid "Bonus Registration"
-msgstr ""
+msgstr "Bonus 登録"
 
 #: .\templates_bonusweb\base.html:351 .\templates_bonusweb\base.html:356
 msgid "QR Code Generator"
-msgstr ""
+msgstr "QRコード生成ツール"
 
 #: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
 msgid "Manage Products"
-msgstr ""
+msgstr "商品管理"
 
 #: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
 msgid "Customer Reviews"
-msgstr ""
+msgstr "顧客レビュー"
 
 #: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
 msgid "Send Notification"
-msgstr ""
+msgstr "通知を送信"
 
 #: .\templates_bonusweb\base.html:364
 msgid "Legal"
-msgstr ""
+msgstr "法的情報"
 
 #: .\templates_bonusweb\base.html:366
 msgid "Terms & Conditions"
-msgstr ""
+msgstr "利用規約"
 
 #: .\templates_bonusweb\base.html:370
 msgid "Privacy Policy"
-msgstr ""
+msgstr "プライバシーポリシー"
 
 #: .\templates_bonusweb\base.html:371
 msgid "Account & Data Deletion"
-msgstr ""
+msgstr "アカウントとデータ削除"
 
 #: .\templates_bonusweb\base.html:373
 msgid "API Docs"
-msgstr ""
+msgstr "API ドキュメント"
 
 #: .\templates_bonusweb\base.html:379
 msgid "All rights reserved"
-msgstr ""
+msgstr "無断転載を禁じます"
 
 #: .\templates_bonusweb\base.html:381
 msgid "This website was designed by"
-msgstr ""
+msgstr "このサイトの制作元："
 
 #: .\templates_bonusweb\business_menu\connect_done.html:3
 #: .\templates_bonusweb\business_menu\connect_done.html:6
 msgid "Stripe connected"
-msgstr ""
+msgstr "Stripe 接続済み"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:7
 msgid "You can now receive customer payments."
-msgstr ""
+msgstr "お客様の支払いを受け付けられるようになりました。"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:9
 #: .\templates_bonusweb\business_menu\connect_done.html:11
 msgid "Back to panel"
-msgstr ""
+msgstr "パネルに戻る"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:34
 msgid "Prices"
-msgstr ""
+msgstr "料金"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:65
 msgid "Previous"
-msgstr ""
+msgstr "前へ"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:78
 msgid "Next"
-msgstr ""
+msgstr "次へ"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:92
 msgid "Special offers"
-msgstr ""
+msgstr "特別オファー"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:139
 msgid "items"
-msgstr ""
+msgstr "件"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:154
 msgid "Previous image"
-msgstr ""
+msgstr "前の画像"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:157
 msgid "Next image"
-msgstr ""
+msgstr "次の画像"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:208
 msgid "No items in this category yet."
-msgstr ""
+msgstr "このカテゴリーにはまだアイテムがありません。"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:220
 msgid "No menu items available"
-msgstr ""
+msgstr "利用可能なメニューがありません"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:221
 msgid "This restaurant hasn't added any menu items yet."
-msgstr ""
+msgstr "このレストランはまだメニューを追加していません。"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:226
 msgid "Download our apps for a better experience."
-msgstr ""
+msgstr "より良い体験のためにアプリをダウンロードしてください。"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:229
 msgid "Download Apps"
-msgstr ""
+msgstr "アプリをダウンロード"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:3
 #: .\templates_bonusweb\business_menu\menu_not_found.html:9
 msgid "Menu Not Found"
-msgstr ""
+msgstr "メニューが見つかりません"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:10
 msgid "The menu you're looking for doesn't exist or has been removed."
-msgstr ""
+msgstr "お探しのメニューは存在しないか削除されました。"
 
 #: .\templates_bonusweb\business_menu\menu_not_found.html:12
 msgid "Go Home"
-msgstr ""
+msgstr "ホームへ"
 
 #: .\templates_bonusweb\business_menu\payment.html:4
 msgid "Complete Registration - Payment"
-msgstr ""
+msgstr "登録完了 — 支払い"
 
 #: .\templates_bonusweb\business_menu\payment.html:8
 msgid "Complete Registration"
-msgstr ""
+msgstr "登録を完了"
 
 #: .\templates_bonusweb\business_menu\payment.html:9
 msgid "Please complete the payment to finish your registration"
-msgstr ""
+msgstr "登録を完了するにはお支払いを完了してください。"
 
 #: .\templates_bonusweb\business_menu\payment.html:15
 msgid "Scan QR Code to Pay"
-msgstr ""
+msgstr "QRコードをスキャンして支払う"
 
 #: .\templates_bonusweb\business_menu\payment.html:31
 msgid "Your browser does not support PDFs. "
-msgstr ""
+msgstr "お使いのブラウザは PDF に対応していません。 "
 
 #: .\templates_bonusweb\business_menu\payment.html:33
 msgid "Download the PDF"
-msgstr ""
+msgstr "PDFをダウンロード"
 
 #: .\templates_bonusweb\business_menu\payment.html:45
 msgid ""
 "To complete the registration process, please scan this QR code. After "
 "payment, contact support."
-msgstr ""
+msgstr "登録を完了するにはこのQRコードをスキャンしてください。支払い後、サポートへご連絡ください。"
 
 #: .\templates_bonusweb\business_menu\payment.html:53
 msgid "Need help? "
-msgstr ""
+msgstr "サポートが必要ですか？ "
 
 #: .\templates_bonusweb\business_menu\payment.html:54
 msgid "Contact Support"
-msgstr ""
+msgstr "サポートへ連絡"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:3
 msgid "Subscribe"
-msgstr ""
+msgstr "登録する"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:8
 msgid ""
 "Your trial has ended. Complete your subscription to keep using the service."
-msgstr ""
+msgstr "無料トライアルが終了しました。サービスを続けるにはサブスクリプションを完了してください。"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:11
 msgid ""
 "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
 "Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
 "other methods."
-msgstr ""
+msgstr "プランをアップグレードするには 200 ユーロを支払います。Stripe Checkout にリダイレクトされ、カード・PayPal・Google Pay・Apple Pay 等でお支払いいただけます。"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:15
 msgid "You will be redirected to Stripe to complete payment."
-msgstr ""
+msgstr "支払いを完了するために Stripe にリダイレクトされます。"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:25
 msgid "Redirecting..."
-msgstr ""
+msgstr "リダイレクト中…"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:40
 msgid "Request failed. Try again."
-msgstr ""
+msgstr "リクエストに失敗しました。再試行してください。"
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:7
 msgid ""
 "You cancelled the payment. No charge was made. You can try again anytime to "
 "upgrade your plan and enable online payments from your digital menu."
-msgstr ""
+msgstr "支払いをキャンセルされました。課金はありません。プランのアップグレードとデジタルメニューのオンライン決済有効化のため、いつでも再試行できます。"
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:10
 msgid "Try again – Start Plan"
-msgstr ""
+msgstr "再試行 – プラン開始"
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:12
 #: .\templates_bonusweb\business_menu\subscribe_success.html:11
 #: .\templates_bonusweb\business_menu\subscribe_success.html:13
 msgid "Back to Dashboard"
-msgstr ""
+msgstr "ダッシュボードに戻る"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:3
 msgid "Subscription complete"
-msgstr ""
+msgstr "サブスクリプション完了"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:6
 msgid "Thank you!"
-msgstr ""
+msgstr "ありがとうございます！"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:7
 msgid ""
 "Your subscription is active. You can now use the app and connect your Stripe "
 "account to receive customer payments."
-msgstr ""
+msgstr "サブスクリプションが有効です。アプリを使用し、Stripe アカウントを連携してお客様の支払いを受け取れます。"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
-msgstr ""
+msgstr "Stripe を接続して支払いを受け取る"

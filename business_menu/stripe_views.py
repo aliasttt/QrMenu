@@ -28,6 +28,13 @@ def _stripe_enabled():
     )
 
 
+def _absolute_url(request, path):
+    base = (getattr(settings, "SITE_URL", "") or "").rstrip("/")
+    if base:
+        return f"{base}{path}"
+    return request.build_absolute_uri(path)
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 @method_decorator(require_http_methods(["POST"]), name="dispatch")
 class StripeWebhookView(APIView):
@@ -56,8 +63,22 @@ class StripeWebhookView(APIView):
 
         if event.type == "checkout.session.completed":
             session = event.data.object
+            metadata = session.get("metadata") or {}
+            if metadata.get("purpose") == "order_payment":
+                order_id = metadata.get("order_id")
+                payment_intent_id = session.get("payment_intent") or ""
+                if order_id:
+                    try:
+                        order = Order.objects.get(pk=int(order_id), restaurant_id=int(metadata.get("restaurant_id")))
+                        if str(order.status) != "paid":
+                            order.status = "paid"
+                            order.stripe_payment_intent_id = payment_intent_id or order.stripe_payment_intent_id
+                            order.save(update_fields=["status", "stripe_payment_intent_id"])
+                            logger.info("Order %s marked paid via Checkout Session %s", order_id, session.get("id"))
+                    except (Order.DoesNotExist, ValueError, TypeError):
+                        logger.exception("Webhook order not found for checkout session: %s", session.get("id"))
             admin_id = session.get("client_reference_id")
-            if admin_id:
+            if admin_id and metadata.get("purpose") != "order_payment":
                 try:
                     admin = BusinessAdmin.objects.get(id=int(admin_id))
                     admin.payment_status = "paid"
@@ -406,3 +427,106 @@ class CreateOrderPaymentIntentView(APIView):
             "success": True,
             "client_secret": pi.client_secret,
         })
+
+
+class CreateOrderCheckoutSessionView(APIView):
+    """Create a Stripe Checkout Session for an order using card or PayPal through Stripe."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        if not _stripe_enabled():
+            return Response(
+                {"success": False, "error": "Stripe is not configured."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        restaurant_id = request.data.get("restaurant_id") or request.query_params.get("restaurant_id")
+        order_id = request.data.get("order_id") or request.query_params.get("order_id")
+        provider = (request.data.get("provider") or request.query_params.get("provider") or "stripe").strip().lower()
+        if provider not in ("stripe", "paypal"):
+            provider = "stripe"
+        if not restaurant_id or not order_id:
+            return Response(
+                {"success": False, "error": "restaurant_id and order_id required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            restaurant = Restaurant.objects.select_related("admin").get(pk=int(restaurant_id), is_active=True)
+            order = Order.objects.get(pk=int(order_id), restaurant=restaurant)
+        except (Restaurant.DoesNotExist, Order.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"success": False, "error": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        admin = getattr(restaurant, "admin", None)
+        if not (admin and getattr(admin, "stripe_account_id", None)):
+            return Response(
+                {"success": False, "error": "This restaurant does not accept online payment."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if str(order.payment_method) != "online":
+            return Response(
+                {"success": False, "error": "This order is not for online payment."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if str(order.status) not in ("pending", "paid"):
+            return Response(
+                {"success": False, "error": "Order is no longer pending."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        amount_decimal = getattr(order, "total_amount", 0) or 0
+        amount_cents = int(round(float(amount_decimal) * 100))
+        if amount_cents < 50:
+            return Response(
+                {"success": False, "error": "Amount too small."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        currency = (getattr(order, "currency", None) or "eur").lower()[:3]
+        payment_method_types = ["paypal"] if provider == "paypal" else ["card"]
+
+        import stripe
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        success_url = _absolute_url(request, f"/restaurants/{restaurant.id}/menu/?order_id={order.id}&payment=success")
+        cancel_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={provider}&payment=cancel")
+        try:
+            session = stripe.checkout.Session.create(
+                mode="payment",
+                payment_method_types=payment_method_types,
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": currency,
+                            "product_data": {
+                                "name": f"{restaurant.name} order #{order.id}",
+                            },
+                            "unit_amount": amount_cents,
+                        },
+                        "quantity": 1,
+                    }
+                ],
+                payment_intent_data={
+                    "transfer_data": {"destination": admin.stripe_account_id},
+                    "metadata": {
+                        "purpose": "order_payment",
+                        "provider": provider,
+                        "order_id": str(order.id),
+                        "restaurant_id": str(restaurant.id),
+                    },
+                },
+                metadata={
+                    "purpose": "order_payment",
+                    "provider": provider,
+                    "order_id": str(order.id),
+                    "restaurant_id": str(restaurant.id),
+                },
+                success_url=success_url,
+                cancel_url=cancel_url,
+            )
+        except Exception as e:
+            logger.exception("Order Checkout Session create failed: %s", e)
+            return Response(
+                {"success": False, "error": str(e)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        return Response({"success": True, "url": session.url, "session_id": session.id})

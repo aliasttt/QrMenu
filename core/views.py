@@ -975,6 +975,7 @@ def order_payment(request, restaurant_id, order_id):
             "stripe_configured": stripe_configured,
             "stripe_publishable_key": getattr(django_settings, "STRIPE_PUBLISHABLE_KEY", "") or "",
             "create_payment_intent_url": "/api/business-menu/api/create-order-payment-intent/",
+            "create_checkout_session_url": "/api/business-menu/api/create-order-checkout-session/",
         },
     )
 
