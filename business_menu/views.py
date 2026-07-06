@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.db import IntegrityError
-from django.db.models import Q
+from django.db.models import Count, Q, Sum
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.password_validation import validate_password
@@ -3290,11 +3290,17 @@ class FinalizePaidOrderView(APIView):
 
         full_name = " ".join([first_name, last_name]).strip()
         with transaction.atomic():
+            business_admin = getattr(restaurant, "admin", None)
             customer, _ = Customer.objects.update_or_create(
                 restaurant=restaurant,
                 phone=phone,
                 defaults={
+                    "business_admin": business_admin,
+                    "first_name": first_name,
+                    "last_name": last_name,
                     "name": full_name,
+                    "address": address,
+                    "source": "online_order",
                     "notes": f"Address: {address}",
                 },
             )
@@ -3316,10 +3322,28 @@ class FinalizePaidOrderView(APIView):
                     "status": Payment.Status.SUCCEEDED,
                 },
             )
+            customer_stats = Order.objects.filter(customer=customer).aggregate(
+                orders_count=Count("id"),
+                total_spent=Sum("total_amount", filter=Q(status=Order.Status.PAID)),
+            )
+            customer.orders_count = customer_stats.get("orders_count") or 0
+            customer.total_spent = customer_stats.get("total_spent") or Decimal("0.00")
+            customer.last_order = order
+            customer.last_order_at = timezone.now()
+            customer.save(
+                update_fields=[
+                    "orders_count",
+                    "total_spent",
+                    "last_order",
+                    "last_order_at",
+                    "updated_at",
+                ]
+            )
 
         return Response(
             {
                 "order_id": order.id,
+                "customer_id": customer.id,
                 "status": order.status,
                 "total_amount": str(order.total_amount),
                 "currency": order.currency or "EUR",
@@ -3333,6 +3357,50 @@ class FinalizePaidOrderView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+def _serialize_admin_order(order):
+    customer = getattr(order, "customer", None)
+    return {
+        "id": order.id,
+        "status": order.status,
+        "total_amount": str(order.total_amount),
+        "currency": order.currency or "EUR",
+        "service_type": order.service_type,
+        "payment_method": order.payment_method,
+        "table_number": order.table_number or "",
+        "notes": order.notes or "",
+        "scheduled_for": order.scheduled_for.isoformat() if getattr(order, "scheduled_for", None) else None,
+        "created_at": order.created_at.isoformat() if order.created_at else None,
+        "updated_at": order.updated_at.isoformat() if order.updated_at else None,
+        "items": order.items_json or [],
+        "customer": {
+            "id": customer.id if customer else None,
+            "restaurant_id": customer.restaurant_id if customer else None,
+            "business_admin_id": customer.business_admin_id if customer else None,
+            "first_name": customer.first_name if customer else "",
+            "last_name": customer.last_name if customer else "",
+            "name": customer.name if customer else "",
+            "phone": customer.phone if customer else "",
+            "email": customer.email if customer else "",
+            "address": customer.address if customer else "",
+            "source": customer.source if customer else "",
+            "orders_count": customer.orders_count if customer else 0,
+            "total_spent": str(customer.total_spent) if customer else "0.00",
+            "last_order_id": customer.last_order_id if customer else None,
+            "last_order_at": customer.last_order_at.isoformat() if customer and customer.last_order_at else None,
+            "notes": customer.notes if customer else "",
+        },
+        "payment": {
+            "stripe_payment_intent_id": order.stripe_payment_intent_id or "",
+            "stripe_order_id": order.stripe_order_id or "",
+        },
+        "actions": {
+            "can_mark_preparing": order.status in (Order.Status.PENDING, Order.Status.PAID),
+            "can_mark_completed": order.status == Order.Status.PREPARING,
+            "can_cancel": order.status in (Order.Status.PENDING, Order.Status.PAID, Order.Status.PREPARING),
+        },
+    }
 
 
 class AdminOrderListView(APIView):
@@ -3356,28 +3424,19 @@ class AdminOrderListView(APIView):
                 {"detail": "Restaurant not found for this admin."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        orders = Order.objects.filter(restaurant=restaurant).exclude(
+        orders_qs = Order.objects.select_related("customer", "customer__business_admin").filter(restaurant=restaurant).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
             customer__isnull=True,
-        ).order_by("-created_at")[:200]
-        out = []
-        for o in orders:
-            out.append({
-                "id": o.id,
-                "status": o.status,
-                "total_amount": str(o.total_amount),
-                "currency": o.currency,
-                "service_type": o.service_type,
-                "payment_method": o.payment_method,
-                "table_number": o.table_number or "",
-                "notes": o.notes or "",
-                "created_at": o.created_at.isoformat() if o.created_at else None,
-                "items": o.items_json,
-            })
+        ).order_by("-created_at")
+        requested_status = (request.query_params.get("status") or "").strip().lower()
+        if requested_status:
+            orders_qs = orders_qs.filter(status=requested_status)
+        orders = list(orders_qs[:200])
         return Response({
             "restaurant_id": restaurant.id,
             "restaurant_name": restaurant.name,
-            "orders": out,
+            "count": len(orders),
+            "orders": [_serialize_admin_order(o) for o in orders],
         }, status=status.HTTP_200_OK)
 
 
@@ -3401,31 +3460,19 @@ class AdminOrderNewListView(APIView):
                 {"detail": "Restaurant not found for this admin."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        orders = Order.objects.filter(restaurant=restaurant).filter(
+        orders = Order.objects.select_related("customer", "customer__business_admin").filter(restaurant=restaurant).filter(
             Q(status=Order.Status.PENDING, payment_method=Order.PaymentMethod.CASH)
             | Q(status=Order.Status.PAID, payment_method=Order.PaymentMethod.ONLINE)
         ).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
             customer__isnull=True,
         ).order_by("-created_at")[:100]
-        out = []
-        for o in orders:
-            out.append({
-                "id": o.id,
-                "status": o.status,
-                "total_amount": str(o.total_amount),
-                "currency": o.currency,
-                "service_type": o.service_type,
-                "payment_method": o.payment_method,
-                "table_number": o.table_number or "",
-                "notes": o.notes or "",
-                "created_at": o.created_at.isoformat() if o.created_at else None,
-                "items": o.items_json,
-            })
+        orders = list(orders)
         return Response({
             "restaurant_id": restaurant.id,
             "restaurant_name": restaurant.name,
-            "orders": out,
+            "count": len(orders),
+            "orders": [_serialize_admin_order(o) for o in orders],
         }, status=status.HTTP_200_OK)
 
 
@@ -3462,7 +3509,7 @@ class AdminOrderDetailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
-            order = Order.objects.get(id=order_id, restaurant=restaurant)
+            order = Order.objects.select_related("customer", "customer__business_admin").get(id=order_id, restaurant=restaurant)
         except Order.DoesNotExist:
             return Response(
                 {"detail": "Order not found."},
@@ -3470,10 +3517,26 @@ class AdminOrderDetailView(APIView):
             )
         order.status = new_status
         order.save(update_fields=["status", "updated_at"])
-        return Response({
-            "id": order.id,
-            "status": order.status,
-        }, status=status.HTTP_200_OK)
+        order.refresh_from_db()
+        return Response(_serialize_admin_order(order), status=status.HTTP_200_OK)
+
+    def get(self, request, order_id):
+        restaurant, err = self._get_admin_restaurant(request)
+        if err:
+            return err
+        try:
+            order = Order.objects.select_related("customer", "customer__business_admin").get(id=order_id, restaurant=restaurant)
+        except Order.DoesNotExist:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if order.payment_method == Order.PaymentMethod.ONLINE and not order.customer_id:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(_serialize_admin_order(order), status=status.HTTP_200_OK)
 
 
 class AdminOrderSettingsView(APIView):

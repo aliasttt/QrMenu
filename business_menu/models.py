@@ -749,10 +749,33 @@ class Customer(models.Model):
         related_name="customers",
         help_text="رستوران مرتبط",
     )
+    business_admin = models.ForeignKey(
+        BusinessAdmin,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="customers",
+        db_index=True,
+        help_text="Business owner/admin for this customer",
+    )
     email = models.EmailField(blank=True, db_index=True)
     phone = models.CharField(max_length=32, blank=True, db_index=True)
+    first_name = models.CharField(max_length=120, blank=True)
+    last_name = models.CharField(max_length=120, blank=True)
     name = models.CharField(max_length=200, blank=True)
+    address = models.TextField(blank=True)
+    source = models.CharField(max_length=32, default="online_order", db_index=True)
     stripe_customer_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    last_order = models.ForeignKey(
+        "Order",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    last_order_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    orders_count = models.PositiveIntegerField(default=0)
+    total_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -761,6 +784,10 @@ class Customer(models.Model):
         verbose_name = "Customer"
         verbose_name_plural = "Customers"
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["restaurant", "phone"]),
+            models.Index(fields=["business_admin", "phone"]),
+        ]
 
     def __str__(self):
         return f"{self.name or self.email or self.phone or '—'} ({self.restaurant.name})"

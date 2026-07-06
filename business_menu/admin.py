@@ -470,11 +470,30 @@ class PaymentAdmin(admin.ModelAdmin):
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     """مشتریان — داده از Stripe/سفارشات"""
-    list_display = ("name", "email", "phone", "restaurant", "stripe_customer_id", "created_at")
-    list_filter = ("restaurant", "created_at")
-    search_fields = ("name", "email", "phone", "restaurant__name", "stripe_customer_id")
+    list_display = (
+        "name",
+        "phone",
+        "restaurant",
+        "business_admin",
+        "orders_count",
+        "total_spent",
+        "last_order_at",
+        "created_at",
+    )
+    list_filter = ("restaurant", "business_admin", "source", "created_at")
+    search_fields = (
+        "name",
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+        "address",
+        "restaurant__name",
+        "business_admin__name",
+        "stripe_customer_id",
+    )
     readonly_fields = ("created_at", "updated_at")
-    raw_id_fields = ("restaurant",)
+    raw_id_fields = ("restaurant", "business_admin", "last_order")
 
 
 @admin.register(MenuItemImage)
