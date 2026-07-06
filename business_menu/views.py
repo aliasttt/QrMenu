@@ -2365,7 +2365,7 @@ def menu_qr_display_view(request, token):
             "has_delivery": delivery_enabled,
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
             "allow_payment_online": allow_online,
-            "online_ordering_enabled": bool(delivery_enabled and allow_online),
+            "online_ordering_enabled": bool(allow_online),
             "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
         }
         cart_items = list(request.session.get(_cart_key(restaurant.id), []))
@@ -2990,7 +2990,7 @@ class RestaurantOrderOptionsView(APIView):
             "has_delivery": delivery_enabled,
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
             "allow_payment_online": allow_online,
-            "online_ordering_enabled": bool(delivery_enabled and allow_online),
+            "online_ordering_enabled": bool(allow_online),
             "is_within_hours": is_within_hours,
             "delivery_order_available": bool(delivery_enabled and is_within_hours),
             "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
@@ -3199,6 +3199,9 @@ class OrderListView(APIView):
         orders = Order.objects.filter(
             restaurant=restaurant,
             session_key=session_key,
+        ).exclude(
+            payment_method=Order.PaymentMethod.ONLINE,
+            customer__isnull=True,
         ).order_by("-created_at")[:50]
         out = []
         for o in orders:
@@ -3232,14 +3235,15 @@ class FinalizePaidOrderView(APIView):
         data = request.data or {}
         order_id = data.get("order_id")
         payment_intent_id = (data.get("payment_intent_id") or "").strip()
+        checkout_session_id = (data.get("session_id") or data.get("checkout_session_id") or "").strip()
         first_name = (data.get("first_name") or "").strip()
         last_name = (data.get("last_name") or "").strip()
         address = (data.get("address") or "").strip()
         phone = (data.get("phone") or "").strip()
 
-        if not all([order_id, payment_intent_id, first_name, last_name, address, phone]):
+        if not all([order_id, first_name, last_name, address, phone]) or not (payment_intent_id or checkout_session_id):
             return Response(
-                {"detail": "order_id, payment_intent_id, first_name, last_name, address, and phone are required."},
+                {"detail": "order_id, payment reference, first_name, last_name, address, and phone are required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3248,16 +3252,9 @@ class FinalizePaidOrderView(APIView):
                 pk=int(order_id),
                 restaurant=restaurant,
                 payment_method=Order.PaymentMethod.ONLINE,
-                stripe_payment_intent_id=payment_intent_id,
             )
         except (Order.DoesNotExist, ValueError, TypeError):
             return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        if str(order.service_type) != Order.ServiceType.DELIVERY:
-            return Response(
-                {"detail": "Customer delivery details are only required for delivery orders."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
         payment_succeeded = str(order.status) == Order.Status.PAID
         charge_id = ""
@@ -3265,12 +3262,25 @@ class FinalizePaidOrderView(APIView):
             try:
                 import stripe
                 stripe.api_key = settings.STRIPE_SECRET_KEY
+                if checkout_session_id:
+                    checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
+                    metadata = checkout_session.get("metadata") or {}
+                    if (
+                        str(metadata.get("order_id") or "") != str(order.id)
+                        or str(metadata.get("restaurant_id") or "") != str(restaurant.id)
+                    ):
+                        return Response(
+                            {"detail": "Payment session does not match this order."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    payment_succeeded = checkout_session.get("payment_status") == "paid"
+                    payment_intent_id = checkout_session.get("payment_intent") or payment_intent_id
                 pi = stripe.PaymentIntent.retrieve(payment_intent_id)
                 payment_succeeded = pi.get("status") == "succeeded"
                 latest_charge = pi.get("latest_charge")
                 charge_id = latest_charge if isinstance(latest_charge, str) else ""
             except Exception as e:
-                logger.warning("Could not verify PaymentIntent %s: %s", payment_intent_id, e)
+                logger.warning("Could not verify order payment %s/%s: %s", checkout_session_id, payment_intent_id, e)
 
         if not payment_succeeded:
             return Response(
@@ -3285,15 +3295,16 @@ class FinalizePaidOrderView(APIView):
                 phone=phone,
                 defaults={
                     "name": full_name,
-                    "notes": f"Delivery address: {address}",
+                    "notes": f"Address: {address}",
                 },
             )
             original_notes = (order.notes or "").strip()
-            delivery_note = f"Customer: {full_name}\nPhone: {phone}\nDelivery address: {address}"
+            delivery_note = f"Customer: {full_name}\nPhone: {phone}\nAddress: {address}"
             order.customer = customer
             order.notes = f"{original_notes}\n\n{delivery_note}".strip() if original_notes else delivery_note
             order.status = Order.Status.PAID
-            order.save(update_fields=["customer", "notes", "status", "updated_at"])
+            order.stripe_payment_intent_id = payment_intent_id or order.stripe_payment_intent_id
+            order.save(update_fields=["customer", "notes", "status", "stripe_payment_intent_id", "updated_at"])
             Payment.objects.update_or_create(
                 restaurant=restaurant,
                 order=order,
@@ -3341,7 +3352,6 @@ class AdminOrderListView(APIView):
             )
         orders = Order.objects.filter(restaurant=restaurant).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
-            service_type=Order.ServiceType.DELIVERY,
             customer__isnull=True,
         ).order_by("-created_at")[:200]
         out = []
@@ -3390,7 +3400,6 @@ class AdminOrderNewListView(APIView):
             | Q(status=Order.Status.PAID, payment_method=Order.PaymentMethod.ONLINE)
         ).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
-            service_type=Order.ServiceType.DELIVERY,
             customer__isnull=True,
         ).order_by("-created_at")[:100]
         out = []

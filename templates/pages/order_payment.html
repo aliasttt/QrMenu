@@ -32,6 +32,39 @@
           <a href="/restaurants/{{ restaurant.id }}/menu/" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">{% trans "Back to menu" %}</a>
         </div>
         {% else %}
+        {% if payment_success %}
+        <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Payment received. Complete your details to send the order to the restaurant." %}</p>
+        <form id="customer-details-form" class="mt-5 space-y-4">
+          {% csrf_token %}
+          <input type="hidden" name="session_id" value="{{ checkout_session_id|default:'' }}">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "First name" %}</label>
+              <input name="first_name" required autocomplete="given-name" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Last name" %}</label>
+              <input name="last_name" required autocomplete="family-name" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            </div>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Phone" %}</label>
+            <input name="phone" required autocomplete="tel" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Address" %}</label>
+            <textarea name="address" required rows="3" autocomplete="street-address" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white"></textarea>
+          </div>
+          <p id="customer-details-error" class="hidden rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+          <button type="submit" id="submit-customer-details" class="w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
+            {% trans "Submit order" %}
+          </button>
+        </form>
+        <div id="order-finalized" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
+          <p class="font-semibold">{% trans "Order sent to the restaurant." %}</p>
+          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">{% trans "Back to menu" %}</a>
+        </div>
+        {% else %}
         <p class="mt-2 text-slate-600 dark:text-slate-400">{% blocktrans with name=restaurant.name %}Choose Stripe or PayPal. Both are processed securely by Stripe and paid to {{ name }}.{% endblocktrans %}</p>
         <form id="checkout-form" class="mt-5 space-y-3">
           {% csrf_token %}
@@ -55,6 +88,7 @@
           <a href="/restaurants/{{ restaurant.id }}/menu/" class="text-sm text-slate-600 dark:text-slate-400 hover:underline">{% trans "Back to menu" %}</a>
         </div>
         {% endif %}
+        {% endif %}
       </div>
     </div>
     {% endif %}
@@ -67,9 +101,13 @@
   var restaurantId = {{ restaurant.id }};
   var orderId = {{ order.id }};
   var errorEl = document.getElementById("checkout-error");
+  var detailsForm = document.getElementById("customer-details-form");
+  var detailsError = document.getElementById("customer-details-error");
+  var finalizedEl = document.getElementById("order-finalized");
   var buttons = document.querySelectorAll(".checkout-provider");
   var params = new URLSearchParams(window.location.search);
   var initialProvider = params.get("provider");
+  var checkoutSessionId = params.get("session_id") || document.querySelector('[name="session_id"]')?.value || "";
 
   function showError(message) {
     if (!errorEl) return;
@@ -112,7 +150,57 @@
     });
   });
 
-  if (initialProvider === "stripe" || initialProvider === "paypal") {
+  if (detailsForm) {
+    detailsForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      var submitBtn = document.getElementById("submit-customer-details");
+      var fd = new FormData(detailsForm);
+      if (detailsError) detailsError.classList.add("hidden");
+      if (submitBtn) submitBtn.disabled = true;
+      fetch("/api/business-menu/orders/finalize-paid/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")?.value || ""
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          order_id: orderId,
+          session_id: checkoutSessionId,
+          first_name: fd.get("first_name"),
+          last_name: fd.get("last_name"),
+          phone: fd.get("phone"),
+          address: fd.get("address")
+        })
+      })
+      .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+      .then(function(result) {
+        if (!result.ok) {
+          if (detailsError) {
+            detailsError.textContent = result.data.detail || "{% trans 'Could not submit order.' %}";
+            detailsError.classList.remove("hidden");
+          }
+          if (submitBtn) submitBtn.disabled = false;
+          return;
+        }
+        detailsForm.classList.add("hidden");
+        if (finalizedEl) finalizedEl.classList.remove("hidden");
+        window.setTimeout(function() {
+          window.location.href = result.data.tracking_url || "/restaurants/" + restaurantId + "/menu/";
+        }, 800);
+      })
+      .catch(function(err) {
+        if (detailsError) {
+          detailsError.textContent = err.message || "{% trans 'Could not submit order.' %}";
+          detailsError.classList.remove("hidden");
+        }
+        if (submitBtn) submitBtn.disabled = false;
+      });
+    });
+  }
+
+  if (!detailsForm && (initialProvider === "stripe" || initialProvider === "paypal")) {
     var autoButton = document.querySelector('[data-provider="' + initialProvider + '"]');
     startCheckout(initialProvider, autoButton);
   }

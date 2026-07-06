@@ -70,11 +70,10 @@ class StripeWebhookView(APIView):
                 if order_id:
                     try:
                         order = Order.objects.get(pk=int(order_id), restaurant_id=int(metadata.get("restaurant_id")))
-                        if str(order.status) != "paid":
-                            order.status = "paid"
+                        if payment_intent_id and order.stripe_payment_intent_id != payment_intent_id:
                             order.stripe_payment_intent_id = payment_intent_id or order.stripe_payment_intent_id
-                            order.save(update_fields=["status", "stripe_payment_intent_id"])
-                            logger.info("Order %s marked paid via Checkout Session %s", order_id, session.get("id"))
+                            order.save(update_fields=["stripe_payment_intent_id"])
+                        logger.info("Order %s payment completed; waiting for customer details", order_id)
                     except (Order.DoesNotExist, ValueError, TypeError):
                         logger.exception("Webhook order not found for checkout session: %s", session.get("id"))
             admin_id = session.get("client_reference_id")
@@ -105,11 +104,11 @@ class StripeWebhookView(APIView):
             order_id = (pi.get("metadata") or {}).get("order_id")
             if order_id:
                 try:
-                    order = Order.objects.get(pk=int(order_id), stripe_payment_intent_id=pi.get("id"))
-                    if str(order.status) != "paid":
-                        order.status = "paid"
-                        order.save(update_fields=["status"])
-                        logger.info("Order %s marked paid via PaymentIntent %s", order_id, pi.get("id"))
+                    order = Order.objects.get(pk=int(order_id))
+                    if pi.get("id") and order.stripe_payment_intent_id != pi.get("id"):
+                        order.stripe_payment_intent_id = pi.get("id")
+                        order.save(update_fields=["stripe_payment_intent_id"])
+                    logger.info("Order %s payment intent succeeded; waiting for customer details", order_id)
                 except (Order.DoesNotExist, ValueError, TypeError):
                     pass
 
@@ -483,7 +482,7 @@ class CreateOrderCheckoutSessionView(APIView):
 
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        success_url = _absolute_url(request, f"/restaurants/{restaurant.id}/menu/?order_id={order.id}&payment=success")
+        success_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?payment=success&session_id={{CHECKOUT_SESSION_ID}}")
         cancel_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={provider}&payment=cancel")
         payment_intent_data = {
             "metadata": {

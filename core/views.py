@@ -507,7 +507,7 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
         "has_delivery": delivery_enabled,
         "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
         "allow_payment_online": allow_online,
-        "online_ordering_enabled": bool(delivery_enabled and allow_online),
+        "online_ordering_enabled": bool(allow_online),
         "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
     }
     has_location = bool(getattr(restaurant, "has_map_location", False))
@@ -959,6 +959,8 @@ def order_payment(request, restaurant_id, order_id):
             "order_items": order.items_json if getattr(order, "items_json", None) else [],
             "total_amount": order.total_amount,
             "currency": order.currency or "EUR",
+            "payment_success": request.GET.get("payment") == "success",
+            "checkout_session_id": request.GET.get("session_id", ""),
             "stripe_connected": stripe_connected,
             "stripe_accepts_order_payments": stripe_accepts_order_payments,
             "stripe_configured": stripe_configured,
