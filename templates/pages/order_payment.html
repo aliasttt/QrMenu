@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 {% load static i18n %}
 {% block title %}{% blocktrans with name=restaurant.name %}Payment - {{ name }}{% endblocktrans %}{% endblock %}
+{% block styles %}
+<style>
+  @media print {
+    body * { visibility: hidden !important; }
+    #invoice-panel, #invoice-panel * { visibility: visible !important; }
+    #invoice-panel {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      box-shadow: none !important;
+      border: 0 !important;
+    }
+    .invoice-no-print { display: none !important; }
+  }
+</style>
+{% endblock %}
 {% block content %}
 <div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.14),_transparent_32%),linear-gradient(135deg,_#f8fafc_0%,_#eef6ff_45%,_#fff7ed_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.22),_transparent_32%),linear-gradient(135deg,_#020617_0%,_#0f172a_55%,_#1e1b4b_100%)] py-8 px-4">
   <div class="mx-auto max-w-lg">
@@ -72,7 +89,57 @@
         </form>
         <div id="order-finalized" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
           <p class="font-semibold">{% trans "Order sent to the restaurant." %}</p>
-          <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-2 inline-block text-sm font-medium underline">{% trans "Back to menu" %}</a>
+        </div>
+        <div id="invoice-panel" class="mt-5 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+          <div class="bg-slate-950 px-5 py-5 text-white">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-300">{% trans "Purchase invoice" %}</p>
+            <div class="mt-2 flex items-start justify-between gap-4">
+              <div>
+                <h2 class="text-2xl font-bold">{{ restaurant.name }}</h2>
+                <p class="mt-1 text-sm text-slate-300">Invoice #<span data-invoice-order-id>{{ order.id }}</span></p>
+              </div>
+              <div class="rounded-xl bg-white/10 px-3 py-2 text-right">
+                <p class="text-xs text-slate-300">{% trans "Total" %}</p>
+                <p class="text-lg font-bold"><span data-invoice-currency>{{ currency }}</span> <span data-invoice-total>{{ total_amount }}</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-5 p-5">
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Customer" %}</p>
+                <p class="mt-1 font-semibold text-slate-900 dark:text-white" data-invoice-customer-name></p>
+                <p class="text-sm text-slate-600 dark:text-slate-300" data-invoice-phone></p>
+                <p class="text-sm text-slate-600 dark:text-slate-300" data-invoice-address></p>
+              </div>
+              <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Order" %}</p>
+                <p class="mt-1 text-sm text-slate-700 dark:text-slate-300">{% trans "Status" %}: <span class="font-semibold text-emerald-600 dark:text-emerald-300" data-invoice-status></span></p>
+                <p class="text-sm text-slate-700 dark:text-slate-300">{% trans "Date" %}: <span data-invoice-date></span></p>
+              </div>
+            </div>
+            <div>
+              <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Items" %}</p>
+              <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                <table class="w-full text-left text-sm">
+                  <thead class="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                    <tr>
+                      <th class="px-3 py-2">{% trans "Item" %}</th>
+                      <th class="px-3 py-2 text-center">{% trans "Qty" %}</th>
+                      <th class="px-3 py-2 text-right">{% trans "Price" %}</th>
+                    </tr>
+                  </thead>
+                  <tbody data-invoice-items class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="invoice-no-print flex flex-col gap-2 sm:flex-row">
+              <button type="button" id="download-invoice" class="flex-1 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-700 hover:to-sky-600 dark:shadow-indigo-950/40">
+                {% trans "Download invoice" %}
+              </button>
+              <a href="/restaurants/{{ restaurant.id }}/menu/" class="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">{% trans "Back to menu" %}</a>
+            </div>
+          </div>
         </div>
         {% else %}
         {% if payment_cancel %}
@@ -114,9 +181,54 @@
   var detailsForm = document.getElementById("customer-details-form");
   var detailsError = document.getElementById("customer-details-error");
   var finalizedEl = document.getElementById("order-finalized");
+  var invoicePanel = document.getElementById("invoice-panel");
+  var invoiceItemsEl = document.querySelector("[data-invoice-items]");
+  var downloadInvoiceBtn = document.getElementById("download-invoice");
   var checkoutForm = document.getElementById("checkout-form");
   var params = new URLSearchParams(window.location.search);
   var checkoutSessionId = params.get("session_id") || document.querySelector('[name="session_id"]')?.value || "";
+  var initialInvoiceItems = [
+    {% for line in order_items %}
+    { name: "{{ line.name|escapejs }}", quantity: "{{ line.quantity|escapejs }}", price: "{{ line.price|escapejs }}" }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  function setInvoiceText(selector, value) {
+    var el = document.querySelector(selector);
+    if (el) el.textContent = value || "";
+  }
+
+  function renderInvoice(data) {
+    if (!invoicePanel) return;
+    setInvoiceText("[data-invoice-order-id]", data.order_id);
+    setInvoiceText("[data-invoice-currency]", data.currency || "{{ currency|escapejs }}");
+    setInvoiceText("[data-invoice-total]", data.total_amount || "{{ total_amount|escapejs }}");
+    setInvoiceText("[data-invoice-customer-name]", data.customer_name);
+    setInvoiceText("[data-invoice-phone]", data.customer_phone);
+    setInvoiceText("[data-invoice-address]", data.customer_address);
+    setInvoiceText("[data-invoice-status]", data.status);
+    setInvoiceText("[data-invoice-date]", data.created_at ? new Date(data.created_at).toLocaleString() : new Date().toLocaleString());
+    if (invoiceItemsEl) {
+      invoiceItemsEl.innerHTML = "";
+      (data.items && data.items.length ? data.items : initialInvoiceItems).forEach(function(item) {
+        var tr = document.createElement("tr");
+        tr.className = "bg-white dark:bg-slate-900";
+        var name = item.name || "";
+        var qty = item.quantity || 1;
+        var price = item.price || "";
+        tr.innerHTML =
+          '<td class="px-3 py-2 text-slate-800 dark:text-slate-100"></td>' +
+          '<td class="px-3 py-2 text-center text-slate-700 dark:text-slate-300"></td>' +
+          '<td class="px-3 py-2 text-right font-medium text-slate-900 dark:text-white"></td>';
+        tr.children[0].textContent = name;
+        tr.children[1].textContent = qty;
+        tr.children[2].textContent = (data.currency || "{{ currency|escapejs }}") + " " + price;
+        invoiceItemsEl.appendChild(tr);
+      });
+    }
+    invoicePanel.classList.remove("hidden");
+    invoicePanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   function showError(message) {
     if (!errorEl) return;
@@ -184,9 +296,7 @@
         }
         detailsForm.classList.add("hidden");
         if (finalizedEl) finalizedEl.classList.remove("hidden");
-        window.setTimeout(function() {
-          window.location.href = result.data.tracking_url || "/restaurants/" + restaurantId + "/menu/";
-        }, 800);
+        renderInvoice(result.data);
       })
       .catch(function(err) {
         if (detailsError) {
@@ -200,6 +310,11 @@
 
   if (!detailsForm && checkoutForm && params.get("payment") !== "cancel") {
     startCheckout();
+  }
+  if (downloadInvoiceBtn) {
+    downloadInvoiceBtn.addEventListener("click", function() {
+      window.print();
+    });
   }
 })();
 </script>
