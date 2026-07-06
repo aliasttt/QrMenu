@@ -960,6 +960,7 @@ def order_payment(request, restaurant_id, order_id):
             "total_amount": order.total_amount,
             "currency": order.currency or "EUR",
             "payment_success": request.GET.get("payment") == "success",
+            "payment_cancel": request.GET.get("payment") == "cancel",
             "checkout_session_id": request.GET.get("session_id", ""),
             "stripe_connected": stripe_connected,
             "stripe_accepts_order_payments": stripe_accepts_order_payments,

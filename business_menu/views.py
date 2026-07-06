@@ -3064,9 +3064,6 @@ class OrderCreateView(APIView):
             )
         service_type = (request.data.get("service_type") or "").strip().lower() or "dine_in"
         payment_method = (request.data.get("payment_method") or "").strip().lower() or "cash"
-        payment_provider = (request.data.get("payment_provider") or "").strip().lower() or "stripe"
-        if payment_provider not in ("stripe", "paypal"):
-            payment_provider = "stripe"
         table_number = (request.data.get("table_number") or "").strip()
         notes = (request.data.get("notes") or "").strip()
 
@@ -3170,7 +3167,7 @@ class OrderCreateView(APIView):
             }
             if payment_method == "online":
                 payload["requires_payment"] = True
-                payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={payment_provider}"
+                payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order.id}/pay/"
             return Response(payload, status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.exception("Order create failed: %s", e)

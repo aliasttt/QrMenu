@@ -483,7 +483,7 @@ class CreateOrderCheckoutSessionView(APIView):
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
         success_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?payment=success&session_id={{CHECKOUT_SESSION_ID}}")
-        cancel_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={provider}&payment=cancel")
+        cancel_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?payment=cancel")
         payment_intent_data = {
             "metadata": {
                 "purpose": "order_payment",
