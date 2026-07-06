@@ -2,7 +2,7 @@
 {% load static i18n %}
 {% block title %}{% blocktrans with name=restaurant.name %}Payment - {{ name }}{% endblocktrans %}{% endblock %}
 {% block content %}
-<div class="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4">
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.14),_transparent_32%),linear-gradient(135deg,_#f8fafc_0%,_#eef6ff_45%,_#fff7ed_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.22),_transparent_32%),linear-gradient(135deg,_#020617_0%,_#0f172a_55%,_#1e1b4b_100%)] py-8 px-4">
   <div class="mx-auto max-w-lg">
     {% if error %}
     <div class="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-200">
@@ -10,22 +10,29 @@
       <a href="/restaurants/{{ restaurant.id }}/menu/" class="mt-4 inline-block rounded-xl bg-slate-200 px-4 py-2 text-sm font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200">{% trans "Back to menu" %}</a>
     </div>
     {% else %}
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <h1 class="text-xl font-bold text-slate-900 dark:text-white">{% trans "Payment" %}</h1>
-      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{% blocktrans with name=restaurant.name id=order.id %}{{ name }} - Order #{{ id }}{% endblocktrans %}</p>
-
-      <div class="mt-6 border-t border-slate-200 pt-4 dark:border-slate-700">
-        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{% trans "Order summary" %}</p>
-        <ul class="mt-2 space-y-1 text-slate-700 dark:text-slate-300">
-          {% for line in order_items %}
-          <li><span>{{ line.quantity }}x</span> {{ line.name }} - {{ currency }} {{ line.price }} x {{ line.quantity }}</li>
-          {% endfor %}
-        </ul>
-        <p class="mt-4 text-lg font-bold text-slate-900 dark:text-white">{% trans "Total:" %} {{ currency }} {{ total_amount }}</p>
+    <div class="overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-xl shadow-indigo-100/60 backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-black/30">
+      <div class="bg-gradient-to-br from-indigo-600 via-sky-500 to-emerald-400 px-6 py-6 text-white">
+        <p class="text-sm font-semibold uppercase tracking-wide text-white/75">{% trans "Secure checkout" %}</p>
+        <h1 class="mt-2 text-2xl font-bold">{% trans "Payment" %}</h1>
+        <p class="mt-1 text-sm text-white/85">{% blocktrans with name=restaurant.name id=order.id %}{{ name }} - Order #{{ id }}{% endblocktrans %}</p>
       </div>
 
-      <div class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
-        <p class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Payment method" %}</p>
+      <div class="p-6">
+
+      <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+        <p class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Order summary" %}</p>
+        <ul class="mt-3 space-y-2 text-slate-700 dark:text-slate-300">
+          {% for line in order_items %}
+          <li class="flex justify-between gap-3 rounded-lg bg-white px-3 py-2 shadow-sm dark:bg-slate-900/70">
+            <span>{{ line.quantity }}x {{ line.name }}</span>
+            <span class="font-medium">{{ currency }} {{ line.price }} x {{ line.quantity }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        <p class="mt-4 flex items-center justify-between rounded-xl bg-slate-900 px-4 py-3 text-lg font-bold text-white dark:bg-white dark:text-slate-950"><span>{% trans "Total:" %}</span><span>{{ currency }} {{ total_amount }}</span></p>
+      </div>
+
+      <div class="mt-6">
         {% if not stripe_accepts_order_payments %}
         <p class="mt-2 text-slate-700 dark:text-slate-300">{% trans "This restaurant does not accept online payment. Please pay by cash when you pick up or dine in." %}</p>
         <div class="mt-6 flex flex-wrap gap-3">
@@ -33,30 +40,33 @@
         </div>
         {% else %}
         {% if payment_success %}
-        <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Payment received. Complete your details to send the order to the restaurant." %}</p>
-        <form id="customer-details-form" class="mt-5 space-y-4">
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-900/25 dark:text-emerald-100">
+          <p class="font-semibold">{% trans "Payment received" %}</p>
+          <p class="mt-1 text-sm text-emerald-700 dark:text-emerald-200">{% trans "Complete your details to send the order to the restaurant." %}</p>
+        </div>
+        <form id="customer-details-form" class="mt-5 space-y-4 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4 dark:border-indigo-900/70 dark:bg-indigo-950/30">
           {% csrf_token %}
           <input type="hidden" name="session_id" value="{{ checkout_session_id|default:'' }}">
           <div class="grid gap-3 sm:grid-cols-2">
             <div>
               <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "First name" %}</label>
-              <input name="first_name" required autocomplete="given-name" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+              <input name="first_name" required autocomplete="given-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
             </div>
             <div>
               <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Last name" %}</label>
-              <input name="last_name" required autocomplete="family-name" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+              <input name="last_name" required autocomplete="family-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
             </div>
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Phone" %}</label>
-            <input name="phone" required autocomplete="tel" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            <input name="phone" required autocomplete="tel" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Address" %}</label>
-            <textarea name="address" required rows="3" autocomplete="street-address" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-900 dark:text-white"></textarea>
+            <textarea name="address" required rows="3" autocomplete="street-address" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40"></textarea>
           </div>
           <p id="customer-details-error" class="hidden rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
-          <button type="submit" id="submit-customer-details" class="w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
+          <button type="submit" id="submit-customer-details" class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-700 hover:to-sky-600 disabled:opacity-50 dark:shadow-indigo-950/40">
             {% trans "Submit order" %}
           </button>
         </form>
@@ -88,6 +98,7 @@
         {% endif %}
         {% endif %}
         {% endif %}
+      </div>
       </div>
     </div>
     {% endif %}
