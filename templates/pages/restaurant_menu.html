@@ -17,6 +17,17 @@
   {% if theme_slug %}
   <link rel="stylesheet" href="{% static 'business_menu/themes/menu_themes.css' %}">
   <style>
+    html:has(.restaurant-menu-page),
+    body:has(.restaurant-menu-page),
+    #main-content:has(.restaurant-menu-page) {
+      background: var(--menu-bg, #030712) !important;
+    }
+    body:has(.restaurant-menu-page) > [aria-hidden="true"] {
+      display: none !important;
+    }
+    #main-content > .container.pt-4 {
+      display: none !important;
+    }
     .menu-root { background: var(--menu-bg, #f8fafc); color: var(--menu-text, #0f172a); }
     .menu-root .restaurant-menu-card,
     .menu-root .menu-themed-surface {
@@ -64,6 +75,18 @@
     }
     .menu-root .menu-themed-button * { color: inherit !important; }
     .menu-root .menu-cart-count { color: #fff !important; }
+    .menu-root .menu-status-shell {
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--menu-primary, #0f172a) 20%, var(--menu-surface, #fff)), var(--menu-surface, #fff)) !important;
+      border-color: color-mix(in srgb, var(--menu-primary, #0f172a) 48%, var(--menu-border, #e2e8f0)) !important;
+      color: var(--menu-text, #0f172a) !important;
+      box-shadow: 0 20px 55px color-mix(in srgb, #000 38%, transparent);
+    }
+    .menu-root .menu-status-pill {
+      background: color-mix(in srgb, var(--menu-primary, #0f172a) 18%, var(--menu-surface-2, #f1f5f9)) !important;
+      color: var(--menu-text, #0f172a) !important;
+      border-color: color-mix(in srgb, var(--menu-primary, #0f172a) 38%, var(--menu-border, #e2e8f0)) !important;
+    }
     .menu-root .menu-category-active {
       background: var(--menu-primary, #0f172a) !important;
       border-color: var(--menu-primary, #0f172a) !important;
@@ -79,21 +102,17 @@
     }
     .menu-root input[type="search"]::placeholder { color: var(--menu-text-muted, #64748b); }
     .restaurant-category-rail {
-      position: sticky;
-      top: 1rem;
-      max-height: calc(100vh - 2rem);
-      overflow-y: auto;
+      position: static;
+      max-height: none;
+      overflow: visible;
       padding-right: .25rem;
       scrollbar-width: thin;
     }
     .restaurant-mobile-categories {
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      position: static;
       margin-inline: -0.25rem;
       padding: .5rem .25rem .65rem;
-      background: linear-gradient(to bottom, var(--menu-bg, #f8fafc) 72%, transparent);
-      backdrop-filter: blur(10px);
+      background: transparent;
     }
   </style>
   {% endif %}
@@ -385,11 +404,13 @@
     x-init="fetchOrderHistory()"
   >
     <!-- Pending order warning when user is browsing menu (not in order panel) -->
-    <div x-show="!orderPanelOpen && pendingOrderWarning" x-cloak class="sticky top-0 z-30 mx-4 mt-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 shadow-sm dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-200 sm:mx-6 lg:mx-8">
-      <p class="text-sm font-medium">{% trans "You have order(s) pending or in progress. Check status and when it's ready in the Orders panel." %}</p>
-      <button @click="openOrderPanel()" class="mt-2 rounded-lg bg-amber-200 px-3 py-1.5 text-sm font-semibold text-amber-900 hover:bg-amber-300 dark:bg-amber-800 dark:text-amber-100 dark:hover:bg-amber-700">{% trans "View orders" %}</button>
+    <div x-show="!orderPanelOpen && pendingOrderWarning" x-cloak class="mx-4 mt-3 rounded-2xl border px-4 py-3 shadow-lg menu-status-shell sm:mx-6 lg:mx-8">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm font-bold menu-themed-text">{% trans "You have order(s) pending or in progress. Check status and details in your orders page." %}</p>
+        <a href="{{ orders_url }}" class="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "View orders" %}</a>
+      </div>
     </div>
-    <div x-show="!orderPanelOpen && !canOrderNow()" x-cloak class="sticky top-0 z-30 mx-4 mt-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 shadow-sm dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-200 sm:mx-6 lg:mx-8">
+    <div x-show="!orderPanelOpen && !canOrderNow()" x-cloak class="mx-4 mt-3 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-rose-800 shadow-sm dark:border-rose-700 dark:bg-rose-950/40 dark:text-rose-100 sm:mx-6 lg:mx-8">
       <p class="text-sm font-medium">{% trans "Restaurant is currently closed. You can schedule your order for when we're open." %}</p>
       <a :href="scheduleUrl" class="mt-2 inline-block rounded-lg bg-rose-200 px-3 py-1.5 text-sm font-semibold text-rose-900 hover:bg-rose-300 dark:bg-rose-800 dark:text-rose-100 dark:hover:bg-rose-700">{% trans "Schedule for later" %}</a>
     </div>
@@ -602,134 +623,34 @@
       x-transition
       class="fixed inset-x-0 bottom-0 z-50 px-3 pb-3 sm:px-5"
     >
-      <div class="mx-auto max-w-4xl overflow-hidden rounded-2xl border shadow-2xl restaurant-menu-card">
+      <div class="mx-auto max-w-3xl overflow-hidden rounded-3xl border p-3 menu-status-shell">
         <template x-if="activeTrackedOrder()">
-          <div>
-            <button type="button" @click="trackerOpen = !trackerOpen" class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left menu-themed-soft">
-              <div class="min-w-0">
-                <p class="text-xs font-semibold uppercase tracking-wide menu-themed-muted">{% trans "Order status" %}</p>
-                <p class="mt-0.5 truncate text-sm font-bold sm:text-base">
-                  #<span x-text="activeTrackedOrder().id"></span>
-                  <span class="mx-1">·</span>
-                  <span x-text="statusLabel(activeTrackedOrder().status)"></span>
-                  <span class="mx-1">·</span>
-                  <span x-text="activeTrackedOrder().currency || 'EUR'"></span>
-                  <span x-text="activeTrackedOrder().total_amount"></span>
-                </p>
-              </div>
-              <div class="flex shrink-0 items-center gap-2">
-                <button type="button" @click.stop="myOrdersOpen = true; trackerOpen = true" class="rounded-full border px-3 py-1.5 text-xs font-semibold menu-themed-surface">{% trans "My orders" %}</button>
-                <span class="rounded-full px-3 py-1.5 text-xs font-semibold menu-themed-button" x-text="trackerOpen ? '−' : '+'"></span>
-              </div>
-            </button>
-
-            <div x-show="trackerOpen" class="border-t px-4 py-4" style="border-color: var(--menu-border, #e2e8f0);">
-              <div class="grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
-                <div>
-                  <div class="relative">
-                    <div class="absolute left-0 right-0 top-4 h-1 rounded-full menu-themed-soft"></div>
-                    <div class="absolute left-0 top-4 h-1 rounded-full menu-themed-button" :style="'width:' + orderProgress(activeTrackedOrder()) + '%'"></div>
-                    <div class="relative grid grid-cols-4 gap-2">
-                      <template x-for="step in [1,2,3,4]" :key="step">
-                        <div class="text-center">
-                          <span class="mx-auto flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold"
-                                :class="orderStep(activeTrackedOrder()) >= step ? 'menu-themed-button' : 'menu-themed-surface'">
-                            <span x-text="step"></span>
-                          </span>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                  <div class="mt-2 grid grid-cols-4 gap-2 text-center text-[11px] font-semibold menu-themed-muted">
-                    <span>{% trans "Received" %}</span>
-                    <span>{% trans "Preparing" %}</span>
-                    <span>{% trans "Ready" %}</span>
-                    <span>{% trans "Done" %}</span>
-                  </div>
-                  <p class="mt-4 text-sm font-medium menu-themed-text" x-text="statusMessage(activeTrackedOrder())"></p>
-                  <p class="mt-1 line-clamp-2 text-xs menu-themed-muted" x-text="orderItemsSummary(activeTrackedOrder())"></p>
-                </div>
-
-                <div class="rounded-xl border p-3 menu-themed-soft">
-                  <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <p class="font-semibold menu-themed-muted">{% trans "Service" %}</p>
-                      <p class="font-bold capitalize" x-text="activeTrackedOrder().service_type"></p>
-                    </div>
-                    <div>
-                      <p class="font-semibold menu-themed-muted">{% trans "Payment" %}</p>
-                      <p class="font-bold capitalize" x-text="activeTrackedOrder().payment_method"></p>
-                    </div>
-                    <div x-show="activeTrackedOrder().table_number">
-                      <p class="font-semibold menu-themed-muted">{% trans "Table" %}</p>
-                      <p class="font-bold" x-text="activeTrackedOrder().table_number"></p>
-                    </div>
-                    <div>
-                      <p class="font-semibold menu-themed-muted">{% trans "Created" %}</p>
-                      <p class="font-bold" x-text="orderCreatedAt(activeTrackedOrder())"></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-4 rounded-xl border p-3 menu-themed-surface">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-sm font-bold">{% trans "My orders" %}</p>
-                    <p class="text-xs menu-themed-muted">{% trans "Enter your phone to see your orders again." %}</p>
-                  </div>
-                  <button type="button" @click="myOrdersOpen = !myOrdersOpen" class="rounded-full border px-3 py-1.5 text-xs font-semibold menu-themed-soft">
-                    <span x-show="!myOrdersOpen">{% trans "Open" %}</span>
-                    <span x-show="myOrdersOpen">{% trans "Hide" %}</span>
-                  </button>
-                </div>
-                <div x-show="myOrdersOpen" class="mt-3 space-y-3">
-                  <div class="flex flex-col gap-2 sm:flex-row">
-                    <input x-model="lookupPhone" type="tel" placeholder="{% trans 'Phone number' %}" class="min-w-0 flex-1 rounded-xl border px-3 py-2 text-sm menu-themed-surface">
-                    <button type="button" @click="lookupOrdersByPhone(true)" :disabled="lookupLoading" class="rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50 menu-themed-button">
-                      <span x-show="!lookupLoading">{% trans "Find orders" %}</span>
-                      <span x-show="lookupLoading">{% trans "Loading..." %}</span>
-                    </button>
-                  </div>
-                  <p x-show="lookupError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700" x-text="lookupError"></p>
-                  <template x-if="lookupOrders.length > 0">
-                    <ul class="max-h-48 space-y-2 overflow-y-auto">
-                      <template x-for="o in lookupOrders" :key="o.id">
-                        <li class="rounded-lg border p-3 text-sm menu-themed-soft">
-                          <div class="flex items-center justify-between gap-2">
-                            <span class="font-bold">#<span x-text="o.id"></span></span>
-                            <span class="rounded-full px-2 py-1 text-xs font-semibold menu-themed-button" x-text="statusLabel(o.status)"></span>
-                          </div>
-                          <p class="mt-1 text-xs menu-themed-muted">
-                            <span x-text="o.currency || 'EUR'"></span>
-                            <span x-text="o.total_amount"></span>
-                            <span> · </span>
-                            <span x-text="orderItemsSummary(o)"></span>
-                          </p>
-                        </li>
-                      </template>
-                    </ul>
-                  </template>
-                </div>
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+              <p class="text-[11px] font-black uppercase tracking-[0.18em] menu-themed-muted">{% trans "Order status" %}</p>
+              <p class="mt-1 truncate text-base font-black">
+                #<span x-text="activeTrackedOrder().id"></span>
+                <span class="mx-1">&middot;</span>
+                <span x-text="statusLabel(activeTrackedOrder().status)"></span>
+                <span class="mx-1">&middot;</span>
+                <span x-text="activeTrackedOrder().currency || 'EUR'"></span>
+                <span x-text="activeTrackedOrder().total_amount"></span>
+              </p>
+              <div class="mt-2 h-2 overflow-hidden rounded-full menu-status-pill">
+                <div class="h-full rounded-full menu-themed-button" :style="'width:' + orderProgress(activeTrackedOrder()) + '%'"></div>
               </div>
             </div>
+            <a href="{{ orders_url }}" class="inline-flex shrink-0 items-center justify-center rounded-2xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "View order" %}</a>
           </div>
         </template>
 
         <template x-if="!activeTrackedOrder()">
-          <div class="px-4 py-3">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-sm font-bold">{% trans "My orders" %}</p>
-                <p class="text-xs menu-themed-muted">{% trans "Enter your phone to see previous orders." %}</p>
-              </div>
-              <button type="button" @click="myOrdersOpen = !myOrdersOpen" class="rounded-full px-3 py-1.5 text-xs font-semibold menu-themed-button">{% trans "Open" %}</button>
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-black">{% trans "My orders" %}</p>
+              <p class="truncate text-xs menu-themed-muted">{% trans "Track previous orders by phone number." %}</p>
             </div>
-            <div x-show="myOrdersOpen" class="mt-3 flex flex-col gap-2 sm:flex-row">
-              <input x-model="lookupPhone" type="tel" placeholder="{% trans 'Phone number' %}" class="min-w-0 flex-1 rounded-xl border px-3 py-2 text-sm menu-themed-surface">
-              <button type="button" @click="lookupOrdersByPhone(true)" :disabled="lookupLoading" class="rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50 menu-themed-button">{% trans "Find orders" %}</button>
-            </div>
-            <p x-show="lookupError" class="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700" x-text="lookupError"></p>
+            <a href="{{ orders_url }}" class="inline-flex shrink-0 items-center justify-center rounded-2xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "Open" %}</a>
           </div>
         </template>
       </div>

@@ -35,15 +35,15 @@
 }
 
 .theme--modern-midnight {
-  --menu-bg: #020617;
-  --menu-surface: #0f172a;
-  --menu-surface-2: #1e293b;
-  --menu-text: #e2e8f0;
-  --menu-text-muted: #94a3b8;
-  --menu-border: #334155;
-  --menu-primary: #93c5fd;
-  --menu-secondary: #475569;
-  --menu-accent: #38bdf8;
+  --menu-bg: #030712;
+  --menu-surface: #111827;
+  --menu-surface-2: #1f2937;
+  --menu-text: #f8fafc;
+  --menu-text-muted: #cbd5e1;
+  --menu-border: #526179;
+  --menu-primary: #60a5fa;
+  --menu-secondary: #93c5fd;
+  --menu-accent: #22d3ee;
 }
 
 .theme--warm-sunset {

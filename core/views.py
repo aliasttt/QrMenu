@@ -532,6 +532,7 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
         "scheduled_for": scheduled_for,
         "schedule_url": f"/restaurants/{restaurant_id}/schedule/",
         "reservation_url": f"/restaurants/{restaurant_id}/reservation/",
+        "orders_url": f"/restaurants/{restaurant_id}/orders/",
         "menu_cards": menu_cards,
         "menu_sections": menu_sections,
         "category_list": category_list,
@@ -567,6 +568,22 @@ def restaurant_menu(request, restaurant_id):
         "pages/restaurant_menu.html",
         build_restaurant_menu_context(request, restaurant, restaurant_id),
     )
+
+
+def restaurant_orders(request, restaurant_id):
+    """Public order tracker page for a restaurant guest."""
+    try:
+        _ensure_restaurant_settings_columns()
+    except Exception:
+        pass
+    restaurant = get_object_or_404(
+        Restaurant.objects.select_related("admin", "settings", "settings__menu_theme"),
+        pk=restaurant_id,
+        is_active=True,
+    )
+    context = build_restaurant_menu_context(request, restaurant, restaurant_id)
+    context["menu_url"] = f"/restaurants/{restaurant_id}/menu/"
+    return render(request, "pages/restaurant_orders.html", context)
 
 
 def public_menu(request, restaurant_slug):
