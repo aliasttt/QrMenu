@@ -114,6 +114,70 @@
       padding: .5rem .25rem .65rem;
       background: transparent;
     }
+    html:not(.dark) .menu-root .menu-order-panel,
+    html:not(.dark) .menu-root .menu-order-panel p,
+    html:not(.dark) .menu-root .menu-order-panel label,
+    html:not(.dark) .menu-root .menu-order-panel span,
+    html:not(.dark) .menu-root .menu-order-panel h2,
+    html:not(.dark) .menu-root .menu-order-panel h3 {
+      color: #0f172a !important;
+    }
+    html:not(.dark) .menu-root .menu-order-panel .text-slate-700,
+    html:not(.dark) .menu-root .menu-order-panel .text-slate-600,
+    html:not(.dark) .menu-root .menu-order-panel .text-slate-500,
+    html:not(.dark) .menu-root .menu-order-panel .text-slate-400 {
+      color: #475569 !important;
+    }
+    .menu-root .menu-order-panel .text-indigo-700,
+    .menu-root .menu-order-panel .text-indigo-600 {
+      color: #4f46e5 !important;
+    }
+    .menu-root .menu-order-panel .text-indigo-800 {
+      color: #3730a3 !important;
+    }
+    .menu-root .menu-order-panel .text-emerald-800,
+    .menu-root .menu-order-panel .text-emerald-700 {
+      color: #065f46 !important;
+    }
+    .menu-root .menu-order-panel .text-rose-700,
+    .menu-root .menu-order-panel .text-rose-500 {
+      color: #be123c !important;
+    }
+    .menu-root .menu-order-panel .text-white,
+    .menu-root .menu-order-panel .bg-indigo-600,
+    .menu-root .menu-order-panel .bg-emerald-600,
+    .menu-root .menu-order-panel .text-white *,
+    .menu-root .menu-order-panel .bg-indigo-600 *,
+    .menu-root .menu-order-panel .bg-emerald-600 * {
+      color: #ffffff !important;
+    }
+    html:not(.dark) .menu-root .menu-order-panel input,
+    html:not(.dark) .menu-root .menu-order-panel textarea {
+      color: #0f172a !important;
+    }
+    .menu-root .menu-order-panel input::placeholder,
+    .menu-root .menu-order-panel textarea::placeholder {
+      color: #64748b !important;
+      opacity: 1;
+    }
+    html.dark .menu-root .menu-order-panel,
+    html.dark .menu-root .menu-order-panel p,
+    html.dark .menu-root .menu-order-panel label,
+    html.dark .menu-root .menu-order-panel span,
+    html.dark .menu-root .menu-order-panel h2,
+    html.dark .menu-root .menu-order-panel h3 {
+      color: #f8fafc !important;
+    }
+    html.dark .menu-root .menu-order-panel .text-slate-700,
+    html.dark .menu-root .menu-order-panel .text-slate-600,
+    html.dark .menu-root .menu-order-panel .text-slate-500,
+    html.dark .menu-root .menu-order-panel .text-slate-400 {
+      color: #cbd5e1 !important;
+    }
+    html.dark .menu-root .menu-order-panel input,
+    html.dark .menu-root .menu-order-panel textarea {
+      color: #ffffff !important;
+    }
   </style>
   {% endif %}
 {% endblock %}
@@ -656,7 +720,7 @@
       </div>
     </div>
 
-    <div x-cloak x-show="orderPanelOpen" class="fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-slate-950" x-transition>
+    <div x-cloak x-show="orderPanelOpen" class="menu-order-panel fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-slate-950" x-transition>
       <div class="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <div class="flex items-center gap-2">
           <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{% trans "Orders" %}</h2>
