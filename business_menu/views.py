@@ -3203,20 +3203,73 @@ class OrderListView(APIView):
             payment_method=Order.PaymentMethod.ONLINE,
             customer__isnull=True,
         ).order_by("-created_at")[:50]
-        out = []
-        for o in orders:
-            out.append({
-                "id": o.id,
-                "status": str(o.status),
-                "total_amount": str(o.total_amount),
-                "currency": str(o.currency) if o.currency else "EUR",
-                "service_type": str(getattr(o, "service_type", "")) or "dine_in",
-                "payment_method": str(getattr(o, "payment_method", "")) or "cash",
-                "table_number": str(getattr(o, "table_number", "") or ""),
-                "created_at": o.created_at.isoformat() if o.created_at else None,
-                "items": o.items_json or [],
-            })
-        return Response({"orders": out}, status=status.HTTP_200_OK)
+        return Response({"orders": [_serialize_public_order(o) for o in orders]}, status=status.HTTP_200_OK)
+
+
+def _serialize_public_order(order):
+    customer = getattr(order, "customer", None)
+    status_value = str(order.status)
+    status_steps = {
+        Order.Status.PENDING: 1,
+        Order.Status.PAID: 1,
+        Order.Status.PREPARING: 2,
+        Order.Status.COMPLETED: 4,
+        Order.Status.CANCELLED: 0,
+        Order.Status.REFUNDED: 0,
+    }
+    return {
+        "id": order.id,
+        "status": status_value,
+        "status_step": status_steps.get(status_value, 1),
+        "total_amount": str(order.total_amount),
+        "currency": str(order.currency) if order.currency else "EUR",
+        "service_type": str(getattr(order, "service_type", "")) or "dine_in",
+        "payment_method": str(getattr(order, "payment_method", "")) or "cash",
+        "table_number": str(getattr(order, "table_number", "") or ""),
+        "notes": order.notes or "",
+        "scheduled_for": order.scheduled_for.isoformat() if getattr(order, "scheduled_for", None) else None,
+        "created_at": order.created_at.isoformat() if order.created_at else None,
+        "updated_at": order.updated_at.isoformat() if order.updated_at else None,
+        "items": order.items_json or [],
+        "customer": {
+            "name": customer.name if customer else "",
+            "phone": customer.phone if customer else "",
+            "address": customer.address if customer else "",
+        },
+    }
+
+
+class PublicOrderLookupView(APIView):
+    """
+    Public order lookup for restaurant guests by phone number.
+    Only returns orders for the current restaurant and matching customer phone.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        phone = (request.query_params.get("phone") or "").strip()
+        if not phone:
+            return Response({"detail": "phone is required.", "orders": []}, status=status.HTTP_400_BAD_REQUEST)
+        variants = phone_variants_for_lookup(phone)
+        if not variants:
+            variants = {phone}
+        orders = (
+            Order.objects.select_related("customer")
+            .filter(restaurant=restaurant, customer__phone__in=variants)
+            .exclude(payment_method=Order.PaymentMethod.ONLINE, customer__isnull=True)
+            .order_by("-created_at")[:50]
+        )
+        return Response(
+            {
+                "restaurant_id": restaurant.id,
+                "phone": phone,
+                "orders": [_serialize_public_order(o) for o in orders],
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 @method_decorator(csrf_exempt, name="dispatch")

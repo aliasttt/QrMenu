@@ -297,6 +297,10 @@
         }
         detailsForm.classList.add("hidden");
         if (finalizedEl) finalizedEl.classList.remove("hidden");
+        try {
+          localStorage.setItem("qrmenu_order_phone_" + restaurantId, result.data.customer_phone || fd.get("phone") || "");
+          localStorage.setItem("qrmenu_last_order_" + restaurantId, String(result.data.order_id || orderId));
+        } catch (e) {}
         renderInvoice(result.data);
       })
       .catch(function(err) {
