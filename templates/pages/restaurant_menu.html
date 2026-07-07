@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load static i18n %}
 {% block title %}{{ restaurant.name }} | {% trans "Menu" %}{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
 {% block meta_description %}{{ restaurant.name }} — {{ restaurant.description|truncatewords:20|default:"" }}{% endblock %}
 
 {% block styles %}
@@ -16,13 +18,83 @@
   <link rel="stylesheet" href="{% static 'business_menu/themes/menu_themes.css' %}">
   <style>
     .menu-root { background: var(--menu-bg, #f8fafc); color: var(--menu-text, #0f172a); }
-    .menu-root .restaurant-menu-card { background: var(--menu-surface, #fff); border-color: var(--menu-border, #e2e8f0); }
-    .menu-root .restaurant-menu-card h1, .menu-root .restaurant-menu-card h2, .menu-root .restaurant-menu-card .font-semibold { color: var(--menu-text, #0f172a); }
-    .menu-root .restaurant-menu-card p, .menu-root .restaurant-menu-card .text-slate-600 { color: var(--menu-text-muted, #64748b); }
-    .menu-root .restaurant-menu-card .text-rose-800 { color: var(--menu-primary, #0f172a); }
-    .menu-root .restaurant-menu-card .text-rose-700 { color: var(--menu-text-muted, #64748b); }
-    .menu-root .category-btn-active { background: var(--menu-primary, #0f172a); border-color: var(--menu-primary); color: var(--menu-surface); }
-    .menu-root .category-btn-active.dark { background: var(--menu-surface); color: var(--menu-primary); }
+    .menu-root .restaurant-menu-card,
+    .menu-root .menu-themed-surface {
+      background: var(--menu-surface, #fff) !important;
+      border-color: var(--menu-border, #e2e8f0) !important;
+      color: var(--menu-text, #0f172a) !important;
+    }
+    .menu-root .menu-themed-soft {
+      background: var(--menu-surface-2, #f1f5f9) !important;
+      border-color: var(--menu-border, #e2e8f0) !important;
+      color: var(--menu-text, #0f172a) !important;
+    }
+    .menu-root .menu-themed-text,
+    .menu-root h1,
+    .menu-root h2,
+    .menu-root h3,
+    .menu-root .font-semibold,
+    .menu-root .font-bold,
+    .menu-root .text-slate-900,
+    .menu-root .text-slate-800,
+    .menu-root .text-slate-700,
+    .menu-root .text-white,
+    .menu-root .dark\:text-white {
+      color: var(--menu-text, #0f172a) !important;
+    }
+    .menu-root .menu-themed-muted,
+    .menu-root p,
+    .menu-root .text-slate-600,
+    .menu-root .text-slate-500,
+    .menu-root .text-slate-400,
+    .menu-root .dark\:text-slate-300,
+    .menu-root .dark\:text-slate-400 {
+      color: var(--menu-text-muted, #64748b) !important;
+    }
+    .menu-root .menu-themed-primary,
+    .menu-root .text-rose-800,
+    .menu-root .text-rose-700,
+    .menu-root .text-blue-600 {
+      color: var(--menu-primary, #0f172a) !important;
+    }
+    .menu-root .menu-themed-button {
+      background: var(--menu-primary, #0f172a) !important;
+      border-color: var(--menu-primary, #0f172a) !important;
+      color: var(--menu-surface, #fff) !important;
+    }
+    .menu-root .menu-themed-button * { color: inherit !important; }
+    .menu-root .menu-cart-count { color: #fff !important; }
+    .menu-root .menu-category-active {
+      background: var(--menu-primary, #0f172a) !important;
+      border-color: var(--menu-primary, #0f172a) !important;
+      color: var(--menu-surface, #fff) !important;
+      box-shadow: 0 14px 30px color-mix(in srgb, var(--menu-primary, #0f172a) 22%, transparent);
+    }
+    .menu-root .menu-category-active p,
+    .menu-root .menu-category-active span { color: inherit !important; }
+    .menu-root input[type="search"] {
+      background: var(--menu-surface, #fff) !important;
+      border-color: var(--menu-border, #e2e8f0) !important;
+      color: var(--menu-text, #0f172a) !important;
+    }
+    .menu-root input[type="search"]::placeholder { color: var(--menu-text-muted, #64748b); }
+    .restaurant-category-rail {
+      position: sticky;
+      top: 1rem;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      padding-right: .25rem;
+      scrollbar-width: thin;
+    }
+    .restaurant-mobile-categories {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin-inline: -0.25rem;
+      padding: .5rem .25rem .65rem;
+      background: linear-gradient(to bottom, var(--menu-bg, #f8fafc) 72%, transparent);
+      backdrop-filter: blur(10px);
+    }
   </style>
   {% endif %}
 {% endblock %}
@@ -239,11 +311,11 @@
     </div>
     <div class="grid gap-4 lg:grid-cols-[230px_1fr] min-w-0">
       <aside class="hidden lg:block min-w-0">
-        <div class="space-y-2">
+        <div class="restaurant-category-rail space-y-2">
           <button
             type="button"
             @click="setCategory('all')"
-            :class="activeCategory === 'all' ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900' : 'border-slate-300 bg-white text-slate-800 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200'"
+            :class="activeCategory === 'all' ? 'menu-category-active' : 'menu-themed-surface'"
             class="w-full rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition"
           >
             {% trans "All Categories" %}
@@ -252,14 +324,14 @@
           <button
             type="button"
             @click="setCategory('{{ cat.id }}')"
-            :class="activeCategory === '{{ cat.id }}' ? 'border-emerald-500 shadow-sm' : 'border-slate-300 dark:border-slate-600'"
-            class="w-full rounded-xl border bg-white p-2 text-left transition hover:border-emerald-400 dark:bg-slate-900"
+            :class="activeCategory === '{{ cat.id }}' ? 'menu-category-active' : 'menu-themed-surface'"
+            class="w-full rounded-xl border p-2 text-left transition"
           >
             <div class="flex items-center gap-2.5">
-              <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-11 w-11 rounded-lg object-cover bg-slate-200 dark:bg-slate-700" loading="lazy" />
+              <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-11 w-11 rounded-lg object-cover menu-themed-soft" loading="lazy" />
               <div class="min-w-0">
-                <p class="line-clamp-1 text-xs font-semibold text-slate-900 dark:text-white">{{ cat.name }}</p>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">{% blocktrans count counter=cat.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}</p>
+                <p class="line-clamp-1 text-xs font-semibold">{{ cat.name }}</p>
+                <p class="text-[11px] menu-themed-muted">{% blocktrans count counter=cat.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}</p>
               </div>
             </div>
           </button>
@@ -268,21 +340,6 @@
       </aside>
 
       <div class="min-w-0">
-        <div class="flex justify-end mb-2">
-          <button
-            type="button"
-            @click="
-              const html = document.documentElement;
-              const isDark = html.classList.toggle('dark');
-              localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            "
-            class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            aria-label="{% trans 'Toggle night mode' %}"
-          >
-            <svg class="h-5 w-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-            <svg class="h-5 w-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-          </button>
-        </div>
         <header class="rounded-2xl border border-slate-200 bg-white p-3.5 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card min-w-0 overflow-hidden">
           {% if banner_images %}
           <div class="grid grid-cols-3 gap-1 sm:gap-2 min-w-0 w-full">
@@ -292,7 +349,7 @@
           </div>
           {% endif %}
 
-          <div class="relative mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+          <div class="relative mt-3 rounded-2xl border p-4 menu-themed-soft">
             {% if banner_images %}
             <div class="absolute -top-8 left-1/2 hidden h-16 w-16 -translate-x-1/2 overflow-hidden rounded-full border-2 border-white bg-white shadow sm:block">
               <img src="{{ banner_images.0 }}" alt="{{ restaurant.name }}" class="h-full w-full object-cover">
@@ -317,9 +374,9 @@
               {% endif %}
             </div>
 
-            <div class="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm dark:border-rose-900/50 dark:bg-rose-900/20">
-              <p class="font-semibold text-rose-800 dark:text-rose-200">{% trans "Opening Hours" %}</p>
-              <p class="mt-1 text-rose-700 dark:text-rose-300">{% if restaurant_hours %}{{ restaurant_hours }}{% else %}{% trans "Not provided yet" %}{% endif %}</p>
+            <div class="mt-3 rounded-xl border p-3 text-sm menu-themed-surface">
+              <p class="font-semibold menu-themed-primary">{% trans "Opening Hours" %}</p>
+              <p class="mt-1 menu-themed-muted">{% if restaurant_hours %}{{ restaurant_hours }}{% else %}{% trans "Not provided yet" %}{% endif %}</p>
             </div>
           </div>
         </header>
@@ -333,15 +390,15 @@
           </div>
         </div>
 
-        <div class="mt-4 flex gap-3 overflow-x-auto pb-1 lg:hidden">
-          <button @click="setCategory('all')" :class="activeCategory === 'all' ? 'border-slate-900' : 'border-slate-300 dark:border-slate-600'" class="w-28 shrink-0 rounded-xl border bg-white p-2 text-left dark:bg-slate-900">
-            <div class="h-12 rounded-lg bg-slate-200 dark:bg-slate-700"></div>
-            <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-900 dark:text-white">{% trans "All" %}</p>
+        <div class="restaurant-mobile-categories mt-4 flex gap-3 overflow-x-auto lg:hidden">
+          <button @click="setCategory('all')" :class="activeCategory === 'all' ? 'menu-category-active' : 'menu-themed-surface'" class="w-28 shrink-0 rounded-xl border p-2 text-left">
+            <div class="h-12 rounded-lg menu-themed-soft"></div>
+            <p class="mt-1 line-clamp-1 text-xs font-semibold">{% trans "All" %}</p>
           </button>
           {% for cat in category_list %}
-          <button @click="setCategory('{{ cat.id }}')" :class="activeCategory === '{{ cat.id }}' ? 'border-emerald-500' : 'border-slate-300 dark:border-slate-600'" class="w-28 shrink-0 rounded-xl border bg-white p-2 text-left dark:bg-slate-900">
-            <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-12 w-full rounded-lg object-cover bg-slate-200 dark:bg-slate-700" loading="lazy">
-            <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-900 dark:text-white">{{ cat.name }}</p>
+          <button @click="setCategory('{{ cat.id }}')" :class="activeCategory === '{{ cat.id }}' ? 'menu-category-active' : 'menu-themed-surface'" class="w-28 shrink-0 rounded-xl border p-2 text-left">
+            <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-12 w-full rounded-lg object-cover menu-themed-soft" loading="lazy">
+            <p class="mt-1 line-clamp-1 text-xs font-semibold">{{ cat.name }}</p>
           </button>
           {% endfor %}
         </div>
@@ -349,7 +406,7 @@
         {% if packages %}
           <div class="mt-5 space-y-6">
             <section data-category-section="packages">
-              <div class="mb-3 rounded-xl bg-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 dark:bg-slate-700 dark:text-slate-100">{% trans "Packages" %}</div>
+              <div class="mb-3 rounded-xl px-4 py-3 text-sm font-semibold menu-themed-soft">{% trans "Packages" %}</div>
               <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {% for p in packages %}
                 <div class="rounded-xl border border-slate-300 bg-white p-3 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card">
@@ -359,7 +416,7 @@
                   <div class="mt-2 flex items-center gap-2">
                     <span class="font-bold text-slate-900 dark:text-white">€ {{ p.package_price }}</span>
                     {% if p.original_price %}<span class="text-sm text-slate-500 line-through">€ {{ p.original_price }}</span>{% endif %}
-                    {% if p.discount_percent %}<span class="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">-{{ p.discount_percent }}%</span>{% endif %}
+                    {% if p.discount_percent %}<span class="rounded px-2 py-0.5 text-xs font-medium menu-themed-soft">-{{ p.discount_percent }}%</span>{% endif %}
                   </div>
                 </div>
                 {% endfor %}
@@ -376,33 +433,33 @@
           <div class="mt-5 space-y-6">
             {% for section in menu_sections %}
             <section x-show="activeCategory === 'all' || activeCategory === '{{ section.id }}'">
-              <div class="mb-3 rounded-xl bg-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 dark:bg-slate-700 dark:text-slate-100">
+              <div class="mb-3 rounded-xl px-4 py-3 text-sm font-semibold menu-themed-soft">
                 {{ section.name }}
               </div>
 
               <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {% for item in section.items %}
                 <article x-show="isVisible('{{ section.id }}', '{{ item.name|escapejs }}', '{{ item.description|escapejs }}')">
-                  <div class="group relative hidden overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm transition hover:border-emerald-500/70 hover:shadow-md md:block dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card">
+                  <div class="group relative hidden overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md md:block restaurant-menu-card">
                     {% if not settings or settings.show_images %}
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800">
                       <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
-                      <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-xl font-bold text-slate-900 shadow-md transition hover:bg-emerald-600 hover:text-white disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900/90 dark:text-white">+</button>
+                      <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full text-xl font-bold shadow-md transition disabled:opacity-50 disabled:pointer-events-none menu-themed-button">+</button>
                     </div>
                     {% endif %}
-                    <div class="pointer-events-none absolute inset-x-0 bottom-0 translate-y-[58%] bg-white/95 p-3 transition duration-300 group-hover:translate-y-0 dark:bg-slate-900/95">
+                    <div class="pointer-events-none absolute inset-x-0 bottom-0 translate-y-[58%] p-3 transition duration-300 group-hover:translate-y-0 restaurant-menu-card">
                       <h2 class="line-clamp-1 text-base font-bold text-slate-900 dark:text-white">{% if settings and settings.show_serial and item.serial %}{{ item.serial }} — {% endif %}{{ item.name }}</h2>
                       {% if not settings or settings.show_descriptions %}<p class="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{{ item.description }}</p>{% endif %}
                       {% if item.stock %}<p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ item.stock }}</p>{% endif %}
                       <div class="mt-3 flex items-center justify-between gap-2">
                         {% if not settings or settings.show_prices %}<p class="text-lg font-bold text-slate-900 dark:text-white">€ {{ item.price }}</p>{% endif %}
-                        <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="pointer-events-auto rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-black dark:bg-white dark:text-slate-900">{% trans "Learn More" %}</button>
-                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="pointer-events-auto rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 disabled:pointer-events-none">{% trans "Add" %}</button>
+                        <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="pointer-events-auto rounded-lg px-3 py-1.5 text-xs font-semibold transition menu-themed-button">{% trans "Learn More" %}</button>
+                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="pointer-events-auto rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none menu-themed-button">{% trans "Add" %}</button>
                       </div>
                     </div>
                   </div>
 
-                  <div class="rounded-2xl border border-rose-300 bg-white p-2.5 md:hidden dark:border-slate-600 dark:bg-slate-900 restaurant-menu-card">
+                  <div class="rounded-2xl border p-2.5 md:hidden restaurant-menu-card">
                     <div class="flex gap-2.5">
                       <div class="min-w-0 flex-1">
                         <h2 class="line-clamp-2 text-base font-bold text-slate-900 dark:text-white">{% if settings and settings.show_serial and item.serial %}{{ item.serial }} — {% endif %}{{ item.name }}</h2>
@@ -410,14 +467,14 @@
                         {% if item.stock %}<p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ item.stock }}</p>{% endif %}
                         {% if not settings or settings.show_prices %}<p class="mt-2 text-xl font-bold text-blue-600">€ {{ item.price }}</p>{% endif %}
                         <div class="mt-2 flex gap-2">
-                          <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900">{% trans "Learn More" %}</button>
-                          <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 disabled:pointer-events-none">{% trans "Add" %}</button>
+                          <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="rounded-lg px-3 py-1.5 text-xs font-semibold menu-themed-button">{% trans "Learn More" %}</button>
+                          <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none menu-themed-button">{% trans "Add" %}</button>
                         </div>
                       </div>
                       {% if not settings or settings.show_images %}
                       <div class="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
                         <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full w-full object-cover" loading="lazy">
-                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-lg font-bold text-slate-900 shadow disabled:opacity-50 disabled:pointer-events-none">+</button>
+                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full text-lg font-bold shadow disabled:opacity-50 disabled:pointer-events-none menu-themed-button">+</button>
                       </div>
                       {% endif %}
                     </div>
@@ -442,16 +499,16 @@
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-400" x-text="modalItem.description"></p>
         <div class="mt-4 flex items-center justify-between">
           <p class="text-xl font-bold text-slate-900 dark:text-white">£ <span x-text="modalItem.price"></span></p>
-          <button :disabled="!canOrderNow()" @click="addToCart(modalItem.id, modalItem.name, modalItem.price, 1)" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none">{% trans "Add" %}</button>
+          <button :disabled="!canOrderNow()" @click="addToCart(modalItem.id, modalItem.name, modalItem.price, 1)" class="rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50 disabled:pointer-events-none menu-themed-button">{% trans "Add" %}</button>
         </div>
       </div>
     </div>
 
-    <div x-cloak x-show="toastOpen" class="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg" x-text="toastMsg"></div>
+    <div x-cloak x-show="toastOpen" class="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg menu-themed-button" x-text="toastMsg"></div>
 
     {% csrf_token %}
-    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900" aria-label="{% trans 'Cart' %}">
-      <span class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-xs font-bold" x-text="cartCount()"></span>
+    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg menu-themed-button" aria-label="{% trans 'Cart' %}">
+      <span class="menu-cart-count absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-xs font-bold" x-text="cartCount()"></span>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
     </button>
 
