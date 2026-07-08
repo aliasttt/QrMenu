@@ -1,7 +1,7 @@
 import re
 from decimal import Decimal
 
-from django.db import migrations, models
+from django.db import migrations
 from django.db.models import Count, Q, Sum
 
 
@@ -64,12 +64,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(merge_customer_phone_duplicates, migrations.RunPython.noop),
-        migrations.AddConstraint(
-            model_name="customer",
-            constraint=models.UniqueConstraint(
-                fields=("restaurant", "phone"),
-                condition=~models.Q(phone=""),
-                name="uniq_customer_phone_per_restaurant",
-            ),
-        ),
+
     ]
