@@ -67,11 +67,11 @@
           <div class="grid gap-3 sm:grid-cols-2">
             <div>
               <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "First name" %}</label>
-              <input name="first_name" required autocomplete="given-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
+              <input name="first_name" autocomplete="given-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
             </div>
             <div>
               <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Last name" %}</label>
-              <input name="last_name" required autocomplete="family-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
+              <input name="last_name" autocomplete="family-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
             </div>
           </div>
           <div>
@@ -80,7 +80,7 @@
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Address" %}</label>
-            <textarea name="address" required rows="3" autocomplete="street-address" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40"></textarea>
+            <textarea name="address" rows="3" autocomplete="street-address" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40"></textarea>
           </div>
           <p id="customer-details-error" class="hidden rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
           <button type="submit" id="submit-customer-details" class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-700 hover:to-sky-600 disabled:opacity-50 dark:shadow-indigo-950/40">

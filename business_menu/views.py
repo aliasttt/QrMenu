@@ -3069,6 +3069,7 @@ class OrderCreateView(APIView):
             payment_provider = "stripe"
         table_number = (request.data.get("table_number") or "").strip()
         notes = (request.data.get("notes") or "").strip()
+        customer_phone = (request.data.get("customer_phone") or request.data.get("phone") or "").strip()
 
         if service_type not in ("dine_in", "pickup", "delivery"):
             return Response(
@@ -3145,8 +3146,16 @@ class OrderCreateView(APIView):
             total_decimal = Decimal("0.00")
         try:
             with transaction.atomic():
+                customer = None
+                if customer_phone:
+                    customer = _get_or_update_customer_by_phone(
+                        restaurant,
+                        customer_phone,
+                        source="online_order",
+                    )
                 order = Order.objects.create(
                     restaurant=restaurant,
+                    customer=customer,
                     status=Order.Status.PENDING,
                     total_amount=total_decimal,
                     currency="EUR",
@@ -3158,6 +3167,24 @@ class OrderCreateView(APIView):
                     session_key=session_key,
                     scheduled_for=scheduled_dt,
                 )
+                if customer:
+                    customer_stats = Order.objects.filter(customer=customer).aggregate(
+                        orders_count=Count("id"),
+                        total_spent=Sum("total_amount", filter=Q(status=Order.Status.PAID)),
+                    )
+                    customer.orders_count = customer_stats.get("orders_count") or 0
+                    customer.total_spent = customer_stats.get("total_spent") or Decimal("0.00")
+                    customer.last_order = order
+                    customer.last_order_at = timezone.now()
+                    customer.save(
+                        update_fields=[
+                            "orders_count",
+                            "total_spent",
+                            "last_order",
+                            "last_order_at",
+                            "updated_at",
+                        ]
+                    )
             _set_cart(request, restaurant.id, [])
             payload = {
                 "order_id": order.id,
@@ -3167,6 +3194,7 @@ class OrderCreateView(APIView):
                 "service_type": str(order.service_type),
                 "payment_method": str(order.payment_method),
                 "table_number": str(order.table_number or ""),
+                "customer_phone": str(order.customer.phone if order.customer else ""),
             }
             if payment_method == "online":
                 payload["requires_payment"] = True
@@ -3239,6 +3267,58 @@ def _serialize_public_order(order):
     }
 
 
+def _canonical_customer_phone(phone: str) -> str:
+    raw = (phone or "").strip()
+    if not raw:
+        return ""
+    try:
+        formatted = format_phone_number(raw)
+    except Exception:
+        formatted = ""
+    return formatted or re.sub(r"\s+", "", raw)
+
+
+def _get_or_update_customer_by_phone(restaurant, phone: str, **updates):
+    canonical_phone = _canonical_customer_phone(phone)
+    if not canonical_phone:
+        return None
+    variants = phone_variants_for_lookup(canonical_phone) | phone_variants_for_lookup(phone)
+    if not variants:
+        variants = {canonical_phone}
+
+    business_admin = getattr(restaurant, "admin", None)
+    defaults = {
+        "business_admin": business_admin,
+        "phone": canonical_phone,
+        "source": updates.pop("source", "online_order"),
+    }
+    for key, value in updates.items():
+        if value not in (None, ""):
+            defaults[key] = value
+
+    customer = (
+        Customer.objects.select_for_update()
+        .filter(restaurant=restaurant, phone__in=variants)
+        .order_by("id")
+        .first()
+    )
+    if customer:
+        changed_fields = []
+        for key, value in defaults.items():
+            if getattr(customer, key, None) != value:
+                setattr(customer, key, value)
+                changed_fields.append(key)
+        if changed_fields:
+            changed_fields.append("updated_at")
+            customer.save(update_fields=changed_fields)
+        return customer
+
+    try:
+        return Customer.objects.create(restaurant=restaurant, **defaults)
+    except IntegrityError:
+        return Customer.objects.select_for_update().get(restaurant=restaurant, phone=canonical_phone)
+
+
 class PublicOrderLookupView(APIView):
     """
     Public order lookup for restaurant guests by phone number.
@@ -3253,7 +3333,8 @@ class PublicOrderLookupView(APIView):
         phone = (request.query_params.get("phone") or "").strip()
         if not phone:
             return Response({"detail": "phone is required.", "orders": []}, status=status.HTTP_400_BAD_REQUEST)
-        variants = phone_variants_for_lookup(phone)
+        canonical_phone = _canonical_customer_phone(phone)
+        variants = phone_variants_for_lookup(phone) | phone_variants_for_lookup(canonical_phone)
         if not variants:
             variants = {phone}
         orders = (
@@ -3294,9 +3375,14 @@ class FinalizePaidOrderView(APIView):
         address = (data.get("address") or "").strip()
         phone = (data.get("phone") or "").strip()
 
-        if not all([order_id, first_name, last_name, address, phone]) or not (payment_intent_id or checkout_session_id):
+        if not order_id or not phone or not (payment_intent_id or checkout_session_id):
             return Response(
-                {"detail": "order_id, payment reference, first_name, last_name, address, and phone are required."},
+                {"detail": "order_id, payment reference, and phone are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not _canonical_customer_phone(phone):
+            return Response(
+                {"detail": "A valid phone number is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3343,22 +3429,23 @@ class FinalizePaidOrderView(APIView):
 
         full_name = " ".join([first_name, last_name]).strip()
         with transaction.atomic():
-            business_admin = getattr(restaurant, "admin", None)
-            customer, _ = Customer.objects.update_or_create(
-                restaurant=restaurant,
-                phone=phone,
-                defaults={
-                    "business_admin": business_admin,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "name": full_name,
-                    "address": address,
-                    "source": "online_order",
-                    "notes": f"Address: {address}",
-                },
+            customer = _get_or_update_customer_by_phone(
+                restaurant,
+                phone,
+                first_name=first_name,
+                last_name=last_name,
+                name=full_name,
+                address=address,
+                notes=f"Address: {address}" if address else "",
+                source="online_order",
             )
             original_notes = (order.notes or "").strip()
-            delivery_note = f"Customer: {full_name}\nPhone: {phone}\nAddress: {address}"
+            detail_lines = [f"Phone: {customer.phone if customer else phone}"]
+            if full_name:
+                detail_lines.insert(0, f"Customer: {full_name}")
+            if address:
+                detail_lines.append(f"Address: {address}")
+            delivery_note = "\n".join(detail_lines)
             order.customer = customer
             order.notes = f"{original_notes}\n\n{delivery_note}".strip() if original_notes else delivery_note
             order.status = Order.Status.PAID

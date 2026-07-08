@@ -788,6 +788,13 @@ class Customer(models.Model):
             models.Index(fields=["restaurant", "phone"]),
             models.Index(fields=["business_admin", "phone"]),
         ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["restaurant", "phone"],
+                condition=~models.Q(phone=""),
+                name="uniq_customer_phone_per_restaurant",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.name or self.email or self.phone or '—'} ({self.restaurant.name})"
