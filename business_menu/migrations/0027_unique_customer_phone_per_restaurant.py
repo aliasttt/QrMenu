@@ -56,6 +56,7 @@ def merge_customer_phone_duplicates(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ("business_menu", "0026_customer_business_profile"),
