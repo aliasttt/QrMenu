@@ -11,7 +11,7 @@
     @media (max-width: 1023px) {
       .restaurant-menu-page .container { max-width: 100%; box-sizing: border-box; }
       .restaurant-menu-page [class*="grid"] { min-width: 0; }
-      .restaurant-menu-page img { max-width: 100%; height: auto; }
+      .restaurant-menu-page img { max-width: 100%; }
     }
     body:has(.restaurant-menu-page) .site-scroll-top {
       display: none !important;
@@ -43,6 +43,55 @@
       margin-inline: -0.25rem;
       padding: .5rem .25rem .65rem;
       background: var(--menu-bg, #f8fafc);
+    }
+    .restaurant-menu-banner-img,
+    .restaurant-menu-logo-img,
+    .restaurant-menu-item-img {
+      height: 100% !important;
+      width: 100% !important;
+      object-fit: cover;
+    }
+    .restaurant-menu-hero-logo {
+      display: block;
+    }
+    @media (max-width: 767px) {
+      .restaurant-menu-page {
+        padding-top: .75rem;
+      }
+      .restaurant-menu-hero {
+        border-radius: 1.25rem;
+        padding: .65rem;
+      }
+      .restaurant-menu-banner-grid {
+        gap: .45rem;
+      }
+      .restaurant-menu-banner-frame {
+        aspect-ratio: 4 / 3;
+        min-height: 0;
+      }
+      .restaurant-menu-identity {
+        margin-top: .8rem;
+        padding: 3rem 1rem 1rem;
+        border-radius: 1.25rem;
+      }
+      .restaurant-menu-hero-logo {
+        top: -2.35rem;
+        height: 4.25rem;
+        width: 4.25rem;
+      }
+      .restaurant-menu-title {
+        font-size: 1.9rem;
+        line-height: 1.08;
+      }
+      .restaurant-menu-contact {
+        gap: .65rem;
+        font-size: .95rem;
+        line-height: 1.45;
+      }
+      .restaurant-mobile-categories {
+        border-bottom: 1px solid var(--menu-border, #334155);
+        box-shadow: 0 16px 26px color-mix(in srgb, #000 24%, transparent);
+      }
     }
   </style>
   {% if theme_slug %}
@@ -159,6 +208,55 @@
       margin-inline: -0.25rem;
       padding: .5rem .25rem .65rem;
       background: var(--menu-bg, #f8fafc);
+    }
+    .restaurant-menu-banner-img,
+    .restaurant-menu-logo-img,
+    .restaurant-menu-item-img {
+      height: 100% !important;
+      width: 100% !important;
+      object-fit: cover;
+    }
+    .restaurant-menu-hero-logo {
+      display: block;
+    }
+    @media (max-width: 767px) {
+      .restaurant-menu-page {
+        padding-top: .75rem;
+      }
+      .restaurant-menu-hero {
+        border-radius: 1.25rem;
+        padding: .65rem;
+      }
+      .restaurant-menu-banner-grid {
+        gap: .45rem;
+      }
+      .restaurant-menu-banner-frame {
+        aspect-ratio: 4 / 3;
+        min-height: 0;
+      }
+      .restaurant-menu-identity {
+        margin-top: .8rem;
+        padding: 3rem 1rem 1rem;
+        border-radius: 1.25rem;
+      }
+      .restaurant-menu-hero-logo {
+        top: -2.35rem;
+        height: 4.25rem;
+        width: 4.25rem;
+      }
+      .restaurant-menu-title {
+        font-size: 1.9rem;
+        line-height: 1.08;
+      }
+      .restaurant-menu-contact {
+        gap: .65rem;
+        font-size: .95rem;
+        line-height: 1.45;
+      }
+      .restaurant-mobile-categories {
+        border-bottom: 1px solid var(--menu-border, #334155);
+        box-shadow: 0 16px 26px color-mix(in srgb, #000 24%, transparent);
+      }
     }
     html:not(.dark) .menu-root .menu-order-panel,
     html:not(.dark) .menu-root .menu-order-panel p,
@@ -562,29 +660,31 @@
       </aside>
 
       <div class="min-w-0">
-        <header class="rounded-2xl border border-slate-200 bg-white p-3.5 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card min-w-0 overflow-hidden">
+        <header class="restaurant-menu-hero rounded-2xl border border-slate-200 bg-white p-3.5 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card min-w-0 overflow-hidden">
           {% if banner_images %}
-          <div class="grid grid-cols-3 gap-1 sm:gap-2 min-w-0 w-full">
+          <div class="restaurant-menu-banner-grid grid grid-cols-3 gap-1 sm:gap-2 min-w-0 w-full">
             {% for banner in banner_images %}
-            <img src="{{ banner }}" alt="{{ restaurant.name }}" class="h-20 w-full min-w-0 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 sm:h-40" loading="lazy">
+            <div class="restaurant-menu-banner-frame h-20 min-w-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800 sm:h-40">
+              <img src="{{ banner }}" alt="{{ restaurant.name }}" class="restaurant-menu-banner-img" loading="lazy">
+            </div>
             {% endfor %}
           </div>
           {% endif %}
 
-          <div class="relative mt-3 rounded-2xl border p-4 menu-themed-soft">
+          <div class="restaurant-menu-identity relative mt-3 rounded-2xl border p-4 menu-themed-soft">
             {% if banner_images %}
-            <div class="absolute -top-8 left-1/2 hidden h-16 w-16 -translate-x-1/2 overflow-hidden rounded-full border-2 border-white bg-white shadow sm:block">
-              <img src="{{ banner_images.0 }}" alt="{{ restaurant.name }}" class="h-full w-full object-cover">
+            <div class="restaurant-menu-hero-logo absolute -top-8 left-1/2 h-16 w-16 -translate-x-1/2 overflow-hidden rounded-full border-2 border-white bg-white shadow">
+              <img src="{{ banner_images.0 }}" alt="{{ restaurant.name }}" class="restaurant-menu-logo-img">
             </div>
             {% endif %}
 
-            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white {% if banner_images %}sm:pt-8{% endif %}">{{ restaurant.name }}</h1>
+            <h1 class="restaurant-menu-title text-2xl font-extrabold text-slate-900 dark:text-white {% if banner_images %}sm:pt-8{% endif %}">{{ restaurant.name }}</h1>
 
             {% if restaurant.description %}
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ restaurant.description }}</p>
             {% endif %}
 
-            <div class="mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
+            <div class="restaurant-menu-contact mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
               {% if restaurant.address %}
               <p><span class="font-semibold text-slate-900 dark:text-white">{% trans "Address:" %}</span> {{ restaurant.address }}</p>
               {% endif %}
@@ -681,24 +781,24 @@
                     </div>
                   </div>
 
-                  <div class="rounded-2xl border p-2.5 md:hidden restaurant-menu-card">
-                    <div class="flex gap-2.5">
-                      <div class="min-w-0 flex-1">
-                        <h2 class="line-clamp-2 text-base font-bold text-slate-900 dark:text-white">{% if settings and settings.show_serial and item.serial %}{{ item.serial }} — {% endif %}{{ item.name }}</h2>
-                        {% if not settings or settings.show_descriptions %}<p class="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{{ item.description }}</p>{% endif %}
-                        {% if item.stock %}<p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ item.stock }}</p>{% endif %}
-                        {% if not settings or settings.show_prices %}<p class="mt-2 text-xl font-bold text-blue-600">€ {{ item.price }}</p>{% endif %}
-                        <div class="mt-2 flex gap-2">
-                          <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="rounded-lg px-3 py-1.5 text-xs font-semibold menu-themed-button">{% trans "Learn More" %}</button>
-                          <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none menu-themed-button">{% trans "Add" %}</button>
+                  <div class="overflow-hidden rounded-2xl border md:hidden restaurant-menu-card">
+                    {% if not settings or settings.show_images %}
+                    <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      <img src="{{ item.image_url }}" alt="{{ item.name }}" class="restaurant-menu-item-img" loading="lazy">
+                      <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full text-xl font-bold shadow-lg disabled:opacity-50 disabled:pointer-events-none menu-themed-button">+</button>
+                    </div>
+                    {% endif %}
+                    <div class="p-3.5">
+                      <h2 class="line-clamp-2 text-lg font-bold text-slate-900 dark:text-white">{% if settings and settings.show_serial and item.serial %}{{ item.serial }} — {% endif %}{{ item.name }}</h2>
+                      {% if not settings or settings.show_descriptions %}<p class="mt-1.5 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{{ item.description }}</p>{% endif %}
+                      {% if item.stock %}<p class="mt-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ item.stock }}</p>{% endif %}
+                      <div class="mt-3 flex items-center justify-between gap-2">
+                        {% if not settings or settings.show_prices %}<p class="text-xl font-bold text-blue-600">€ {{ item.price }}</p>{% endif %}
+                        <div class="flex shrink-0 gap-2">
+                          <button @click="openModal({ id: {{ item.id }}, name: '{{ item.name|escapejs }}', description: '{{ item.description|escapejs }}', image: '{{ item.image_url|escapejs }}', price: '{{ item.price }}' })" class="rounded-lg px-3 py-2 text-xs font-semibold menu-themed-button">{% trans "Learn More" %}</button>
+                          <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="rounded-lg px-3 py-2 text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none menu-themed-button">{% trans "Add" %}</button>
                         </div>
                       </div>
-                      {% if not settings or settings.show_images %}
-                      <div class="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
-                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full w-full object-cover" loading="lazy">
-                        <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full text-lg font-bold shadow disabled:opacity-50 disabled:pointer-events-none menu-themed-button">+</button>
-                      </div>
-                      {% endif %}
                     </div>
                   </div>
                 </article>
@@ -729,7 +829,7 @@
     <div x-cloak x-show="toastOpen" class="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg menu-themed-button" x-text="toastMsg"></div>
 
     {% csrf_token %}
-    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-28 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg menu-themed-button" aria-label="{% trans 'Cart' %}">
+    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-56 right-6 z-[60] flex h-14 w-14 items-center justify-center rounded-full shadow-lg menu-themed-button md:bottom-28" aria-label="{% trans 'Cart' %}">
       <span class="menu-cart-count absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-xs font-bold" x-text="cartCount()"></span>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
     </button>
