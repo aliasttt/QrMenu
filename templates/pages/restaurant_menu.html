@@ -460,16 +460,26 @@
           pending: '{% trans "Received" %}',
           paid: '{% trans "Received" %}',
           preparing: '{% trans "Preparing" %}',
+          out_for_delivery: '{% trans "Out for delivery" %}',
           completed: '{% trans "Completed" %}',
           cancelled: '{% trans "Cancelled" %}',
           refunded: '{% trans "Refunded" %}',
         };
         return labels[String(status || '').toLowerCase()] || status || '';
       },
+      serviceLabel(serviceType) {
+        const labels = {
+          dine_in: '{% trans "In Store" %}',
+          pickup: '{% trans "Pickup" %}',
+          delivery: '{% trans "Delivery" %}',
+        };
+        return labels[String(serviceType || '').toLowerCase()] || serviceType || '';
+      },
       statusMessage(order) {
         if (!order) return '';
         const status = String(order.status || '').toLowerCase();
         if (status === 'preparing') return '{% trans "The restaurant is preparing your order." %}';
+        if (status === 'out_for_delivery') return '{% trans "Your order is out for delivery." %}';
         if (status === 'completed') return '{% trans "Your order is completed." %}';
         if (status === 'cancelled') return '{% trans "This order was cancelled." %}';
         if (status === 'refunded') return '{% trans "This order was refunded." %}';
@@ -479,6 +489,7 @@
         if (!order) return 0;
         const status = String(order.status || '').toLowerCase();
         if (status === 'preparing') return 2;
+        if (status === 'out_for_delivery') return 3;
         if (status === 'completed') return 4;
         if (status === 'cancelled' || status === 'refunded') return 0;
         return 1;
@@ -994,8 +1005,8 @@
                   <div class="flex flex-wrap gap-2">
                     <button @click="orderMode = 'dine_in'; serviceType = 'dine_in'; paymentMethod = 'cash'" :class="orderMode === 'dine_in' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Dine In" %}</button>
                     <button @click="orderMode = 'pickup'; serviceType = 'pickup'; paymentMethod = 'cash'" :class="orderMode === 'pickup' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Pickup" %}</button>
-                    <template x-if="orderOptions.online_ordering_enabled && canOrderNow()">
-                      <button @click="orderMode = 'online'; serviceType = 'pickup'; paymentMethod = 'online'; paymentProvider = 'stripe'" :class="orderMode === 'online' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Online Ordering" %}</button>
+                    <template x-if="orderOptions.online_ordering_enabled && orderOptions.has_delivery && canOrderNow()">
+                      <button @click="orderMode = 'online'; serviceType = 'delivery'; paymentMethod = 'online'; paymentProvider = 'stripe'" :class="orderMode === 'online' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                     </template>
                     <template x-if="orderOptions.reservation_enabled">
                       <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'" class="rounded-lg border-2 px-3 py-1.5 text-sm font-semibold">{% trans "Reservation" %}</button>
@@ -1143,8 +1154,8 @@
               <div class="flex flex-wrap gap-2">
                 <button @click="orderMode = 'dine_in'; serviceType = 'dine_in'; paymentMethod = 'cash'" :class="orderMode === 'dine_in' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Dine In" %}</button>
                 <button @click="orderMode = 'pickup'; serviceType = 'pickup'; paymentMethod = 'cash'" :class="orderMode === 'pickup' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Pickup" %}</button>
-                <template x-if="orderOptions.online_ordering_enabled && canOrderNow()">
-                  <button @click="orderMode = 'online'; serviceType = 'pickup'; paymentMethod = 'online'; paymentProvider = 'stripe'" :class="orderMode === 'online' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Online Ordering" %}</button>
+                <template x-if="orderOptions.online_ordering_enabled && orderOptions.has_delivery && canOrderNow()">
+                  <button @click="orderMode = 'online'; serviceType = 'delivery'; paymentMethod = 'online'; paymentProvider = 'stripe'" :class="orderMode === 'online' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Delivery" %}</button>
                 </template>
                 <template x-if="orderOptions.reservation_enabled">
                   <button @click="serviceType = 'reservation'" :class="serviceType === 'reservation' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-xl px-4 py-2.5 text-sm font-semibold">{% trans "Reservation" %}</button>
@@ -1251,7 +1262,7 @@
                     <p class="flex justify-between text-sm text-slate-700 dark:text-slate-300"><span x-text="line.quantity"></span>× <span x-text="line.name"></span> — € <span x-text="(line.quantity * parseFloat(line.price)).toFixed(2)"></span></p>
                   </template>
                   <p class="border-t border-slate-200 pt-3 font-semibold dark:border-slate-700">{% trans "Total" %} € <span x-text="lastOrder.total_amount"></span></p>
-                  <p class="text-sm text-slate-600 dark:text-slate-400">{% trans "Service:" %} <span x-text="lastOrder.service_type"></span> · {% trans "Payment:" %} <span x-text="lastOrder.payment_method"></span></p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">{% trans "Service:" %} <span x-text="serviceLabel(lastOrder.service_type)"></span> · {% trans "Payment:" %} <span x-text="lastOrder.payment_method"></span></p>
                   <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
                     <p class="font-semibold">{% trans "Order placed successfully" %}</p>
                     <p class="mt-1">{% trans "Your order is pending. The restaurant will update the status (e.g. preparing, completed)." %}</p>

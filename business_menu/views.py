@@ -3072,6 +3072,9 @@ class OrderCreateView(APIView):
         notes = (request.data.get("notes") or "").strip()
         customer_phone = (request.data.get("customer_phone") or request.data.get("phone") or "").strip()
 
+        if payment_method == "online":
+            service_type = "delivery"
+
         if service_type not in ("dine_in", "pickup", "delivery"):
             return Response(
                 {"detail": "Invalid service_type. Use dine_in, pickup, or delivery."},
@@ -3242,6 +3245,7 @@ def _serialize_public_order(order):
         Order.Status.PENDING: 1,
         Order.Status.PAID: 1,
         Order.Status.PREPARING: 2,
+        Order.Status.OUT_FOR_DELIVERY: 3,
         Order.Status.COMPLETED: 4,
         Order.Status.CANCELLED: 0,
         Order.Status.REFUNDED: 0,
@@ -3450,8 +3454,10 @@ class FinalizePaidOrderView(APIView):
             order.customer = customer
             order.notes = f"{original_notes}\n\n{delivery_note}".strip() if original_notes else delivery_note
             order.status = Order.Status.PAID
+            if order.payment_method == Order.PaymentMethod.ONLINE:
+                order.service_type = Order.ServiceType.DELIVERY
             order.stripe_payment_intent_id = payment_intent_id or order.stripe_payment_intent_id
-            order.save(update_fields=["customer", "notes", "status", "stripe_payment_intent_id", "updated_at"])
+            order.save(update_fields=["customer", "notes", "status", "service_type", "stripe_payment_intent_id", "updated_at"])
             Payment.objects.update_or_create(
                 restaurant=restaurant,
                 order=order,
@@ -3492,6 +3498,8 @@ class FinalizePaidOrderView(APIView):
                 "customer_name": full_name,
                 "customer_phone": phone,
                 "customer_address": address,
+                "service_type": order.service_type,
+                "payment_method": order.payment_method,
                 "items": order.items_json or [],
                 "created_at": order.updated_at.isoformat() if order.updated_at else None,
                 "tracking_url": f"/restaurants/{restaurant.id}/menu/",

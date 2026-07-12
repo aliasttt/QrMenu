@@ -115,6 +115,8 @@
               <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{% trans "Order" %}</p>
                 <p class="mt-1 text-sm text-slate-700 dark:text-slate-300">{% trans "Status" %}: <span class="font-semibold text-emerald-600 dark:text-emerald-300" data-invoice-status></span></p>
+                <p class="text-sm text-slate-700 dark:text-slate-300">{% trans "Service" %}: <span data-invoice-service></span></p>
+                <p class="text-sm text-slate-700 dark:text-slate-300">{% trans "Payment" %}: <span data-invoice-payment></span></p>
                 <p class="text-sm text-slate-700 dark:text-slate-300">{% trans "Date" %}: <span data-invoice-date></span></p>
               </div>
             </div>
@@ -199,6 +201,23 @@
     if (el) el.textContent = value || "";
   }
 
+  function serviceLabel(serviceType) {
+    var labels = {
+      dine_in: "{% trans 'In Store' %}",
+      pickup: "{% trans 'Pickup' %}",
+      delivery: "{% trans 'Delivery' %}"
+    };
+    return labels[String(serviceType || "").toLowerCase()] || serviceType || "";
+  }
+
+  function paymentLabel(paymentMethod) {
+    var labels = {
+      cash: "{% trans 'Cash' %}",
+      online: "{% trans 'Online' %}"
+    };
+    return labels[String(paymentMethod || "").toLowerCase()] || paymentMethod || "";
+  }
+
   function renderInvoice(data) {
     if (!invoicePanel) return;
     setInvoiceText("[data-invoice-order-id]", data.order_id);
@@ -208,6 +227,8 @@
     setInvoiceText("[data-invoice-phone]", data.customer_phone);
     setInvoiceText("[data-invoice-address]", data.customer_address);
     setInvoiceText("[data-invoice-status]", data.status);
+    setInvoiceText("[data-invoice-service]", serviceLabel(data.service_type));
+    setInvoiceText("[data-invoice-payment]", paymentLabel(data.payment_method));
     setInvoiceText("[data-invoice-date]", data.created_at ? new Date(data.created_at).toLocaleString() : new Date().toLocaleString());
     if (invoiceItemsEl) {
       invoiceItemsEl.innerHTML = "";

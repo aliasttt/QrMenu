@@ -55,15 +55,25 @@
         pending: '{% trans "Received" %}',
         paid: '{% trans "Received" %}',
         preparing: '{% trans "Preparing" %}',
+        out_for_delivery: '{% trans "Out for delivery" %}',
         completed: '{% trans "Completed" %}',
         cancelled: '{% trans "Cancelled" %}',
         refunded: '{% trans "Refunded" %}',
       };
       return labels[String(status || '').toLowerCase()] || status || '';
     },
+    serviceLabel(serviceType) {
+      const labels = {
+        dine_in: '{% trans "In Store" %}',
+        pickup: '{% trans "Pickup" %}',
+        delivery: '{% trans "Delivery" %}',
+      };
+      return labels[String(serviceType || '').toLowerCase()] || serviceType || '';
+    },
     statusMessage(order) {
       const status = String((order && order.status) || '').toLowerCase();
       if (status === 'preparing') return '{% trans "The restaurant is preparing this order." %}';
+      if (status === 'out_for_delivery') return '{% trans "This order is out for delivery." %}';
       if (status === 'completed') return '{% trans "This order is completed." %}';
       if (status === 'cancelled') return '{% trans "This order was cancelled." %}';
       if (status === 'refunded') return '{% trans "This order was refunded." %}';
@@ -72,6 +82,7 @@
     orderStep(order) {
       const status = String((order && order.status) || '').toLowerCase();
       if (status === 'preparing') return 2;
+      if (status === 'out_for_delivery') return 3;
       if (status === 'completed') return 4;
       if (status === 'cancelled' || status === 'refunded') return 0;
       return 1;
@@ -178,7 +189,7 @@
             <div class="mt-2 grid grid-cols-4 gap-2 text-center text-[11px] font-bold orders-muted">
               <span>{% trans "Received" %}</span>
               <span>{% trans "Preparing" %}</span>
-              <span>{% trans "Ready" %}</span>
+              <span>{% trans "Delivery" %}</span>
               <span>{% trans "Done" %}</span>
             </div>
           </div>
@@ -190,7 +201,7 @@
             </div>
             <div class="rounded-2xl border p-3 orders-soft">
               <p class="text-xs font-bold uppercase orders-muted">{% trans "Service" %}</p>
-              <p class="mt-1 text-sm font-semibold capitalize" x-text="order.service_type"></p>
+              <p class="mt-1 text-sm font-semibold" x-text="serviceLabel(order.service_type)"></p>
             </div>
             <div class="rounded-2xl border p-3 orders-soft">
               <p class="text-xs font-bold uppercase orders-muted">{% trans "Payment" %}</p>
