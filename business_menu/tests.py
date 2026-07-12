@@ -6,7 +6,7 @@ from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from .models import BusinessAdmin
+from .models import BusinessAdmin, Courier, Order, Restaurant
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -132,3 +132,132 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["admin"]["id"], right_admin.id)
         self.assertNotEqual(response.data["admin"]["id"], wrong_admin.id)
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class AdminCourierOrderTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="restaurant-admin",
+            email="owner@example.com",
+            password="Pass12345",
+        )
+        self.admin = BusinessAdmin.objects.create(
+            auth_user=self.user,
+            phone="+491700000000",
+            name="Restaurant Admin",
+            email="owner@example.com",
+            payment_status="paid",
+        )
+        self.restaurant = Restaurant.objects.create(
+            admin=self.admin,
+            name="Test Bistro",
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_courier_crud_and_delete_without_history(self):
+        create_response = self.client.post(
+            "/api/business-menu/admin/couriers/",
+            {"name": "Ali Yildiz", "phone": "+491701112233", "is_active": True},
+            format="json",
+        )
+        self.assertEqual(create_response.status_code, 201)
+        courier_id = create_response.data["id"]
+
+        list_response = self.client.get("/api/business-menu/admin/couriers/")
+        self.assertEqual(list_response.status_code, 200)
+        self.assertEqual(list_response.data["count"], 1)
+
+        patch_response = self.client.patch(
+            f"/api/business-menu/admin/couriers/{courier_id}/",
+            {"is_active": False},
+            format="json",
+        )
+        self.assertEqual(patch_response.status_code, 200)
+        self.assertFalse(patch_response.data["is_active"])
+
+        delete_response = self.client.delete(f"/api/business-menu/admin/couriers/{courier_id}/")
+        self.assertEqual(delete_response.status_code, 204)
+
+    def test_delete_courier_with_order_history_returns_409(self):
+        courier = Courier.objects.create(
+            restaurant=self.restaurant,
+            name="Ali Yildiz",
+            phone="+491701112233",
+        )
+        Order.objects.create(
+            restaurant=self.restaurant,
+            courier=courier,
+            status=Order.Status.OUT_FOR_DELIVERY,
+            service_type=Order.ServiceType.DELIVERY,
+        )
+
+        response = self.client.delete(f"/api/business-menu/admin/couriers/{courier.id}/")
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.data["detail"], "courier_has_order_history")
+
+    def test_assign_courier_sets_out_for_delivery_atomically(self):
+        courier = Courier.objects.create(
+            restaurant=self.restaurant,
+            name="Ali Yildiz",
+            phone="+491701112233",
+        )
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            status=Order.Status.PREPARING,
+            service_type=Order.ServiceType.DELIVERY,
+        )
+
+        response = self.client.post(
+            f"/api/business-menu/admin/orders/{order.id}/assign-courier/",
+            {"courier_id": courier.id},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["status"], Order.Status.OUT_FOR_DELIVERY)
+        self.assertEqual(response.data["courier"], courier.id)
+        self.assertEqual(response.data["courier_name"], "Ali Yildiz")
+        self.assertTrue(response.data["actions"]["can_mark_completed"])
+        order.refresh_from_db()
+        self.assertEqual(order.status, Order.Status.OUT_FOR_DELIVERY)
+        self.assertEqual(order.courier_id, courier.id)
+
+    def test_assign_courier_rejects_non_delivery_order(self):
+        courier = Courier.objects.create(
+            restaurant=self.restaurant,
+            name="Ali Yildiz",
+            phone="+491701112233",
+        )
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            status=Order.Status.PREPARING,
+            service_type=Order.ServiceType.PICKUP,
+        )
+
+        response = self.client.post(
+            f"/api/business-menu/admin/orders/{order.id}/assign-courier/",
+            {"courier_id": courier.id},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.data["detail"], "pickup_orders_do_not_use_a_courier")
+
+    def test_patch_order_cancelled_stores_optional_reason(self):
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            status=Order.Status.PREPARING,
+            service_type=Order.ServiceType.DELIVERY,
+        )
+
+        response = self.client.patch(
+            f"/api/business-menu/admin/orders/{order.id}/",
+            {"status": "cancelled", "reason": "customer_no_show"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["status"], Order.Status.CANCELLED)
+        self.assertEqual(response.data["cancellation_reason"], "customer_no_show")

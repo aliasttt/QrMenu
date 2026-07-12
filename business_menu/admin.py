@@ -21,6 +21,7 @@ from .models import (
     MenuTheme,
     RestaurantSettings,
     Customer,
+    Courier,
     Order,
     Payment,
 )
@@ -427,6 +428,14 @@ class MenuQRCodeAdmin(admin.ModelAdmin):
 
 
 # ——— سفارشات ———
+@admin.register(Courier)
+class CourierAdmin(admin.ModelAdmin):
+    list_display = ("id", "restaurant", "name", "phone", "is_active", "created_at")
+    list_filter = ("is_active", "restaurant", "created_at")
+    search_fields = ("name", "phone", "restaurant__name")
+    readonly_fields = ("created_at",)
+
+
 class PaymentInline(admin.TabularInline):
     model = Payment
     extra = 0
@@ -440,14 +449,14 @@ class OrderAdmin(admin.ModelAdmin):
     """سفارشات هر رستوران"""
     list_display = (
         "id", "restaurant", "customer_short", "service_type", "table_number",
-        "payment_method", "status", "total_amount", "currency", "created_at",
+        "payment_method", "status", "courier", "total_amount", "currency", "created_at",
     )
     list_filter = ("status", "service_type", "payment_method", "restaurant", "created_at")
     search_fields = ("restaurant__name", "customer__email", "customer__phone", "customer__name", "stripe_order_id")
     readonly_fields = ("created_at", "updated_at")
     list_editable = ("status",)
     inlines = [PaymentInline]
-    raw_id_fields = ("customer",)
+    raw_id_fields = ("customer", "courier")
 
     def customer_short(self, obj):
         if not obj.customer:

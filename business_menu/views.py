@@ -67,6 +67,7 @@ from .models import (
     RestaurantSettings,
     ReservationSettings,
     Order,
+    Courier,
     Customer,
     Payment,
     Reservation,
@@ -3501,6 +3502,7 @@ class FinalizePaidOrderView(APIView):
 
 def _serialize_admin_order(order):
     customer = getattr(order, "customer", None)
+    courier = getattr(order, "courier", None)
     return {
         "id": order.id,
         "status": order.status,
@@ -3510,6 +3512,9 @@ def _serialize_admin_order(order):
         "payment_method": order.payment_method,
         "table_number": order.table_number or "",
         "notes": order.notes or "",
+        "courier": order.courier_id,
+        "courier_name": courier.name if courier else "",
+        "cancellation_reason": order.cancellation_reason or "",
         "scheduled_for": order.scheduled_for.isoformat() if getattr(order, "scheduled_for", None) else None,
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "updated_at": order.updated_at.isoformat() if order.updated_at else None,
@@ -3537,10 +3542,189 @@ def _serialize_admin_order(order):
         },
         "actions": {
             "can_mark_preparing": order.status in (Order.Status.PENDING, Order.Status.PAID),
-            "can_mark_completed": order.status == Order.Status.PREPARING,
-            "can_cancel": order.status in (Order.Status.PENDING, Order.Status.PAID, Order.Status.PREPARING),
+            "can_assign_courier": (
+                order.status == Order.Status.PREPARING
+                and order.service_type == Order.ServiceType.DELIVERY
+            ),
+            "can_mark_completed": order.status in (Order.Status.PREPARING, Order.Status.OUT_FOR_DELIVERY),
+            "can_cancel": order.status in (
+                Order.Status.PENDING,
+                Order.Status.PAID,
+                Order.Status.PREPARING,
+                Order.Status.OUT_FOR_DELIVERY,
+            ),
         },
     }
+
+
+def _get_admin_restaurant_or_response(request):
+    admin = _get_business_admin_for_user(request.user)
+    if not admin:
+        return None, Response(
+            {"detail": "Business admin not found."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    try:
+        return admin.restaurant, None
+    except Restaurant.DoesNotExist:
+        return None, Response(
+            {"detail": "Restaurant not found for this admin."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+
+def _serialize_admin_courier(courier):
+    return {
+        "id": courier.id,
+        "name": courier.name,
+        "phone": courier.phone,
+        "is_active": courier.is_active,
+    }
+
+
+class AdminCourierListCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        restaurant, err = _get_admin_restaurant_or_response(request)
+        if err:
+            return err
+        couriers = list(Courier.objects.filter(restaurant=restaurant).order_by("name", "id"))
+        return Response(
+            {
+                "count": len(couriers),
+                "couriers": [_serialize_admin_courier(courier) for courier in couriers],
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request):
+        restaurant, err = _get_admin_restaurant_or_response(request)
+        if err:
+            return err
+        name = (request.data.get("name") or "").strip()
+        phone = (request.data.get("phone") or "").strip()
+        if not name or not phone:
+            return Response(
+                {"detail": "name_and_phone_required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        courier = Courier.objects.create(
+            restaurant=restaurant,
+            name=name,
+            phone=phone,
+            is_active=bool(request.data.get("is_active", True)),
+        )
+        return Response(_serialize_admin_courier(courier), status=status.HTTP_201_CREATED)
+
+
+class AdminCourierDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _get_courier(self, request, courier_id):
+        restaurant, err = _get_admin_restaurant_or_response(request)
+        if err:
+            return None, err
+        try:
+            return Courier.objects.get(id=courier_id, restaurant=restaurant), None
+        except Courier.DoesNotExist:
+            return None, Response(
+                {"detail": "Courier not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def patch(self, request, courier_id):
+        courier, err = self._get_courier(request, courier_id)
+        if err:
+            return err
+        update_fields = []
+        if "name" in request.data:
+            courier.name = (request.data.get("name") or "").strip()
+            update_fields.append("name")
+        if "phone" in request.data:
+            courier.phone = (request.data.get("phone") or "").strip()
+            update_fields.append("phone")
+        if "is_active" in request.data:
+            courier.is_active = bool(request.data.get("is_active"))
+            update_fields.append("is_active")
+        if not update_fields:
+            return Response(_serialize_admin_courier(courier), status=status.HTTP_200_OK)
+        if not courier.name or not courier.phone:
+            return Response(
+                {"detail": "name_and_phone_required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        courier.save(update_fields=update_fields)
+        return Response(_serialize_admin_courier(courier), status=status.HTTP_200_OK)
+
+    def delete(self, request, courier_id):
+        courier, err = self._get_courier(request, courier_id)
+        if err:
+            return err
+        if Order.objects.filter(courier=courier).exists():
+            return Response(
+                {"detail": "courier_has_order_history"},
+                status=status.HTTP_409_CONFLICT,
+            )
+        courier.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminOrderAssignCourierView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request, order_id):
+        restaurant, err = _get_admin_restaurant_or_response(request)
+        if err:
+            return err
+        courier_id = request.data.get("courier_id")
+        if not courier_id:
+            return Response(
+                {"detail": "courier_id_required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            order = Order.objects.select_for_update().select_related(
+                "customer",
+                "customer__business_admin",
+                "courier",
+            ).get(id=order_id, restaurant=restaurant)
+        except Order.DoesNotExist:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if order.payment_method == Order.PaymentMethod.ONLINE and not order.customer_id:
+            return Response(
+                {"detail": "Order not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if order.status != Order.Status.PREPARING:
+            return Response(
+                {"detail": "invalid_transition", "current_status": order.status},
+                status=status.HTTP_409_CONFLICT,
+            )
+        if order.service_type != Order.ServiceType.DELIVERY:
+            return Response(
+                {"detail": "pickup_orders_do_not_use_a_courier"},
+                status=status.HTTP_409_CONFLICT,
+            )
+        try:
+            courier = Courier.objects.get(
+                id=courier_id,
+                restaurant=restaurant,
+                is_active=True,
+            )
+        except Courier.DoesNotExist:
+            return Response(
+                {"detail": "Courier not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        order.courier = courier
+        order.status = Order.Status.OUT_FOR_DELIVERY
+        order.save(update_fields=["courier", "status", "updated_at"])
+        return Response(_serialize_admin_order(order), status=status.HTTP_200_OK)
 
 
 class AdminOrderListView(APIView):
@@ -3564,7 +3748,7 @@ class AdminOrderListView(APIView):
                 {"detail": "Restaurant not found for this admin."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        orders_qs = Order.objects.select_related("customer", "customer__business_admin").filter(restaurant=restaurant).exclude(
+        orders_qs = Order.objects.select_related("customer", "customer__business_admin", "courier").filter(restaurant=restaurant).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
             customer__isnull=True,
         ).order_by("-created_at")
@@ -3600,7 +3784,7 @@ class AdminOrderNewListView(APIView):
                 {"detail": "Restaurant not found for this admin."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        orders = Order.objects.select_related("customer", "customer__business_admin").filter(restaurant=restaurant).filter(
+        orders = Order.objects.select_related("customer", "customer__business_admin", "courier").filter(restaurant=restaurant).filter(
             Q(status=Order.Status.PENDING, payment_method=Order.PaymentMethod.CASH)
             | Q(status=Order.Status.PAID, payment_method=Order.PaymentMethod.ONLINE)
         ).exclude(
@@ -3642,21 +3826,25 @@ class AdminOrderDetailView(APIView):
         if err:
             return err
         new_status = (request.data.get("status") or "").strip().lower()
-        allowed = ("preparing", "cancelled", "completed", "paid")
+        allowed = ("preparing", "out_for_delivery", "completed", "cancelled", "paid")
         if new_status not in allowed:
             return Response(
                 {"detail": f"Invalid status. Use one of: {', '.join(allowed)}"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
-            order = Order.objects.select_related("customer", "customer__business_admin").get(id=order_id, restaurant=restaurant)
+            order = Order.objects.select_related("customer", "customer__business_admin", "courier").get(id=order_id, restaurant=restaurant)
         except Order.DoesNotExist:
             return Response(
                 {"detail": "Order not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
         order.status = new_status
-        order.save(update_fields=["status", "updated_at"])
+        update_fields = ["status", "updated_at"]
+        if new_status == Order.Status.CANCELLED and (reason := request.data.get("reason")):
+            order.cancellation_reason = str(reason)[:200]
+            update_fields.append("cancellation_reason")
+        order.save(update_fields=update_fields)
         order.refresh_from_db()
         return Response(_serialize_admin_order(order), status=status.HTTP_200_OK)
 
@@ -3665,7 +3853,7 @@ class AdminOrderDetailView(APIView):
         if err:
             return err
         try:
-            order = Order.objects.select_related("customer", "customer__business_admin").get(id=order_id, restaurant=restaurant)
+            order = Order.objects.select_related("customer", "customer__business_admin", "courier").get(id=order_id, restaurant=restaurant)
         except Order.DoesNotExist:
             return Response(
                 {"detail": "Order not found."},

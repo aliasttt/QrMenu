@@ -800,6 +800,26 @@ class Customer(models.Model):
         return f"{self.name or self.email or self.phone or '—'} ({self.restaurant.name})"
 
 
+class Courier(models.Model):
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="couriers",
+    )
+    name = models.CharField(max_length=120)
+    phone = models.CharField(max_length=32)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Courier"
+        verbose_name_plural = "Couriers"
+        ordering = ["name", "id"]
+
+    def __str__(self):
+        return f"{self.name} ({self.restaurant.name})"
+
+
 class Order(models.Model):
     """
     سفارش هر رستوران/کافه — بعداً از Stripe یا اپ پر می‌شود
@@ -808,6 +828,7 @@ class Order(models.Model):
         PENDING = "pending", "در انتظار"
         PAID = "paid", "پرداخت شده"
         PREPARING = "preparing", "در حال آماده‌سازی"
+        OUT_FOR_DELIVERY = "out_for_delivery", "Out for delivery"
         COMPLETED = "completed", "تکمیل شده"
         CANCELLED = "cancelled", "لغو شده"
         REFUNDED = "refunded", "مسترد شده"
@@ -852,6 +873,14 @@ class Order(models.Model):
     stripe_order_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     items_json = models.JSONField(default=dict, blank=True, help_text="آیتم‌های سفارش (JSON)")
     notes = models.TextField(blank=True)
+    courier = models.ForeignKey(
+        Courier,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders",
+    )
+    cancellation_reason = models.CharField(max_length=200, null=True, blank=True)
     # نوع سرویس و پرداخت
     service_type = models.CharField(
         max_length=20,
