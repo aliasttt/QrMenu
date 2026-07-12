@@ -111,27 +111,39 @@ class CustomerRegisterView(APIView):
         if MenuCustomer.objects.filter(phone=phone).exists():
             return Response({"detail": "phone_already_registered"}, status=409)
 
-        customer = MenuCustomer(
-            email=email,
-            phone=phone,
-            first_name=first_name,
-            last_name=last_name,
-        )
-        customer.set_password(password)
-        customer.save()
-
-        if address:
-            MenuCustomerAddress.objects.create(
-                customer=customer,
-                address=address,
-                is_default=True,
+        try:
+            customer = MenuCustomer(
+                email=email,
+                phone=phone,
+                first_name=first_name,
+                last_name=last_name,
             )
+            customer.set_password(password)
+            customer.save()
 
-        request.session[SESSION_KEY] = customer.id
-        request.session.set_expiry(60 * 60 * 24 * 30)
-        customer.last_login_at = timezone.now()
-        customer.save(update_fields=["last_login_at"])
-        return Response(_serialize_customer(customer), status=201)
+            if address:
+                MenuCustomerAddress.objects.create(
+                    customer=customer,
+                    address=address,
+                    is_default=True,
+                )
+
+            request.session[SESSION_KEY] = customer.id
+            request.session.set_expiry(60 * 60 * 24 * 30)
+            customer.last_login_at = timezone.now()
+            customer.save(update_fields=["last_login_at"])
+            return Response(_serialize_customer(customer), status=201)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).exception("MenuCustomer register failed")
+            msg = str(e)
+            low = msg.lower()
+            if "unique" in low or "duplicate" in low:
+                if "email" in low:
+                    return Response({"detail": "email_already_registered"}, status=409)
+                if "phone" in low:
+                    return Response({"detail": "phone_already_registered"}, status=409)
+            return Response({"detail": "server_error", "message": msg}, status=500)
 
 
 class CustomerLoginView(APIView):

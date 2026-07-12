@@ -271,7 +271,15 @@
           });
           const data = await r.json().catch(() => ({}));
           if (!r.ok) {
-            this.authError = data.detail === 'invalid_credentials' ? '{% trans "Invalid email/phone or password." %}' : (data.detail || '{% trans "Login failed." %}');
+            const loginMap = {
+              invalid_credentials: '{% trans "Invalid email/phone or password. Please try again or use \"Forgot password\"." %}',
+              credentials_required: '{% trans "Please enter both your email/phone and your password." %}',
+              server_error: '{% trans "Server error. Please try again in a moment." %}',
+            };
+            this.authError = loginMap[data.detail]
+              || (data.message ? (data.detail || 'error') + ': ' + data.message : '')
+              || (data.detail ? String(data.detail) : '')
+              || ('{% trans "Login failed." %}' + ' (HTTP ' + r.status + ')');
           } else {
             this.currentUser = data;
             this.profileEdits = { first_name: data.first_name || '', last_name: data.last_name || '', email: data.email || '', phone: data.phone || '' };
@@ -301,18 +309,22 @@
           const data = await r.json().catch(() => ({}));
           if (!r.ok) {
             const map = {
-              phone_already_registered: '{% trans "This phone number is already registered. Please log in instead." %}',
-              email_already_registered: '{% trans "This email is already registered. Please log in instead." %}',
-              invalid_email: '{% trans "Please enter a valid email." %}',
+              phone_already_registered: '{% trans "This phone number is already registered. We switched you to Log in — please enter your password." %}',
+              email_already_registered: '{% trans "This email is already registered. We switched you to Log in — please enter your password." %}',
+              invalid_email: '{% trans "Please enter a valid email address (e.g. name@example.com)." %}',
               password_min_6: '{% trans "Password must be at least 6 characters." %}',
               first_name_required: '{% trans "First name is required." %}',
-              phone_required: '{% trans "Phone is required." %}',
+              phone_required: '{% trans "Phone number is required." %}',
+              server_error: '{% trans "Server error while creating your account. Please try again." %}',
             };
             if (data.detail === 'phone_already_registered' || data.detail === 'email_already_registered') {
               this.authMode = 'login';
               this.authIdentifier = data.detail === 'phone_already_registered' ? this.regPhone : this.regEmail;
             }
-            this.authError = map[data.detail] || (data.detail || '{% trans "Registration failed." %}');
+            this.authError = map[data.detail]
+              || (data.message ? (data.detail || 'error') + ': ' + data.message : '')
+              || (data.detail ? String(data.detail) : '')
+              || ('{% trans "Registration failed." %}' + ' (HTTP ' + r.status + ')');
           } else {
             this.currentUser = data;
             this.profileEdits = { first_name: data.first_name || '', last_name: data.last_name || '', email: data.email || '', phone: data.phone || '' };
