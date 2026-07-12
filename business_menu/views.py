@@ -3224,6 +3224,11 @@ class OrderCreateView(APIView):
             if payment_method == "online":
                 payload["requires_payment"] = True
                 payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={payment_provider}"
+            else:
+                # Cash order: invoice is ready immediately — email it to the customer.
+                from .invoice_email import send_invoice_email_async
+                _oid = order.id
+                transaction.on_commit(lambda: send_invoice_email_async(_oid))
             return Response(payload, status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.exception("Order create failed: %s", e)
@@ -3577,6 +3582,15 @@ class FinalizePaidOrderView(APIView):
         last_name = (data.get("last_name") or "").strip()
         address = (data.get("address") or "").strip()
         phone = (data.get("phone") or "").strip()
+        email = (data.get("email") or data.get("customer_email") or "").strip().lower()
+        if not email:
+            try:
+                from .customer_auth import _get_logged_in_customer as _get_menu_customer
+                mc = _get_menu_customer(request)
+                if mc:
+                    email = mc.email or ""
+            except Exception:
+                pass
 
         if not order_id or not phone or not (payment_intent_id or checkout_session_id):
             return Response(
@@ -3639,6 +3653,7 @@ class FinalizePaidOrderView(APIView):
                 last_name=last_name,
                 name=full_name,
                 address=address,
+                email=email if email else None,
                 notes=f"Address: {address}" if address else "",
                 source="online_order",
             )
@@ -3684,6 +3699,11 @@ class FinalizePaidOrderView(APIView):
                     "updated_at",
                 ]
             )
+
+        # Online order: payment confirmed, invoice is ready — email it.
+        from .invoice_email import send_invoice_email_async
+        _oid = order.id
+        transaction.on_commit(lambda: send_invoice_email_async(_oid))
 
         return Response(
             {

@@ -81,6 +81,10 @@
             <input name="phone" required autocomplete="tel" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
           </div>
           <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Email (for invoice)" %}</label>
+            <input name="email" type="email" autocomplete="email" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
+          </div>
+          <div>
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Address" %}</label>
             <textarea name="address" rows="3" autocomplete="street-address" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40"></textarea>
           </div>
@@ -305,7 +309,8 @@
           first_name: fd.get("first_name"),
           last_name: fd.get("last_name"),
           phone: fd.get("phone"),
-          address: fd.get("address")
+          address: fd.get("address"),
+          email: fd.get("email") || ""
         })
       })
       .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
