@@ -3487,7 +3487,7 @@ class PublicOrderCancelView(APIView):
             try:
                 order = (
                     Order.objects.select_for_update()
-                    .select_related("restaurant", "restaurant__admin", "customer")
+                    .select_related("restaurant", "restaurant__admin")
                     .get(pk=order_id, restaurant=restaurant)
                 )
             except Order.DoesNotExist:
@@ -3877,11 +3877,7 @@ class AdminOrderAssignCourierView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
-            order = Order.objects.select_for_update().select_related(
-                "customer",
-                "customer__business_admin",
-                "courier",
-            ).get(id=order_id, restaurant=restaurant)
+            order = Order.objects.select_for_update().get(id=order_id, restaurant=restaurant)
         except Order.DoesNotExist:
             return Response(
                 {"detail": "Order not found."},
