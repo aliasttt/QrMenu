@@ -952,6 +952,9 @@ class Payment(models.Model):
     )
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     stripe_charge_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    stripe_refund_id = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+    refund_status = models.CharField(max_length=50, blank=True, default="")
+    refund_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     currency = models.CharField(max_length=3, default="EUR")
     status = models.CharField(

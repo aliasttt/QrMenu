@@ -1,12 +1,13 @@
 from datetime import timedelta
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
 from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from .models import BusinessAdmin, Courier, Order, Restaurant
+from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -261,3 +262,88 @@ class AdminCourierOrderTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["status"], Order.Status.CANCELLED)
         self.assertEqual(response.data["cancellation_reason"], "customer_no_show")
+
+    @override_settings(STRIPE_SECRET_KEY="sk_test_123")
+    def test_public_cancel_online_order_refunds_stripe(self):
+        self.admin.stripe_account_id = "acct_123"
+        self.admin.save(update_fields=["stripe_account_id"])
+        customer = Customer.objects.create(
+            restaurant=self.restaurant,
+            phone="+491701112233",
+            name="Ali Asadi",
+        )
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            customer=customer,
+            status=Order.Status.PAID,
+            service_type=Order.ServiceType.DELIVERY,
+            payment_method=Order.PaymentMethod.ONLINE,
+            total_amount="25.00",
+            stripe_payment_intent_id="pi_123",
+        )
+        Payment.objects.create(
+            restaurant=self.restaurant,
+            order=order,
+            stripe_payment_intent_id="pi_123",
+            amount="25.00",
+            currency="EUR",
+            status=Payment.Status.SUCCEEDED,
+        )
+        refund_create = Mock(
+            return_value={"id": "re_123", "status": "succeeded", "amount": 2500}
+        )
+        fake_stripe = SimpleNamespace(
+            api_key="",
+            Refund=SimpleNamespace(create=refund_create),
+        )
+
+        with patch.dict("sys.modules", {"stripe": fake_stripe}):
+            response = self.client.post(
+                f"/api/business-menu/orders/{order.id}/cancel/",
+                {
+                    "restaurant_id": self.restaurant.id,
+                    "phone": "+491701112233",
+                    "reason": "customer_cancelled",
+                },
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["status"], Order.Status.REFUNDED)
+        self.assertEqual(response.data["refund"]["refund_id"], "re_123")
+        self.assertEqual(response.data["refund"]["status"], "succeeded")
+        refund_create.assert_called_once()
+        _, kwargs = refund_create.call_args
+        self.assertEqual(kwargs["payment_intent"], "pi_123")
+        self.assertTrue(kwargs["reverse_transfer"])
+        order.refresh_from_db()
+        self.assertEqual(order.status, Order.Status.REFUNDED)
+
+    def test_public_cancel_rejects_out_for_delivery_order(self):
+        customer = Customer.objects.create(
+            restaurant=self.restaurant,
+            phone="+491701112233",
+            name="Ali Asadi",
+        )
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            customer=customer,
+            status=Order.Status.OUT_FOR_DELIVERY,
+            service_type=Order.ServiceType.DELIVERY,
+            payment_method=Order.PaymentMethod.ONLINE,
+            total_amount="25.00",
+            stripe_payment_intent_id="pi_123",
+        )
+
+        response = self.client.post(
+            f"/api/business-menu/orders/{order.id}/cancel/",
+            {
+                "restaurant_id": self.restaurant.id,
+                "phone": "+491701112233",
+                "reason": "customer_cancelled",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.data["detail"], "invalid_transition")

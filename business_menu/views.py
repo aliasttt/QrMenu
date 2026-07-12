@@ -3241,6 +3241,11 @@ class OrderListView(APIView):
 def _serialize_public_order(order):
     customer = getattr(order, "customer", None)
     status_value = str(order.status)
+    payment = None
+    try:
+        payment = order.payments.order_by("-created_at").first()
+    except Exception:
+        payment = None
     status_steps = {
         Order.Status.PENDING: 1,
         Order.Status.PAID: 1,
@@ -3258,6 +3263,16 @@ def _serialize_public_order(order):
         "currency": str(order.currency) if order.currency else "EUR",
         "service_type": str(getattr(order, "service_type", "")) or "dine_in",
         "payment_method": str(getattr(order, "payment_method", "")) or "cash",
+        "can_cancel": status_value in (Order.Status.PENDING, Order.Status.PAID, Order.Status.PREPARING),
+        "refund": _serialize_order_refund(payment) if payment and payment.status == Payment.Status.REFUNDED else {
+            "required": order.payment_method == Order.PaymentMethod.ONLINE,
+            "provider": "stripe" if order.payment_method == Order.PaymentMethod.ONLINE else "",
+            "status": "",
+            "refund_id": "",
+            "amount": "",
+            "currency": str(order.currency) if order.currency else "EUR",
+            "payment_intent_id": order.stripe_payment_intent_id or "",
+        },
         "table_number": str(getattr(order, "table_number", "") or ""),
         "notes": order.notes or "",
         "scheduled_for": order.scheduled_for.isoformat() if getattr(order, "scheduled_for", None) else None,
@@ -3324,6 +3339,99 @@ def _get_or_update_customer_by_phone(restaurant, phone: str, **updates):
         return Customer.objects.select_for_update().get(restaurant=restaurant, phone=canonical_phone)
 
 
+class OrderRefundError(Exception):
+    pass
+
+
+def _serialize_order_refund(payment):
+    if not payment:
+        return {
+            "required": False,
+            "provider": "",
+            "status": "",
+            "refund_id": "",
+            "amount": "",
+            "currency": "",
+            "payment_intent_id": "",
+        }
+    return {
+        "required": True,
+        "provider": "stripe",
+        "status": payment.refund_status or payment.status,
+        "refund_id": payment.stripe_refund_id or "",
+        "amount": str(payment.refund_amount if payment.refund_amount is not None else payment.amount),
+        "currency": payment.currency or "EUR",
+        "payment_intent_id": payment.stripe_payment_intent_id or "",
+    }
+
+
+def _refund_online_order_payment(order, reason="requested_by_customer"):
+    if order.payment_method != Order.PaymentMethod.ONLINE:
+        return {"required": False, "status": "not_required"}
+
+    payment = Payment.objects.filter(order=order).order_by("-created_at").first()
+    if payment and payment.status == Payment.Status.REFUNDED and payment.stripe_refund_id:
+        return _serialize_order_refund(payment)
+
+    payment_intent_id = order.stripe_payment_intent_id or (payment.stripe_payment_intent_id if payment else "")
+    if not payment_intent_id:
+        raise OrderRefundError("payment_intent_missing")
+    if not getattr(settings, "STRIPE_SECRET_KEY", None):
+        raise OrderRefundError("stripe_not_configured")
+
+    try:
+        import stripe
+
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        admin = getattr(order.restaurant, "admin", None)
+        refund_kwargs = {
+            "payment_intent": payment_intent_id,
+            "reason": "requested_by_customer",
+            "metadata": {
+                "purpose": "order_cancel_refund",
+                "order_id": str(order.id),
+                "restaurant_id": str(order.restaurant_id),
+                "reason": str(reason or "requested_by_customer")[:200],
+            },
+        }
+        if admin and getattr(admin, "stripe_account_id", None):
+            refund_kwargs["reverse_transfer"] = True
+        refund = stripe.Refund.create(
+            **refund_kwargs,
+            idempotency_key=f"order-{order.id}-cancel-refund",
+        )
+    except Exception as e:
+        logger.exception("Order refund failed for order %s: %s", order.id, e)
+        raise OrderRefundError(str(e))
+
+    refund_amount = Decimal(str((refund.get("amount") or 0) / 100)).quantize(Decimal("0.01"))
+    payment_defaults = {
+        "stripe_charge_id": order.stripe_order_id or (payment.stripe_charge_id if payment else None),
+        "stripe_refund_id": refund.get("id") or "",
+        "refund_status": refund.get("status") or "",
+        "refund_amount": refund_amount,
+        "amount": order.total_amount,
+        "currency": order.currency or "EUR",
+        "status": Payment.Status.REFUNDED,
+    }
+    payment, _ = Payment.objects.update_or_create(
+        restaurant=order.restaurant,
+        order=order,
+        stripe_payment_intent_id=payment_intent_id,
+        defaults=payment_defaults,
+    )
+    return _serialize_order_refund(payment)
+
+
+def _customer_phone_matches_order(order, phone):
+    customer = getattr(order, "customer", None)
+    if not customer or not customer.phone:
+        return False
+    canonical_phone = _canonical_customer_phone(phone)
+    variants = phone_variants_for_lookup(phone) | phone_variants_for_lookup(canonical_phone)
+    return customer.phone in variants
+
+
 class PublicOrderLookupView(APIView):
     """
     Public order lookup for restaurant guests by phone number.
@@ -3356,6 +3464,66 @@ class PublicOrderLookupView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class PublicOrderCancelView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, order_id):
+        restaurant, err = _get_restaurant_for_public(request)
+        if err:
+            return err
+        phone = (request.data.get("phone") or "").strip()
+        reason = (request.data.get("reason") or "customer_cancelled").strip()[:200]
+        if not phone:
+            return Response(
+                {"detail": "phone is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            try:
+                order = (
+                    Order.objects.select_for_update()
+                    .select_related("restaurant", "restaurant__admin", "customer")
+                    .get(pk=order_id, restaurant=restaurant)
+                )
+            except Order.DoesNotExist:
+                return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            if not _customer_phone_matches_order(order, phone):
+                return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            if order.status not in (Order.Status.PENDING, Order.Status.PAID, Order.Status.PREPARING):
+                return Response(
+                    {
+                        "detail": "invalid_transition",
+                        "current_status": order.status,
+                    },
+                    status=status.HTTP_409_CONFLICT,
+                )
+
+            try:
+                refund = _refund_online_order_payment(order, reason=reason)
+            except OrderRefundError as e:
+                return Response(
+                    {
+                        "detail": "refund_failed",
+                        "reason": str(e),
+                        "current_status": order.status,
+                    },
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
+
+            order.status = Order.Status.REFUNDED if order.payment_method == Order.PaymentMethod.ONLINE else Order.Status.CANCELLED
+            order.cancellation_reason = reason
+            order.save(update_fields=["status", "cancellation_reason", "updated_at"])
+
+        order.refresh_from_db()
+        payload = _serialize_public_order(order)
+        payload["refund"] = refund
+        return Response(payload, status=status.HTTP_200_OK)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -3559,7 +3727,6 @@ def _serialize_admin_order(order):
                 Order.Status.PENDING,
                 Order.Status.PAID,
                 Order.Status.PREPARING,
-                Order.Status.OUT_FOR_DELIVERY,
             ),
         },
     }
@@ -3841,13 +4008,26 @@ class AdminOrderDetailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
-            order = Order.objects.select_related("customer", "customer__business_admin", "courier").get(id=order_id, restaurant=restaurant)
+            order = Order.objects.select_related("restaurant", "restaurant__admin", "customer", "customer__business_admin", "courier").get(id=order_id, restaurant=restaurant)
         except Order.DoesNotExist:
             return Response(
                 {"detail": "Order not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        order.status = new_status
+        if new_status == Order.Status.CANCELLED:
+            if order.status not in (Order.Status.PENDING, Order.Status.PAID, Order.Status.PREPARING):
+                return Response(
+                    {"detail": "invalid_transition", "current_status": order.status},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            try:
+                _refund_online_order_payment(order, reason=request.data.get("reason") or "admin_cancelled")
+            except OrderRefundError as e:
+                return Response(
+                    {"detail": "refund_failed", "reason": str(e), "current_status": order.status},
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
+        order.status = Order.Status.REFUNDED if new_status == Order.Status.CANCELLED and order.payment_method == Order.PaymentMethod.ONLINE else new_status
         update_fields = ["status", "updated_at"]
         if new_status == Order.Status.CANCELLED and (reason := request.data.get("reason")):
             order.cancellation_reason = str(reason)[:200]

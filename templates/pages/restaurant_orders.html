@@ -48,7 +48,9 @@
     phone: localStorage.getItem('qrmenu_order_phone_{{ restaurant.id }}') || '',
     orders: [],
     loading: false,
+    cancelingOrderId: null,
     error: '',
+    cancelMessage: '',
     init() { if (this.phone) this.lookup(false); },
     statusLabel(status) {
       const labels = {
@@ -101,6 +103,60 @@
       if (!order || !order.created_at) return '';
       try { return new Date(order.created_at).toLocaleString(); } catch (e) { return ''; }
     },
+    canCancel(order) {
+      if (!order) return false;
+      if (typeof order.can_cancel !== 'undefined') return !!order.can_cancel;
+      return ['pending', 'paid', 'preparing'].includes(String(order.status || '').toLowerCase());
+    },
+    refundText(order) {
+      const refund = (order && order.refund) || {};
+      if (!refund.refund_id && !refund.status) return '';
+      const parts = [];
+      if (refund.status) parts.push('{% trans "Refund" %}: ' + refund.status);
+      if (refund.amount) parts.push((refund.currency || 'EUR') + ' ' + refund.amount);
+      if (refund.refund_id) parts.push('#' + refund.refund_id);
+      return parts.join(' · ');
+    },
+    async cancelOrder(order) {
+      if (!this.canCancel(order) || this.cancelingOrderId) return;
+      const phone = String(this.phone || '').trim();
+      if (!phone) {
+        this.error = '{% trans "Enter your phone number." %}';
+        return;
+      }
+      this.cancelingOrderId = order.id;
+      this.error = '';
+      this.cancelMessage = '';
+      try {
+        const r = await fetch(this.apiBase + '/orders/' + order.id + '/cancel/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            restaurant_id: this.restaurantId,
+            phone: phone,
+            reason: 'customer_cancelled'
+          })
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          this.error = data.detail === 'invalid_transition'
+            ? '{% trans "This order can no longer be cancelled." %}'
+            : (data.detail === 'refund_failed'
+              ? '{% trans "Refund failed. Please contact the restaurant." %}'
+              : (data.detail || '{% trans "Could not cancel order." %}'));
+          this.cancelingOrderId = null;
+          return;
+        }
+        this.orders = this.orders.map(o => o.id === order.id ? data : o);
+        this.cancelMessage = data.refund && data.refund.required
+          ? '{% trans "Order cancelled and refund requested." %}'
+          : '{% trans "Order cancelled." %}';
+      } catch (e) {
+        this.error = '{% trans "Network error" %}';
+      }
+      this.cancelingOrderId = null;
+    },
     async lookup(showEmpty) {
       const phone = String(this.phone || '').trim();
       if (!phone) {
@@ -146,6 +202,7 @@
         </button>
       </div>
       <p x-show="error" class="mt-3 rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" x-text="error"></p>
+      <p x-show="cancelMessage" class="mt-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700" x-text="cancelMessage"></p>
     </div>
 
     <template x-if="orders.length === 0 && !loading">
@@ -169,7 +226,18 @@
               </h2>
               <p class="mt-1 text-sm orders-muted" x-text="statusMessage(order)"></p>
             </div>
-            <span class="inline-flex rounded-full px-4 py-2 text-sm font-black orders-button" x-text="statusLabel(order.status)"></span>
+            <div class="flex shrink-0 flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full px-4 py-2 text-sm font-black orders-button" x-text="statusLabel(order.status)"></span>
+              <button
+                x-show="canCancel(order)"
+                @click="cancelOrder(order)"
+                :disabled="cancelingOrderId === order.id"
+                class="rounded-full border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-black text-rose-700 shadow-sm transition hover:bg-rose-100 disabled:opacity-60"
+              >
+                <span x-show="cancelingOrderId !== order.id">{% trans "Cancel" %}</span>
+                <span x-show="cancelingOrderId === order.id">{% trans "Cancelling..." %}</span>
+              </button>
+            </div>
           </div>
 
           <div class="mt-5">
@@ -206,6 +274,7 @@
             <div class="rounded-2xl border p-3 orders-soft">
               <p class="text-xs font-bold uppercase orders-muted">{% trans "Payment" %}</p>
               <p class="mt-1 text-sm font-semibold capitalize" x-text="order.payment_method"></p>
+              <p x-show="refundText(order)" class="mt-1 text-xs font-semibold orders-muted" x-text="refundText(order)"></p>
             </div>
           </div>
         </article>
