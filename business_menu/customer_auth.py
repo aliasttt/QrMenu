@@ -161,6 +161,73 @@ class CustomerLoginView(APIView):
         return Response(_serialize_customer(customer))
 
 
+class CustomerForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        import random
+        from django.core.cache import cache
+        email = (request.data.get("email") or "").strip().lower()
+        if not _valid_email(email):
+            return Response({"detail": "invalid_email"}, status=400)
+        customer = MenuCustomer.objects.filter(email__iexact=email, is_active=True).first()
+        if not customer:
+            # Do not leak account existence.
+            return Response({"detail": "code_sent"})
+        code = str(random.randint(100000, 999999))
+        cache.set(f"menu_customer_reset_{email}", code, 600)
+
+        subject = "Your password reset code"
+        body = (
+            f"Hello,\n\nYour password reset code is: {code}\n\n"
+            "This code is valid for 10 minutes.\n\n"
+            "If you did not request this, please ignore this email."
+        )
+        try:
+            from django.conf import settings as _s
+            from django.core.mail import EmailMessage, get_connection
+            from_email = getattr(_s, "BONUS_FROM_EMAIL", getattr(_s, "DEFAULT_FROM_EMAIL", None))
+            connection = get_connection(
+                backend="django.core.mail.backends.smtp.EmailBackend",
+                host=getattr(_s, "BONUS_EMAIL_HOST", _s.EMAIL_HOST),
+                port=getattr(_s, "BONUS_EMAIL_PORT", getattr(_s, "EMAIL_PORT", 587)),
+                username=getattr(_s, "BONUS_EMAIL_HOST_USER", getattr(_s, "EMAIL_HOST_USER", "")),
+                password=getattr(_s, "BONUS_EMAIL_HOST_PASSWORD", getattr(_s, "EMAIL_HOST_PASSWORD", "")),
+                use_tls=getattr(_s, "BONUS_EMAIL_USE_TLS", getattr(_s, "EMAIL_USE_TLS", True)),
+                timeout=30,
+            )
+            EmailMessage(subject=subject, body=body, from_email=from_email, to=[email], connection=connection).send(fail_silently=False)
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning("Password reset email failed for %s", email, exc_info=True)
+        return Response({"detail": "code_sent"})
+
+
+class CustomerResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        from django.core.cache import cache
+        email = (request.data.get("email") or "").strip().lower()
+        code = (request.data.get("code") or "").strip()
+        new_password = (request.data.get("new_password") or "").strip()
+        if not _valid_email(email) or not code:
+            return Response({"detail": "invalid_input"}, status=400)
+        if len(new_password) < 6:
+            return Response({"detail": "password_min_6"}, status=400)
+        cache_key = f"menu_customer_reset_{email}"
+        stored = cache.get(cache_key)
+        if not stored or stored != code:
+            return Response({"detail": "invalid_or_expired_code"}, status=400)
+        customer = MenuCustomer.objects.filter(email__iexact=email, is_active=True).first()
+        if not customer:
+            return Response({"detail": "invalid_or_expired_code"}, status=400)
+        customer.set_password(new_password)
+        customer.save(update_fields=["password", "updated_at"])
+        cache.delete(cache_key)
+        return Response({"detail": "password_reset"})
+
+
 class CustomerLogoutView(APIView):
     permission_classes = [AllowAny]
 

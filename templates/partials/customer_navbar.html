@@ -46,13 +46,14 @@
   </nav>
 
   <!-- Auth modal -->
-  <div x-cloak x-show="authOpen" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/70 p-4" @click.self="authOpen = false">
-    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+  <div x-cloak x-show="authOpen" class="fixed inset-0 z-[70] overflow-y-auto bg-slate-900/70 p-4" @click.self="authOpen = false">
+    <div class="mx-auto my-8 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900" @click.stop>
       <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-lg font-black text-slate-900 dark:text-white" x-text="authMode === 'login' ? '{% trans "Log in" %}' : '{% trans "Create account" %}'"></h3>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white"
+          x-text="authMode === 'login' ? '{% trans "Log in" %}' : (authMode === 'register' ? '{% trans "Create account" %}' : (authMode === 'forgot' ? '{% trans "Forgot password" %}' : (authMode === 'reset_code' ? '{% trans "Enter reset code" %}' : '{% trans "New password" %}')))"></h3>
         <button @click="authOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
       </div>
-      <div class="mb-4 flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+      <div class="mb-4 flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800" x-show="authMode === 'login' || authMode === 'register'">
         <button @click="authMode = 'login'; authError = ''" :class="authMode === 'login' ? 'bg-white shadow dark:bg-slate-900' : ''" class="flex-1 rounded-lg py-2 text-sm font-semibold text-slate-800 dark:text-slate-200">{% trans "Log in" %}</button>
         <button @click="authMode = 'register'; authError = ''" :class="authMode === 'register' ? 'bg-white shadow dark:bg-slate-900' : ''" class="flex-1 rounded-lg py-2 text-sm font-semibold text-slate-800 dark:text-slate-200">{% trans "Register" %}</button>
       </div>
@@ -65,6 +66,7 @@
             <span x-show="!authLoading">{% trans "Log in" %}</span>
             <span x-show="authLoading">{% trans "Logging in..." %}</span>
           </button>
+          <button type="button" @click="authMode = 'forgot'; authError = ''; forgotEmail = authIdentifier.includes('@') ? authIdentifier : ''" class="w-full text-center text-xs font-semibold text-orange-600 hover:underline">{% trans "Forgot password?" %}</button>
         </div>
       </template>
       <template x-if="authMode === 'register'">
@@ -84,12 +86,40 @@
           </button>
         </div>
       </template>
+      <template x-if="authMode === 'forgot'">
+        <div class="space-y-3">
+          <p class="text-sm text-slate-600 dark:text-slate-300">{% trans "Enter your account email. We'll send a 6-digit code to reset your password." %}</p>
+          <input type="email" x-model="forgotEmail" placeholder="{% trans 'Email' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+          <button @click="doForgot()" :disabled="authLoading" class="w-full rounded-xl bg-orange-600 py-3 text-sm font-bold text-white hover:bg-orange-700 disabled:opacity-50">
+            <span x-show="!authLoading">{% trans "Send code" %}</span>
+            <span x-show="authLoading">{% trans "Sending..." %}</span>
+          </button>
+          <button type="button" @click="authMode = 'login'; authError = ''" class="w-full text-center text-xs font-semibold text-slate-600 hover:underline dark:text-slate-300">{% trans "Back to login" %}</button>
+        </div>
+      </template>
+      <template x-if="authMode === 'reset_code'">
+        <div class="space-y-3">
+          <p class="text-sm text-slate-600 dark:text-slate-300">
+            {% trans "Enter the 6-digit code sent to" %} <span class="font-bold" x-text="forgotEmail"></span> {% trans "and choose a new password." %}
+          </p>
+          <input type="text" inputmode="numeric" maxlength="6" x-model="resetCode" placeholder="{% trans '6-digit code' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-center tracking-[0.5em] text-lg font-black dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <input type="password" x-model="resetNewPassword" placeholder="{% trans 'New password (min 6 chars)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+          <p x-show="authInfo" x-text="authInfo" class="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"></p>
+          <button @click="doReset()" :disabled="authLoading" class="w-full rounded-xl bg-orange-600 py-3 text-sm font-bold text-white hover:bg-orange-700 disabled:opacity-50">
+            <span x-show="!authLoading">{% trans "Reset password" %}</span>
+            <span x-show="authLoading">{% trans "Resetting..." %}</span>
+          </button>
+          <button type="button" @click="authMode = 'forgot'; authError = ''" class="w-full text-center text-xs font-semibold text-slate-600 hover:underline dark:text-slate-300">{% trans "Resend code" %}</button>
+        </div>
+      </template>
     </div>
   </div>
 
   <!-- Profile modal -->
-  <div x-cloak x-show="profileOpen && currentUser" class="fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/70 p-4" @click.self="profileOpen = false">
-    <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+  <div x-cloak x-show="profileOpen && currentUser" class="fixed inset-0 z-[65] overflow-y-auto bg-slate-900/70 p-4" @click.self="profileOpen = false">
+    <div class="mx-auto my-8 w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900" @click.stop>
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-black text-slate-900 dark:text-white">{% trans "My profile" %}</h3>
         <button @click="profileOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
@@ -142,8 +172,8 @@
   </div>
 
   <!-- Orders modal (lookup by phone from account) -->
-  <div x-cloak x-show="ordersOpen && currentUser" class="fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/70 p-4" @click.self="ordersOpen = false">
-    <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+  <div x-cloak x-show="ordersOpen && currentUser" class="fixed inset-0 z-[65] overflow-y-auto bg-slate-900/70 p-4" @click.self="ordersOpen = false">
+    <div class="mx-auto my-8 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900" @click.stop>
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-black text-slate-900 dark:text-white">{% trans "My orders" %}</h3>
         <button @click="ordersOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
@@ -181,7 +211,11 @@
       authIdentifier: '',
       authPassword: '',
       authError: '',
+      authInfo: '',
       authLoading: false,
+      forgotEmail: '',
+      resetCode: '',
+      resetNewPassword: '',
       regFirstName: '', regLastName: '', regEmail: '', regPhone: '', regPassword: '', regAddress: '',
       profileOpen: false,
       profileEdits: { first_name: '', last_name: '', email: '', phone: '' },
@@ -280,6 +314,55 @@
             this.regPassword = '';
             window.__menuCustomer = data;
             window.dispatchEvent(new CustomEvent('menu-customer-changed', { detail: data }));
+          }
+        } catch (e) { this.authError = '{% trans "Network error" %}'; }
+        this.authLoading = false;
+      },
+      async doForgot() {
+        this.authError = ''; this.authInfo = '';
+        const email = String(this.forgotEmail || '').trim().toLowerCase();
+        if (!email || !email.includes('@')) { this.authError = '{% trans "Please enter a valid email." %}'; return; }
+        this.authLoading = true;
+        try {
+          const r = await fetch(this.apiBase + '/customer/forgot-password/', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': this._csrf() },
+            body: JSON.stringify({ email }),
+          });
+          if (r.ok) {
+            this.authMode = 'reset_code';
+            this.authInfo = '{% trans "If the email exists, a code has been sent." %}';
+          } else {
+            const data = await r.json().catch(() => ({}));
+            this.authError = data.detail || '{% trans "Could not send code." %}';
+          }
+        } catch (e) { this.authError = '{% trans "Network error" %}'; }
+        this.authLoading = false;
+      },
+      async doReset() {
+        this.authError = ''; this.authInfo = '';
+        const code = String(this.resetCode || '').trim();
+        const pw = String(this.resetNewPassword || '').trim();
+        if (code.length !== 6) { this.authError = '{% trans "Enter the 6-digit code." %}'; return; }
+        if (pw.length < 6) { this.authError = '{% trans "Password must be at least 6 characters." %}'; return; }
+        this.authLoading = true;
+        try {
+          const r = await fetch(this.apiBase + '/customer/reset-password/', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': this._csrf() },
+            body: JSON.stringify({ email: this.forgotEmail, code, new_password: pw }),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            this.authError = data.detail === 'invalid_or_expired_code'
+              ? '{% trans "Invalid or expired code." %}'
+              : (data.detail === 'password_min_6' ? '{% trans "Password must be at least 6 characters." %}' : (data.detail || '{% trans "Reset failed." %}'));
+          } else {
+            this.authMode = 'login';
+            this.authIdentifier = this.forgotEmail;
+            this.authPassword = pw;
+            this.resetCode = ''; this.resetNewPassword = '';
+            this.authInfo = '{% trans "Password reset. You can log in now." %}';
           }
         } catch (e) { this.authError = '{% trans "Network error" %}'; }
         this.authLoading = false;
