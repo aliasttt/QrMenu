@@ -3468,6 +3468,7 @@ class PublicOrderLookupView(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class PublicOrderCancelView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, order_id):
@@ -3679,9 +3680,23 @@ class FinalizePaidOrderView(APIView):
 def _serialize_admin_order(order):
     customer = getattr(order, "customer", None)
     courier = getattr(order, "courier", None)
+    try:
+        payment = order.payments.order_by("-created_at").first()
+    except Exception:
+        payment = None
+    refund = _serialize_order_refund(payment) if payment and payment.status == Payment.Status.REFUNDED else {
+        "required": order.payment_method == Order.PaymentMethod.ONLINE,
+        "provider": "stripe" if order.payment_method == Order.PaymentMethod.ONLINE else "",
+        "status": "",
+        "refund_id": "",
+        "amount": "",
+        "currency": order.currency or "EUR",
+        "payment_intent_id": order.stripe_payment_intent_id or "",
+    }
     return {
         "id": order.id,
         "status": order.status,
+        "is_cancelled": order.status in (Order.Status.CANCELLED, Order.Status.REFUNDED),
         "total_amount": str(order.total_amount),
         "currency": order.currency or "EUR",
         "service_type": order.service_type,
@@ -3715,7 +3730,9 @@ def _serialize_admin_order(order):
         "payment": {
             "stripe_payment_intent_id": order.stripe_payment_intent_id or "",
             "stripe_order_id": order.stripe_order_id or "",
+            "refund": refund,
         },
+        "refund": refund,
         "actions": {
             "can_mark_preparing": order.status in (Order.Status.PENDING, Order.Status.PAID),
             "can_assign_courier": (

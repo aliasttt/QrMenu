@@ -319,6 +319,15 @@ class AdminCourierOrderTests(APITestCase):
         order.refresh_from_db()
         self.assertEqual(order.status, Order.Status.REFUNDED)
 
+        admin_response = self.client.get("/api/business-menu/admin/orders/")
+        self.assertEqual(admin_response.status_code, 200)
+        admin_order = next(o for o in admin_response.data["orders"] if o["id"] == order.id)
+        self.assertEqual(admin_order["status"], Order.Status.REFUNDED)
+        self.assertTrue(admin_order["is_cancelled"])
+        self.assertFalse(admin_order["actions"]["can_cancel"])
+        self.assertEqual(admin_order["refund"]["refund_id"], "re_123")
+        self.assertEqual(admin_order["payment"]["refund"]["status"], "succeeded")
+
     def test_public_cancel_rejects_out_for_delivery_order(self):
         customer = Customer.objects.create(
             restaurant=self.restaurant,

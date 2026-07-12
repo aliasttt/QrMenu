@@ -128,23 +128,26 @@
       this.error = '';
       this.cancelMessage = '';
       try {
-        const r = await fetch(this.apiBase + '/orders/' + order.id + '/cancel/', {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        const r = await fetch(this.apiBase + '/orders/' + order.id + '/cancel/?restaurant_id=' + this.restaurantId, {
           method: 'POST',
           credentials: 'same-origin',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
           body: JSON.stringify({
             restaurant_id: this.restaurantId,
             phone: phone,
             reason: 'customer_cancelled'
           })
         });
-        const data = await r.json().catch(() => ({}));
+        const rawText = await r.text();
+        let data = {};
+        try { data = rawText ? JSON.parse(rawText) : {}; } catch (e) { data = { detail: rawText }; }
         if (!r.ok) {
           this.error = data.detail === 'invalid_transition'
             ? '{% trans "This order can no longer be cancelled." %}'
             : (data.detail === 'refund_failed'
               ? '{% trans "Refund failed. Please contact the restaurant." %}'
-              : (data.detail || '{% trans "Could not cancel order." %}'));
+              : ((data.detail && !String(data.detail).includes('<!DOCTYPE')) ? data.detail : '{% trans "Could not cancel order." %}'));
           this.cancelingOrderId = null;
           return;
         }
@@ -185,6 +188,7 @@
   }"
 >
   <div class="mx-auto max-w-5xl">
+    {% csrf_token %}
     <div class="flex items-center justify-between gap-3">
       <div>
         <p class="text-sm font-semibold uppercase tracking-wide orders-muted">{% trans "Order tracker" %}</p>
