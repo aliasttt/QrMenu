@@ -3705,6 +3705,7 @@ def _serialize_admin_order(order):
         "notes": order.notes or "",
         "courier": order.courier_id,
         "courier_name": courier.name if courier else "",
+        "courier_phone": courier.phone if courier else "",
         "cancellation_reason": order.cancellation_reason or "",
         "scheduled_for": order.scheduled_for.isoformat() if getattr(order, "scheduled_for", None) else None,
         "created_at": order.created_at.isoformat() if order.created_at else None,
@@ -3862,6 +3863,35 @@ class AdminCourierDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+def _notify_customer_courier_assigned(order, courier):
+    customer = getattr(order, "customer", None)
+    if not customer:
+        return
+    phone = (customer.phone or "").strip()
+    if not phone:
+        return
+    body = (
+        f"Your order #{order.id} is on its way! "
+        f"Your courier {courier.name} ({courier.phone}) will deliver it "
+        f"— contact them directly if there's an issue with the address."
+    )
+    try:
+        from accounts.twilio_utils import get_twilio_client, format_phone_number as _fmt
+        to_number = _fmt(phone) or phone
+        client = get_twilio_client()
+        try:
+            client.messages.create(body=body, from_="MyBonusBerlin", to=to_number)
+        except Exception:
+            incoming = client.incoming_phone_numbers.list(limit=1)
+            if incoming:
+                client.messages.create(body=body, from_=incoming[0].phone_number, to=to_number)
+    except Exception:
+        import logging
+        logging.getLogger(__name__).warning(
+            "courier_assigned SMS failed for order %s", order.id, exc_info=True
+        )
+
+
 class AdminOrderAssignCourierView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -3912,6 +3942,7 @@ class AdminOrderAssignCourierView(APIView):
         order.courier = courier
         order.status = Order.Status.OUT_FOR_DELIVERY
         order.save(update_fields=["courier", "status", "updated_at"])
+        transaction.on_commit(lambda: _notify_customer_courier_assigned(order, courier))
         return Response(_serialize_admin_order(order), status=status.HTTP_200_OK)
 
 
