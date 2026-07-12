@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load static i18n %}
 {% block title %}{% blocktrans with name=restaurant.name %}Orders - {{ name }}{% endblocktrans %}{% endblock %}
-{% block navbar %}{% endblock %}
+{% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 {% block styles %}
+<script>window.__customerRestaurantId = {{ restaurant.id }};</script>
 <link rel="stylesheet" href="{% static 'business_menu/themes/menu_themes.css' %}">
 <style>
   html:has(.orders-page),
@@ -375,18 +376,7 @@
         <p class="text-sm font-semibold uppercase tracking-wide orders-muted">{% trans "Order tracker" %}</p>
         <h1 class="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{{ restaurant.name }}</h1>
       </div>
-      <div class="flex items-center gap-2">
-        <template x-if="currentUser">
-          <button @click="profileOpen = true" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft" x-text="'👤 ' + (currentUser.first_name || currentUser.email)"></button>
-        </template>
-        <template x-if="currentUser">
-          <button @click="doLogout()" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Log out" %}</button>
-        </template>
-        <template x-if="!currentUser">
-          <button @click="openAuthModal('login')" class="rounded-xl px-4 py-2 text-sm font-bold orders-button">{% trans "Login / Register" %}</button>
-        </template>
-        <a href="{{ menu_url }}" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Menu" %}</a>
-      </div>
+      <a href="{{ menu_url }}" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Menu" %}</a>
     </div>
 
     <div class="mt-6 rounded-3xl border p-4 shadow-2xl orders-card sm:p-6">

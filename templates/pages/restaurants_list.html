@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
+{% block footer %}{% endblock %}
 {% block title %}{% trans "Restaurants & Cafes" %} | {{ theme.brand_name }}{% endblock %}
 {% block meta_description %}{% trans "Browse our partner restaurants and cafes. Open a menu and order online." %}{% endblock %}
 

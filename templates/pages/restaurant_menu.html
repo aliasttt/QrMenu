@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static i18n %}
 {% block title %}{{ restaurant.name }} | {% trans "Menu" %}{% endblock %}
-{% block navbar %}{% endblock %}
+{% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 {% block meta_description %}{{ restaurant.name }} — {{ restaurant.description|truncatewords:20|default:"" }}{% endblock %}
 
 {% block styles %}
+  <script>window.__customerRestaurantId = {{ restaurant.id }};</script>
   <style>
     /* Mobile: prevent horizontal overflow, keep sections within viewport */
     @media (max-width: 1023px) {
@@ -1173,15 +1174,6 @@
           {% endif %}
         </div>
         <div class="flex items-center gap-2">
-          <template x-if="currentUser">
-            <span class="hidden sm:inline text-sm font-semibold text-slate-700 dark:text-slate-200" x-text="'{% trans "Hi" %}, ' + (currentUser.first_name || currentUser.email)"></span>
-          </template>
-          <template x-if="currentUser">
-            <button @click="doLogout()" class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">{% trans "Log out" %}</button>
-          </template>
-          <template x-if="!currentUser">
-            <button @click="openAuthModal('login')" class="inline-flex items-center rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 shadow-sm hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">{% trans "Login / Register" %}</button>
-          </template>
           {% if order_options.reservation_enabled %}
           <a href="{{ reservation_url }}" target="_blank" rel="noopener" class="sm:hidden inline-flex items-center rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">{% trans "Reservation" %}</a>
           {% endif %}

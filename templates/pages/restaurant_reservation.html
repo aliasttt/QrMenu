@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static i18n %}
+{% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
+{% block footer %}{% endblock %}
 {% block title %}{% blocktrans with name=restaurant.name %}Reservation — {{ name }}{% endblocktrans %}{% endblock %}
 {% block content %}
 {% csrf_token %}

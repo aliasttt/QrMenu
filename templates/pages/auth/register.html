@@ -31,7 +31,7 @@
           </div>
           {% if recaptcha_site_key %}
           <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" id="recaptcha-el"></div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">{% trans 'Please complete the "I''m not a robot" check.' %}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">{% trans "Please complete the \"I'm not a robot\" check." %}</p>
           {% endif %}
           <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
           <button type="submit" id="btn-submit" class="btn-primary w-full">{% trans "Continue" %}</button>
