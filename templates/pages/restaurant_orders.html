@@ -177,7 +177,7 @@
       const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
       try {
         const patch = {};
-        for (const k of ['first_name', 'last_name', 'email', 'phone']) {
+        for (const k of ['first_name', 'last_name', 'email']) {
           if (this.profileEdits[k] !== this.currentUser[k]) patch[k] = this.profileEdits[k];
         }
         if (!Object.keys(patch).length) { this.profileMessage = '{% trans "No changes to save." %}'; this.profileSaving = false; return; }
@@ -552,8 +552,8 @@
           <input type="email" x-model="profileEdits.email" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
         </div>
         <div>
-          <label class="mb-1 block text-xs font-semibold text-slate-600">{% trans "Phone" %}</label>
-          <input type="tel" x-model="profileEdits.phone" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+          <label class="mb-1 block text-xs font-semibold text-slate-500">{% trans "Phone (cannot be changed — this is your account ID)" %}</label>
+          <input type="tel" :value="currentUser?.phone || ''" readonly disabled class="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-500">
         </div>
         <p x-show="profileMessage" x-text="profileMessage" class="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700"></p>
         <button @click="saveProfile()" :disabled="profileSaving" class="w-full rounded-xl bg-indigo-600 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">

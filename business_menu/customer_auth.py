@@ -276,14 +276,8 @@ class CustomerMeView(APIView):
                 return Response({"detail": "email_already_registered"}, status=409)
             c.email = email
             fields.append("email")
-        if "phone" in request.data:
-            phone = _normalize_phone(request.data.get("phone"))
-            if not phone:
-                return Response({"detail": "phone_required"}, status=400)
-            if MenuCustomer.objects.filter(phone=phone).exclude(pk=c.pk).exists():
-                return Response({"detail": "phone_already_registered"}, status=409)
-            c.phone = phone
-            fields.append("phone")
+        # Phone is the unique identifier for the account and is intentionally
+        # not editable via profile update. Ignore any phone value in the patch.
         if "password" in request.data:
             pw = (request.data.get("password") or "").strip()
             if len(pw) < 6:
