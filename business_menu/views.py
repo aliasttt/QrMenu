@@ -3071,6 +3071,20 @@ class OrderCreateView(APIView):
         table_number = (request.data.get("table_number") or "").strip()
         notes = (request.data.get("notes") or "").strip()
         customer_phone = (request.data.get("customer_phone") or request.data.get("phone") or "").strip()
+        customer_email = (request.data.get("customer_email") or request.data.get("email") or "").strip().lower()
+        customer_name = (request.data.get("customer_name") or request.data.get("name") or "").strip()
+        customer_address = (request.data.get("customer_address") or request.data.get("address") or "").strip()
+
+        from .customer_auth import _get_logged_in_customer as _get_menu_customer
+        menu_customer = _get_menu_customer(request)
+        if menu_customer:
+            customer_phone = customer_phone or menu_customer.phone
+            customer_email = customer_email or menu_customer.email
+            customer_name = customer_name or menu_customer.name
+            if not customer_address:
+                default_addr = menu_customer.addresses.filter(is_default=True).first() or menu_customer.addresses.first()
+                if default_addr:
+                    customer_address = default_addr.address
 
         if payment_method == "online":
             service_type = "delivery"
@@ -3152,10 +3166,17 @@ class OrderCreateView(APIView):
             with transaction.atomic():
                 customer = None
                 if customer_phone:
+                    _crm_updates = {"source": "online_order"}
+                    if customer_email:
+                        _crm_updates["email"] = customer_email
+                    if customer_name:
+                        _crm_updates["name"] = customer_name
+                    if customer_address:
+                        _crm_updates["address"] = customer_address
                     customer = _get_or_update_customer_by_phone(
                         restaurant,
                         customer_phone,
-                        source="online_order",
+                        **_crm_updates,
                     )
                 order = Order.objects.create(
                     restaurant=restaurant,
@@ -3447,6 +3468,11 @@ class PublicOrderLookupView(APIView):
         if err:
             return err
         phone = (request.query_params.get("phone") or "").strip()
+        if not phone:
+            from .customer_auth import _get_logged_in_customer as _get_menu_customer
+            mc = _get_menu_customer(request)
+            if mc:
+                phone = mc.phone
         if not phone:
             return Response({"detail": "phone is required.", "orders": []}, status=status.HTTP_400_BAD_REQUEST)
         canonical_phone = _canonical_customer_phone(phone)

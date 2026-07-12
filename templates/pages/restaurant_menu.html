@@ -427,6 +427,224 @@
       pendingOrderWarning: false,
       orderLoading: false,
       orderError: '',
+      // Menu-customer auth + checkout state
+      currentUser: null,
+      authOpen: false,
+      authMode: 'login',
+      authIdentifier: '',
+      authPassword: '',
+      authError: '',
+      authLoading: false,
+      regFirstName: '',
+      regLastName: '',
+      regEmail: '',
+      regPhone: '',
+      regPassword: '',
+      regAddress: '',
+      checkoutOpen: false,
+      checkoutFirstName: '',
+      checkoutLastName: '',
+      checkoutEmail: '',
+      checkoutPhone: '',
+      checkoutSelectedAddressId: null,
+      checkoutNewAddress: '',
+      checkoutAddingAddress: false,
+      checkoutError: '',
+      async fetchMe() {
+        try {
+          const r = await fetch(this.apiBase + '/customer/me/', { credentials: 'same-origin' });
+          if (r.ok) {
+            this.currentUser = await r.json();
+            this.customerPhone = this.currentUser.phone || this.customerPhone;
+          } else {
+            this.currentUser = null;
+          }
+        } catch (e) { this.currentUser = null; }
+      },
+      async doLogout() {
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        try {
+          await fetch(this.apiBase + '/customer/logout/', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+          });
+        } catch (e) {}
+        this.currentUser = null;
+      },
+      openAuthModal(mode) {
+        this.authMode = mode || 'login';
+        this.authError = '';
+        this.authOpen = true;
+      },
+      async doLogin() {
+        this.authError = '';
+        if (!this.authIdentifier || !this.authPassword) {
+          this.authError = '{% trans "Please enter your email/phone and password." %}';
+          return;
+        }
+        this.authLoading = true;
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        try {
+          const r = await fetch(this.apiBase + '/customer/login/', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+            body: JSON.stringify({ identifier: this.authIdentifier, password: this.authPassword }),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            this.authError = data.detail === 'invalid_credentials'
+              ? '{% trans "Invalid email/phone or password." %}'
+              : (data.detail || '{% trans "Login failed." %}');
+          } else {
+            this.currentUser = data;
+            this.customerPhone = data.phone || this.customerPhone;
+            this.authOpen = false;
+            this.authPassword = '';
+            if (this.checkoutOpen) this.hydrateCheckoutFromUser();
+          }
+        } catch (e) { this.authError = this.T.networkError; }
+        this.authLoading = false;
+      },
+      async doRegister() {
+        this.authError = '';
+        if (!this.regFirstName || !this.regEmail || !this.regPhone || !this.regPassword) {
+          this.authError = '{% trans "Please fill in the required fields." %}';
+          return;
+        }
+        if (this.regPassword.length < 6) {
+          this.authError = '{% trans "Password must be at least 6 characters." %}';
+          return;
+        }
+        this.authLoading = true;
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        try {
+          const r = await fetch(this.apiBase + '/customer/register/', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+            body: JSON.stringify({
+              first_name: this.regFirstName, last_name: this.regLastName,
+              email: this.regEmail, phone: this.regPhone,
+              password: this.regPassword, address: this.regAddress,
+            }),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            const map = {
+              phone_already_registered: '{% trans "This phone number is already registered. Please log in instead." %}',
+              email_already_registered: '{% trans "This email is already registered. Please log in instead." %}',
+              invalid_email: '{% trans "Please enter a valid email." %}',
+              password_min_6: '{% trans "Password must be at least 6 characters." %}',
+              first_name_required: '{% trans "First name is required." %}',
+              phone_required: '{% trans "Phone is required." %}',
+            };
+            if (data.detail === 'phone_already_registered' || data.detail === 'email_already_registered') {
+              this.authMode = 'login';
+              this.authIdentifier = data.detail === 'phone_already_registered' ? this.regPhone : this.regEmail;
+            }
+            this.authError = map[data.detail] || (data.detail || '{% trans "Registration failed." %}');
+          } else {
+            this.currentUser = data;
+            this.customerPhone = data.phone || this.regPhone;
+            this.authOpen = false;
+            this.regPassword = '';
+            if (this.checkoutOpen) this.hydrateCheckoutFromUser();
+          }
+        } catch (e) { this.authError = this.T.networkError; }
+        this.authLoading = false;
+      },
+      hydrateCheckoutFromUser() {
+        if (!this.currentUser) return;
+        this.checkoutFirstName = this.currentUser.first_name || '';
+        this.checkoutLastName = this.currentUser.last_name || '';
+        this.checkoutEmail = this.currentUser.email || '';
+        this.checkoutPhone = this.currentUser.phone || '';
+        const def = (this.currentUser.addresses || []).find(a => a.is_default) || (this.currentUser.addresses || [])[0];
+        this.checkoutSelectedAddressId = def ? def.id : null;
+      },
+      openCheckout() {
+        this.orderError = '';
+        if (!this.canOrderNow()) { this.orderError = this.T.tableRequired ? 'Ordering is only available during opening hours.' : ''; return; }
+        if (this.serviceType === 'dine_in' && !this.tableNumber.trim()) { this.orderError = this.T.tableRequired; return; }
+        this.checkoutError = '';
+        if (this.currentUser) this.hydrateCheckoutFromUser();
+        else {
+          this.checkoutFirstName = this.checkoutFirstName || '';
+          this.checkoutPhone = this.checkoutPhone || this.customerPhone || '';
+        }
+        this.checkoutOpen = true;
+      },
+      async addAddressFromCheckout() {
+        const addr = String(this.checkoutNewAddress || '').trim();
+        if (!addr || !this.currentUser) return;
+        this.checkoutAddingAddress = true;
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        try {
+          const r = await fetch(this.apiBase + '/customer/addresses/', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+            body: JSON.stringify({ address: addr, is_default: true }),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (r.ok) {
+            await this.fetchMe();
+            this.checkoutSelectedAddressId = data.id;
+            this.checkoutNewAddress = '';
+          } else {
+            this.checkoutError = data.detail || '{% trans "Could not save address." %}';
+          }
+        } catch (e) { this.checkoutError = this.T.networkError; }
+        this.checkoutAddingAddress = false;
+      },
+      async saveProfileEdits() {
+        if (!this.currentUser) return true;
+        const patch = {};
+        if (this.checkoutFirstName !== this.currentUser.first_name) patch.first_name = this.checkoutFirstName;
+        if (this.checkoutLastName !== this.currentUser.last_name) patch.last_name = this.checkoutLastName;
+        if (this.checkoutEmail && this.checkoutEmail !== this.currentUser.email) patch.email = this.checkoutEmail;
+        if (this.checkoutPhone && this.checkoutPhone !== this.currentUser.phone) patch.phone = this.checkoutPhone;
+        if (!Object.keys(patch).length) return true;
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        try {
+          const r = await fetch(this.apiBase + '/customer/me/', {
+            method: 'PATCH', credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+            body: JSON.stringify(patch),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            this.checkoutError = data.detail || '{% trans "Could not update profile." %}';
+            return false;
+          }
+          this.currentUser = data;
+          return true;
+        } catch (e) { this.checkoutError = this.T.networkError; return false; }
+      },
+      async submitCheckout() {
+        this.checkoutError = '';
+        const phone = String(this.checkoutPhone || '').trim();
+        if (!phone) { this.checkoutError = '{% trans "Phone is required." %}'; return; }
+        if (this.serviceType === 'delivery') {
+          const selected = (this.currentUser?.addresses || []).find(a => a.id === this.checkoutSelectedAddressId);
+          if (!selected && !String(this.checkoutNewAddress || '').trim()) {
+            this.checkoutError = '{% trans "Please select or add a delivery address." %}';
+            return;
+          }
+        }
+        if (this.currentUser) {
+          const ok = await this.saveProfileEdits();
+          if (!ok) return;
+        }
+        const selectedAddr = (this.currentUser?.addresses || []).find(a => a.id === this.checkoutSelectedAddressId);
+        const addressString = (selectedAddr && selectedAddr.address) || String(this.checkoutNewAddress || '').trim() || '';
+        this.customerPhone = phone;
+        this.checkoutOpen = false;
+        await this.placeOrder({
+          name: (this.checkoutFirstName + ' ' + this.checkoutLastName).trim(),
+          email: this.checkoutEmail,
+          phone: phone,
+          address: addressString,
+        });
+      },
       setCategory(id) { this.activeCategory = id; },
       matchesSearch(name, desc) {
         if (!this.search) return true;
@@ -622,7 +840,8 @@
       goToConfirmStep() {
         if (this.canGoToConfirm()) this.orderTab = 2;
       },
-      async placeOrder() {
+      async placeOrder(overrides) {
+        overrides = overrides || {};
         this.orderError = '';
         if (!this.canOrderNow()) {
           this.orderError = 'Ordering is only available during opening hours.';
@@ -649,7 +868,10 @@
               payment_method: this.paymentMethod,
               payment_provider: this.paymentProvider,
               table_number: this.tableNumber,
-              customer_phone: this.customerPhone,
+              customer_phone: overrides.phone || this.customerPhone,
+              customer_email: overrides.email || '',
+              customer_name: overrides.name || '',
+              customer_address: overrides.address || '',
               notes: this.orderNote,
               scheduled_for: this.scheduledFor || null,
             }),
@@ -685,7 +907,7 @@
         this.orderLoading = false;
       }
     }"
-    x-init="fetchOrderHistory()"
+    x-init="fetchOrderHistory(); fetchMe()"
   >
     <!-- Pending order warning when user is browsing menu (not in order panel) -->
     <div x-show="!orderPanelOpen && pendingOrderWarning" x-cloak class="mx-4 mb-5 mt-3 rounded-2xl border px-4 py-3 shadow-lg menu-status-shell sm:mx-6 lg:mx-8">
@@ -951,6 +1173,15 @@
           {% endif %}
         </div>
         <div class="flex items-center gap-2">
+          <template x-if="currentUser">
+            <span class="hidden sm:inline text-sm font-semibold text-slate-700 dark:text-slate-200" x-text="'{% trans "Hi" %}, ' + (currentUser.first_name || currentUser.email)"></span>
+          </template>
+          <template x-if="currentUser">
+            <button @click="doLogout()" class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">{% trans "Log out" %}</button>
+          </template>
+          <template x-if="!currentUser">
+            <button @click="openAuthModal('login')" class="inline-flex items-center rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 shadow-sm hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">{% trans "Login / Register" %}</button>
+          </template>
           {% if order_options.reservation_enabled %}
           <a href="{{ reservation_url }}" target="_blank" rel="noopener" class="sm:hidden inline-flex items-center rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">{% trans "Reservation" %}</a>
           {% endif %}
@@ -1087,7 +1318,7 @@
                 <div class="flex flex-col flex-1">
                   <p class="mb-3 text-xl font-bold text-slate-900 dark:text-white">€ <span x-text="cartSubtotal()"></span> <span class="text-sm font-normal text-slate-500">{% trans "total" %}</span></p>
                   <p x-show="orderError" class="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="orderError"></p>
-                  <button @click="placeOrder()" :disabled="orderLoading" class="mt-auto w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                  <button @click="openCheckout()" :disabled="orderLoading" class="mt-auto w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600">
                     <span x-show="!orderLoading && paymentMethod !== 'online'">{% trans "Place Order" %}</span>
                     <span x-show="!orderLoading && paymentMethod === 'online'">{% trans "Pay Online" %}</span>
                     <span x-show="orderLoading">{% trans "Placing…" %}</span>
@@ -1244,7 +1475,7 @@
               <template x-if="serviceType !== 'reservation'">
                 <div>
                   <p x-show="orderError" class="mb-3 rounded-xl bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="orderError"></p>
-                  <button @click="placeOrder()" :disabled="orderLoading" class="w-full rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
+                  <button @click="openCheckout()" :disabled="orderLoading" class="w-full rounded-xl bg-indigo-600 py-4 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
                     <span x-show="paymentMethod !== 'online'">{% trans "Place Order" %}</span>
                     <span x-show="paymentMethod === 'online'">{% trans "Pay Online" %}</span>
                   </button>
@@ -1273,6 +1504,133 @@
             </div>
             <button @click="orderPanelOpen = false" class="w-full rounded-xl border border-slate-200 bg-white py-3 font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">{% trans "Done" %}</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth modal (login / register) -->
+    <div x-cloak x-show="authOpen" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/70 p-4" @click.self="authOpen = false">
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-lg font-black text-slate-900 dark:text-white" x-text="authMode === 'login' ? '{% trans "Log in" %}' : '{% trans "Create account" %}'"></h3>
+          <button @click="authOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+        </div>
+
+        <div class="mb-4 flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+          <button @click="authMode = 'login'; authError = ''" :class="authMode === 'login' ? 'bg-white shadow dark:bg-slate-900' : ''" class="flex-1 rounded-lg py-2 text-sm font-semibold text-slate-800 dark:text-slate-200">{% trans "Log in" %}</button>
+          <button @click="authMode = 'register'; authError = ''" :class="authMode === 'register' ? 'bg-white shadow dark:bg-slate-900' : ''" class="flex-1 rounded-lg py-2 text-sm font-semibold text-slate-800 dark:text-slate-200">{% trans "Register" %}</button>
+        </div>
+
+        <template x-if="authMode === 'login'">
+          <div class="space-y-3">
+            <input type="text" x-model="authIdentifier" placeholder="{% trans 'Email or phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <input type="password" x-model="authPassword" placeholder="{% trans 'Password' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" @keydown.enter="doLogin()">
+            <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+            <button @click="doLogin()" :disabled="authLoading" class="w-full rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">
+              <span x-show="!authLoading">{% trans "Log in" %}</span>
+              <span x-show="authLoading">{% trans "Logging in..." %}</span>
+            </button>
+          </div>
+        </template>
+
+        <template x-if="authMode === 'register'">
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" x-model="regFirstName" placeholder="{% trans 'First name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+              <input type="text" x-model="regLastName" placeholder="{% trans 'Last name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            </div>
+            <input type="email" x-model="regEmail" placeholder="{% trans 'Email' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <input type="tel" x-model="regPhone" placeholder="{% trans 'Phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <input type="text" x-model="regAddress" placeholder="{% trans 'Address (optional)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <input type="password" x-model="regPassword" placeholder="{% trans 'Password (min 6 chars)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+            <button @click="doRegister()" :disabled="authLoading" class="w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50">
+              <span x-show="!authLoading">{% trans "Create account" %}</span>
+              <span x-show="authLoading">{% trans "Creating..." %}</span>
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Checkout modal (final review before placing order) -->
+    <div x-cloak x-show="checkoutOpen" class="fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/70 p-4" @click.self="checkoutOpen = false">
+      <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">{% trans "Confirm your details" %}</h3>
+          <button @click="checkoutOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+        </div>
+
+        <template x-if="!currentUser">
+          <div class="mb-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 text-sm dark:border-indigo-800 dark:bg-indigo-900/20">
+            <p class="font-semibold text-indigo-900 dark:text-indigo-100">{% trans "Already have an account?" %}</p>
+            <p class="mt-1 text-indigo-800 dark:text-indigo-200">{% trans "Log in to auto-fill your saved details and addresses." %}</p>
+            <div class="mt-2 flex gap-2">
+              <button @click="checkoutOpen = false; openAuthModal('login')" class="flex-1 rounded-lg bg-indigo-600 py-2 text-sm font-bold text-white hover:bg-indigo-700">{% trans "Log in" %}</button>
+              <button @click="checkoutOpen = false; openAuthModal('register')" class="flex-1 rounded-lg border border-indigo-300 bg-white py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 dark:bg-slate-900 dark:text-indigo-300">{% trans "Register" %}</button>
+            </div>
+          </div>
+        </template>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">{% trans "First name" %}</label>
+              <input type="text" x-model="checkoutFirstName" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">{% trans "Last name" %}</label>
+              <input type="text" x-model="checkoutLastName" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            </div>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">{% trans "Email" %}</label>
+            <input type="email" x-model="checkoutEmail" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">{% trans "Phone" %}</label>
+            <input type="tel" x-model="checkoutPhone" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          </div>
+
+          <template x-if="currentUser && (currentUser.addresses || []).length">
+            <div>
+              <label class="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">{% trans "Delivery address" %}</label>
+              <div class="space-y-2">
+                <template x-for="a in currentUser.addresses" :key="a.id">
+                  <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-600 dark:bg-slate-800" :class="checkoutSelectedAddressId === a.id ? 'ring-2 ring-indigo-500' : ''">
+                    <input type="radio" :value="a.id" x-model.number="checkoutSelectedAddressId" class="mt-1">
+                    <div class="min-w-0 flex-1">
+                      <p class="font-semibold text-slate-900 dark:text-white" x-text="a.label || '{% trans "Address" %}'"></p>
+                      <p class="text-slate-600 dark:text-slate-300" x-text="a.address"></p>
+                    </div>
+                    <span x-show="a.is_default" class="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">{% trans "Default" %}</span>
+                  </label>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <span x-show="!currentUser || !(currentUser.addresses || []).length">{% trans "Delivery address" %}</span>
+              <span x-show="currentUser && (currentUser.addresses || []).length">{% trans "Or add a new address" %}</span>
+            </label>
+            <input type="text" x-model="checkoutNewAddress" placeholder="{% trans 'Street, number, city' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <template x-if="currentUser && checkoutNewAddress.trim()">
+              <button @click="addAddressFromCheckout()" :disabled="checkoutAddingAddress" class="mt-2 w-full rounded-lg border border-slate-200 bg-white py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                <span x-show="!checkoutAddingAddress">{% trans "Save this address to my account" %}</span>
+                <span x-show="checkoutAddingAddress">{% trans "Saving..." %}</span>
+              </button>
+            </template>
+          </div>
+
+          <p x-show="checkoutError" x-text="checkoutError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
+
+          <button @click="submitCheckout()" :disabled="orderLoading" class="w-full rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">
+            <span x-show="!orderLoading && paymentMethod !== 'online'">{% trans "Place Order" %}</span>
+            <span x-show="!orderLoading && paymentMethod === 'online'">{% trans "Pay Online" %}</span>
+            <span x-show="orderLoading">{% trans "Placing..." %}</span>
+          </button>
         </div>
       </div>
     </div>

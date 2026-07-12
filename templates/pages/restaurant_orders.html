@@ -51,7 +51,188 @@
     cancelingOrderId: null,
     error: '',
     cancelMessage: '',
-    init() { if (this.phone) this.lookup(false); },
+    currentUser: null,
+    authOpen: false,
+    authMode: 'login',
+    authIdentifier: '',
+    authPassword: '',
+    authError: '',
+    authLoading: false,
+    regFirstName: '', regLastName: '', regEmail: '', regPhone: '', regPassword: '', regAddress: '',
+    profileOpen: false,
+    profileEdits: { first_name: '', last_name: '', email: '', phone: '' },
+    profileSaving: false,
+    profileMessage: '',
+    newAddressText: '',
+    newAddressLabel: '',
+    newAddressSaving: false,
+    async init() {
+      await this.fetchMe();
+      if (this.currentUser) {
+        this.phone = this.currentUser.phone || this.phone;
+        this.lookup(false);
+      } else if (this.phone) {
+        this.lookup(false);
+      }
+    },
+    async fetchMe() {
+      try {
+        const r = await fetch(this.apiBase + '/customer/me/', { credentials: 'same-origin' });
+        if (r.ok) {
+          this.currentUser = await r.json();
+          this.profileEdits = {
+            first_name: this.currentUser.first_name || '',
+            last_name: this.currentUser.last_name || '',
+            email: this.currentUser.email || '',
+            phone: this.currentUser.phone || '',
+          };
+        } else { this.currentUser = null; }
+      } catch (e) { this.currentUser = null; }
+    },
+    openAuthModal(mode) { this.authMode = mode || 'login'; this.authError = ''; this.authOpen = true; },
+    async doLogin() {
+      this.authError = '';
+      if (!this.authIdentifier || !this.authPassword) { this.authError = '{% trans "Please enter your email/phone and password." %}'; return; }
+      this.authLoading = true;
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        const r = await fetch(this.apiBase + '/customer/login/', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+          body: JSON.stringify({ identifier: this.authIdentifier, password: this.authPassword }),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          this.authError = data.detail === 'invalid_credentials' ? '{% trans "Invalid email/phone or password." %}' : (data.detail || '{% trans "Login failed." %}');
+        } else {
+          this.currentUser = data;
+          this.profileEdits = {
+            first_name: data.first_name || '', last_name: data.last_name || '',
+            email: data.email || '', phone: data.phone || '',
+          };
+          this.phone = data.phone || this.phone;
+          this.authOpen = false;
+          this.authPassword = '';
+          this.lookup(false);
+        }
+      } catch (e) { this.authError = '{% trans "Network error" %}'; }
+      this.authLoading = false;
+    },
+    async doRegister() {
+      this.authError = '';
+      if (!this.regFirstName || !this.regEmail || !this.regPhone || !this.regPassword) { this.authError = '{% trans "Please fill in the required fields." %}'; return; }
+      if (this.regPassword.length < 6) { this.authError = '{% trans "Password must be at least 6 characters." %}'; return; }
+      this.authLoading = true;
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        const r = await fetch(this.apiBase + '/customer/register/', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+          body: JSON.stringify({
+            first_name: this.regFirstName, last_name: this.regLastName,
+            email: this.regEmail, phone: this.regPhone,
+            password: this.regPassword, address: this.regAddress,
+          }),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          const map = {
+            phone_already_registered: '{% trans "This phone number is already registered. Please log in instead." %}',
+            email_already_registered: '{% trans "This email is already registered. Please log in instead." %}',
+            invalid_email: '{% trans "Please enter a valid email." %}',
+            password_min_6: '{% trans "Password must be at least 6 characters." %}',
+          };
+          if (data.detail === 'phone_already_registered' || data.detail === 'email_already_registered') {
+            this.authMode = 'login';
+            this.authIdentifier = data.detail === 'phone_already_registered' ? this.regPhone : this.regEmail;
+          }
+          this.authError = map[data.detail] || (data.detail || '{% trans "Registration failed." %}');
+        } else {
+          this.currentUser = data;
+          this.phone = data.phone || this.regPhone;
+          this.profileEdits = { first_name: data.first_name || '', last_name: data.last_name || '', email: data.email || '', phone: data.phone || '' };
+          this.authOpen = false;
+          this.regPassword = '';
+          this.lookup(false);
+        }
+      } catch (e) { this.authError = '{% trans "Network error" %}'; }
+      this.authLoading = false;
+    },
+    async doLogout() {
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        await fetch(this.apiBase + '/customer/logout/', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+        });
+      } catch (e) {}
+      this.currentUser = null;
+      this.orders = [];
+      this.profileOpen = false;
+    },
+    async saveProfile() {
+      if (!this.currentUser) return;
+      this.profileSaving = true; this.profileMessage = '';
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        const patch = {};
+        for (const k of ['first_name', 'last_name', 'email', 'phone']) {
+          if (this.profileEdits[k] !== this.currentUser[k]) patch[k] = this.profileEdits[k];
+        }
+        if (!Object.keys(patch).length) { this.profileMessage = '{% trans "No changes to save." %}'; this.profileSaving = false; return; }
+        const r = await fetch(this.apiBase + '/customer/me/', {
+          method: 'PATCH', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+          body: JSON.stringify(patch),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) { this.profileMessage = data.detail || '{% trans "Update failed." %}'; }
+        else {
+          this.currentUser = data;
+          this.profileMessage = '{% trans "Profile updated." %}';
+          if (patch.phone) { this.phone = data.phone; this.lookup(false); }
+        }
+      } catch (e) { this.profileMessage = '{% trans "Network error" %}'; }
+      this.profileSaving = false;
+    },
+    async addAddress() {
+      const addr = String(this.newAddressText || '').trim();
+      if (!addr || !this.currentUser) return;
+      this.newAddressSaving = true;
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        const r = await fetch(this.apiBase + '/customer/addresses/', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+          body: JSON.stringify({ address: addr, label: this.newAddressLabel }),
+        });
+        if (r.ok) { this.newAddressText = ''; this.newAddressLabel = ''; await this.fetchMe(); }
+      } catch (e) {}
+      this.newAddressSaving = false;
+    },
+    async setDefaultAddress(id) {
+      if (!this.currentUser) return;
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        await fetch(this.apiBase + '/customer/addresses/' + id + '/', {
+          method: 'PATCH', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+          body: JSON.stringify({ is_default: true }),
+        });
+        await this.fetchMe();
+      } catch (e) {}
+    },
+    async deleteAddress(id) {
+      if (!this.currentUser) return;
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      try {
+        await fetch(this.apiBase + '/customer/addresses/' + id + '/', {
+          method: 'DELETE', credentials: 'same-origin',
+          headers: { 'X-CSRFToken': csrf },
+        });
+        await this.fetchMe();
+      } catch (e) {}
+    },
     statusLabel(status) {
       const labels = {
         pending: '{% trans "Received" %}',
@@ -194,7 +375,18 @@
         <p class="text-sm font-semibold uppercase tracking-wide orders-muted">{% trans "Order tracker" %}</p>
         <h1 class="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{{ restaurant.name }}</h1>
       </div>
-      <a href="{{ menu_url }}" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Menu" %}</a>
+      <div class="flex items-center gap-2">
+        <template x-if="currentUser">
+          <button @click="profileOpen = true" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft" x-text="'👤 ' + (currentUser.first_name || currentUser.email)"></button>
+        </template>
+        <template x-if="currentUser">
+          <button @click="doLogout()" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Log out" %}</button>
+        </template>
+        <template x-if="!currentUser">
+          <button @click="openAuthModal('login')" class="rounded-xl px-4 py-2 text-sm font-bold orders-button">{% trans "Login / Register" %}</button>
+        </template>
+        <a href="{{ menu_url }}" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Menu" %}</a>
+      </div>
     </div>
 
     <div class="mt-6 rounded-3xl border p-4 shadow-2xl orders-card sm:p-6">
@@ -301,6 +493,116 @@
           </div>
         </article>
       </template>
+    </div>
+  </div>
+
+  <!-- Auth modal -->
+  <div x-cloak x-show="authOpen" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/70 p-4" @click.self="authOpen = false">
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl text-slate-900">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-lg font-black" x-text="authMode === 'login' ? '{% trans "Log in" %}' : '{% trans "Create account" %}'"></h3>
+        <button @click="authOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100">✕</button>
+      </div>
+      <div class="mb-4 flex rounded-xl bg-slate-100 p-1">
+        <button @click="authMode = 'login'; authError = ''" :class="authMode === 'login' ? 'bg-white shadow' : ''" class="flex-1 rounded-lg py-2 text-sm font-semibold">{% trans "Log in" %}</button>
+        <button @click="authMode = 'register'; authError = ''" :class="authMode === 'register' ? 'bg-white shadow' : ''" class="flex-1 rounded-lg py-2 text-sm font-semibold">{% trans "Register" %}</button>
+      </div>
+      <template x-if="authMode === 'login'">
+        <div class="space-y-3">
+          <input type="text" x-model="authIdentifier" placeholder="{% trans 'Email or phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+          <input type="password" x-model="authPassword" placeholder="{% trans 'Password' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm" @keydown.enter="doLogin()">
+          <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"></p>
+          <button @click="doLogin()" :disabled="authLoading" class="w-full rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">
+            <span x-show="!authLoading">{% trans "Log in" %}</span>
+            <span x-show="authLoading">{% trans "Logging in..." %}</span>
+          </button>
+        </div>
+      </template>
+      <template x-if="authMode === 'register'">
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" x-model="regFirstName" placeholder="{% trans 'First name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+            <input type="text" x-model="regLastName" placeholder="{% trans 'Last name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+          </div>
+          <input type="email" x-model="regEmail" placeholder="{% trans 'Email' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+          <input type="tel" x-model="regPhone" placeholder="{% trans 'Phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+          <input type="text" x-model="regAddress" placeholder="{% trans 'Address (optional)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+          <input type="password" x-model="regPassword" placeholder="{% trans 'Password (min 6 chars)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm">
+          <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"></p>
+          <button @click="doRegister()" :disabled="authLoading" class="w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50">
+            <span x-show="!authLoading">{% trans "Create account" %}</span>
+            <span x-show="authLoading">{% trans "Creating..." %}</span>
+          </button>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Profile / Address book modal -->
+  <div x-cloak x-show="profileOpen && currentUser" class="fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/70 p-4" @click.self="profileOpen = false">
+    <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl text-slate-900">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-lg font-black">{% trans "My profile" %}</h3>
+        <button @click="profileOpen = false" class="rounded-lg p-1 text-slate-500 hover:bg-slate-100">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600">{% trans "First name" %}</label>
+            <input type="text" x-model="profileEdits.first_name" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-slate-600">{% trans "Last name" %}</label>
+            <input type="text" x-model="profileEdits.last_name" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-600">{% trans "Email" %}</label>
+          <input type="email" x-model="profileEdits.email" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold text-slate-600">{% trans "Phone" %}</label>
+          <input type="tel" x-model="profileEdits.phone" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+        </div>
+        <p x-show="profileMessage" x-text="profileMessage" class="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700"></p>
+        <button @click="saveProfile()" :disabled="profileSaving" class="w-full rounded-xl bg-indigo-600 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">
+          <span x-show="!profileSaving">{% trans "Save changes" %}</span>
+          <span x-show="profileSaving">{% trans "Saving..." %}</span>
+        </button>
+      </div>
+
+      <div class="mt-6 border-t border-slate-200 pt-4">
+        <h4 class="mb-3 text-sm font-black text-slate-800">{% trans "My addresses" %}</h4>
+        <template x-if="!(currentUser?.addresses || []).length">
+          <p class="mb-3 text-sm text-slate-500">{% trans "No addresses saved yet." %}</p>
+        </template>
+        <ul class="space-y-2">
+          <template x-for="a in (currentUser?.addresses || [])" :key="a.id">
+            <li class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-bold" x-text="a.label || '{% trans "Address" %}'"></p>
+                  <p class="text-sm text-slate-600" x-text="a.address"></p>
+                </div>
+                <div class="flex shrink-0 flex-col items-end gap-1">
+                  <span x-show="a.is_default" class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black text-emerald-700">{% trans "Default" %}</span>
+                  <button x-show="!a.is_default" @click="setDefaultAddress(a.id)" class="text-xs font-bold text-indigo-600 hover:underline">{% trans "Set default" %}</button>
+                  <button @click="deleteAddress(a.id)" class="text-xs font-bold text-rose-600 hover:underline">{% trans "Delete" %}</button>
+                </div>
+              </div>
+            </li>
+          </template>
+        </ul>
+        <div class="mt-3 space-y-2">
+          <input type="text" x-model="newAddressLabel" placeholder="{% trans 'Label (e.g. Home, Work)' %}" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+          <input type="text" x-model="newAddressText" placeholder="{% trans 'Street, number, city' %}" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+          <button @click="addAddress()" :disabled="newAddressSaving || !newAddressText.trim()" class="w-full rounded-xl bg-emerald-600 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50">
+            <span x-show="!newAddressSaving">{% trans "Add address" %}</span>
+            <span x-show="newAddressSaving">{% trans "Saving..." %}</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </section>

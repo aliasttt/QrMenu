@@ -138,6 +138,65 @@ class PasswordResetCode(models.Model):
     def is_expired(self) -> bool:
         return timezone.now() > self.expires_at
 
+class MenuCustomer(models.Model):
+    """
+    End-user account for people ordering from restaurant menus.
+    Completely separate from Profile / BusinessAdmin — never mix.
+    Global account: one login works across all restaurants; per-restaurant
+    orders are filtered at query time (not by account scope).
+    """
+    email = models.EmailField(unique=True, db_index=True)
+    phone = models.CharField(max_length=32, unique=True, db_index=True)
+    first_name = models.CharField(max_length=120, blank=True)
+    last_name = models.CharField(max_length=120, blank=True)
+    password = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_login_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Menu Customer"
+        verbose_name_plural = "Menu Customers"
+        ordering = ["-created_at"]
+
+    def set_password(self, raw_password: str) -> None:
+        from django.contrib.auth.hashers import make_password
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password: str) -> bool:
+        from django.contrib.auth.hashers import check_password
+        return check_password(raw_password, self.password)
+
+    @property
+    def name(self) -> str:
+        return (f"{self.first_name} {self.last_name}").strip()
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f"{self.name or self.email or self.phone} (menu-customer #{self.pk})"
+
+
+class MenuCustomerAddress(models.Model):
+    customer = models.ForeignKey(
+        MenuCustomer,
+        on_delete=models.CASCADE,
+        related_name="addresses",
+    )
+    label = models.CharField(max_length=64, blank=True)
+    address = models.TextField()
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Menu Customer Address"
+        verbose_name_plural = "Menu Customer Addresses"
+        ordering = ["-is_default", "-created_at"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f"{self.label or 'Address'} for #{self.customer_id}"
+
+
 class Business(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
     name = models.CharField(max_length=200)

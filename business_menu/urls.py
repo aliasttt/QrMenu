@@ -1,5 +1,6 @@
 from django.urls import path
 from django.shortcuts import redirect
+from . import customer_auth as _ca
 from .views import (
     SendOTPView,
     LoginView,
@@ -141,6 +142,15 @@ urlpatterns = [
     # سبد و سفارش (عمومی، با token یا restaurant_id)
     path('cart/', CartView.as_view(), name='cart'),
     path('order-options/', RestaurantOrderOptionsView.as_view(), name='order_options'),
+    # Customer (end-user) auth — separate from BusinessAdmin JWT.
+    path('customer/check-phone/', _ca.CustomerCheckPhoneView.as_view(), name='customer_check_phone'),
+    path('customer/check-email/', _ca.CustomerCheckEmailView.as_view(), name='customer_check_email'),
+    path('customer/register/', _ca.CustomerRegisterView.as_view(), name='customer_register'),
+    path('customer/login/', _ca.CustomerLoginView.as_view(), name='customer_login'),
+    path('customer/logout/', _ca.CustomerLogoutView.as_view(), name='customer_logout'),
+    path('customer/me/', _ca.CustomerMeView.as_view(), name='customer_me'),
+    path('customer/addresses/', _ca.CustomerAddressListCreateView.as_view(), name='customer_addresses'),
+    path('customer/addresses/<int:address_id>/', _ca.CustomerAddressDetailView.as_view(), name='customer_address_detail'),
     path('orders/', OrderCreateView.as_view(), name='order_create'),
     path('orders/list/', OrderListView.as_view(), name='order_list'),
     path('orders/lookup/', PublicOrderLookupView.as_view(), name='order_lookup'),
