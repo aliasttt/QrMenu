@@ -45,8 +45,9 @@
     </div>
   </nav>
 
-  <!-- Auth modal -->
-  <div x-cloak x-show="authOpen" class="fixed inset-0 z-[70] overflow-y-auto bg-slate-900/70 p-4" @click.self="authOpen = false">
+  <!-- Auth modal (teleported to body to escape header stacking context) -->
+  <template x-teleport="body">
+  <div x-cloak x-show="authOpen" class="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/70 p-4" @click.self="authOpen = false">
     <div class="mx-auto my-8 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900" @click.stop>
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-black text-slate-900 dark:text-white"
@@ -116,9 +117,11 @@
       </template>
     </div>
   </div>
+  </template>
 
-  <!-- Profile modal -->
-  <div x-cloak x-show="profileOpen && currentUser" class="fixed inset-0 z-[65] overflow-y-auto bg-slate-900/70 p-4" @click.self="profileOpen = false">
+  <!-- Profile modal (teleported) -->
+  <template x-teleport="body">
+  <div x-cloak x-show="profileOpen && currentUser" class="fixed inset-0 z-[9998] overflow-y-auto bg-slate-900/70 p-4" @click.self="profileOpen = false">
     <div class="mx-auto my-8 w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900" @click.stop>
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-black text-slate-900 dark:text-white">{% trans "My profile" %}</h3>
@@ -170,9 +173,11 @@
       </div>
     </div>
   </div>
+  </template>
 
-  <!-- Orders modal (lookup by phone from account) -->
-  <div x-cloak x-show="ordersOpen && currentUser" class="fixed inset-0 z-[65] overflow-y-auto bg-slate-900/70 p-4" @click.self="ordersOpen = false">
+  <!-- Orders modal (teleported) -->
+  <template x-teleport="body">
+  <div x-cloak x-show="ordersOpen && currentUser" class="fixed inset-0 z-[9998] overflow-y-auto bg-slate-900/70 p-4" @click.self="ordersOpen = false">
     <div class="mx-auto my-8 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900" @click.stop>
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-black text-slate-900 dark:text-white">{% trans "My orders" %}</h3>
@@ -198,6 +203,7 @@
       </ul>
     </div>
   </div>
+  </template>
 </header>
 
 <script>
