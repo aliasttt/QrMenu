@@ -266,6 +266,24 @@
             </div>
           </div>
 
+          <template x-if="order.courier_name || order.courier_phone">
+            <div class="mt-5 rounded-2xl border p-4 orders-soft">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0">
+                  <p class="text-xs font-bold uppercase orders-muted">{% trans "Your courier" %}</p>
+                  <p class="mt-1 text-base font-black" x-text="order.courier_name || '{% trans "Courier assigned" %}'"></p>
+                  <p x-show="order.courier_phone" class="mt-1 text-sm orders-muted">{% trans "Call the courier directly if there is an issue with the address." %}</p>
+                </div>
+                <template x-if="order.courier_phone">
+                  <a :href="'tel:' + order.courier_phone" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-black orders-button">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.515l.7 2.8a2 2 0 01-.45 1.9L8.09 10.91a11 11 0 005 5l1.694-1.379a2 2 0 011.9-.451l2.8.7A2 2 0 0121 16.72V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <span x-text="order.courier_phone"></span>
+                  </a>
+                </template>
+              </div>
+            </div>
+          </template>
+
           <div class="mt-5 grid gap-3 sm:grid-cols-3">
             <div class="rounded-2xl border p-3 orders-soft">
               <p class="text-xs font-bold uppercase orders-muted">{% trans "Items" %}</p>

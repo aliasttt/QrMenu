@@ -3240,6 +3240,7 @@ class OrderListView(APIView):
 
 def _serialize_public_order(order):
     customer = getattr(order, "customer", None)
+    courier = getattr(order, "courier", None)
     status_value = str(order.status)
     payment = None
     try:
@@ -3275,6 +3276,8 @@ def _serialize_public_order(order):
         },
         "table_number": str(getattr(order, "table_number", "") or ""),
         "notes": order.notes or "",
+        "courier_name": courier.name if courier else "",
+        "courier_phone": courier.phone if courier else "",
         "scheduled_for": order.scheduled_for.isoformat() if getattr(order, "scheduled_for", None) else None,
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "updated_at": order.updated_at.isoformat() if order.updated_at else None,
