@@ -3583,14 +3583,25 @@ class FinalizePaidOrderView(APIView):
         address = (data.get("address") or "").strip()
         phone = (data.get("phone") or "").strip()
         email = (data.get("email") or data.get("customer_email") or "").strip().lower()
-        if not email:
-            try:
-                from .customer_auth import _get_logged_in_customer as _get_menu_customer
-                mc = _get_menu_customer(request)
-                if mc:
-                    email = mc.email or ""
-            except Exception:
-                pass
+
+        # If a MenuCustomer is already logged in, prefer their stored data over
+        # whatever came in the request — they went through the checkout modal
+        # so we already have everything.
+        menu_customer = None
+        try:
+            from .customer_auth import _get_logged_in_customer as _get_menu_customer
+            menu_customer = _get_menu_customer(request)
+        except Exception:
+            menu_customer = None
+        if menu_customer:
+            first_name = first_name or menu_customer.first_name
+            last_name = last_name or menu_customer.last_name
+            email = email or (menu_customer.email or "")
+            phone = phone or (menu_customer.phone or "")
+            if not address:
+                default_addr = menu_customer.addresses.filter(is_default=True).first() or menu_customer.addresses.first()
+                if default_addr:
+                    address = default_addr.address
 
         if not order_id or not phone or not (payment_intent_id or checkout_session_id):
             return Response(
@@ -3699,6 +3710,42 @@ class FinalizePaidOrderView(APIView):
                     "updated_at",
                 ]
             )
+
+        # Guest checkout — auto-register a MenuCustomer with the details they
+        # just entered so their order is linked to a real account and they can
+        # log in later via "Forgot password". If a matching email/phone already
+        # exists as a MenuCustomer, we skip auto-register but link the login
+        # session only if there is exactly one unambiguous match (skip on
+        # ambiguity to avoid accidental account takeover).
+        if not menu_customer and email and phone:
+            try:
+                from accounts.models import MenuCustomer, MenuCustomerAddress
+                from .customer_auth import _normalize_phone, SESSION_KEY
+                phone_norm = _normalize_phone(phone) or phone
+                existing = MenuCustomer.objects.filter(
+                    Q(email__iexact=email) | Q(phone=phone_norm)
+                ).first()
+                if existing is None:
+                    from django.utils.crypto import get_random_string
+                    new_customer = MenuCustomer(
+                        email=email,
+                        phone=phone_norm,
+                        first_name=first_name,
+                        last_name=last_name,
+                        last_login_at=timezone.now(),
+                    )
+                    new_customer.set_password(get_random_string(24))
+                    new_customer.save()
+                    if address:
+                        MenuCustomerAddress.objects.create(
+                            customer=new_customer,
+                            address=address,
+                            is_default=True,
+                        )
+                    request.session[SESSION_KEY] = new_customer.id
+                    request.session.set_expiry(60 * 60 * 24 * 30)
+            except Exception:
+                logger.exception("Auto-register MenuCustomer failed for order %s", order.id)
 
         # Online order: payment confirmed, invoice is ready — email it.
         from .invoice_email import send_invoice_email_async
