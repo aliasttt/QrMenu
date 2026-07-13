@@ -1,4 +1,7 @@
-{% load static i18n %}
+{% load static i18n i18n_extras %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
 <header
   class="sticky top-0 z-40 border-b border-slate-100 bg-white/95 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/95"
   x-data="customerNavbar()"
@@ -20,7 +23,27 @@
       </template>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2" @click.outside="langOpen = false">
+      <div class="relative">
+        <button type="button" @click="langOpen = !langOpen" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200" aria-label="{% trans 'Change language' %}">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+          <span class="uppercase">{{ LANGUAGE_CODE }}</span>
+          <svg class="h-3 w-3 transition-transform" :class="{ 'rotate-180': langOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="langOpen" x-cloak x-transition class="absolute right-0 top-full z-50 mt-1 max-h-[70vh] w-56 overflow-y-auto rounded-xl border border-slate-200 bg-white py-2 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+          {% for lang in languages %}
+          <form action="{% url 'set_language' %}" method="post" class="block">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path|translate_url:lang.code }}">
+            <input type="hidden" name="language" value="{{ lang.code }}">
+            <button type="submit" class="flex w-full items-center justify-between px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800 {% if lang.code == LANGUAGE_CODE %}bg-orange-50 font-semibold text-orange-600 dark:bg-orange-900/20 dark:text-orange-300{% endif %}">
+              <span>{{ lang.name_local }}</span>
+              {% if lang.code == LANGUAGE_CODE %}<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{% endif %}
+            </button>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
       <template x-if="!currentUser">
         <button @click="openAuthModal('login')" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100">{% trans "Log in" %}</button>
       </template>
@@ -215,6 +238,7 @@
       apiBase: '/api/business-menu',
       currentUser: null,
       userMenuOpen: false,
+      langOpen: false,
       authOpen: false,
       authMode: 'login',
       authIdentifier: '',
