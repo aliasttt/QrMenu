@@ -164,6 +164,24 @@ def _customer_email_for(order) -> str:
     return email.strip()
 
 
+def _resolve_from_email() -> str:
+    """
+    Choose a sender address that the configured SMTP will actually accept.
+    Priority: BONUS_FROM_EMAIL → DEFAULT_FROM_EMAIL (if it looks real) →
+    EMAIL_HOST_USER (last resort, because titan/smtp servers reject FROM
+    addresses that don't match an authenticated mailbox on the account).
+    """
+    for attr in ("BONUS_FROM_EMAIL", "DEFAULT_FROM_EMAIL"):
+        v = getattr(settings, attr, None)
+        if v and "@" in v and "example.com" not in v.lower():
+            return v
+    host_user = getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", "")) or ""
+    if host_user and "@" in host_user:
+        return host_user
+    # Absolute last resort — will likely fail but keeps behaviour explicit.
+    return getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
+
+
 def send_invoice_email(order) -> bool:
     """
     Send a confirmation email to the customer with the invoice PDF attached.
@@ -172,7 +190,11 @@ def send_invoice_email(order) -> bool:
     try:
         to_email = _customer_email_for(order)
         if not to_email:
-            logger.info("Invoice email skipped for order %s: no customer email", order.id)
+            logger.warning(
+                "Invoice email skipped for order %s: no customer email on Customer(id=%s)",
+                order.id,
+                getattr(getattr(order, "customer", None), "id", None),
+            )
             return False
 
         try:
@@ -212,15 +234,20 @@ def send_invoice_email(order) -> bool:
         ]
         body = "\n".join(body_lines)
 
-        from_email = getattr(settings, "BONUS_FROM_EMAIL", getattr(settings, "DEFAULT_FROM_EMAIL", None))
+        from_email = _resolve_from_email()
+        host = getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST)
+        port = getattr(settings, "BONUS_EMAIL_PORT", getattr(settings, "EMAIL_PORT", 587))
+        user = getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", ""))
+        password = getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", getattr(settings, "EMAIL_HOST_PASSWORD", ""))
+        use_tls = getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True))
+        logger.info(
+            "Sending invoice email order=%s to=%s from=%s host=%s port=%s user=%s attach=%s",
+            order.id, to_email, from_email, host, port, bool(user), bool(pdf_bytes),
+        )
         connection = get_connection(
             backend="django.core.mail.backends.smtp.EmailBackend",
-            host=getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST),
-            port=getattr(settings, "BONUS_EMAIL_PORT", getattr(settings, "EMAIL_PORT", 587)),
-            username=getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", "")),
-            password=getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", getattr(settings, "EMAIL_HOST_PASSWORD", "")),
-            use_tls=getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True)),
-            timeout=30,
+            host=host, port=port, username=user, password=password,
+            use_tls=use_tls, timeout=30,
         )
         msg = EmailMessage(
             subject=subject,
@@ -231,9 +258,9 @@ def send_invoice_email(order) -> bool:
         )
         if pdf_bytes:
             msg.attach(f"invoice-{order.id}.pdf", pdf_bytes, "application/pdf")
-        msg.send(fail_silently=False)
-        logger.info("Invoice email sent to %s for order %s", to_email, order.id)
-        return True
+        sent = msg.send(fail_silently=False)
+        logger.info("Invoice email send() returned %s for order %s → %s", sent, order.id, to_email)
+        return bool(sent)
     except Exception:
         logger.exception("Invoice email failed for order %s", getattr(order, "id", "?"))
         return False

@@ -198,7 +198,8 @@ class CustomerForgotPasswordView(APIView):
         try:
             from django.conf import settings as _s
             from django.core.mail import EmailMessage, get_connection
-            from_email = getattr(_s, "BONUS_FROM_EMAIL", getattr(_s, "DEFAULT_FROM_EMAIL", None))
+            from .invoice_email import _resolve_from_email
+            from_email = _resolve_from_email()
             connection = get_connection(
                 backend="django.core.mail.backends.smtp.EmailBackend",
                 host=getattr(_s, "BONUS_EMAIL_HOST", _s.EMAIL_HOST),

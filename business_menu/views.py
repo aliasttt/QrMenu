@@ -3973,7 +3973,12 @@ def _notify_customer_courier_assigned(order, courier):
     )
     try:
         from accounts.twilio_utils import get_twilio_client, format_phone_number as _fmt
-        to_number = _fmt(phone) or phone
+        # If the customer's phone is already in E.164 form (starts with '+'),
+        # use it as-is. Otherwise fall back to the DE-centric normaliser.
+        # format_phone_number() assumes German numbers and would prepend +49
+        # to an already-international number like +905340... which Twilio then
+        # rejects as "Invalid 'To' Phone Number".
+        to_number = phone if phone.startswith("+") else (_fmt(phone) or phone)
         client = get_twilio_client()
         try:
             client.messages.create(body=body, from_="MyBonusBerlin", to=to_number)
