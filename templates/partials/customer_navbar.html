@@ -60,8 +60,8 @@
       </div>
       <template x-if="authMode === 'login'">
         <div class="space-y-3">
-          <input type="text" x-model="authIdentifier" placeholder="{% trans 'Email or phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-          <input type="password" x-model="authPassword" placeholder="{% trans 'Password' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" @keydown.enter="doLogin()">
+          <input type="text" name="username" autocomplete="username" x-model="authIdentifier" placeholder="{% trans 'Email or phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <input type="password" name="password" autocomplete="current-password" x-model="authPassword" placeholder="{% trans 'Password' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" @keydown.enter="doLogin()">
           <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
           <button @click="doLogin()" :disabled="authLoading" class="w-full rounded-xl bg-orange-600 py-3 text-sm font-bold text-white hover:bg-orange-700 disabled:opacity-50">
             <span x-show="!authLoading">{% trans "Log in" %}</span>
@@ -73,13 +73,13 @@
       <template x-if="authMode === 'register'">
         <div class="space-y-3">
           <div class="grid grid-cols-2 gap-2">
-            <input type="text" x-model="regFirstName" placeholder="{% trans 'First name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-            <input type="text" x-model="regLastName" placeholder="{% trans 'Last name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <input type="text" name="given-name" autocomplete="given-name" x-model="regFirstName" placeholder="{% trans 'First name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+            <input type="text" name="family-name" autocomplete="family-name" x-model="regLastName" placeholder="{% trans 'Last name' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
           </div>
-          <input type="email" x-model="regEmail" placeholder="{% trans 'Email' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-          <input type="tel" x-model="regPhone" placeholder="{% trans 'Phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-          <input type="text" x-model="regAddress" placeholder="{% trans 'Address (optional)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-          <input type="password" x-model="regPassword" placeholder="{% trans 'Password (min 6 chars)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <input type="email" name="email" autocomplete="email" x-model="regEmail" placeholder="{% trans 'Email' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <input type="tel" name="tel" autocomplete="tel" x-model="regPhone" placeholder="{% trans 'Phone' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <input type="text" name="street-address" autocomplete="street-address" x-model="regAddress" placeholder="{% trans 'Address (optional)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          <input type="password" name="new-password" autocomplete="new-password" x-model="regPassword" placeholder="{% trans 'Password (min 6 chars)' %}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
           <p x-show="authError" x-text="authError" class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
           <button @click="doRegister()" :disabled="authLoading" class="w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50">
             <span x-show="!authLoading">{% trans "Create account" %}</span>
