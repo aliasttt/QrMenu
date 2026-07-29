@@ -4,13 +4,20 @@ Email utility functions for sending verification codes via email
 import random
 from datetime import timedelta
 from django.conf import settings
-from django.core.mail import send_mail, EmailMessage
 from django.utils import timezone
 from django.core.cache import cache
 from .models import EmailVerificationCode
+from .email_safety import (
+    acquire_email_cooldown,
+    check_email_action,
+    get_configured_email_connection,
+    normalize_email_address,
+    safe_send_mail,
+    validate_recipient_email,
+)
 
 
-def send_email_verification_code(user, email):
+def send_email_verification_code(user, email, request=None, action="email_verification"):
     """
     Send a 6-digit verification code to the user's email
     
@@ -26,8 +33,12 @@ def send_email_verification_code(user, email):
         }
     """
     try:
-        # Normalize email for stable matching
-        email = (email or "").strip().lower()
+        email = validate_recipient_email(email)
+        allowed, reason = check_email_action(action, email, request=request)
+        if not allowed:
+            return {"success": False, "message": f"rate_limited:{reason}", "rate_limited": True}
+        if not acquire_email_cooldown(action, email):
+            return {"success": False, "message": "cooldown_active", "rate_limited": True}
 
         # Generate 6-digit code
         code = str(random.randint(100000, 999999))
@@ -69,26 +80,18 @@ Bonus Berlin Team
         from_email = getattr(settings, "BONUS_FROM_EMAIL", getattr(settings, "DEFAULT_FROM_EMAIL", None))
 
         # Always send via SMTP (Bonus SMTP if configured)
-        from django.core.mail import get_connection
-        connection = get_connection(
-            backend="django.core.mail.backends.smtp.EmailBackend",
-            host=getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST),
-            port=getattr(settings, "BONUS_EMAIL_PORT", getattr(settings, "EMAIL_PORT", 587)),
-            username=getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", "")),
-            password=getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", getattr(settings, "EMAIL_HOST_PASSWORD", "")),
-            use_tls=getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True)),
-            timeout=30,
-        )
+        connection = get_configured_email_connection(timeout=30)
 
         try:
-            email_msg = EmailMessage(
+            safe_send_mail(
+                action=action,
                 subject=subject,
-                body=message,
+                message=message,
                 from_email=from_email,
-                to=[email],
+                recipient_list=[email],
+                fail_silently=False,
                 connection=connection,
             )
-            email_msg.send(fail_silently=False)
 
             result = {
                 'success': True,
@@ -142,7 +145,7 @@ def verify_email_code(user, email, code):
         }
     """
     try:
-        email = (email or "").strip().lower()
+        email = normalize_email_address(email)
         # Find the most recent unverified code for this user and email
         verification = EmailVerificationCode.objects.filter(
             user=user,

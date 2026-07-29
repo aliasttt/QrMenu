@@ -46,6 +46,20 @@ from accounts.twilio_utils import (
     UNLIMITED_OTP_CODES,
 )
 from accounts.email_utils import send_email_verification_code, verify_email_code
+from accounts.email_safety import (
+    EMAIL_GENERIC_RESPONSE,
+    acquire_email_cooldown,
+    check_email_action,
+    fingerprint,
+    get_configured_email_connection,
+    get_client_ip,
+    is_honeypot_filled,
+    normalize_email_address,
+    safe_send_mail,
+    validate_recipient_email,
+    turnstile_required,
+    verify_turnstile,
+)
 from django.contrib.auth.models import User
 from .auth_utils import (
     get_or_create_user_for_business_admin,
@@ -127,7 +141,10 @@ def _recaptcha_required() -> bool:
 
 def _send_signup_verification_email(email: str, code: str) -> bool:
     """Send 6-digit verification code to email. From QR Menu / mybonus-berlin.de. Returns True if sent."""
-    from django.core.mail import send_mail
+    email = validate_recipient_email(email)
+    if not acquire_email_cooldown("business_signup_verification", email):
+        logger.warning("Business signup verification email skipped due to cooldown email_fp=%s", email[:2])
+        return False
     from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@mybonus-berlin.de")
     subject = "Your verification code - QR Menu"
     message = f"""Hello,
@@ -144,7 +161,8 @@ Best regards,
 QR Menu Team
 """
     try:
-        send_mail(
+        safe_send_mail(
+            action="registration_verification",
             subject=subject,
             message=message,
             from_email=from_email,
@@ -386,7 +404,7 @@ class SendOTPView(APIView):
         if target_email:
             # ارسال کد تأیید به ایمیل
             try:
-                email_result = send_email_verification_code(user, target_email)
+                email_result = send_email_verification_code(user, target_email, request=request, action="email_verification")
             except Exception as e:
                 # اگر ارسال ایمیل خطا داد، فقط لاگ کن و ادامه بده
                 logger.error(f"Error sending verification code to email {target_email}: {str(e)}")
@@ -624,29 +642,29 @@ class ForgotPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = (request.data.get("email") or "").strip().lower()
+        email = normalize_email_address(request.data.get("email") or "")
         if not email:
             return Response({"detail": "email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            email = validate_recipient_email(email)
+        except Exception:
+            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
+        allowed, reason = check_email_action("business_password_reset", email, request=request)
+        if not allowed:
+            return Response({"detail": "Too many password reset requests. Please try again later.", "reason": reason}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+        if not acquire_email_cooldown("business_password_reset", email):
+            return Response({"detail": "Please wait before requesting another reset code."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         admins = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id")
         if not admins.exists():
-            return Response(
-                {"detail": "No active business admin found with this email."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
         if admins.count() > 1:
-            return Response(
-                {"detail": "Duplicate admin email found. Email must be unique for password reset."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
 
         admin = admins.first()
         user = admin.auth_user or User.objects.filter(email__iexact=email).first()
         if not user:
-            return Response(
-                {"detail": "Account is not linked to an auth user."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
 
         if admin.auth_user_id != user.id:
             admin.auth_user = user
@@ -657,17 +675,9 @@ class ForgotPasswordView(APIView):
         PasswordResetCode.objects.create(user=user, email=email, code=code, expires_at=expires_at)
 
         try:
-            from django.core.mail import get_connection, send_mail
-            connection = get_connection(
-                backend="django.core.mail.backends.smtp.EmailBackend",
-                host=getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST),
-                port=getattr(settings, "BONUS_EMAIL_PORT", getattr(settings, "EMAIL_PORT", 587)),
-                username=getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", "")),
-                password=getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", getattr(settings, "EMAIL_HOST_PASSWORD", "")),
-                use_tls=getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True)),
-                timeout=30,
-            )
-            send_mail(
+            connection = get_configured_email_connection(timeout=30)
+            safe_send_mail(
+                action="business_password_reset",
                 subject="Password Reset Code",
                 message=f"Your password reset code is: {code}\n\nThis code will expire in 10 minutes.",
                 from_email=getattr(settings, "BONUS_FROM_EMAIL", getattr(settings, "DEFAULT_FROM_EMAIL", None)),
@@ -677,7 +687,7 @@ class ForgotPasswordView(APIView):
             )
         except Exception:
             if settings.DEBUG:
-                return Response({"message": "Reset code sent to email", "code": code}, status=status.HTTP_200_OK)
+                return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
             return Response({"detail": "failed to send email"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"message": "Reset code sent to email"}, status=status.HTTP_200_OK)
@@ -5405,6 +5415,15 @@ class RestaurantOwnerSignupView(APIView):
             )
 
         # Step 1: validate form, send verification email
+        if is_honeypot_filled(request.data):
+            logger.warning("business_signup_honeypot_blocked ip_fp=%s", fingerprint(get_client_ip(request), "ip"))
+            return Response({"success": True, "message": "Thanks. If your request can be processed, we will email you."})
+        turnstile_token = (request.data.get("cf-turnstile-response") or request.data.get("turnstile_token") or "").strip()
+        if turnstile_required() and not verify_turnstile(turnstile_token, remoteip=get_client_ip(request)):
+            return Response(
+                {"success": False, "message": "Please complete the security check."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
         if _recaptcha_required():
             if not _verify_recaptcha(captcha_token):
@@ -5417,9 +5436,16 @@ class RestaurantOwnerSignupView(APIView):
             return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
-        signup_email = (validated_data.get("email") or "").strip().lower()
+        signup_email = normalize_email_address(validated_data.get("email") or "")
         if not signup_email:
             return Response({"success": False, "message": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            signup_email = validate_recipient_email(signup_email)
+        except Exception:
+            return Response({"success": False, "message": "Invalid email."}, status=status.HTTP_400_BAD_REQUEST)
+        allowed, reason = check_email_action("registration_verification", signup_email, request=request)
+        if not allowed:
+            return Response({"success": False, "message": "Too many verification requests. Please try again later.", "reason": reason}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         # Rate limit: do not send new code for same email within 60 seconds
         since = timezone.now() - timedelta(seconds=60)

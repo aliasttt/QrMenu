@@ -4,8 +4,8 @@ Run daily via cron: python manage.py send_trial_ended_emails
 """
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.core.mail import send_mail
 from django.conf import settings
+from accounts.email_safety import safe_send_mail, validate_recipient_email
 
 from business_menu.models import BusinessAdmin
 
@@ -26,8 +26,9 @@ class Command(BaseCommand):
         dry_run = options.get("dry_run", False)
         count = 0
         for admin in qs:
-            email = (admin.email or "").strip()
-            if not email:
+            try:
+                email = validate_recipient_email((admin.email or "").strip())
+            except Exception:
                 self.stdout.write(self.style.WARNING(f"Admin id={admin.id} has no email, skipping"))
                 continue
             if dry_run:
@@ -37,7 +38,8 @@ class Command(BaseCommand):
                 admin.save(update_fields=["payment_status"])
                 base_url = getattr(settings, "SITE_URL", "https://preismenu.de").rstrip("/")
                 subscribe_url = f"{base_url}/business-menu/subscribe/?admin_id={admin.id}"
-                send_mail(
+                safe_send_mail(
+                    action="trial_ended",
                     subject="Your free trial has ended – subscribe to continue",
                     message=f"""Hello {admin.name},
 

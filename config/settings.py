@@ -164,7 +164,6 @@ if (BASE_DIR / "static").exists():
 if (BASE_DIR / "static_bonusweb").exists():
     STATICFILES_DIRS.append(BASE_DIR / "static_bonusweb")
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
@@ -247,11 +246,36 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", os.getenv("EMAIL_PORT", "587")))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", os.getenv("EMAIL_HOST_USER", ""))
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", os.getenv("EMAIL_HOST_PASSWORD", ""))
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", os.getenv("EMAIL_USE_TLS", "1")) == "1"
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", os.getenv("DEFAULT_FROM_EMAIL", "noreply@example.com"))
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", os.getenv("DEFAULT_FROM_EMAIL", "qrmenu@mybonusberlin.com"))
+BONUS_FROM_EMAIL = os.environ.get("BONUS_FROM_EMAIL", os.getenv("BONUS_FROM_EMAIL", DEFAULT_FROM_EMAIL))
+CONTACT_ADMIN_EMAIL = os.environ.get("CONTACT_ADMIN_EMAIL", os.getenv("CONTACT_ADMIN_EMAIL", "qrmenu@mybonusberlin.com"))
 if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 else:
     EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"))
+
+REDIS_URL = os.environ.get("REDIS_URL", os.getenv("REDIS_URL", ""))
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        }
+    }
+
+EMAIL_LIMIT_REGISTRATION_PER_EMAIL_15M = int(os.environ.get("EMAIL_LIMIT_REGISTRATION_PER_EMAIL_15M", "3"))
+EMAIL_LIMIT_REGISTRATION_PER_IP_1H = int(os.environ.get("EMAIL_LIMIT_REGISTRATION_PER_IP_1H", "10"))
+EMAIL_LIMIT_PASSWORD_RESET_PER_EMAIL_30M = int(os.environ.get("EMAIL_LIMIT_PASSWORD_RESET_PER_EMAIL_30M", "3"))
+EMAIL_LIMIT_PASSWORD_RESET_PER_IP_1H = int(os.environ.get("EMAIL_LIMIT_PASSWORD_RESET_PER_IP_1H", "10"))
+EMAIL_LIMIT_CONTACT_PER_IP_10M = int(os.environ.get("EMAIL_LIMIT_CONTACT_PER_IP_10M", "5"))
+EMAIL_LIMIT_CONTACT_PER_EMAIL_1H = int(os.environ.get("EMAIL_LIMIT_CONTACT_PER_EMAIL_1H", "3"))
+EMAIL_GLOBAL_SAFETY_LIMIT = int(os.environ.get("EMAIL_GLOBAL_SAFETY_LIMIT", "200"))
+EMAIL_GLOBAL_SAFETY_WINDOW_SECONDS = int(os.environ.get("EMAIL_GLOBAL_SAFETY_WINDOW_SECONDS", "3600"))
+EMAIL_ACTION_COOLDOWN_SECONDS = int(os.environ.get("EMAIL_ACTION_COOLDOWN_SECONDS", "60"))
+EMAIL_TASK_LOCK_SECONDS = int(os.environ.get("EMAIL_TASK_LOCK_SECONDS", "600"))
+TURNSTILE_SITE_KEY = os.environ.get("TURNSTILE_SITE_KEY", os.getenv("TURNSTILE_SITE_KEY", ""))
+TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", os.getenv("TURNSTILE_SECRET_KEY", ""))
 
 # Twilio OTP
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "") or os.getenv("TWILIO_ACCOUNT_SID", "")

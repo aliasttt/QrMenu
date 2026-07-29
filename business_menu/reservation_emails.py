@@ -1,7 +1,7 @@
 """Emails for reservation: new request (to owner), confirmed (to customer), cancelled (to customer)."""
 import logging
 from django.conf import settings
-from django.core.mail import send_mail
+from accounts.email_safety import safe_send_mail, validate_recipient_email
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def send_reservation_new_request_email(reservation):
         admin = getattr(restaurant, "admin", None)
         if not admin or not (getattr(admin, "email", None) or "").strip():
             return
-        to = (admin.email or "").strip()
+        to = validate_recipient_email((admin.email or "").strip())
         subject = f"[Reservation] New request for {restaurant.name} – {reservation.requested_date} {reservation.requested_time}"
         lines = [
             f"A new reservation request has been received.",
@@ -41,7 +41,8 @@ def send_reservation_new_request_email(reservation):
         lines.append("")
         lines.append("Please approve or cancel this reservation from your app/panel.")
         message = "\n".join(lines)
-        send_mail(
+        safe_send_mail(
+            action="reservation_owner_notice",
             subject=subject,
             message=message,
             from_email=_from_email(),
@@ -58,6 +59,7 @@ def send_reservation_confirmation_email(reservation):
     if not email:
         return
     try:
+        email = validate_recipient_email(email)
         restaurant = reservation.restaurant
         subject = f"Reservation confirmed – {restaurant.name}"
         lines = [
@@ -84,7 +86,8 @@ def send_reservation_confirmation_email(reservation):
                 price = item.get("price", "0")
                 lines.append(f"  – {qty}× {name} @ €{price}")
         message = "\n".join(lines)
-        send_mail(
+        safe_send_mail(
+            action="reservation_confirmation",
             subject=subject,
             message=message,
             from_email=_from_email(),
@@ -101,6 +104,7 @@ def send_reservation_cancelled_email(reservation, reason=None):
     if not email:
         return
     try:
+        email = validate_recipient_email(email)
         restaurant = reservation.restaurant
         subject = f"Reservation cancelled – {restaurant.name}"
         lines = [
@@ -116,7 +120,8 @@ def send_reservation_cancelled_email(reservation, reason=None):
         lines.append("")
         lines.append("You can make a new reservation at any time.")
         message = "\n".join(lines)
-        send_mail(
+        safe_send_mail(
+            action="reservation_cancelled",
             subject=subject,
             message=message,
             from_email=_from_email(),

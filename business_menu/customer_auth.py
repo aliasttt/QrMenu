@@ -14,6 +14,15 @@ from rest_framework.permissions import AllowAny
 
 from accounts.models import MenuCustomer, MenuCustomerAddress
 from accounts.twilio_utils import format_phone_number
+from accounts.email_safety import (
+    EMAIL_GENERIC_RESPONSE,
+    acquire_email_cooldown,
+    check_email_action,
+    get_configured_email_connection,
+    normalize_email_address,
+    safe_send_mail,
+    validate_recipient_email,
+)
 
 SESSION_KEY = "menu_customer_id"
 
@@ -179,13 +188,20 @@ class CustomerForgotPasswordView(APIView):
     def post(self, request):
         import random
         from django.core.cache import cache
-        email = (request.data.get("email") or "").strip().lower()
-        if not _valid_email(email):
-            return Response({"detail": "invalid_email"}, status=400)
+        email = normalize_email_address(request.data.get("email") or "")
+        try:
+            email = validate_recipient_email(email)
+        except Exception:
+            return Response(EMAIL_GENERIC_RESPONSE)
+        allowed, reason = check_email_action("customer_password_reset", email, request=request)
+        if not allowed:
+            return Response({"detail": "too_many_requests", "reason": reason}, status=429)
+        if not acquire_email_cooldown("customer_password_reset", email):
+            return Response({"detail": "cooldown_active"}, status=429)
         customer = MenuCustomer.objects.filter(email__iexact=email, is_active=True).first()
         if not customer:
             # Do not leak account existence.
-            return Response({"detail": "code_sent"})
+            return Response(EMAIL_GENERIC_RESPONSE)
         code = str(random.randint(100000, 999999))
         cache.set(f"menu_customer_reset_{email}", code, 600)
 
@@ -196,20 +212,18 @@ class CustomerForgotPasswordView(APIView):
             "If you did not request this, please ignore this email."
         )
         try:
-            from django.conf import settings as _s
-            from django.core.mail import EmailMessage, get_connection
             from .invoice_email import _resolve_from_email
             from_email = _resolve_from_email()
-            connection = get_connection(
-                backend="django.core.mail.backends.smtp.EmailBackend",
-                host=getattr(_s, "BONUS_EMAIL_HOST", _s.EMAIL_HOST),
-                port=getattr(_s, "BONUS_EMAIL_PORT", getattr(_s, "EMAIL_PORT", 587)),
-                username=getattr(_s, "BONUS_EMAIL_HOST_USER", getattr(_s, "EMAIL_HOST_USER", "")),
-                password=getattr(_s, "BONUS_EMAIL_HOST_PASSWORD", getattr(_s, "EMAIL_HOST_PASSWORD", "")),
-                use_tls=getattr(_s, "BONUS_EMAIL_USE_TLS", getattr(_s, "EMAIL_USE_TLS", True)),
-                timeout=30,
+            connection = get_configured_email_connection(timeout=30)
+            safe_send_mail(
+                action="customer_password_reset",
+                subject=subject,
+                message=body,
+                from_email=from_email,
+                recipient_list=[email],
+                connection=connection,
+                fail_silently=False,
             )
-            EmailMessage(subject=subject, body=body, from_email=from_email, to=[email], connection=connection).send(fail_silently=False)
         except Exception:
             import logging
             logging.getLogger(__name__).warning("Password reset email failed for %s", email, exc_info=True)

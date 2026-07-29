@@ -11,7 +11,16 @@ import logging
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.mail import EmailMessage, get_connection
+from django.core.mail import EmailMessage
+from accounts.email_safety import (
+    acquire_task_lock,
+    check_global_email_limit,
+    fingerprint,
+    get_configured_email_connection,
+    validate_header_value,
+    validate_message_text,
+    validate_recipient_email,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -196,6 +205,13 @@ def send_invoice_email(order) -> bool:
                 getattr(getattr(order, "customer", None), "id", None),
             )
             return False
+        try:
+            to_email = validate_recipient_email(to_email)
+        except Exception:
+            logger.warning("Invoice email skipped for order %s: invalid customer email", order.id)
+            return False
+        if not check_global_email_limit("invoice_email"):
+            return False
 
         try:
             pdf_bytes = build_invoice_pdf(order)
@@ -234,24 +250,20 @@ def send_invoice_email(order) -> bool:
         ]
         body = "\n".join(body_lines)
 
-        from_email = _resolve_from_email()
+        from_email = validate_recipient_email(_resolve_from_email())
         host = getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST)
         port = getattr(settings, "BONUS_EMAIL_PORT", getattr(settings, "EMAIL_PORT", 587))
         user = getattr(settings, "BONUS_EMAIL_HOST_USER", getattr(settings, "EMAIL_HOST_USER", ""))
         password = getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", getattr(settings, "EMAIL_HOST_PASSWORD", ""))
         use_tls = getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True))
         logger.info(
-            "Sending invoice email order=%s to=%s from=%s host=%s port=%s user=%s attach=%s",
-            order.id, to_email, from_email, host, port, bool(user), bool(pdf_bytes),
+            "Sending invoice email order=%s to_fp=%s from=%s host=%s port=%s user=%s attach=%s",
+            order.id, fingerprint(to_email, "email"), from_email, host, port, bool(user), bool(pdf_bytes),
         )
-        connection = get_connection(
-            backend="django.core.mail.backends.smtp.EmailBackend",
-            host=host, port=port, username=user, password=password,
-            use_tls=use_tls, timeout=30,
-        )
+        connection = get_configured_email_connection(timeout=30)
         msg = EmailMessage(
-            subject=subject,
-            body=body,
+            subject=validate_header_value(subject),
+            body=validate_message_text(body, max_length=20000),
             from_email=from_email,
             to=[to_email],
             connection=connection,
@@ -259,7 +271,7 @@ def send_invoice_email(order) -> bool:
         if pdf_bytes:
             msg.attach(f"invoice-{order.id}.pdf", pdf_bytes, "application/pdf")
         sent = msg.send(fail_silently=False)
-        logger.info("Invoice email send() returned %s for order %s → %s", sent, order.id, to_email)
+        logger.info("Invoice email send() returned %s for order %s", sent, order.id)
         return bool(sent)
     except Exception:
         logger.exception("Invoice email failed for order %s", getattr(order, "id", "?"))
@@ -273,6 +285,9 @@ def send_invoice_email_async(order_id: int) -> None:
     so we send only after the DB commit succeeds.
     """
     try:
+        if not acquire_task_lock("invoice_email", str(order_id)):
+            logger.info("Duplicate invoice email task skipped for order %s", order_id)
+            return
         from .models import Order
         order = Order.objects.select_related("restaurant", "customer").get(pk=order_id)
         send_invoice_email(order)

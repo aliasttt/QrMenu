@@ -3,11 +3,27 @@ from urllib.parse import quote
 
 from django.conf import settings as django_settings
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib import messages
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from accounts.email_safety import (
+    acquire_email_cooldown,
+    check_email_action,
+    csrf_origin_allowed,
+    fingerprint,
+    get_client_ip,
+    is_honeypot_filled,
+    normalize_email_address,
+    safe_send_mail,
+    turnstile_required,
+    validate_header_value,
+    validate_message_text,
+    validate_recipient_email,
+    verify_turnstile,
+)
 from business_menu.models import Restaurant, MenuItem, RestaurantSettings, MenuTheme, Order, BusinessAdmin
 from business_menu.hours_utils import (
     is_within_opening_hours,
@@ -202,7 +218,62 @@ def pricing(request):
 
 
 def contact(request):
-    return render(request, "pages/contact.html")
+    turnstile_site_key = getattr(django_settings, "TURNSTILE_SITE_KEY", "")
+    if request.method != "POST":
+        return render(request, "pages/contact.html", {"turnstile_site_key": turnstile_site_key})
+
+    data = request.POST
+    ip = get_client_ip(request)
+    if not csrf_origin_allowed(request):
+        messages.error(request, _("Security check failed. Please reload the page and try again."))
+        return HttpResponse("security_check_failed", status=403)
+    if is_honeypot_filled(data):
+        messages.success(request, _("Thanks. If your message needs a reply, we will contact you."))
+        return HttpResponse("ok", status=200)
+    if turnstile_required() and not verify_turnstile(data.get("cf-turnstile-response", ""), remoteip=ip):
+        messages.error(request, _("Security check failed. Please try again."))
+        return HttpResponse("security_check_failed", status=400)
+
+    try:
+        sender_email = validate_recipient_email(data.get("email", ""))
+        name = validate_header_value(data.get("name", ""), max_length=120)
+        subject = validate_header_value(data.get("subject", ""), max_length=140)
+        message = validate_message_text(data.get("message", ""), max_length=3000)
+    except Exception:
+        messages.error(request, _("Please check the form fields and try again."))
+        return render(request, "pages/contact.html", {"turnstile_site_key": turnstile_site_key}, status=400)
+    if not name or not subject or not message:
+        messages.error(request, _("Please complete all fields."))
+        return render(request, "pages/contact.html", {"turnstile_site_key": turnstile_site_key}, status=400)
+
+    allowed, reason = check_email_action("contact_support", normalize_email_address(sender_email), request=request)
+    if not allowed:
+        messages.error(request, _("Too many messages. Please try again later."))
+        return render(request, "pages/contact.html", {"turnstile_site_key": turnstile_site_key}, status=429)
+    if not acquire_email_cooldown("contact_support", sender_email):
+        messages.error(request, _("Please wait before sending another message."))
+        return render(request, "pages/contact.html", {"turnstile_site_key": turnstile_site_key}, status=429)
+
+    admin_email = validate_recipient_email(getattr(django_settings, "CONTACT_ADMIN_EMAIL", "qrmenu@mybonusberlin.com"))
+    body = "\n".join([
+        "New contact form message",
+        "",
+        f"Name: {name}",
+        f"Email: {sender_email}",
+        f"IP fingerprint: {fingerprint(ip, 'ip')}",
+        "",
+        message,
+    ])
+    safe_send_mail(
+        action="contact_support",
+        subject=f"Contact form: {subject}",
+        message=body,
+        from_email=getattr(django_settings, "BONUS_FROM_EMAIL", getattr(django_settings, "DEFAULT_FROM_EMAIL", "")),
+        recipient_list=[admin_email],
+        fail_silently=False,
+    )
+    messages.success(request, _("Thanks. If your message needs a reply, we will contact you."))
+    return render(request, "pages/contact.html", {"turnstile_site_key": turnstile_site_key})
 
 
 SERVICE_PAGES = [

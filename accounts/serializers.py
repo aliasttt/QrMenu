@@ -282,32 +282,10 @@ class RegisterSerializer(serializers.Serializer):
         
         # Generate and send verification code only if email provided
         if email:
-            from django.utils import timezone
-            from datetime import timedelta
-            import random
-            
-            verification_code = str(random.randint(100000, 999999))
-            expires_at = timezone.now() + timedelta(minutes=10)  # Code expires in 10 minutes
-            
-            EmailVerificationCode.objects.create(
-                user=user,
-                email=email,
-                code=verification_code,
-                expires_at=expires_at
-            )
-            
-            # Send verification email
-            from django.core.mail import send_mail
             try:
-                send_mail(
-                    subject='Email Verification Code - Bonus',
-                    message=f'Your verification code is: {verification_code}\n\nThis code will expire in 10 minutes.',
-                    from_email=None,  # Uses DEFAULT_FROM_EMAIL from settings
-                    recipient_list=[email],
-                    fail_silently=False,
-                )
+                from .email_utils import send_email_verification_code
+                send_email_verification_code(user, email, action="registration_verification")
             except Exception:
-                # Log error but don't fail registration
                 pass
         
         return user

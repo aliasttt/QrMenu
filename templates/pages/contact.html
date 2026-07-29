@@ -38,11 +38,20 @@
       <div class="lg:col-span-3" data-reveal data-delay="100">
         <div class="rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 md:p-8 shadow-soft">
           <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">{% trans "Send a message" %}</h2>
-          <form class="space-y-4">
+          <form class="space-y-4" method="post" action="{% url 'contact' %}">
+            {% csrf_token %}
+            <div class="hidden" aria-hidden="true">
+              <label for="id_website">Website</label>
+              <input id="id_website" type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
             {% include "partials/form_fields.html" with label=_("Name") name="name" placeholder=_("Your name") %}
             {% include "partials/form_fields.html" with label=_("Email") name="email" field_type="email" placeholder=_("you@example.com") %}
             {% include "partials/form_fields.html" with label=_("Subject") name="subject" placeholder=_("How can we help?") %}
             {% include "partials/form_fields.html" with label=_("Message") name="message" field_type="textarea" placeholder=_("Your message") %}
+            {% if turnstile_site_key %}
+              <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
+              <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            {% endif %}
             <button type="submit" class="btn-primary w-full sm:w-auto">{% trans "Send message" %}</button>
           </form>
         </div>

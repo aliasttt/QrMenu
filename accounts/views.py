@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-from django.core.mail import send_mail, get_connection
 from datetime import timedelta
 import random
 from django.db.models import Count, Q
@@ -41,6 +40,15 @@ from .twilio_utils import (
     UNLIMITED_OTP_PHONES,
 )
 from .email_utils import send_email_verification_code, verify_email_code
+from .email_safety import (
+    EMAIL_GENERIC_RESPONSE,
+    acquire_email_cooldown,
+    check_email_action,
+    get_configured_email_connection,
+    normalize_email_address,
+    safe_send_mail,
+    validate_recipient_email,
+)
 from .throttling import LoginThrottle, RegisterThrottle, OTPThrottle, PasswordResetThrottle
 
 
@@ -582,7 +590,7 @@ class MeView(APIView):
 
         first_name = (request.data.get("first_name") or "").strip()
         last_name = (request.data.get("last_name") or "").strip()
-        email = (request.data.get("email") or "").strip()
+        email = normalize_email_address(request.data.get("email") or "")
 
         if first_name:
             user.first_name = first_name
@@ -1071,6 +1079,10 @@ class SendEmailCodeView(APIView):
 
         if not email:
             return Response({"detail": "email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            email = validate_recipient_email(email)
+        except Exception:
+            return Response({"detail": "invalid email"}, status=status.HTTP_400_BAD_REQUEST)
 
         user = None
         if user_id:
@@ -1095,27 +1107,28 @@ class SendEmailCodeView(APIView):
                 user = qs.first()
 
         if not user:
-            return Response({"detail": "unable to resolve user for this email"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "verification code sent"}, status=status.HTTP_200_OK)
 
         # Reject if this email is already registered to another user
         if User.objects.filter(email__iexact=email).exclude(id=user.id).exists():
             return Response({"detail": "This email is already registered."}, status=status.HTTP_400_BAD_REQUEST)
+        registered_email = normalize_email_address(getattr(user, "email", "") or "")
+        if registered_email and registered_email != email:
+            return Response({"message": "verification code sent"}, status=status.HTTP_200_OK)
+        allowed, reason = check_email_action("registration_verification", email, request=request)
+        if not allowed:
+            return Response({"detail": "Too many verification requests. Please try again later.", "reason": reason}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+        if not acquire_email_cooldown("registration_verification", email):
+            return Response({"detail": "Please wait before requesting another code."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         code = str(random.randint(100000, 999999))
         expires_at = timezone.now() + timedelta(minutes=10)
         EmailVerificationCode.objects.create(user=user, email=email, code=code, expires_at=expires_at)
 
         try:
-            bonus_connection = get_connection(
-                backend="django.core.mail.backends.smtp.EmailBackend",
-                host=getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST),
-                port=getattr(settings, "BONUS_EMAIL_PORT", settings.EMAIL_PORT),
-                username=getattr(settings, "BONUS_EMAIL_HOST_USER", settings.EMAIL_HOST_USER),
-                password=getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", settings.EMAIL_HOST_PASSWORD),
-                use_tls=getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True)),
-                timeout=30,
-            )
-            send_mail(
+            bonus_connection = get_configured_email_connection(timeout=30)
+            safe_send_mail(
+                action="registration_verification",
                 subject="Email Verification Code",
                 message=f"Your verification code is: {code}\n\nThis code will expire in 10 minutes.",
                 from_email=getattr(settings, "BONUS_FROM_EMAIL", None),
@@ -1127,7 +1140,7 @@ class SendEmailCodeView(APIView):
         except Exception as e:
             # In development, return the code to allow testing
             if settings.DEBUG:
-                return Response({"message": "verification code generated (DEBUG)", "code": code}, status=status.HTTP_200_OK)
+                return Response({"message": "verification code generated (DEBUG)"}, status=status.HTTP_200_OK)
             return Response({"detail": "failed to send email"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -1142,13 +1155,22 @@ class PasswordForgotView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = (request.data.get("email") or "").strip().lower()
+        email = normalize_email_address(request.data.get("email") or "")
         username = (request.data.get("username") or "").strip()
         number = (request.data.get("number") or "").strip()
         user_id = request.data.get("user_id")
 
         if not email:
             return Response({"detail": "email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            email = validate_recipient_email(email)
+        except Exception:
+            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
+        allowed, reason = check_email_action("password_reset", email, request=request)
+        if not allowed:
+            return Response({"detail": "Too many password reset requests. Please try again later.", "reason": reason}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+        if not acquire_email_cooldown("password_reset", email):
+            return Response({"detail": "Please wait before requesting another reset code."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         # Prefer user by phone when number is sent (same user that will be used at login)
         user = None
@@ -1175,6 +1197,8 @@ class PasswordForgotView(APIView):
             user = User.objects.filter(username__iexact=username).first()
         if not user and user_id:
             user = User.objects.filter(id=user_id).first()
+        if not user or normalize_email_address(getattr(user, "email", "")) != email:
+            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
 
         # Only allow OTP if user exists AND the email entered matches the user's registered email
         if not user:
@@ -1199,16 +1223,9 @@ class PasswordForgotView(APIView):
         expires_at = timezone.now() + timedelta(minutes=10)
         PasswordResetCode.objects.create(user=user, email=email, code=code, expires_at=expires_at)
         try:
-            bonus_connection = get_connection(
-                backend="django.core.mail.backends.smtp.EmailBackend",
-                host=getattr(settings, "BONUS_EMAIL_HOST", settings.EMAIL_HOST),
-                port=getattr(settings, "BONUS_EMAIL_PORT", settings.EMAIL_PORT),
-                username=getattr(settings, "BONUS_EMAIL_HOST_USER", settings.EMAIL_HOST_USER),
-                password=getattr(settings, "BONUS_EMAIL_HOST_PASSWORD", settings.EMAIL_HOST_PASSWORD),
-                use_tls=getattr(settings, "BONUS_EMAIL_USE_TLS", getattr(settings, "EMAIL_USE_TLS", True)),
-                timeout=30,
-            )
-            send_mail(
+            bonus_connection = get_configured_email_connection(timeout=30)
+            safe_send_mail(
+                action="password_reset",
                 subject="Password Reset Code",
                 message=f"Your password reset code is: {code}\n\nThis code will expire in 10 minutes.",
                 from_email=getattr(settings, "BONUS_FROM_EMAIL", None),
@@ -1218,10 +1235,10 @@ class PasswordForgotView(APIView):
             )
         except Exception:
             if settings.DEBUG:
-                return Response({"message": "verification code generated (DEBUG)", "code": code}, status=status.HTTP_200_OK)
+                return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
             pass
 
-        return Response({"message": "کد بازیابی به ایمیل شما ارسال شد."}, status=status.HTTP_200_OK)
+        return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
 
 
 class PasswordVerifyView(APIView):
@@ -1703,7 +1720,7 @@ class SendOTPView(APIView):
 
             # If user has email, send email verification code
             if user_email:
-                email_result = send_email_verification_code(user, user_email)
+                email_result = send_email_verification_code(user, user_email, request=request, action="email_verification")
         
         # Prepare response
         response_data = {
