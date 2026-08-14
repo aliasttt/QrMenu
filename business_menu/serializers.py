@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils import timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from .models import (
     BusinessAdmin,
@@ -189,6 +190,56 @@ class BusinessMenuChangePasswordSerializer(serializers.Serializer):
 
     current_password = serializers.CharField(write_only=True, min_length=1, max_length=128)
     new_password = serializers.CharField(write_only=True, min_length=1, max_length=128)
+
+
+class BusinessMenuSubscriptionSerializer(serializers.Serializer):
+    """
+    Resolved app subscription shape for business-menu clients.
+    Mirrors the legacy BusinessAdmin billing fields until the dedicated
+    Subscription table is introduced.
+    """
+
+    def to_representation(self, admin):
+        now = timezone.now()
+        payment_status = getattr(admin, "payment_status", None)
+        trial_end = getattr(admin, "trial_ends_at", None)
+        subscription_end = getattr(admin, "subscription_ends_at", None)
+
+        if payment_status == "paid":
+            state = "active"
+            current_period_end = subscription_end
+            provider = "stripe"
+            plan = "monthly"
+            will_renew = True
+        elif payment_status == "trial" and trial_end and trial_end > now:
+            state = "trial"
+            current_period_end = trial_end
+            provider = "manual"
+            plan = "monthly"
+            will_renew = True
+        else:
+            state = "expired" if payment_status in {"paid", "trial", "unpaid"} else "none"
+            current_period_end = subscription_end or trial_end
+            provider = None
+            plan = None
+            will_renew = False
+
+        is_entitled = state in {"trial", "active"}
+        if is_entitled and current_period_end:
+            is_entitled = current_period_end > now
+
+        return {
+            "state": state,
+            "is_entitled": is_entitled,
+            "plan": plan,
+            "provider": provider,
+            "current_period_end": current_period_end.isoformat().replace("+00:00", "Z") if current_period_end else None,
+            "will_renew": will_renew,
+            "trial_end": trial_end.isoformat().replace("+00:00", "Z") if trial_end else None,
+            "purchasable_in_app": not is_entitled,
+            "manage_url": None,
+            "message": "",
+        }
 
 
 class BusinessAdminUpdateSerializer(serializers.ModelSerializer):

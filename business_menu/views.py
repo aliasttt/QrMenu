@@ -89,7 +89,7 @@ from .models import (
 from accounts.models import PasswordResetCode
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, BusinessMenuResetPasswordSerializer,
-    BusinessMenuChangePasswordSerializer,
+    BusinessMenuChangePasswordSerializer, BusinessMenuSubscriptionSerializer,
     RestaurantSerializer, RestaurantProfileSerializer,
     MenuItemSerializer,
     MenuItemCreateSerializer, MenuQRCodeSerializer, SendOTPSerializer, LoginSerializer,
@@ -528,6 +528,7 @@ class LoginView(APIView):
                 "email": admin.email or "",
                 "is_active": admin.is_active,
             },
+            "subscription": BusinessMenuSubscriptionSerializer(admin).data,
         }
 
         if restaurant:
@@ -827,6 +828,7 @@ class ResetPasswordView(APIView):
                 "email": admin.email or "",
                 "phone": admin.phone or "",
             },
+            "subscription": BusinessMenuSubscriptionSerializer(admin).data,
         }
         if restaurant:
             logo_url = ""

@@ -7,6 +7,7 @@ from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
+from accounts.models import PasswordResetCode
 from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
 
 
@@ -64,6 +65,9 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertTrue(response.data["success"])
         self.assertIn("access", response.data)
         self.assertEqual(response.data["admin"]["id"], admin.id)
+        self.assertEqual(response.data["subscription"]["state"], "trial")
+        self.assertTrue(response.data["subscription"]["is_entitled"])
+        self.assertFalse(response.data["subscription"]["purchasable_in_app"])
 
     def test_login_accepts_no_slash_url(self):
         admin = BusinessAdmin.objects.create(
@@ -133,6 +137,43 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["admin"]["id"], right_admin.id)
         self.assertNotEqual(response.data["admin"]["id"], wrong_admin.id)
+        self.assertEqual(response.data["subscription"]["state"], "active")
+        self.assertEqual(response.data["subscription"]["provider"], "stripe")
+        self.assertTrue(response.data["subscription"]["is_entitled"])
+
+    def test_reset_password_response_includes_subscription(self):
+        email = "owner@example.com"
+        user = User.objects.create_user(
+            username="business_admin_4915901234567",
+            email=email,
+            password="OldStrongPass123!",
+        )
+        admin = BusinessAdmin.objects.create(
+            auth_user=user,
+            phone="+4915901234567",
+            name="QR Menu Admin",
+            email=email,
+            payment_status="trial",
+            trial_ends_at=timezone.now() + timedelta(days=1),
+        )
+        PasswordResetCode.objects.create(
+            user=user,
+            email=email,
+            code="123456",
+            expires_at=timezone.now() + timedelta(minutes=10),
+        )
+
+        response = self.client.post(
+            "/api/business-menu/reset-password/",
+            {"email": email, "code": "123456", "password": "NewStrongPass123!"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("access", response.data)
+        self.assertEqual(response.data["user"]["id"], admin.id)
+        self.assertEqual(response.data["subscription"]["state"], "trial")
+        self.assertTrue(response.data["subscription"]["is_entitled"])
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
