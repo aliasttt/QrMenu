@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Impressum | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}Impressum und Anbieterkennzeichnung fuer PreisMenu und My Bonus QR Menu.{% endblock %}
+
+{% block content %}
+<section class="qr-section bg-white dark:bg-slate-900">
+  <div class="qr-container max-w-3xl">
+    <p class="text-sm font-semibold uppercase text-orange-600 dark:text-orange-400">Rechtliches</p>
+    <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Impressum</h1>
+    <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Angaben gemaess § 5 TMG</p>
+
+    <div class="prose prose-slate mt-10 max-w-none dark:prose-invert">
+      <h2>Anbieter</h2>
+      <p>
+        PreisMenu / My Bonus QR Menu<br>
+        Angraweb
+      </p>
+
+      <h2>Kontakt</h2>
+      <p>
+        E-Mail: <a href="mailto:qrmenu@mybonusberlin.com">qrmenu@mybonusberlin.com</a><br>
+        Telefon: <a href="tel:+4915511422732">+49 15511 422732</a><br>
+        Website: <a href="https://preismenu.de/">https://preismenu.de/</a>
+      </p>
+
+      <h2>Verantwortlich fuer den Inhalt</h2>
+      <p>PreisMenu / My Bonus QR Menu</p>
+
+      <h2>Haftung fuer Inhalte</h2>
+      <p>Wir bemuehen uns, die Inhalte dieser Website aktuell und richtig zu halten. Fuer die Richtigkeit, Vollstaendigkeit und Aktualitaet der Inhalte koennen wir jedoch keine Gewaehr uebernehmen.</p>
+
+      <h2>Haftung fuer Links</h2>
+      <p>Diese Website kann Links zu externen Websites enthalten. Auf deren Inhalte haben wir keinen Einfluss. Fuer externe Inhalte ist stets der jeweilige Anbieter oder Betreiber verantwortlich.</p>
+
+      <h2>Urheberrecht</h2>
+      <p>Die auf dieser Website erstellten Inhalte und Werke unterliegen dem Urheberrecht. Eine Vervielfaeltigung, Bearbeitung oder Verbreitung ausserhalb der Grenzen des Urheberrechts bedarf der Zustimmung des jeweiligen Rechteinhabers.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
