@@ -220,6 +220,21 @@ def _get_owned_restaurant(user, restaurant_id: int) -> Restaurant | None:
         return None
 
 
+def _empty_subscription_payload():
+    return {
+        "state": "none",
+        "is_entitled": False,
+        "plan": None,
+        "provider": None,
+        "current_period_end": None,
+        "will_renew": False,
+        "trial_end": None,
+        "purchasable_in_app": True,
+        "manage_url": None,
+        "message": "",
+    }
+
+
 def _sync_working_hours_to_settings(restaurant: Restaurant) -> None:
     """Mirror `working_hours` JSON into RestaurantSettings.opening_hours_json for سفارش/اعتبارسنجی."""
     wh = restaurant.working_hours or {}
@@ -632,6 +647,103 @@ class LoginView(APIView):
 
         user = self._resolve_user_for_admin(admin)
         return self._login_response(request, admin, user, message="OTP verified successfully")
+
+
+class AdminSubscriptionView(APIView):
+    """
+    GET /api/business-menu/admin/subscription/
+    Returns the resolved subscription entitlement for the authenticated
+    BusinessAdmin account. POST is accepted as a compatibility alias.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _payload(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return _empty_subscription_payload()
+        return BusinessMenuSubscriptionSerializer(admin).data
+
+    def get(self, request):
+        return Response(self._payload(request), status=status.HTTP_200_OK)
+
+    def post(self, request):
+        return self.get(request)
+
+
+class AdminSubscriptionVerifyView(APIView):
+    """
+    Placeholder endpoint for App Store / Play Billing receipt verification.
+    Registered now so clients receive JSON instead of HTML 404 while provider
+    validation is wired up behind the same route.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    provider = None
+
+    def get(self, request):
+        return Response(
+            {
+                "detail": "POST a purchase token or receipt to verify subscription.",
+                "provider": self.provider,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        return Response(
+            {
+                "success": False,
+                "detail": "subscription_verification_not_configured",
+                "provider": self.provider,
+                "subscription": BusinessMenuSubscriptionSerializer(admin).data if admin else _empty_subscription_payload(),
+            },
+            status=status.HTTP_501_NOT_IMPLEMENTED,
+        )
+
+
+class AdminSubscriptionRestoreView(APIView):
+    """Restore purchases placeholder; returns current entitlement for now."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(
+            {"detail": "POST to restore subscription purchases."},
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request):
+        admin = _get_business_admin_for_user(request.user)
+        return Response(
+            {
+                "success": True,
+                "subscription": BusinessMenuSubscriptionSerializer(admin).data if admin else _empty_subscription_payload(),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class AdminSubscriptionNotificationView(APIView):
+    """
+    Store server notification endpoint placeholder. It intentionally returns
+    200 to acknowledge delivery until signed notification validation is added.
+    """
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    provider = None
+
+    def get(self, request):
+        return Response(
+            {"detail": "POST store subscription notifications here.", "provider": self.provider},
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request):
+        logger.info("Received %s subscription notification placeholder", self.provider)
+        return Response(
+            {"success": True, "provider": self.provider, "processed": False},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ForgotPasswordView(APIView):

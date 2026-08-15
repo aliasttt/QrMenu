@@ -177,6 +177,62 @@ class BusinessMenuLoginTests(APITestCase):
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
+class BusinessMenuSubscriptionEndpointTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="business_admin_4915901234567",
+            email="owner@example.com",
+            password="Pass12345",
+        )
+        self.admin = BusinessAdmin.objects.create(
+            auth_user=self.user,
+            phone="+4915901234567",
+            name="QR Menu Admin",
+            email="owner@example.com",
+            payment_status="trial",
+            trial_ends_at=timezone.now() + timedelta(days=1),
+        )
+
+    def test_subscription_status_requires_auth_instead_of_404(self):
+        response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_subscription_status_returns_current_entitlement(self):
+        self.client.force_authenticate(user=self.user)
+
+        for method in (self.client.get, self.client.post):
+            response = method("/api/business-menu/admin/subscription/")
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data["state"], "trial")
+            self.assertTrue(response.data["is_entitled"])
+            self.assertFalse(response.data["purchasable_in_app"])
+
+    def test_subscription_routes_are_registered(self):
+        self.client.force_authenticate(user=self.user)
+
+        routes = [
+            "/api/business-menu/admin/subscription/apple/verify/",
+            "/api/business-menu/admin/subscription/google/verify/",
+            "/api/business-menu/admin/subscription/restore/",
+        ]
+        for route in routes:
+            response = self.client.get(route)
+            self.assertNotEqual(response.status_code, 404, route)
+
+    def test_store_notification_routes_acknowledge_without_auth(self):
+        for route in (
+            "/api/business-menu/admin/subscriptions/apple/notifications/",
+            "/api/business-menu/admin/subscriptions/google/notifications/",
+        ):
+            response = self.client.post(route, {}, format="json")
+
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(response.data["processed"])
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
 class AdminCourierOrderTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
