@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Terms & Conditions" %} | {{ theme.brand_name }}{% endblock %}
+{% block meta_description %}{% trans "Terms and Conditions for My Bonus QR Menu and PreisMenu services." %}{% endblock %}
+
+{% block content %}
+<section class="qr-section bg-white dark:bg-slate-900">
+  <div class="qr-container max-w-3xl">
+    <p class="text-sm font-semibold uppercase text-orange-600 dark:text-orange-400">{% trans "Legal" %}</p>
+    <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">{% trans "Terms & Conditions" %}</h1>
+    <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">{% trans "Last updated: August 15, 2026" %}</p>
+
+    <div class="prose prose-slate mt-10 max-w-none dark:prose-invert">
+      <p>{% trans "These Terms & Conditions govern access to and use of My Bonus QR Menu, including QR menu pages, restaurant dashboards, online ordering, campaigns, and related services." %}</p>
+
+      <h2>{% trans "Use of the Service" %}</h2>
+      <p>{% trans "You agree to use the service lawfully and to provide accurate account, restaurant, menu, pricing, and contact information. You are responsible for activity under your account and for keeping login details secure." %}</p>
+
+      <h2>{% trans "Restaurant Content" %}</h2>
+      <p>{% trans "Restaurants are responsible for their menu items, prices, images, descriptions, availability, allergens, taxes, fees, opening hours, and order handling. Content must not infringe third-party rights or violate applicable law." %}</p>
+
+      <h2>{% trans "Orders and Payments" %}</h2>
+      <p>{% trans "Where ordering or payment features are enabled, the restaurant remains responsible for accepting, preparing, fulfilling, refunding, and supporting customer orders unless otherwise agreed in writing." %}</p>
+
+      <h2>{% trans "Subscriptions" %}</h2>
+      <p>{% trans "Paid plans, trial periods, renewals, taxes, cancellation, and refund rules are shown during checkout or in the relevant subscription communication. Continued use after a billing period may require payment of applicable fees." %}</p>
+
+      <h2>{% trans "Availability and Changes" %}</h2>
+      <p>{% trans "We work to keep the service reliable, but we do not guarantee uninterrupted availability. We may update, suspend, or discontinue features when needed for security, maintenance, compliance, or product improvements." %}</p>
+
+      <h2>{% trans "Limitation of Liability" %}</h2>
+      <p>{% trans "To the fullest extent permitted by law, we are not liable for indirect, incidental, special, consequential, or lost-profit damages arising from use of the service." %}</p>
+
+      <h2>{% trans "Contact" %}</h2>
+      <p>{% trans "For questions about these terms, contact us at" %} <a href="mailto:qrmenu@mybonusberlin.com">qrmenu@mybonusberlin.com</a>.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

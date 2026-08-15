@@ -217,6 +217,14 @@ def pricing(request):
     return render(request, "pages/pricing.html", {"plan": plan, "benefits": benefits, "faqs": faqs, "get_started_url": get_started_url})
 
 
+def privacy_policy(request):
+    return render(request, "pages/privacy_policy.html")
+
+
+def terms_conditions(request):
+    return render(request, "pages/terms_conditions.html")
+
+
 def contact(request):
     turnstile_site_key = getattr(django_settings, "TURNSTILE_SITE_KEY", "")
     if request.method != "POST":
