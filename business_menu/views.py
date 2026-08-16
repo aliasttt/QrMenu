@@ -514,10 +514,6 @@ class LoginView(APIView):
         }, status=status.HTTP_403_FORBIDDEN)
 
     def _login_response(self, request, admin, user, message="Login successful"):
-        payment_response = self._payment_required_response(admin)
-        if payment_response is not None:
-            return payment_response
-
         refresh = RefreshToken.for_user(user)
         try:
             restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
@@ -896,23 +892,6 @@ class ResetPasswordView(APIView):
             return Response(
                 {"detail": "Could not update password. Please try again."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-        now = timezone.now()
-        if admin.payment_status == "paid":
-            pass
-        elif admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
-            pass
-        else:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Your trial has ended. Please subscribe to continue using the service.",
-                    "payment_required": True,
-                    "admin_id": admin.id,
-                    "subscribe_url": f"/business-menu/subscribe/?admin_id={admin.id}",
-                },
-                status=status.HTTP_403_FORBIDDEN,
             )
 
         try:

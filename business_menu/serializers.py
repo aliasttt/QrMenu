@@ -205,12 +205,18 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
         trial_end = getattr(admin, "trial_ends_at", None)
         subscription_end = getattr(admin, "subscription_ends_at", None)
 
-        if payment_status == "paid":
+        if payment_status == "paid" and subscription_end and subscription_end > now:
             state = "active"
             current_period_end = subscription_end
             provider = "stripe"
             plan = "monthly"
             will_renew = True
+        elif payment_status == "paid" and subscription_end:
+            state = "expired"
+            current_period_end = subscription_end
+            provider = None
+            plan = None
+            will_renew = False
         elif payment_status == "trial" and trial_end and trial_end > now:
             state = "trial"
             current_period_end = trial_end
@@ -218,7 +224,7 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
             plan = "monthly"
             will_renew = True
         else:
-            state = "expired" if payment_status in {"paid", "trial", "unpaid"} else "none"
+            state = "expired" if payment_status in {"trial", "unpaid"} and (trial_end or subscription_end) else "none"
             current_period_end = subscription_end or trial_end
             provider = None
             plan = None

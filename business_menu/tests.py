@@ -113,6 +113,7 @@ class BusinessMenuLoginTests(APITestCase):
             name="Wrong Admin",
             email=email,
             payment_status="paid",
+            subscription_ends_at=timezone.now() + timedelta(days=30),
         )
         right_user = User.objects.create_user(
             username="business_admin_492222222222",
@@ -125,6 +126,7 @@ class BusinessMenuLoginTests(APITestCase):
             name="Right Admin",
             email=email,
             payment_status="paid",
+            subscription_ends_at=timezone.now() + timedelta(days=30),
         )
 
         response = self.client.post(
@@ -140,6 +142,35 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertEqual(response.data["subscription"]["state"], "active")
         self.assertEqual(response.data["subscription"]["provider"], "stripe")
         self.assertTrue(response.data["subscription"]["is_entitled"])
+
+    def test_email_login_returns_token_for_unentitled_admin(self):
+        email = "unentitled@example.com"
+        user = User.objects.create_user(
+            username="business_admin_493333333333",
+            email=email,
+            password="Pass12345",
+        )
+        admin = BusinessAdmin.objects.create(
+            auth_user=user,
+            phone="+493333333333",
+            name="Unentitled Admin",
+            email=email,
+            payment_status="unpaid",
+        )
+
+        response = self.client.post(
+            "/api/business-menu/login/",
+            {"email": email, "password": "Pass12345"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["success"])
+        self.assertIn("access", response.data)
+        self.assertEqual(response.data["admin"]["id"], admin.id)
+        self.assertEqual(response.data["subscription"]["state"], "none")
+        self.assertFalse(response.data["subscription"]["is_entitled"])
+        self.assertTrue(response.data["subscription"]["purchasable_in_app"])
 
     def test_reset_password_response_includes_subscription(self):
         email = "owner@example.com"
@@ -208,6 +239,21 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
             self.assertEqual(response.data["state"], "trial")
             self.assertTrue(response.data["is_entitled"])
             self.assertFalse(response.data["purchasable_in_app"])
+
+    def test_paid_without_period_is_not_entitled(self):
+        self.admin.payment_status = "paid"
+        self.admin.trial_ends_at = None
+        self.admin.subscription_ends_at = None
+        self.admin.save(update_fields=["payment_status", "trial_ends_at", "subscription_ends_at"])
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["state"], "none")
+        self.assertIsNone(response.data["provider"])
+        self.assertFalse(response.data["is_entitled"])
+        self.assertTrue(response.data["purchasable_in_app"])
 
     def test_subscription_routes_are_registered(self):
         self.client.force_authenticate(user=self.user)
