@@ -301,6 +301,16 @@ STRIPE_PRICE_ID_ANNUAL = os.environ.get("STRIPE_PRICE_ID_ANNUAL", "") or os.gete
 SUBSCRIPTION_DISPLAY_PRICE = os.environ.get("SUBSCRIPTION_DISPLAY_PRICE", "") or os.getenv("SUBSCRIPTION_DISPLAY_PRICE", "$17.99")
 SUBSCRIPTION_DISPLAY_INTERVAL = os.environ.get("SUBSCRIPTION_DISPLAY_INTERVAL", "") or os.getenv("SUBSCRIPTION_DISPLAY_INTERVAL", "per month")
 
+# App Store Server API (StoreKit / Apple subscriptions)
+APPLE_APP_STORE_ISSUER_ID = os.environ.get("APPLE_APP_STORE_ISSUER_ID", "") or os.getenv("APPLE_APP_STORE_ISSUER_ID", "")
+APPLE_APP_STORE_KEY_ID = os.environ.get("APPLE_APP_STORE_KEY_ID", "") or os.getenv("APPLE_APP_STORE_KEY_ID", "")
+APPLE_APP_STORE_PRIVATE_KEY = os.environ.get("APPLE_APP_STORE_PRIVATE_KEY", "") or os.getenv("APPLE_APP_STORE_PRIVATE_KEY", "")
+APPLE_APP_BUNDLE_ID = os.environ.get("APPLE_APP_BUNDLE_ID", "") or os.getenv("APPLE_APP_BUNDLE_ID", "")
+APPLE_SUBSCRIPTION_PRODUCT_IDS = os.environ.get("APPLE_SUBSCRIPTION_PRODUCT_IDS", "") or os.getenv("APPLE_SUBSCRIPTION_PRODUCT_IDS", "")
+APPLE_APP_STORE_PRODUCTION_URL = os.environ.get("APPLE_APP_STORE_PRODUCTION_URL", "") or os.getenv("APPLE_APP_STORE_PRODUCTION_URL", "https://api.storekit.itunes.apple.com")
+APPLE_APP_STORE_SANDBOX_URL = os.environ.get("APPLE_APP_STORE_SANDBOX_URL", "") or os.getenv("APPLE_APP_STORE_SANDBOX_URL", "https://api.storekit-sandbox.itunes.apple.com")
+APPLE_ROOT_CERTIFICATES_PEM = os.environ.get("APPLE_ROOT_CERTIFICATES_PEM", "") or os.getenv("APPLE_ROOT_CERTIFICATES_PEM", "")
+
 # Firebase (optional)
 FIREBASE_CONFIG = {}
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "") or os.getenv("VAPID_PUBLIC_KEY", "")

@@ -48,6 +48,34 @@ class BusinessAdmin(models.Model):
         max_length=255, blank=True, null=True, db_index=True,
         help_text="Stripe Connect account ID (for receiving customer payments)"
     )
+    subscription_provider = models.CharField(
+        max_length=32,
+        blank=True,
+        db_index=True,
+        help_text="Provider for the active subscription entitlement (stripe, apple, google, manual)",
+    )
+    subscription_product_id = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Store product or Stripe price ID for the current subscription",
+    )
+    subscription_environment = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="Provider environment for the current subscription (Sandbox, Production, etc.)",
+    )
+    subscription_original_transaction_id = models.CharField(
+        max_length=255,
+        blank=True,
+        db_index=True,
+        help_text="Original store transaction ID for receipt/notification reconciliation",
+    )
+    subscription_transaction_id = models.CharField(
+        max_length=255,
+        blank=True,
+        db_index=True,
+        help_text="Latest verified store transaction ID",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

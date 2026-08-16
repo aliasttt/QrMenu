@@ -9,6 +9,7 @@ from rest_framework.test import APITestCase
 
 from accounts.models import PasswordResetCode
 from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
+from .subscription_services import AppleTransactionResult
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -296,6 +297,50 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["url"], fake_session.url)
         create_session.assert_called_once()
+
+    def test_apple_verify_updates_entitlement(self):
+        self.client.force_authenticate(user=self.user)
+        expires_at = timezone.now() + timedelta(days=30)
+        result = AppleTransactionResult(
+            payload={
+                "transactionId": "2000000123456789",
+                "originalTransactionId": "2000000000000001",
+                "productId": "de.preismenu.monthly",
+                "environment": "Sandbox",
+                "expiresDate": str(int(expires_at.timestamp() * 1000)),
+            },
+            signed_transaction_info="signed-from-apple",
+            environment="Sandbox",
+        )
+
+        with patch("business_menu.views.verify_apple_transaction", return_value=result) as verify:
+            response = self.client.post(
+                "/api/business-menu/admin/subscription/apple/verify/",
+                {
+                    "jws": "device.signed.transaction",
+                    "product_id": "de.preismenu.monthly",
+                    "environment": "Sandbox",
+                },
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["success"])
+        self.assertEqual(response.data["subscription"]["state"], "active")
+        self.assertEqual(response.data["subscription"]["provider"], "apple")
+        self.assertFalse(response.data["subscription"]["purchasable_in_app"])
+        verify.assert_called_once_with(
+            "device.signed.transaction",
+            environment="Sandbox",
+            expected_product_id="de.preismenu.monthly",
+        )
+        self.admin.refresh_from_db()
+        self.assertEqual(self.admin.payment_status, "paid")
+        self.assertEqual(self.admin.subscription_provider, "apple")
+        self.assertEqual(self.admin.subscription_product_id, "de.preismenu.monthly")
+        self.assertEqual(self.admin.subscription_environment, "Sandbox")
+        self.assertEqual(self.admin.subscription_original_transaction_id, "2000000000000001")
+        self.assertEqual(self.admin.subscription_transaction_id, "2000000123456789")
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

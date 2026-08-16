@@ -204,12 +204,14 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
         payment_status = getattr(admin, "payment_status", None)
         trial_end = getattr(admin, "trial_ends_at", None)
         subscription_end = getattr(admin, "subscription_ends_at", None)
+        stored_provider = getattr(admin, "subscription_provider", "") or "stripe"
+        stored_plan = getattr(admin, "subscription_product_id", "") or "monthly"
 
         if payment_status == "paid" and subscription_end and subscription_end > now:
             state = "active"
             current_period_end = subscription_end
-            provider = "stripe"
-            plan = "monthly"
+            provider = stored_provider
+            plan = stored_plan
             will_renew = True
         elif payment_status == "paid" and subscription_end:
             state = "expired"

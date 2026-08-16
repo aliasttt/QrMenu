@@ -95,7 +95,10 @@ class StripeWebhookView(APIView):
                     admin.payment_status = "paid"
                     admin.subscription_ends_at = timezone.now() + timedelta(days=365)
                     admin.stripe_customer_id = (session.get("customer") or "").strip() or None
-                    admin.save(update_fields=["payment_status", "subscription_ends_at", "stripe_customer_id"])
+                    admin.subscription_provider = "stripe"
+                    admin.subscription_product_id = (getattr(settings, "STRIPE_PRICE_ID_ANNUAL", "") or "").strip()
+                    admin.subscription_environment = "stripe"
+                    admin.save(update_fields=["payment_status", "subscription_ends_at", "stripe_customer_id", "subscription_provider", "subscription_product_id", "subscription_environment"])
                     logger.info("Subscription activated for admin_id=%s", admin_id)
                 except (BusinessAdmin.DoesNotExist, ValueError, TypeError) as e:
                     logger.exception("Webhook admin not found or invalid client_reference_id: %s", e)

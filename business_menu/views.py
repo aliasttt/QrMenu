@@ -97,6 +97,15 @@ from .serializers import (
     MenuThemeSerializer, RestaurantSettingsSerializer, OnlineOrderingSettingsSerializer, RestaurantOwnerRegistrationSerializer,
     normalize_price_value,
 )
+from .subscription_services import (
+    SubscriptionConfigurationError,
+    SubscriptionRejectedError,
+    SubscriptionVerificationError,
+    apply_apple_transaction_to_admin,
+    decode_compact_jws_unverified,
+    verify_apple_transaction,
+    verify_compact_jws_signature,
+)
 from .cloudinary_utils import (
     upload_image_to_cloudinary, 
     get_image_url_by_uuid, 
@@ -668,9 +677,7 @@ class AdminSubscriptionView(APIView):
 
 class AdminSubscriptionVerifyView(APIView):
     """
-    Placeholder endpoint for App Store / Play Billing receipt verification.
-    Registered now so clients receive JSON instead of HTML 404 while provider
-    validation is wired up behind the same route.
+    Verify App Store / Play Billing purchases and update the current entitlement.
     """
     permission_classes = [permissions.IsAuthenticated]
     provider = None
@@ -686,12 +693,42 @@ class AdminSubscriptionVerifyView(APIView):
 
     def post(self, request):
         admin = _get_business_admin_for_user(request.user)
+        if not admin:
+            return Response({"success": False, "detail": "business_admin_not_found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if self.provider == "apple":
+            jws = (request.data.get("jws") or request.data.get("signedTransactionInfo") or "").strip()
+            product_id = (request.data.get("product_id") or request.data.get("productId") or "").strip()
+            environment = (request.data.get("environment") or "").strip()
+            if not jws:
+                return Response({"success": False, "detail": "jws_required"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                result = verify_apple_transaction(jws, environment=environment, expected_product_id=product_id)
+                apply_apple_transaction_to_admin(admin, result)
+            except SubscriptionVerificationError as exc:
+                return Response(
+                    {"success": False, "detail": exc.code, "message": str(exc)},
+                    status=getattr(exc, "status_code", status.HTTP_400_BAD_REQUEST),
+                )
+            return Response(
+                {
+                    "success": True,
+                    "provider": "apple",
+                    "transaction_id": result.payload.get("transactionId"),
+                    "original_transaction_id": result.payload.get("originalTransactionId"),
+                    "product_id": result.payload.get("productId"),
+                    "environment": result.environment,
+                    "subscription": BusinessMenuSubscriptionSerializer(admin).data,
+                },
+                status=status.HTTP_200_OK,
+            )
+
         return Response(
             {
                 "success": False,
                 "detail": "subscription_verification_not_configured",
                 "provider": self.provider,
-                "subscription": BusinessMenuSubscriptionSerializer(admin).data if admin else _empty_subscription_payload(),
+                "subscription": BusinessMenuSubscriptionSerializer(admin).data,
             },
             status=status.HTTP_501_NOT_IMPLEMENTED,
         )
@@ -735,6 +772,61 @@ class AdminSubscriptionNotificationView(APIView):
         )
 
     def post(self, request):
+        if self.provider == "apple":
+            signed_payload = (request.data.get("signedPayload") or "").strip()
+            if not signed_payload:
+                return Response(
+                    {"success": True, "provider": "apple", "processed": False, "trusted": False, "detail": "signedPayload_required"},
+                    status=status.HTTP_200_OK,
+                )
+            try:
+                notification = verify_compact_jws_signature(signed_payload, require_trusted_root=True)
+                data = notification.get("data") or {}
+                signed_transaction_info = data.get("signedTransactionInfo") or ""
+                if not signed_transaction_info:
+                    return Response(
+                        {"success": True, "provider": "apple", "processed": False, "trusted": True, "detail": "signedTransactionInfo_missing"},
+                        status=status.HTTP_200_OK,
+                    )
+                result_payload = verify_compact_jws_signature(signed_transaction_info, require_trusted_root=True)
+                original_transaction_id = result_payload.get("originalTransactionId") or ""
+                admin = BusinessAdmin.objects.filter(subscription_original_transaction_id=original_transaction_id).order_by("-id").first()
+                if not admin:
+                    return Response(
+                        {"success": True, "provider": "apple", "processed": False, "trusted": True, "detail": "admin_not_found"},
+                        status=status.HTTP_200_OK,
+                    )
+                from .subscription_services import AppleTransactionResult
+                apply_apple_transaction_to_admin(
+                    admin,
+                    AppleTransactionResult(
+                        payload=result_payload,
+                        signed_transaction_info=signed_transaction_info,
+                        environment=result_payload.get("environment") or data.get("environment") or "",
+                    ),
+                )
+                return Response(
+                    {"success": True, "provider": "apple", "processed": True, "trusted": True},
+                    status=status.HTTP_200_OK,
+                )
+            except SubscriptionVerificationError as exc:
+                logger.warning("Rejected Apple subscription notification: %s", exc)
+                return Response(
+                    {"success": True, "provider": "apple", "processed": False, "trusted": False, "detail": exc.code},
+                    status=status.HTTP_200_OK,
+                )
+
+        if self.provider == "google":
+            if not request.META.get("HTTP_X_GOOG_TOPIC") and not request.data:
+                return Response(
+                    {"success": True, "provider": "google", "processed": False, "trusted": False, "detail": "pubsub_envelope_required"},
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                {"success": True, "provider": "google", "processed": False, "trusted": False, "detail": "google_rtdn_not_configured"},
+                status=status.HTTP_200_OK,
+            )
+
         logger.info("Received %s subscription notification placeholder", self.provider)
         return Response(
             {"success": True, "provider": self.provider, "processed": False},
