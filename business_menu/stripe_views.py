@@ -35,6 +35,18 @@ def _absolute_url(request, path):
     return request.build_absolute_uri(path)
 
 
+def _get_subscription_admin(admin_id=None, email=None):
+    if admin_id:
+        try:
+            return BusinessAdmin.objects.get(id=admin_id, is_active=True)
+        except (BusinessAdmin.DoesNotExist, ValueError, TypeError):
+            return None
+    email = (email or "").strip()
+    if email:
+        return BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("-id").first()
+    return None
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 @method_decorator(require_http_methods(["POST"]), name="dispatch")
 class StripeWebhookView(APIView):
@@ -126,16 +138,16 @@ class CreateCheckoutSessionView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
         admin_id = request.data.get("admin_id") or request.query_params.get("admin_id")
-        if not admin_id:
+        email = request.data.get("email") or request.query_params.get("email")
+        if not admin_id and not email:
             return Response(
-                {"success": False, "message": "admin_id required."},
+                {"success": False, "message": "admin_id or email required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        try:
-            admin = BusinessAdmin.objects.get(id=admin_id)
-        except (BusinessAdmin.DoesNotExist, ValueError):
+        admin = _get_subscription_admin(admin_id=admin_id, email=email)
+        if not admin:
             return Response(
-                {"success": False, "message": "Invalid admin."},
+                {"success": False, "message": "We could not find an active restaurant account for those details."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -185,17 +197,18 @@ class RedirectToStripeCheckoutView(APIView):
 
     def get(self, request):
         admin_id = request.GET.get("admin_id")
-        if not admin_id:
+        email = request.GET.get("email")
+        if not admin_id and not email:
             return redirect("/business-menu/subscribe/")
-        try:
-            admin = BusinessAdmin.objects.get(id=admin_id)
-        except (BusinessAdmin.DoesNotExist, ValueError, TypeError):
-            return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+        admin = _get_subscription_admin(admin_id=admin_id, email=email)
+        if not admin:
+            query = f"email={email}" if email else f"admin_id={admin_id}"
+            return redirect(f"/business-menu/subscribe/?{query}")
         if not _stripe_enabled():
-            return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+            return redirect(f"/business-menu/subscribe/?admin_id={admin.id}")
         price_id = (getattr(settings, "STRIPE_PRICE_ID_ANNUAL", None) or "").strip()
         if not price_id or price_id.startswith("prod_"):
-            return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+            return redirect(f"/business-menu/subscribe/?admin_id={admin.id}")
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
         success_url = "https://preismenu.de/payment-success?session_id={CHECKOUT_SESSION_ID}"
@@ -215,7 +228,7 @@ class RedirectToStripeCheckoutView(APIView):
                 return redirect(session.url)
         except Exception as e:
             logger.exception("RedirectToStripeCheckout failed: %s", e)
-        return redirect(f"/business-menu/subscribe/?admin_id={admin_id}")
+        return redirect(f"/business-menu/subscribe/?admin_id={admin.id}")
 
 
 class CreateConnectAccountLinkView(APIView):
@@ -322,7 +335,13 @@ class SubscribePageView(APIView):
 
     def get(self, request):
         admin_id = request.GET.get("admin_id")
-        context = {"admin_id": admin_id, "stripe_publishable_key": getattr(settings, "STRIPE_PUBLISHABLE_KEY", "")}
+        context = {
+            "admin_id": admin_id,
+            "email": request.GET.get("email", ""),
+            "stripe_publishable_key": getattr(settings, "STRIPE_PUBLISHABLE_KEY", ""),
+            "subscription_display_price": getattr(settings, "SUBSCRIPTION_DISPLAY_PRICE", "$17.99"),
+            "subscription_display_interval": getattr(settings, "SUBSCRIPTION_DISPLAY_INTERVAL", "per month"),
+        }
         from django.shortcuts import render
         return render(request, "business_menu/subscribe.html", context)
 

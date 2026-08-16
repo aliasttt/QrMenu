@@ -277,6 +277,26 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.assertFalse(response.data["processed"])
 
+    @override_settings(
+        STRIPE_SECRET_KEY="sk_test_123",
+        STRIPE_PUBLISHABLE_KEY="pk_test_123",
+        STRIPE_PRICE_ID_ANNUAL="price_123",
+    )
+    def test_checkout_session_can_be_created_by_account_email(self):
+        fake_session = SimpleNamespace(url="https://checkout.stripe.com/c/test", id="cs_test_123")
+
+        with patch("stripe.checkout.Session.create", return_value=fake_session) as create_session:
+            response = self.client.post(
+                "/api/business-menu/api/create-checkout-session/",
+                {"email": self.admin.email},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["success"])
+        self.assertEqual(response.data["url"], fake_session.url)
+        create_session.assert_called_once()
+
 
 @override_settings(SECURE_SSL_REDIRECT=False)
 class AdminCourierOrderTests(APITestCase):

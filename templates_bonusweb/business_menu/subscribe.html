@@ -1,43 +1,152 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block title %}{% trans "Subscribe" %}{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 py-16">
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-extrabold mb-2">{% trans "Subscribe to continue" %}</h1>
-    <p class="text-slate-400">{% trans "Your trial has ended. Complete your subscription to keep using the service." %}</p>
+<section class="min-h-screen bg-[#101010] px-4 py-8 text-white sm:py-12">
+  <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center">
+    <div class="text-center">
+      <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[18px] bg-orange-500 shadow-lg shadow-orange-950/40">
+        <svg class="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 3v7M10 3v7M7 10h3M8.5 10v11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 3l5 5-9.5 9.5a3.2 3.2 0 0 1-4.5 0l-.5-.5 11-11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-extrabold tracking-normal">{% trans "Unlock MyBonusQrMenu" %}</h1>
+      <p class="mx-auto mt-2 max-w-xs text-sm leading-6 text-zinc-400">{% trans "Everything you need to run your restaurant, in one app." %}</p>
+    </div>
+
+    <div class="mt-8 space-y-4">
+      <div class="flex items-center gap-4">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11l7 7M5 5l14 14M14 4l6 6M3 21l7-7M14 4l-3 7 7-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="text-sm font-medium">{% trans "Digital menu, categories and QR code" %}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7h15l-2 8H8L6 3H3M9 20h.01M18 20h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="text-sm font-medium">{% trans "Online orders, delivery and pickup" %}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 2v4M17 2v4M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2zM8 13h2M12 13h2M16 13h2M8 17h2M12 17h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="text-sm font-medium">{% trans "Table reservations and floor plan" %}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0zM16 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0zM8 14V9l3-3M11 6h4l2 8M8 9h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="text-sm font-medium">{% trans "Courier management and assignment" %}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12v8H4v-8M3 7h18v5H3zM12 7v13M12 7H8.5A2.5 2.5 0 1 1 11 4.5V7zM12 7h3.5A2.5 2.5 0 1 0 13 4.5V7z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="text-sm font-medium">{% trans "Combo deals and package pricing" %}</span>
+      </div>
+    </div>
+
+    <div class="relative mt-8 rounded-xl border-2 border-orange-500 bg-[#1e1e1e] p-5 pt-7 shadow-xl shadow-black/20">
+      <div class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500 px-5 py-1 text-xs font-bold text-white">
+        {% trans "Free for 14 days" %}
+      </div>
+      <div class="text-center">
+        <div class="text-3xl font-extrabold">
+          {{ subscription_display_price }}
+          <span class="text-sm font-medium text-zinc-400">{{ subscription_display_interval }}</span>
+        </div>
+      </div>
+
+      <form id="subscribe-form" class="mt-6 space-y-3">
+        {% if admin_id %}
+          <input type="hidden" id="admin-id" value="{{ admin_id|escape }}">
+        {% else %}
+          <label for="account-email" class="sr-only">{% trans "Account email" %}</label>
+          <input
+            id="account-email"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            value="{{ email|default:'' }}"
+            required
+            placeholder="{% trans 'Restaurant account email' %}"
+            class="h-12 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30"
+          >
+        {% endif %}
+        <button type="submit" id="btn-subscribe" class="h-12 w-full rounded-lg bg-orange-500 px-4 text-sm font-bold text-white shadow-lg shadow-orange-950/30 transition hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:cursor-wait disabled:opacity-70">
+          {% trans "Start 14-day free trial" %}
+        </button>
+      </form>
+
+      <p class="mx-auto mt-4 max-w-xs text-center text-xs leading-5 text-zinc-400">
+        {% trans "After the free trial, checkout shows the final price and renewal terms before you pay. You can manage or cancel from your account." %}
+      </p>
+      <p id="subscribe-error" class="mt-4 hidden rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-xs text-red-200"></p>
+    </div>
+
+    <div class="mt-7 text-center">
+      <a href="/business-menu/subscribe/" class="text-sm font-medium text-orange-400 hover:text-orange-300">{% trans "Open subscription page" %}</a>
+      <div class="mt-8 flex items-center justify-center gap-3 text-xs text-zinc-500">
+        <a class="underline hover:text-zinc-300" href="/terms/">{% trans "Terms of Use" %}</a>
+        <span aria-hidden="true">.</span>
+        <a class="underline hover:text-zinc-300" href="/privacy/">{% trans "Privacy Policy" %}</a>
+      </div>
+    </div>
   </div>
-  <div class="p-8 rounded-2xl border bg-white/70 backdrop-blur dark:bg-slate-800/70 dark:border-slate-600">
-    <p class="mb-6 text-slate-600 dark:text-slate-400">{% trans "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and other methods." %}</p>
-    <button type="button" id="btn-subscribe" class="w-full rounded-xl bg-orange-500 px-6 py-4 font-semibold text-white shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
-      {% trans "Start Plan" %}
-    </button>
-    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 text-center">{% trans "You will be redirected to Stripe to complete payment." %}</p>
-  </div>
-</div>
+</section>
+
 <script>
 (function() {
-  const adminId = "{{ admin_id|escapejs }}";
+  const form = document.getElementById("subscribe-form");
   const btn = document.getElementById("btn-subscribe");
-  if (!adminId || !btn) return;
-  btn.addEventListener("click", function() {
+  const error = document.getElementById("subscribe-error");
+  const adminId = document.getElementById("admin-id");
+  const email = document.getElementById("account-email");
+
+  function setError(message) {
+    if (!error) return;
+    error.textContent = message || "";
+    error.classList.toggle("hidden", !message);
+  }
+
+  if (!form || !btn) return;
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    setError("");
+    const payload = {};
+    if (adminId && adminId.value) payload.admin_id = adminId.value;
+    if (email && email.value) payload.email = email.value.trim();
+    if (!payload.admin_id && !payload.email) {
+      setError("{% trans 'Enter the email for your restaurant account.' %}");
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = "{% trans 'Redirecting...' %}";
     fetch("/api/business-menu/api/create-checkout-session/", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
-      body: JSON.stringify({ admin_id: adminId }),
+      body: JSON.stringify(payload),
       credentials: "same-origin"
     })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.url) window.location.href = data.url;
-        else { alert(data.message || "Error"); btn.disabled = false; btn.textContent = "{% trans 'Start Plan' %}"; }
+      .then(function(response) { return response.json().then(function(data) { return { ok: response.ok, data: data }; }); })
+      .then(function(result) {
+        if (result.data && result.data.url) {
+          window.location.href = result.data.url;
+          return;
+        }
+        setError((result.data && result.data.message) || "{% trans 'Could not start checkout. Please try again.' %}");
+        btn.disabled = false;
+        btn.textContent = "{% trans 'Start 14-day free trial' %}";
       })
       .catch(function() {
+        setError("{% trans 'Request failed. Please try again.' %}");
         btn.disabled = false;
-        btn.textContent = "{% trans 'Start Plan' %}";
-        alert("{% trans 'Request failed. Try again.' %}");
+        btn.textContent = "{% trans 'Start 14-day free trial' %}";
       });
   });
 })();
