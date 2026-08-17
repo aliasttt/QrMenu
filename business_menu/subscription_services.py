@@ -11,6 +11,12 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 
+APPLE_PRODUCT_ID_TO_PLAN = {
+    "de.preismenu.monthly": "monthly",
+    "de.preismenu.yearly": "yearly",
+}
+VALID_APPLE_PRODUCT_IDS = set(APPLE_PRODUCT_ID_TO_PLAN)
+
 
 class SubscriptionVerificationError(Exception):
     status_code = 400
@@ -211,7 +217,11 @@ def _apple_base_url(environment: str) -> str:
 
 def _allowed_apple_products() -> set[str]:
     raw = getattr(settings, "APPLE_SUBSCRIPTION_PRODUCT_IDS", "") or ""
-    return {item.strip() for item in raw.split(",") if item.strip()}
+    return VALID_APPLE_PRODUCT_IDS | {item.strip() for item in raw.split(",") if item.strip()}
+
+
+def plan_from_product_id(product_id: str) -> str:
+    return APPLE_PRODUCT_ID_TO_PLAN.get(product_id, product_id or "monthly")
 
 
 def verify_apple_transaction(jws: str, environment: str = "", expected_product_id: str = "") -> AppleTransactionResult:
@@ -268,10 +278,11 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
 
 def apply_apple_transaction_to_admin(admin, result: AppleTransactionResult):
     payload = result.payload
+    product_id = payload.get("productId") or ""
     admin.payment_status = "paid" if result.is_entitled else "unpaid"
     admin.subscription_ends_at = result.expires_at
     admin.subscription_provider = "apple"
-    admin.subscription_product_id = payload.get("productId") or ""
+    admin.subscription_product_id = product_id
     admin.subscription_environment = result.environment or ""
     admin.subscription_original_transaction_id = payload.get("originalTransactionId") or ""
     admin.subscription_transaction_id = payload.get("transactionId") or ""

@@ -9,7 +9,7 @@ from rest_framework.test import APITestCase
 
 from accounts.models import PasswordResetCode
 from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
-from .subscription_services import AppleTransactionResult
+from .subscription_services import AppleTransactionResult, verify_apple_transaction
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -328,6 +328,7 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["subscription"]["state"], "active")
         self.assertEqual(response.data["subscription"]["provider"], "apple")
+        self.assertEqual(response.data["subscription"]["plan"], "monthly")
         self.assertFalse(response.data["subscription"]["purchasable_in_app"])
         verify.assert_called_once_with(
             "device.signed.transaction",
@@ -341,6 +342,78 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
         self.assertEqual(self.admin.subscription_environment, "Sandbox")
         self.assertEqual(self.admin.subscription_original_transaction_id, "2000000000000001")
         self.assertEqual(self.admin.subscription_transaction_id, "2000000123456789")
+
+    def test_apple_verify_updates_yearly_plan(self):
+        self.client.force_authenticate(user=self.user)
+        expires_at = timezone.now() + timedelta(days=365)
+        result = AppleTransactionResult(
+            payload={
+                "transactionId": "2000000123456790",
+                "originalTransactionId": "2000000000000002",
+                "productId": "de.preismenu.yearly",
+                "environment": "Sandbox",
+                "expiresDate": str(int(expires_at.timestamp() * 1000)),
+            },
+            signed_transaction_info="signed-from-apple",
+            environment="Sandbox",
+        )
+
+        with patch("business_menu.views.verify_apple_transaction", return_value=result):
+            response = self.client.post(
+                "/api/business-menu/admin/subscription/apple/verify/",
+                {
+                    "jws": "device.signed.transaction",
+                    "product_id": "de.preismenu.yearly",
+                    "environment": "Sandbox",
+                },
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["success"])
+        self.assertEqual(response.data["subscription"]["plan"], "yearly")
+        self.admin.refresh_from_db()
+        self.assertEqual(self.admin.subscription_product_id, "de.preismenu.yearly")
+
+    @override_settings(
+        APPLE_APP_STORE_ISSUER_ID="issuer",
+        APPLE_APP_STORE_KEY_ID="key",
+        APPLE_APP_STORE_PRIVATE_KEY="private-key",
+        APPLE_APP_BUNDLE_ID="de.preismenu.app",
+        APPLE_SUBSCRIPTION_PRODUCT_IDS="de.preismenu.monthly",
+    )
+    @patch("business_menu.subscription_services.decode_compact_jws_unverified")
+    @patch("business_menu.subscription_services._apple_server_jwt")
+    @patch("business_menu.subscription_services.requests.get")
+    @patch("business_menu.subscription_services.verify_compact_jws_signature")
+    def test_apple_transaction_accepts_yearly_even_when_env_lists_monthly(
+        self,
+        verify_signature,
+        requests_get,
+        server_jwt,
+        decode_unverified,
+    ):
+        decode_unverified.return_value = ({}, {"transactionId": "2000000123456790", "environment": "Sandbox"})
+        server_jwt.return_value = "server-token"
+        response = Mock(status_code=200)
+        response.json.return_value = {"signedTransactionInfo": "apple.signed.transaction"}
+        requests_get.return_value = response
+        verify_signature.return_value = {
+            "transactionId": "2000000123456790",
+            "originalTransactionId": "2000000000000002",
+            "bundleId": "de.preismenu.app",
+            "productId": "de.preismenu.yearly",
+            "environment": "Sandbox",
+            "expiresDate": str(int((timezone.now() + timedelta(days=365)).timestamp() * 1000)),
+        }
+
+        result = verify_apple_transaction(
+            "device.signed.transaction",
+            environment="Sandbox",
+            expected_product_id="de.preismenu.yearly",
+        )
+
+        self.assertEqual(result.payload["productId"], "de.preismenu.yearly")
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

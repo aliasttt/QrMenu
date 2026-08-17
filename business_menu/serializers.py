@@ -16,6 +16,7 @@ from .models import (
     RestaurantSettings,
 )
 from .cloudinary_utils import upload_image_to_cloudinary, get_image_url_by_uuid
+from .subscription_services import plan_from_product_id
 
 
 def normalize_price_value(value):
@@ -205,7 +206,7 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
         trial_end = getattr(admin, "trial_ends_at", None)
         subscription_end = getattr(admin, "subscription_ends_at", None)
         stored_provider = getattr(admin, "subscription_provider", "") or "stripe"
-        stored_plan = getattr(admin, "subscription_product_id", "") or "monthly"
+        stored_plan = plan_from_product_id(getattr(admin, "subscription_product_id", ""))
 
         if payment_status == "paid" and subscription_end and subscription_end > now:
             state = "active"
