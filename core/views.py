@@ -229,6 +229,10 @@ def impressum(request):
     return render(request, "pages/impressum.html")
 
 
+def account_delete(request):
+    return render(request, "pages/account_delete.html")
+
+
 def contact(request):
     turnstile_site_key = getattr(django_settings, "TURNSTILE_SITE_KEY", "")
     if request.method != "POST":
