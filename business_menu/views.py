@@ -710,6 +710,12 @@ class AdminSubscriptionVerifyView(APIView):
                     {"success": False, "detail": exc.code, "message": str(exc)},
                     status=getattr(exc, "status_code", status.HTTP_400_BAD_REQUEST),
                 )
+            except Exception as exc:
+                logger.exception("Unexpected error verifying Apple subscription")
+                return Response(
+                    {"success": False, "detail": "apple_verification_unexpected_error", "message": str(exc)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
             return Response(
                 {
                     "success": True,

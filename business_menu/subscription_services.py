@@ -170,12 +170,26 @@ def _datetime_from_apple_ms(value):
 
 
 def _normalise_apple_private_key(value: str) -> str:
-    return (value or "").replace("\\n", "\n").strip()
+    key = (value or "").replace("\\n", "\n").strip()
+    if not key:
+        return ""
+    if "-----BEGIN" not in key:
+        body = "".join(key.split())
+        wrapped = "\n".join(body[i : i + 64] for i in range(0, len(body), 64))
+        key = f"-----BEGIN PRIVATE KEY-----\n{wrapped}\n-----END PRIVATE KEY-----\n"
+    return key
+
+
+def _normalise_apple_issuer_id(value: str) -> str:
+    raw = (value or "").strip()
+    if ":" in raw:
+        raw = raw.split(":", 1)[1].strip()
+    return raw
 
 
 def _apple_settings() -> dict[str, str]:
     values = {
-        "issuer_id": (getattr(settings, "APPLE_APP_STORE_ISSUER_ID", "") or "").strip(),
+        "issuer_id": _normalise_apple_issuer_id(getattr(settings, "APPLE_APP_STORE_ISSUER_ID", "") or ""),
         "key_id": (getattr(settings, "APPLE_APP_STORE_KEY_ID", "") or "").strip(),
         "private_key": _normalise_apple_private_key(getattr(settings, "APPLE_APP_STORE_PRIVATE_KEY", "") or ""),
         "bundle_id": (getattr(settings, "APPLE_APP_BUNDLE_ID", "") or "").strip(),
@@ -194,18 +208,23 @@ def _apple_server_jwt() -> str:
 
     cfg = _apple_settings()
     now = int(time.time())
-    return jwt.encode(
-        {
-            "iss": cfg["issuer_id"],
-            "iat": now,
-            "exp": now + 20 * 60,
-            "aud": "appstoreconnect-v1",
-            "bid": cfg["bundle_id"],
-        },
-        cfg["private_key"],
-        algorithm="ES256",
-        headers={"kid": cfg["key_id"], "typ": "JWT"},
-    )
+    try:
+        return jwt.encode(
+            {
+                "iss": cfg["issuer_id"],
+                "iat": now,
+                "exp": now + 20 * 60,
+                "aud": "appstoreconnect-v1",
+                "bid": cfg["bundle_id"],
+            },
+            cfg["private_key"],
+            algorithm="ES256",
+            headers={"kid": cfg["key_id"], "typ": "JWT"},
+        )
+    except SubscriptionVerificationError:
+        raise
+    except Exception as exc:
+        raise SubscriptionConfigurationError(f"Apple server JWT could not be generated: {exc}") from exc
 
 
 def _apple_base_url(environment: str) -> str:
@@ -250,7 +269,10 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
             detail = response.text[:200]
         raise SubscriptionRejectedError(f"Apple verification failed ({response.status_code}): {detail}")
 
-    data = response.json()
+    try:
+        data = response.json()
+    except Exception as exc:
+        raise SubscriptionRejectedError("Apple response was not valid JSON") from exc
     signed_transaction_info = data.get("signedTransactionInfo")
     if not signed_transaction_info:
         raise SubscriptionRejectedError("Apple response missing signedTransactionInfo")
@@ -258,7 +280,9 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
     payload = verify_compact_jws_signature(signed_transaction_info)
     cfg = _apple_settings()
     if payload.get("bundleId") and payload.get("bundleId") != cfg["bundle_id"]:
-        raise SubscriptionRejectedError("Apple transaction bundleId does not match this app")
+        raise SubscriptionRejectedError(
+            f"Apple transaction bundleId ({payload.get('bundleId')}) does not match this app ({cfg['bundle_id']})"
+        )
     if str(payload.get("transactionId") or "") != str(transaction_id):
         raise SubscriptionRejectedError("Apple transactionId mismatch")
 
