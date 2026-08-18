@@ -262,12 +262,32 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
         raise SubscriptionVerificationError("Apple verification request failed") from exc
 
     if response.status_code != 200:
-        detail = ""
+        parts = []
+        body_json = None
         try:
-            detail = response.json().get("errorMessage") or response.text[:200]
+            body_json = response.json()
         except Exception:
-            detail = response.text[:200]
-        raise SubscriptionRejectedError(f"Apple verification failed ({response.status_code}): {detail}")
+            body_json = None
+        if isinstance(body_json, dict):
+            for key in ("errorMessage", "errorCode", "error", "message"):
+                value = body_json.get(key)
+                if value:
+                    parts.append(f"{key}={value}")
+        body_text = (response.text or "").strip()
+        if not parts and body_text:
+            parts.append(body_text[:400])
+        reason = "; ".join(parts) or "no response body"
+        hint = ""
+        if response.status_code == 401:
+            hint = (
+                " (401 = Apple rejected our JWT. Verify APPLE_APP_STORE_KEY_ID / ISSUER_ID belong to an "
+                "'In-App Purchase' key on the App Store Connect Users & Access → Integrations tab, "
+                "APPLE_APP_BUNDLE_ID matches the bundle registered with that key, and "
+                "APPLE_APP_STORE_PRIVATE_KEY still contains real newlines inside the PEM block.)"
+            )
+        raise SubscriptionRejectedError(
+            f"Apple verification failed ({response.status_code} {response.reason or ''}): {reason}{hint}"
+        )
 
     try:
         data = response.json()
