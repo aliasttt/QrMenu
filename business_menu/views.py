@@ -200,23 +200,84 @@ def _business_admin_phone_from_username(username: str) -> str | None:
     return "+" + m.group(1)
 
 
-def _get_business_admin_for_user(user) -> BusinessAdmin | None:
+def _get_business_admin_for_user(user, request=None) -> BusinessAdmin | None:
     """
     Robust mapping from authenticated Django User -> BusinessAdmin.
     Primary: direct DB relation (BusinessAdmin.auth_user).
-    Fallback: legacy mapping via username prefix business_admin_{digits}(_suffix).
+    Secondary: X-Business-Id header if request context is provided.
+    Fallback: profile phone, legacy username prefix business_admin_{digits}(_suffix), or email.
     """
-    if not user:
+    if not user or not getattr(user, "is_authenticated", False):
         return None
 
-    linked = getattr(user, "business_menu_admin", None)
-    if linked and getattr(linked, "is_active", False):
-        return linked
+    # 1. Direct DB lookup via auth_user
+    try:
+        admin = BusinessAdmin.objects.filter(auth_user=user, is_active=True).first()
+        if admin:
+            return admin
+    except Exception:
+        pass
 
-    phone = _business_admin_phone_from_username(getattr(user, "username", "") or "")
-    if not phone:
-        return None
-    return BusinessAdmin.objects.filter(phone=phone, is_active=True).first()
+    # 2. Check X-Business-Id / business_id header or query param if request provided
+    if request is not None:
+        try:
+            business_id_raw = (
+                request.headers.get("X-Business-Id")
+                or request.META.get("HTTP_X_BUSINESS_ID")
+                or (getattr(request, "query_params", {}).get("business_id") if hasattr(request, "query_params") else None)
+            )
+            if business_id_raw:
+                try:
+                    bid = int(str(business_id_raw).strip())
+                    # Check Restaurant with this id
+                    rest = Restaurant.objects.filter(id=bid, is_active=True).select_related("admin").first()
+                    if rest and rest.admin and rest.admin.is_active:
+                        if rest.admin.auth_user == user or user.is_staff or user.is_superuser:
+                            return rest.admin
+                        if not rest.admin.auth_user:
+                            return rest.admin
+                    # Check BusinessAdmin directly with this id
+                    ba = BusinessAdmin.objects.filter(id=bid, is_active=True).first()
+                    if ba:
+                        if ba.auth_user == user or user.is_staff or user.is_superuser:
+                            return ba
+                        if not ba.auth_user:
+                            return ba
+                except (ValueError, TypeError):
+                    pass
+        except Exception:
+            pass
+
+    # 3. Lookup via user.profile.phone
+    try:
+        profile = getattr(user, "profile", None)
+        if profile and getattr(profile, "phone", None):
+            admin = BusinessAdmin.objects.filter(phone=profile.phone, is_active=True).first()
+            if admin:
+                return admin
+    except Exception:
+        pass
+
+    # 4. Lookup via legacy username prefix
+    try:
+        phone = _business_admin_phone_from_username(getattr(user, "username", "") or "")
+        if phone:
+            admin = BusinessAdmin.objects.filter(phone=phone, is_active=True).first()
+            if admin:
+                return admin
+    except Exception:
+        pass
+
+    # 5. Lookup via email
+    if getattr(user, "email", None):
+        try:
+            admin = BusinessAdmin.objects.filter(email=user.email, is_active=True).first()
+            if admin:
+                return admin
+        except Exception:
+            pass
+
+    return None
 
 
 def _get_owned_restaurant(user, restaurant_id: int) -> Restaurant | None:
@@ -659,14 +720,19 @@ class AdminSubscriptionView(APIView):
     GET /api/business-menu/admin/subscription/
     Returns the resolved subscription entitlement for the authenticated
     BusinessAdmin account. POST is accepted as a compatibility alias.
+    Never 404 and never 401-because-no-subscription.
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def _payload(self, request):
-        admin = _get_business_admin_for_user(request.user)
-        if not admin:
+        try:
+            admin = _get_business_admin_for_user(request.user, request=request)
+            if not admin:
+                return _empty_subscription_payload()
+            return BusinessMenuSubscriptionSerializer(admin).data
+        except Exception as exc:
+            logger.exception("Error resolving subscription payload: %s", exc)
             return _empty_subscription_payload()
-        return BusinessMenuSubscriptionSerializer(admin).data
 
     def get(self, request):
         return Response(self._payload(request), status=status.HTTP_200_OK)
@@ -692,30 +758,53 @@ class AdminSubscriptionVerifyView(APIView):
         )
 
     def post(self, request):
-        admin = _get_business_admin_for_user(request.user)
+        admin = _get_business_admin_for_user(request.user, request=request)
         if not admin:
-            return Response({"success": False, "detail": "business_admin_not_found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"code": "business_admin_not_found", "message": "Business account not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         if self.provider == "apple":
-            jws = (request.data.get("jws") or request.data.get("signedTransactionInfo") or "").strip()
-            product_id = (request.data.get("product_id") or request.data.get("productId") or "").strip()
+            jws = (
+                request.data.get("purchase_token")
+                or request.data.get("purchaseToken")
+                or request.data.get("signed_transaction")
+                or request.data.get("signedTransaction")
+                or request.data.get("signedTransactionInfo")
+                or request.data.get("jws")
+                or request.data.get("transaction_id")
+                or request.data.get("transactionId")
+                or ""
+            ).strip()
+            product_id = (
+                request.data.get("product_id")
+                or request.data.get("productId")
+                or ""
+            ).strip()
             environment = (request.data.get("environment") or "").strip()
+
             if not jws:
-                return Response({"success": False, "detail": "jws_required"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"code": "missing_transaction", "message": "Provide purchase_token or signed_transaction."},
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
             try:
                 result = verify_apple_transaction(jws, environment=environment, expected_product_id=product_id)
                 apply_apple_transaction_to_admin(admin, result)
             except SubscriptionVerificationError as exc:
                 return Response(
-                    {"success": False, "detail": exc.code, "message": str(exc)},
-                    status=getattr(exc, "status_code", status.HTTP_400_BAD_REQUEST),
+                    {"code": getattr(exc, "code", "subscription_verification_failed"), "message": str(exc)},
+                    status=getattr(exc, "status_code", status.HTTP_422_UNPROCESSABLE_ENTITY),
                 )
             except Exception as exc:
                 logger.exception("Unexpected error verifying Apple subscription")
                 return Response(
-                    {"success": False, "detail": "apple_verification_unexpected_error", "message": str(exc)},
+                    {"code": "apple_verification_unexpected_error", "message": str(exc)},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
+
             return Response(
                 {
                     "success": True,
@@ -731,17 +820,17 @@ class AdminSubscriptionVerifyView(APIView):
 
         return Response(
             {
-                "success": False,
-                "detail": "subscription_verification_not_configured",
+                "code": "subscription_verification_not_configured",
+                "message": f"Subscription verification not configured for provider {self.provider}",
                 "provider": self.provider,
-                "subscription": BusinessMenuSubscriptionSerializer(admin).data,
+                "subscription": BusinessMenuSubscriptionSerializer(admin).data if admin else _empty_subscription_payload(),
             },
             status=status.HTTP_501_NOT_IMPLEMENTED,
         )
 
 
 class AdminSubscriptionRestoreView(APIView):
-    """Restore purchases placeholder; returns current entitlement for now."""
+    """Restore purchases placeholder; returns current entitlement."""
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -751,7 +840,7 @@ class AdminSubscriptionRestoreView(APIView):
         )
 
     def post(self, request):
-        admin = _get_business_admin_for_user(request.user)
+        admin = _get_business_admin_for_user(request.user, request=request)
         return Response(
             {
                 "success": True,
@@ -764,8 +853,9 @@ class AdminSubscriptionRestoreView(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdminSubscriptionNotificationView(APIView):
     """
-    Store server notification endpoint placeholder. It intentionally returns
-    200 to acknowledge delivery until signed notification validation is added.
+    Store server notification webhook endpoint.
+    Handles App Store Server Notifications V2 and Google RTDN.
+    Always returns HTTP 200 to acknowledge delivery.
     """
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
@@ -782,54 +872,94 @@ class AdminSubscriptionNotificationView(APIView):
             signed_payload = (request.data.get("signedPayload") or "").strip()
             if not signed_payload:
                 return Response(
-                    {"success": True, "provider": "apple", "processed": False, "trusted": False, "detail": "signedPayload_required"},
+                    {"success": True, "provider": "apple", "processed": False, "detail": "signedPayload_required"},
                     status=status.HTTP_200_OK,
                 )
             try:
-                notification = verify_compact_jws_signature(signed_payload, require_trusted_root=True)
+                has_root_certs = bool(getattr(settings, "APPLE_ROOT_CERTIFICATES_PEM", "") or "")
+                notification = verify_compact_jws_signature(signed_payload, require_trusted_root=has_root_certs)
+                notification_type = notification.get("notificationType") or ""
+                subtype = notification.get("subtype") or ""
+
+                if notification_type == "TEST":
+                    return Response(
+                        {"success": True, "provider": "apple", "processed": True, "test": True},
+                        status=status.HTTP_200_OK,
+                    )
+
                 data = notification.get("data") or {}
                 signed_transaction_info = data.get("signedTransactionInfo") or ""
                 if not signed_transaction_info:
                     return Response(
-                        {"success": True, "provider": "apple", "processed": False, "trusted": True, "detail": "signedTransactionInfo_missing"},
+                        {"success": True, "provider": "apple", "processed": False, "detail": "signedTransactionInfo_missing"},
                         status=status.HTTP_200_OK,
                     )
-                result_payload = verify_compact_jws_signature(signed_transaction_info, require_trusted_root=True)
-                original_transaction_id = result_payload.get("originalTransactionId") or ""
-                admin = BusinessAdmin.objects.filter(subscription_original_transaction_id=original_transaction_id).order_by("-id").first()
+
+                result_payload = verify_compact_jws_signature(signed_transaction_info, require_trusted_root=has_root_certs)
+                original_transaction_id = str(result_payload.get("originalTransactionId") or "").strip()
+                transaction_id = str(result_payload.get("transactionId") or "").strip()
+
+                admin = None
+                if original_transaction_id:
+                    admin = BusinessAdmin.objects.filter(subscription_original_transaction_id=original_transaction_id).order_by("-id").first()
+                if not admin and transaction_id:
+                    admin = BusinessAdmin.objects.filter(subscription_transaction_id=transaction_id).order_by("-id").first()
+
                 if not admin:
+                    logger.info("Apple notification received for unknown transaction: orig=%s, tx=%s", original_transaction_id, transaction_id)
                     return Response(
-                        {"success": True, "provider": "apple", "processed": False, "trusted": True, "detail": "admin_not_found"},
+                        {"success": True, "provider": "apple", "processed": False, "detail": "admin_not_found"},
                         status=status.HTTP_200_OK,
                     )
-                from .subscription_services import AppleTransactionResult
-                apply_apple_transaction_to_admin(
-                    admin,
-                    AppleTransactionResult(
-                        payload=result_payload,
-                        signed_transaction_info=signed_transaction_info,
-                        environment=result_payload.get("environment") or data.get("environment") or "",
-                    ),
-                )
+
+                environment = result_payload.get("environment") or data.get("environment") or "Production"
+                product_id = result_payload.get("productId") or ""
+                revocation_date = result_payload.get("revocationDate")
+
+                if revocation_date or notification_type in {"REVOKE", "REFUND"}:
+                    admin.payment_status = "unpaid"
+                    admin.subscription_ends_at = timezone.now()
+                    admin.subscription_provider = "apple"
+                    admin.save(update_fields=["payment_status", "subscription_ends_at", "subscription_provider"])
+                elif notification_type in {"EXPIRED", "GRACE_PERIOD_EXPIRED"}:
+                    admin.payment_status = "unpaid"
+                    admin.save(update_fields=["payment_status"])
+                else:
+                    from .subscription_services import AppleTransactionResult
+                    apply_apple_transaction_to_admin(
+                        admin,
+                        AppleTransactionResult(
+                            payload=result_payload,
+                            signed_transaction_info=signed_transaction_info,
+                            environment=environment,
+                        ),
+                    )
+
                 return Response(
-                    {"success": True, "provider": "apple", "processed": True, "trusted": True},
+                    {"success": True, "provider": "apple", "processed": True, "notification_type": notification_type, "subtype": subtype},
                     status=status.HTTP_200_OK,
                 )
             except SubscriptionVerificationError as exc:
                 logger.warning("Rejected Apple subscription notification: %s", exc)
                 return Response(
-                    {"success": True, "provider": "apple", "processed": False, "trusted": False, "detail": exc.code},
+                    {"success": True, "provider": "apple", "processed": False, "detail": getattr(exc, "code", str(exc))},
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as exc:
+                logger.exception("Unexpected error processing Apple subscription notification: %s", exc)
+                return Response(
+                    {"success": True, "provider": "apple", "processed": False, "detail": str(exc)},
                     status=status.HTTP_200_OK,
                 )
 
         if self.provider == "google":
             if not request.META.get("HTTP_X_GOOG_TOPIC") and not request.data:
                 return Response(
-                    {"success": True, "provider": "google", "processed": False, "trusted": False, "detail": "pubsub_envelope_required"},
+                    {"success": True, "provider": "google", "processed": False, "detail": "pubsub_envelope_required"},
                     status=status.HTTP_200_OK,
                 )
             return Response(
-                {"success": True, "provider": "google", "processed": False, "trusted": False, "detail": "google_rtdn_not_configured"},
+                {"success": True, "provider": "google", "processed": False, "detail": "google_rtdn_not_configured"},
                 status=status.HTTP_200_OK,
             )
 

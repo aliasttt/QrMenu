@@ -201,6 +201,20 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
     """
 
     def to_representation(self, admin):
+        if not admin:
+            return {
+                "state": "none",
+                "is_entitled": False,
+                "plan": None,
+                "provider": None,
+                "current_period_end": None,
+                "will_renew": False,
+                "trial_end": None,
+                "purchasable_in_app": True,
+                "manage_url": None,
+                "message": "",
+            }
+
         now = timezone.now()
         payment_status = getattr(admin, "payment_status", None)
         trial_end = getattr(admin, "trial_ends_at", None)
@@ -235,16 +249,26 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
 
         is_entitled = state in {"trial", "active"}
         if is_entitled and current_period_end:
-            is_entitled = current_period_end > now
+            try:
+                is_entitled = current_period_end > now
+            except Exception:
+                is_entitled = False
+
+        def _format_dt(dt_val):
+            if not dt_val:
+                return None
+            if hasattr(dt_val, "isoformat"):
+                return dt_val.isoformat().replace("+00:00", "Z")
+            return str(dt_val)
 
         return {
             "state": state,
             "is_entitled": is_entitled,
             "plan": plan,
             "provider": provider,
-            "current_period_end": current_period_end.isoformat().replace("+00:00", "Z") if current_period_end else None,
+            "current_period_end": _format_dt(current_period_end),
             "will_renew": will_renew,
-            "trial_end": trial_end.isoformat().replace("+00:00", "Z") if trial_end else None,
+            "trial_end": _format_dt(trial_end),
             "purchasable_in_app": not is_entitled,
             "manage_url": None,
             "message": "",

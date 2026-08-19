@@ -14,12 +14,14 @@ from django.utils import timezone
 APPLE_PRODUCT_ID_TO_PLAN = {
     "de.preismenu.monthly": "monthly",
     "de.preismenu.yearly": "yearly",
+    "de.mybonusberlin.monthly": "monthly",
+    "de.mybonusberlin.yearly": "yearly",
 }
 VALID_APPLE_PRODUCT_IDS = set(APPLE_PRODUCT_ID_TO_PLAN)
 
 
 class SubscriptionVerificationError(Exception):
-    status_code = 400
+    status_code = 422
     code = "subscription_verification_failed"
 
 
@@ -29,7 +31,7 @@ class SubscriptionConfigurationError(SubscriptionVerificationError):
 
 
 class SubscriptionRejectedError(SubscriptionVerificationError):
-    status_code = 400
+    status_code = 422
     code = "subscription_rejected"
 
 
@@ -240,7 +242,16 @@ def _allowed_apple_products() -> set[str]:
 
 
 def plan_from_product_id(product_id: str) -> str:
-    return APPLE_PRODUCT_ID_TO_PLAN.get(product_id, product_id or "monthly")
+    if not product_id:
+        return "monthly"
+    if product_id in APPLE_PRODUCT_ID_TO_PLAN:
+        return APPLE_PRODUCT_ID_TO_PLAN[product_id]
+    p_lower = str(product_id).lower()
+    if "year" in p_lower or "annual" in p_lower:
+        return "yearly"
+    if "month" in p_lower:
+        return "monthly"
+    return product_id
 
 
 def verify_apple_transaction(jws: str, environment: str = "", expected_product_id: str = "") -> AppleTransactionResult:
