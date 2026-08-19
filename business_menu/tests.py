@@ -1,14 +1,17 @@
 from datetime import timedelta
+from io import StringIO
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from accounts.models import PasswordResetCode
 from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
+from .serializers import BusinessMenuSubscriptionSerializer
 from .subscription_services import AppleTransactionResult, verify_apple_transaction
 
 
@@ -255,6 +258,69 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
         self.assertIsNone(response.data["provider"])
         self.assertFalse(response.data["is_entitled"])
         self.assertTrue(response.data["purchasable_in_app"])
+
+    def test_manual_subscription_is_entitled(self):
+        self.admin.payment_status = "paid"
+        self.admin.trial_ends_at = None
+        self.admin.subscription_ends_at = timezone.now() + timedelta(days=3650)
+        self.admin.subscription_provider = "manual"
+        self.admin.subscription_product_id = "manual_pro"
+        self.admin.subscription_environment = "manual"
+        self.admin.save(
+            update_fields=[
+                "payment_status",
+                "trial_ends_at",
+                "subscription_ends_at",
+                "subscription_provider",
+                "subscription_product_id",
+                "subscription_environment",
+            ]
+        )
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["state"], "active")
+        self.assertEqual(response.data["provider"], "manual")
+        self.assertEqual(response.data["plan"], "manual_pro")
+        self.assertTrue(response.data["is_entitled"])
+        self.assertFalse(response.data["purchasable_in_app"])
+
+    def test_grant_manual_subscription_command_is_idempotent(self):
+        Restaurant.objects.create(admin=self.admin, name="Reviewer Bistro")
+        out = StringIO()
+
+        call_command(
+            "grant_manual_subscription",
+            "--email",
+            self.admin.email,
+            "--expires",
+            "2036-12-31",
+            stdout=out,
+        )
+        first_output = out.getvalue()
+        self.admin.refresh_from_db()
+        first_expires_at = self.admin.subscription_ends_at
+
+        call_command(
+            "grant_manual_subscription",
+            "--admin-id",
+            str(self.admin.id),
+            "--expires",
+            "2036-12-31",
+            stdout=StringIO(),
+        )
+        self.admin.refresh_from_db()
+
+        self.assertIn(f"admin_id={self.admin.id}", first_output)
+        self.assertIn("restaurant_id=", first_output)
+        self.assertEqual(self.admin.payment_status, "paid")
+        self.assertEqual(self.admin.subscription_provider, "manual")
+        self.assertEqual(self.admin.subscription_product_id, "manual_pro")
+        self.assertEqual(self.admin.subscription_environment, "manual")
+        self.assertEqual(self.admin.subscription_ends_at, first_expires_at)
+        self.assertTrue(BusinessMenuSubscriptionSerializer(self.admin).data["is_entitled"])
 
     def test_subscription_routes_are_registered(self):
         self.client.force_authenticate(user=self.user)
