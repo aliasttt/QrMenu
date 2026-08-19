@@ -1,0 +1,1 @@
+{"expire_at":"2026-08-19T19:57:10.9801713+03:30","regions":[{"name":"osc-fr1","display_name":"Paris - Outscale","ssh":"ssh.osc-fr1.scalingo.com:22","api":"https://api.osc-fr1.scalingo.com","dashboard":"https://dashboard.scalingo.com","database_api":"https://db-api.osc-fr1.scalingo.com","default":true}]}
