@@ -103,7 +103,7 @@
             <div class="mt-2 flex items-start justify-between gap-4">
               <div>
                 <h2 class="text-2xl font-bold">{{ restaurant.name }}</h2>
-                <p class="mt-1 text-sm text-slate-300">Invoice #<span data-invoice-order-id>{{ order.id }}</span></p>
+                <p class="mt-1 text-sm text-slate-300">{% trans "Invoice" %} #<span data-invoice-order-id>{{ order.id }}</span></p>
               </div>
               <div class="rounded-xl bg-white/10 px-3 py-2 text-right">
                 <p class="text-xs text-slate-300">{% trans "Total" %}</p>
@@ -282,10 +282,10 @@
         window.location.href = result.data.url;
         return;
       }
-      showError(result.data.error || result.data.message);
+      showError("{% trans 'Could not start payment.' %}");
     })
     .catch(function(err) {
-      showError(err.message);
+      showError("{% trans 'Could not start payment.' %}");
     });
   }
 
@@ -303,8 +303,7 @@
     .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
     .then(function(result) {
       if (!result.ok) {
-        var msg = (result.data && (result.data.detail || result.data.message)) || "{% trans 'Could not submit order.' %}";
-        if (opts.onError) opts.onError(msg);
+        if (opts.onError) opts.onError("{% trans 'Could not submit order.' %}");
         return null;
       }
       if (detailsForm) detailsForm.classList.add("hidden");

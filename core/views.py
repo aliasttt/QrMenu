@@ -204,7 +204,7 @@ def pricing(request):
     faqs = [
         {"q": _("What is included in the price?"), "a": _("Everything: QR menu, online ordering, unlimited items and QR codes, campaigns, custom domain option, themes, and support. One annual subscription, no per-order fees.")},
         {"q": _("Is there a free trial?"), "a": _("Yes. Start with a free trial to build your menu and test ordering. No card required until you go live.")},
-        {"q": _("Why 19% VAT?"), "a": _("We are VAT-registered in the EU. If you are in the EU and liable for VAT, 19% is added at checkout (total €238/year). If you are outside the EU or VAT-exempt, the amount may differ.")},
+        {"q": _("Why 19% VAT?"), "a": _("We are VAT-registered in the EU. If you are in the EU and liable for VAT, a 19 percent VAT charge is added at checkout (total €238/year). If you are outside the EU or VAT-exempt, the amount may differ.")},
     ]
     get_started_url = None
     if request.user.is_authenticated:

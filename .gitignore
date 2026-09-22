@@ -1,0 +1,4 @@
+/deploy-*.tar.gz
+/deploy-*.zip
+__pycache__/
+*.py[cod]

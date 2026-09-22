@@ -104,7 +104,7 @@
         });
         const data = await r.json().catch(() => ({}));
         if (!r.ok) {
-          this.authError = data.detail === 'invalid_credentials' ? '{% trans "Invalid email/phone or password." %}' : (data.detail || '{% trans "Login failed." %}');
+          this.authError = data.detail === 'invalid_credentials' ? '{% trans "Invalid email/phone or password." %}' : '{% trans "Login failed." %}';
         } else {
           this.currentUser = data;
           this.profileEdits = {
@@ -147,7 +147,7 @@
             this.authMode = 'login';
             this.authIdentifier = data.detail === 'phone_already_registered' ? this.regPhone : this.regEmail;
           }
-          this.authError = map[data.detail] || (data.detail || '{% trans "Registration failed." %}');
+          this.authError = map[data.detail] || '{% trans "Registration failed." %}';
         } else {
           this.currentUser = data;
           this.phone = data.phone || this.regPhone;
@@ -187,7 +187,7 @@
           body: JSON.stringify(patch),
         });
         const data = await r.json().catch(() => ({}));
-        if (!r.ok) { this.profileMessage = data.detail || '{% trans "Update failed." %}'; }
+        if (!r.ok) { this.profileMessage = '{% trans "Update failed." %}'; }
         else {
           this.currentUser = data;
           this.profileMessage = '{% trans "Profile updated." %}';
@@ -253,6 +253,10 @@
         delivery: '{% trans "Delivery" %}',
       };
       return labels[String(serviceType || '').toLowerCase()] || serviceType || '';
+    },
+    paymentLabel(paymentMethod) {
+      const labels = { cash: '{% trans "Cash" %}', online: '{% trans "Online" %}' };
+      return labels[String(paymentMethod || '').toLowerCase()] || paymentMethod || '';
     },
     statusMessage(order) {
       const status = String((order && order.status) || '').toLowerCase();
@@ -329,7 +333,7 @@
             ? '{% trans "This order can no longer be cancelled." %}'
             : (data.detail === 'refund_failed'
               ? '{% trans "Refund failed. Please contact the restaurant." %}'
-              : ((data.detail && !String(data.detail).includes('<!DOCTYPE')) ? data.detail : '{% trans "Could not cancel order." %}'));
+              : '{% trans "Could not cancel order." %}');
           this.cancelingOrderId = null;
           return;
         }
@@ -355,7 +359,7 @@
         const data = await r.json().catch(() => ({}));
         if (!r.ok) {
           this.orders = [];
-          this.error = data.detail || '{% trans "Could not load orders." %}';
+          this.error = '{% trans "Could not load orders." %}';
         } else {
           this.orders = data.orders || [];
           localStorage.setItem('qrmenu_order_phone_' + this.restaurantId, phone);
@@ -477,7 +481,7 @@
             </div>
             <div class="rounded-2xl border p-3 orders-soft">
               <p class="text-xs font-bold uppercase orders-muted">{% trans "Payment" %}</p>
-              <p class="mt-1 text-sm font-semibold capitalize" x-text="order.payment_method"></p>
+              <p class="mt-1 text-sm font-semibold" x-text="paymentLabel(order.payment_method)"></p>
               <p x-show="refundText(order)" class="mt-1 text-xs font-semibold orders-muted" x-text="refundText(order)"></p>
             </div>
           </div>

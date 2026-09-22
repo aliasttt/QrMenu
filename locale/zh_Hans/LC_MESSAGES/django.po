@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 12:24+0330\n"
+"POT-Creation-Date: 2026-09-22 13:09+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,605 +18,631 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\core\views.py:106
+#: .\core\views.py:122
 msgid "Owner, Basil House"
 msgstr "老板，Basil House"
 
-#: .\core\views.py:106
+#: .\core\views.py:122
 msgid "We increased table turnover with faster ordering."
 msgstr "通过更快下单，我们提升了餐桌翻台率。"
 
-#: .\core\views.py:107
+#: .\core\views.py:123
 msgid "Manager, South Fork"
 msgstr "经理，South Fork"
 
-#: .\core\views.py:107
+#: .\core\views.py:123
 msgid "Campaigns helped us fill off-peak hours."
 msgstr "营销活动帮助我们填满了淡季时段。"
 
-#: .\core\views.py:108
+#: .\core\views.py:124
 msgid "Founder, Luna Cafe"
 msgstr "创始人，Luna Cafe"
 
-#: .\core\views.py:108
+#: .\core\views.py:124
 msgid "Our staff now spends less time taking manual orders."
 msgstr "员工现在花在手动接单上的时间更少了。"
 
-#: .\core\views.py:111 .\core\views.py:133
+#: .\core\views.py:127 .\core\views.py:149
 msgid "AI menu import"
 msgstr "AI 菜单导入"
 
-#: .\core\views.py:112 .\core\views.py:134
+#: .\core\views.py:128 .\core\views.py:150
 msgid "Multilingual menus"
 msgstr "多语言菜单"
 
-#: .\core\views.py:113 .\core\views.py:135
+#: .\core\views.py:129 .\core\views.py:151
 msgid "QR code generation"
 msgstr "生成二维码"
 
-#: .\core\views.py:114 .\core\views.py:136
+#: .\core\views.py:130 .\core\views.py:152
 msgid "Order management"
 msgstr "订单管理"
 
-#: .\core\views.py:115 .\core\views.py:137
+#: .\core\views.py:131 .\core\views.py:153
 msgid "Campaign engine"
 msgstr "营销引擎"
 
-#: .\core\views.py:116 .\core\views.py:138
+#: .\core\views.py:132 .\core\views.py:154
 msgid "Daily analytics"
 msgstr "每日分析"
 
-#: .\core\views.py:117 .\core\views.py:139
+#: .\core\views.py:133 .\core\views.py:155
 msgid "Category controls"
 msgstr "分类控制"
 
-#: .\core\views.py:118 .\core\views.py:140
+#: .\core\views.py:134 .\core\views.py:156
 msgid "Live availability"
 msgstr "实时库存"
 
-#: .\core\views.py:119 .\core\views.py:141
+#: .\core\views.py:135 .\core\views.py:157
 msgid "POS-ready payloads"
 msgstr "POS 就绪数据"
 
-#: .\core\views.py:120 .\core\views.py:142
+#: .\core\views.py:136 .\core\views.py:158
 msgid "Mobile-first pages"
 msgstr "移动优先页面"
 
-#: .\core\views.py:121 .\core\views.py:143
+#: .\core\views.py:137 .\core\views.py:159
 msgid "Role-ready panel"
 msgstr "角色权限面板"
 
-#: .\core\views.py:122 .\core\views.py:144
+#: .\core\views.py:138 .\core\views.py:160
 msgid "Conversion focused UI"
 msgstr "转化优化界面"
 
-#: .\core\views.py:133
+#: .\core\views.py:149
 msgid ""
 "Upload a PDF or photo and we extract your dishes and prices automatically."
 msgstr "上传 PDF 或照片，我们自动提取菜品和价格。"
 
-#: .\core\views.py:134
+#: .\core\views.py:150
 msgid ""
 "Serve your menu in multiple languages and switch by customer preference."
 msgstr "支持多语言菜单，可根据顾客偏好切换。"
 
-#: .\core\views.py:135
+#: .\core\views.py:151
 msgid "Generate and download QR codes for tables, takeaway, and delivery."
 msgstr "为餐桌、自取和配送生成并下载二维码。"
 
-#: .\core\views.py:136
+#: .\core\views.py:152
 msgid ""
 "Receive, track, and fulfill orders from one dashboard with status updates."
 msgstr "从一个面板接收、跟踪并完成订单，实时更新状态。"
 
-#: .\core\views.py:137
+#: .\core\views.py:153
 msgid ""
 "Create time-based discounts, happy hours, and target specific categories."
 msgstr "创建限时折扣、欢乐时光，并定向到特定分类。"
 
-#: .\core\views.py:138
+#: .\core\views.py:154
 msgid "View orders, revenue, and top items with simple charts and exports."
 msgstr "通过简单的图表和导出查看订单、收入和热销品。"
 
-#: .\core\views.py:139
+#: .\core\views.py:155
 msgid "Organize items into categories and reorder with drag-and-drop."
 msgstr "将菜品按分类整理，通过拖放重新排序。"
 
-#: .\core\views.py:140
+#: .\core\views.py:156
 msgid "Mark items as out of stock and hide or show sections by schedule."
 msgstr "将商品标记为售罄，并按时间表隐藏或显示分类。"
 
-#: .\core\views.py:141
+#: .\core\views.py:157
 msgid "Send orders to your POS or kitchen display via webhooks or API."
 msgstr "通过 webhook 或 API 将订单发送到 POS 或厨房显示屏。"
 
-#: .\core\views.py:142
+#: .\core\views.py:158
 msgid "Menus and checkout are optimized for phones and tablets."
 msgstr "菜单和结账针对手机和平板进行优化。"
 
-#: .\core\views.py:143
+#: .\core\views.py:159
 msgid "Invite staff with roles: admin, manager, or view-only."
 msgstr "以角色邀请员工：管理员、经理或仅查看。"
 
-#: .\core\views.py:144
+#: .\core\views.py:160
 msgid "Clean design and clear CTAs to maximize add-to-cart and checkout."
 msgstr "简洁设计和清晰行动号召，最大化加购与结账率。"
 
-#: .\core\views.py:147
+#: .\core\views.py:163
 msgid "Can I use my own domain?"
 msgstr "可以使用自己的域名吗？"
 
-#: .\core\views.py:147
+#: .\core\views.py:163
 msgid ""
-"Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the "
-"settings panel."
+"Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the"
+" settings panel."
 msgstr "可以。您可以在设置面板中连接自定义域名（例如 menu.yourrestaurant.com）。"
 
-#: .\core\views.py:148
+#: .\core\views.py:164
 msgid "Is there a mobile app for staff?"
 msgstr "有员工用的移动应用吗？"
 
-#: .\core\views.py:148
+#: .\core\views.py:164
 msgid ""
 "The panel is fully responsive; you can use it from any browser. Native apps "
 "are on our roadmap."
 msgstr "面板完全响应式，可在任意浏览器中使用。原生应用在规划中。"
 
-#: .\core\views.py:149
+#: .\core\views.py:165
 msgid "How do I print QR codes?"
 msgstr "如何打印二维码？"
 
-#: .\core\views.py:149
+#: .\core\views.py:165
 msgid ""
 "Generate QR codes from the dashboard and download as PNG or SVG. Print on "
 "table tents or stickers."
 msgstr "在仪表盘中生成二维码，下载为 PNG 或 SVG。可打印在桌卡或贴纸上。"
 
-#: .\core\views.py:150
+#: .\core\views.py:166
 msgid "Do you integrate with POS?"
 msgstr "支持与 POS 集成吗？"
 
-#: .\core\views.py:150
+#: .\core\views.py:166
 msgid ""
-"We support webhooks and an API so you can push orders to your POS or kitchen "
-"display system."
+"We support webhooks and an API so you can push orders to your POS or kitchen"
+" display system."
 msgstr "我们支持 webhook 和 API，可将订单推送到您的 POS 或厨房显示系统。"
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid "Set up your menu"
 msgstr "设置菜单"
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid ""
 "Create categories, add dishes with prices and photos, and set availability."
 msgstr "创建分类，添加带价格和照片的菜品，并设置库存。"
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid "Drag-and-drop reorder, bulk edit, or import from spreadsheet."
 msgstr "拖放重新排序、批量编辑或从电子表格导入。"
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid "Generate your QR"
 msgstr "生成二维码"
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid ""
 "Print QR codes for each table or area. Customers scan to open your menu."
 msgstr "为每张餐桌或区域打印二维码，顾客扫描即可打开菜单。"
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid "Download PNG or SVG, print on table tents or stickers."
 msgstr "下载 PNG 或 SVG，打印在桌卡或贴纸上。"
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid "Get online orders"
 msgstr "接收在线订单"
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid ""
 "Customers browse, add to cart, and checkout. You receive and fulfill orders."
 msgstr "顾客浏览菜单、加入购物车并结账，您接收并完成订单。"
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid "Optional: connect to POS or kitchen display."
 msgstr "可选：连接到 POS 或厨房显示屏。"
 
-#: .\core\views.py:170
+#: .\core\views.py:186
 msgid "QR menu — customers scan and browse your menu on their phone"
 msgstr "二维码菜单——顾客手机扫码即可浏览。"
 
-#: .\core\views.py:171
+#: .\core\views.py:187
 msgid "Unlimited menu items and categories"
 msgstr "无限菜品和分类"
 
-#: .\core\views.py:172
+#: .\core\views.py:188
 msgid "Unlimited QR codes for tables and takeaway"
 msgstr "无限的堂食和外带二维码"
 
-#: .\core\views.py:173
+#: .\core\views.py:189
 msgid "Online ordering — guests order and pay from the same link"
 msgstr "在线点单——顾客在同一链接下单并付款。"
 
-#: .\core\views.py:174
+#: .\core\views.py:190
 msgid "Customizable themes to match your brand"
 msgstr "可自定义主题匹配品牌"
 
-#: .\core\views.py:175
+#: .\core\views.py:191
 msgid "Campaigns & discounts (happy hour, daily specials)"
 msgstr "营销与折扣（欢乐时光、每日特价）"
 
-#: .\core\views.py:176
+#: .\core\views.py:192
 msgid "Multilingual menu support"
 msgstr "多语言菜单支持"
 
-#: .\core\views.py:177
+#: .\core\views.py:193
 msgid "Real-time updates — change prices and availability instantly"
 msgstr "实时更新——瞬间修改价格和库存。"
 
-#: .\core\views.py:178
+#: .\core\views.py:194
 msgid "Basic analytics — see what sells"
 msgstr "基础分析——了解什么最畅销。"
 
-#: .\core\views.py:179
+#: .\core\views.py:195
 msgid "Email & WhatsApp support"
 msgstr "邮件与 WhatsApp 支持"
 
-#: .\core\views.py:183
+#: .\core\views.py:199
 msgid "Win more orders"
 msgstr "赢得更多订单"
 
-#: .\core\views.py:183
+#: .\core\views.py:199
 msgid ""
-"Guests order directly from the QR menu. No waiting for staff—faster turnover "
-"and higher revenue."
+"Guests order directly from the QR menu. No waiting for staff—faster turnover"
+" and higher revenue."
 msgstr "顾客直接通过二维码菜单下单，无需等待员工，翻台更快，收入更高。"
 
-#: .\core\views.py:184
+#: .\core\views.py:200
 msgid "Look professional"
 msgstr "呈现专业形象"
 
-#: .\core\views.py:184
+#: .\core\views.py:200
 msgid ""
 "A clean digital menu and your own domain build trust. Stand out from "
 "competitors still using paper."
 msgstr "简洁的数字菜单和专属域名建立信任，让您在仍使用纸质菜单的同行中脱颖而出。"
 
-#: .\core\views.py:185
+#: .\core\views.py:201
 msgid "One subscription, everything included"
 msgstr "一个订阅，全部包含"
 
-#: .\core\views.py:185
+#: .\core\views.py:201
 msgid ""
-"No per-order fees or hidden costs. One annual fee covers menu, ordering, and "
-"support."
+"No per-order fees or hidden costs. One annual fee covers menu, ordering, and"
+" support."
 msgstr "无按单收费或隐藏费用。一年费用涵盖菜单、点单和支持。"
 
-#: .\core\views.py:186
+#: .\core\views.py:202
 msgid "Launch in minutes"
 msgstr "几分钟内上线"
 
-#: .\core\views.py:186
+#: .\core\views.py:202
 msgid ""
-"Add your dishes, print a QR code, and go live. No IT or design skills needed."
+"Add your dishes, print a QR code, and go live. No IT or design skills "
+"needed."
 msgstr "添加菜品、打印二维码、直接上线。无需 IT 或设计技能。"
 
-#: .\core\views.py:189
+#: .\core\views.py:205
 msgid "What is included in the price?"
 msgstr "价格包含哪些内容？"
 
-#: .\core\views.py:189
+#: .\core\views.py:205
 msgid ""
 "Everything: QR menu, online ordering, unlimited items and QR codes, "
 "campaigns, custom domain option, themes, and support. One annual "
 "subscription, no per-order fees."
 msgstr "全部：二维码菜单、在线点单、无限菜品与二维码、营销活动、自定义域名选项、主题以及支持。一次年费，无按单费用。"
 
-#: .\core\views.py:190
+#: .\core\views.py:206
 msgid "Is there a free trial?"
 msgstr "有免费试用吗？"
 
-#: .\core\views.py:190
+#: .\core\views.py:206
 msgid ""
 "Yes. Start with a free trial to build your menu and test ordering. No card "
 "required until you go live."
 msgstr "可以。使用免费试用构建菜单并测试点单，在正式上线之前无需信用卡。"
 
-#: .\core\views.py:191
+#: .\core\views.py:207
 msgid "Why 19% VAT?"
 msgstr "为什么是 19% 增值税？"
 
-#: .\core\views.py:191
-#, python-format
+#: .\core\views.py:207
 msgid ""
-"We are VAT-registered in the EU. If you are in the EU and liable for VAT, "
-"19% is added at checkout (total €238/year). If you are outside the EU or VAT-"
-"exempt, the amount may differ."
+"We are VAT-registered in the EU. If you are in the EU and liable for VAT, a "
+"19 percent VAT charge is added at checkout (total €238/year). If you are "
+"outside the EU or VAT-exempt, the amount may differ."
 msgstr "我们在欧盟已注册增值税。若您位于欧盟并需缴纳增值税，结账时会加收 19%（年费合计 €238）。欧盟以外或免税用户金额可能不同。"
 
-#: .\core\views.py:211 .\templates\partials\navbar.html:47
+#: .\core\views.py:244
+msgid "Security check failed. Please reload the page and try again."
+msgstr "安全检查失败 。 请重新装入页面再试一次 。"
+
+#: .\core\views.py:247 .\core\views.py:291
+msgid "Thanks. If your message needs a reply, we will contact you."
+msgstr "谢谢。 如果你的消息需要回复 我们会联系你"
+
+#: .\core\views.py:250
+msgid "Security check failed. Please try again."
+msgstr "安全检查失败 。 请再试一次"
+
+#: .\core\views.py:259
+msgid "Please check the form fields and try again."
+msgstr "请检查表单字段再试一次 。"
+
+#: .\core\views.py:262
+msgid "Please complete all fields."
+msgstr "请完成所有字段 。"
+
+#: .\core\views.py:267
+msgid "Too many messages. Please try again later."
+msgstr "太多讯息了 请稍候再试"
+
+#: .\core\views.py:270
+msgid "Please wait before sending another message."
+msgstr "请稍候后再发信"
+
+#: .\core\views.py:298 .\templates\partials\navbar.html:47
 msgid "AI Menu Import"
 msgstr "AI 菜单导入"
 
-#: .\core\views.py:212
+#: .\core\views.py:299
 msgid "Turn paper menus into digital menus in minutes."
 msgstr "几分钟将纸质菜单转换为数字菜单。"
 
-#: .\core\views.py:213
+#: .\core\views.py:300
 msgid ""
 "Upload a photo or PDF and let AI extract dish names, descriptions, and "
 "prices automatically."
 msgstr "上传照片或 PDF，AI 自动提取菜品名称、描述和价格。"
 
-#: .\core\views.py:216
+#: .\core\views.py:303
 msgid "Save hours of manual typing"
 msgstr "节省数小时手动录入"
 
-#: .\core\views.py:217
+#: .\core\views.py:304
 msgid "Launch your QR menu faster"
 msgstr "更快上线二维码菜单"
 
-#: .\core\views.py:218
+#: .\core\views.py:305
 msgid "Reduce human data-entry errors"
 msgstr "减少人工录入错误"
 
-#: .\core\views.py:223 .\templates\partials\navbar.html:48
+#: .\core\views.py:310 .\templates\partials\navbar.html:48
 msgid "Customizable Themes"
 msgstr "可自定义主题"
 
-#: .\core\views.py:224
+#: .\core\views.py:311
 msgid "Match your menu design to your restaurant brand."
 msgstr "让菜单设计与您的餐厅品牌一致。"
 
-#: .\core\views.py:225
+#: .\core\views.py:312
 msgid ""
 "Choose from modern themes and customize colors, typography, and layout in a "
 "few clicks."
 msgstr "从现代主题中选择，几次点击即可自定义颜色、字体和布局。"
 
-#: .\core\views.py:228
+#: .\core\views.py:315
 msgid "Consistent brand identity"
 msgstr "统一的品牌形象"
 
-#: .\core\views.py:229
+#: .\core\views.py:316
 msgid "Better visual experience for guests"
 msgstr "为顾客提供更佳的视觉体验"
 
-#: .\core\views.py:230
+#: .\core\views.py:317
 msgid "Faster edits with pre-built styles"
 msgstr "使用预设样式加快编辑"
 
-#: .\core\views.py:235 .\templates\partials\navbar.html:49
+#: .\core\views.py:322 .\templates\partials\navbar.html:49
 msgid "Dedicated Support"
 msgstr "专属支持"
 
-#: .\core\views.py:236
+#: .\core\views.py:323
 msgid "Real help when you need it most."
 msgstr "在您最需要的时候提供真实的帮助。"
 
-#: .\core\views.py:237
+#: .\core\views.py:324
 msgid ""
 "Our team helps with setup, menu updates, and optimization so your staff can "
 "focus on service."
 msgstr "我们的团队协助设置、菜单更新和优化，让您的员工专注服务。"
 
-#: .\core\views.py:240
+#: .\core\views.py:327
 msgid "Priority support for urgent issues"
 msgstr "紧急问题的优先支持"
 
-#: .\core\views.py:241
+#: .\core\views.py:328
 msgid "Faster onboarding for new branches"
 msgstr "新分店更快上线"
 
-#: .\core\views.py:242
+#: .\core\views.py:329
 msgid "Better uptime and smoother operations"
 msgstr "更高的正常运行时间和更流畅的运营"
 
-#: .\core\views.py:247 .\templates\partials\navbar.html:50
+#: .\core\views.py:334 .\templates\partials\navbar.html:50
 msgid "Menu Creation"
 msgstr "菜单创建"
 
-#: .\core\views.py:248
+#: .\core\views.py:335
 msgid "Build clean, organized menus your guests love."
 msgstr "打造干净、条理清晰、顾客喜爱的菜单。"
 
-#: .\core\views.py:249
+#: .\core\views.py:336
 msgid ""
 "Create categories, add dish photos, set prices, and reorder items with a "
 "simple dashboard."
 msgstr "在简单的面板中创建分类、添加菜品照片、设置价格并重新排序。"
 
-#: .\core\views.py:252
+#: .\core\views.py:339
 msgid "Unlimited menu items"
 msgstr "无限菜品"
 
-#: .\core\views.py:253
+#: .\core\views.py:340
 msgid "Quick editing for daily changes"
 msgstr "快速编辑应对每日变动"
 
-#: .\core\views.py:254
+#: .\core\views.py:341
 msgid "Clear structure for better ordering"
 msgstr "清晰结构，助力点单"
 
-#: .\core\views.py:259 .\templates\partials\navbar.html:51
+#: .\core\views.py:346 .\templates\partials\navbar.html:51
 msgid "Multi-Service Management"
 msgstr "多服务管理"
 
-#: .\core\views.py:260
+#: .\core\views.py:347
 msgid "Run dine-in, takeaway, and delivery from one panel."
 msgstr "在一个面板中管理堂食、自取和配送。"
 
-#: .\core\views.py:261
+#: .\core\views.py:348
 msgid ""
 "Manage service types, availability, and order flow in one place without "
 "switching tools."
 msgstr "在同一处管理服务类型、可用性和订单流程，无需在工具间切换。"
 
-#: .\core\views.py:264
+#: .\core\views.py:351
 msgid "One dashboard for all channels"
 msgstr "一个面板管理所有渠道"
 
-#: .\core\views.py:265
+#: .\core\views.py:352
 msgid "Less staff confusion"
 msgstr "减少员工混乱"
 
-#: .\core\views.py:266
+#: .\core\views.py:353
 msgid "Higher operational speed"
 msgstr "更高的运营速度"
 
-#: .\core\views.py:271 .\templates\partials\navbar.html:52
+#: .\core\views.py:358 .\templates\partials\navbar.html:52
 msgid "Multilingual Support"
 msgstr "多语言支持"
 
-#: .\core\views.py:272
+#: .\core\views.py:359
 msgid "Serve local and international guests better."
 msgstr "更好地服务本地和国际顾客。"
 
-#: .\core\views.py:273
+#: .\core\views.py:360
 msgid ""
 "Offer your menu in multiple languages and let customers switch language "
 "instantly."
 msgstr "以多语言提供菜单，顾客可即时切换语言。"
 
-#: .\core\views.py:276
+#: .\core\views.py:363
 msgid "Better guest experience for tourists"
 msgstr "为游客提供更好的体验"
 
-#: .\core\views.py:277
+#: .\core\views.py:364
 msgid "Fewer ordering mistakes"
 msgstr "减少下单错误"
 
-#: .\core\views.py:278
+#: .\core\views.py:365
 msgid "Higher conversion on the menu page"
 msgstr "菜单页面转化率更高"
 
-#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:661
-#: .\templates\partials\navbar.html:53
+#: .\core\views.py:370 .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr "在线点单"
 
-#: .\core\views.py:284
+#: .\core\views.py:371
 msgid "Take orders directly from the QR menu."
 msgstr "直接通过二维码菜单接单。"
 
-#: .\core\views.py:285
+#: .\core\views.py:372
 msgid ""
 "Guests browse, add to cart, and checkout from their phone with a smooth "
 "mobile-first flow."
 msgstr "顾客通过流畅的移动优先流程，在手机上浏览、加购并完成结账。"
 
-#: .\core\views.py:288
+#: .\core\views.py:375
 msgid "Increase average order value"
 msgstr "提升平均订单金额"
 
-#: .\core\views.py:289
+#: .\core\views.py:376
 msgid "Reduce table waiting time"
 msgstr "缩短餐桌等候时间"
 
-#: .\core\views.py:290
+#: .\core\views.py:377
 msgid "Capture more takeaway orders"
 msgstr "获取更多自取订单"
 
-#: .\core\views.py:295 .\templates\partials\navbar.html:54
+#: .\core\views.py:382 .\templates\partials\navbar.html:54
 msgid "PDF Export"
 msgstr "PDF 导出"
 
-#: .\core\views.py:296
+#: .\core\views.py:383
 msgid "Keep digital and printed menus in sync."
 msgstr "让数字菜单与纸质菜单保持同步。"
 
-#: .\core\views.py:297
+#: .\core\views.py:384
 msgid ""
 "Export your latest menu as PDF for table cards, flyers, and offline sharing."
 msgstr "将最新菜单导出为 PDF，用于桌卡、传单和离线分享。"
 
-#: .\core\views.py:300
+#: .\core\views.py:387
 msgid "Ready-to-print output"
 msgstr "开箱即打的输出"
 
-#: .\core\views.py:301
+#: .\core\views.py:388
 msgid "Consistent branding across channels"
 msgstr "跨渠道保持品牌一致"
 
-#: .\core\views.py:302
+#: .\core\views.py:389
 msgid "Simple backup of menu data"
 msgstr "简单的菜单数据备份"
 
-#: .\core\views.py:307 .\templates\partials\navbar.html:55
+#: .\core\views.py:394 .\templates\partials\navbar.html:55
 msgid "Real-Time Updates"
 msgstr "实时更新"
 
-#: .\core\views.py:308
+#: .\core\views.py:395
 msgid "Update prices and stock instantly."
 msgstr "即时更新价格和库存。"
 
-#: .\core\views.py:309
+#: .\core\views.py:396
 msgid ""
 "Publish menu changes live in seconds so guests always see accurate "
 "information."
 msgstr "秒级发布菜单更新，让顾客始终看到最新准确信息。"
 
-#: .\core\views.py:312
+#: .\core\views.py:399
 msgid "No stale menu data"
 msgstr "无过期菜单数据"
 
-#: .\core\views.py:313
+#: .\core\views.py:400
 msgid "Fewer customer complaints"
 msgstr "顾客投诉减少"
 
-#: .\core\views.py:314
+#: .\core\views.py:401
 msgid "Faster reaction to peak-hour demand"
 msgstr "更快响应高峰时段需求"
 
-#: .\core\views.py:319 .\templates\partials\navbar.html:56
+#: .\core\views.py:406 .\templates\partials\navbar.html:56
 msgid "Secure Payment Processing"
 msgstr "安全支付处理"
 
-#: .\core\views.py:320
+#: .\core\views.py:407
 msgid "Accept payments safely and confidently."
 msgstr "安全放心地接受付款。"
 
-#: .\core\views.py:321
+#: .\core\views.py:408
 msgid ""
 "Support secure online checkout with trusted gateways and encrypted "
 "transaction flow."
 msgstr "使用可信支付网关和加密交易流程，支持安全在线结账。"
 
-#: .\core\views.py:324
+#: .\core\views.py:411
 msgid "Safer transactions"
 msgstr "更安全的交易"
 
-#: .\core\views.py:325
+#: .\core\views.py:412
 msgid "More trust from customers"
 msgstr "赢得更多顾客信任"
 
-#: .\core\views.py:326
+#: .\core\views.py:413
 msgid "Higher checkout completion"
 msgstr "结账完成率更高"
 
-#: .\core\views.py:331 .\templates\partials\navbar.html:57
+#: .\core\views.py:418 .\templates\partials\navbar.html:57
 msgid "Smart Order Management"
 msgstr "智能订单管理"
 
-#: .\core\views.py:332
+#: .\core\views.py:419
 msgid "Track every order in one clean queue."
 msgstr "在一个整洁的队列中跟踪每个订单。"
 
-#: .\core\views.py:333
+#: .\core\views.py:420
 msgid ""
-"Filter by status, prioritize prep, and keep front-of-house and kitchen fully "
-"synchronized."
+"Filter by status, prioritize prep, and keep front-of-house and kitchen fully"
+" synchronized."
 msgstr "按状态过滤、优先安排制作，让前厅与厨房完全同步。"
 
-#: .\core\views.py:336
+#: .\core\views.py:423
 msgid "Clear workflow for staff"
 msgstr "员工工作流程更清晰"
 
-#: .\core\views.py:337
+#: .\core\views.py:424
 msgid "Faster fulfillment"
 msgstr "更快完成订单"
 
-#: .\core\views.py:338
+#: .\core\views.py:425
 msgid "Improved customer satisfaction"
 msgstr "顾客满意度提升"
 
@@ -634,9 +660,9 @@ msgstr "更改或查看列表链接"
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:404
-#: .\templates\pages\restaurant_menu.html:418
-#: .\templates\pages\restaurant_menu.html:449
+#: .\templates\pages\restaurant_menu.html:1074
+#: .\templates\pages\restaurant_menu.html:1094
+#: .\templates\pages\restaurant_menu.html:1119
 msgid "Add"
 msgstr "添加"
 
@@ -693,7 +719,7 @@ msgid "The page you are looking for does not exist or has been moved."
 msgstr "您访问的页面不存在或已被移动。"
 
 #: .\templates\errors\404.html:10 .\templates\errors\500.html:10
-#: .\templates\pages\restaurants_list.html:17
+#: .\templates\pages\restaurants_list.html:19
 msgid "Back to home"
 msgstr "返回首页"
 
@@ -709,11 +735,172 @@ msgstr "出错了"
 msgid "We are working on the issue. Please try again in a few minutes."
 msgstr "我们正在处理此问题，请在几分钟后重试。"
 
+#: .\templates\pages\account_delete.html:4
+msgid "Delete Account"
+msgstr "删除账户"
+
+#: .\templates\pages\account_delete.html:5
+msgid ""
+"Request deletion of your MyQrMenu / PreisMenu account and associated data."
+msgstr "请求删除您的 MyQrMenu / PreisMenu 账户和相关数据 。"
+
+#: .\templates\pages\account_delete.html:10
+msgid "Account & Data"
+msgstr "账户数据( D)"
+
+#: .\templates\pages\account_delete.html:12
+msgid "Delete your account"
+msgstr "删除您的账户"
+
+#: .\templates\pages\account_delete.html:15
+msgid "MyQrMenu / PreisMenu — Account deletion request"
+msgstr "MyQrMenu / PreisMenu – 账户删除请求"
+
+#: .\templates\pages\account_delete.html:19
+msgid "How to request account deletion"
+msgstr "如何请求删除账户"
+
+#: .\templates\pages\account_delete.html:21
+#, python-format
+msgid ""
+"\n"
+"        To delete your account and all associated data, please send an email to\n"
+"        <a href=\"mailto:%(email)s?subject=Account%%20Deletion%%20Request\">%(email)s</a>\n"
+"        from the email address you used to register.\n"
+"        "
+msgstr ""
+"\n"
+"        要删除您的账户和所有相关数据,请发送电子邮件至\n"
+"        <a href=\"mailto:%(email)s?subject=Account%%20Deletion%%20Request\">%(email)s</a>\n"
+"        从您以前注册的电子邮件地址。\n"
+"        "
+
+#: .\templates\pages\account_delete.html:28
+msgid "Please include the following information in your email:"
+msgstr "请在电子邮件中提供以下信息:"
+
+#: .\templates\pages\account_delete.html:30
+msgid "Subject: 'Account Deletion Request'"
+msgstr "主体:\"账户删除请求\""
+
+#: .\templates\pages\account_delete.html:31
+msgid "The email address associated with your account"
+msgstr "与您的账户相关的电子邮件地址"
+
+#: .\templates\pages\account_delete.html:32
+msgid "Your restaurant / business name (if applicable)"
+msgstr "您的餐厅/ 商业名称( 如果适用)"
+
+#: .\templates\pages\account_delete.html:36
+msgid ""
+"We will process your request and permanently delete your account within 7 "
+"business days. You will receive a confirmation email once the deletion is "
+"complete."
+msgstr "我们会处理你的请求 并在7个工作日内永久删除你的账户 删除完成后, 您将收到确认邮件 。"
+
+#: .\templates\pages\account_delete.html:39
+msgid "What data will be deleted"
+msgstr "将删除哪些数据"
+
+#: .\templates\pages\account_delete.html:41
+msgid "Your account profile (name, email, phone number, password)"
+msgstr "您的账户简介( 名称、 电子邮件、 电话号码、 密码)"
+
+#: .\templates\pages\account_delete.html:42
+msgid "Your restaurant / business information and settings"
+msgstr "您的餐厅/ 商业信息和设置"
+
+#: .\templates\pages\account_delete.html:43
+msgid "Menu items, categories, campaigns and images you uploaded"
+msgstr "您上传的菜单项、 类别、 活动和图像"
+
+#: .\templates\pages\account_delete.html:44
+msgid ""
+"Customer orders, reservations and related activity linked to your account"
+msgstr "客户订单、预订和与您的账户相关的活动"
+
+#: .\templates\pages\account_delete.html:45
+msgid "Session and authentication data"
+msgstr "会话和认证数据"
+
+#: .\templates\pages\account_delete.html:48
+msgid "What data may be retained"
+msgstr "可保留哪些数据"
+
+#: .\templates\pages\account_delete.html:50
+msgid ""
+"For legal, tax, accounting and fraud-prevention reasons, we may retain the "
+"following data for the periods required by applicable law (typically up to "
+"10 years under German commercial and tax law):"
+msgstr "出于法律、税收、会计和防止欺诈等原因,我们可以保留适用法律规定的下列数据(根据德国商法和税法,通常最长为10年):"
+
+#: .\templates\pages\account_delete.html:53
+msgid "Invoices, payment records and subscription history"
+msgstr "发票、付款记录和订阅历史"
+
+#: .\templates\pages\account_delete.html:54
+msgid "Records required to comply with legal obligations (e.g. GoBD, HGB, AO)"
+msgstr "遵守法律义务所需的记录(如孟加拉国政府、HGB、AO)"
+
+#: .\templates\pages\account_delete.html:57
+msgid ""
+"This retained data is stored securely and used only to comply with legal "
+"obligations."
+msgstr "这种保留的数据是安全储存的,只用于遵守法律义务。"
+
+#: .\templates\pages\account_delete.html:60 .\templates\pages\contact.html:3
+#: .\templates\pages\privacy_policy.html:35
+#: .\templates\pages\terms_conditions.html:35
+#: .\templates\partials\footer.html:30 .\templates\partials\footer.html:35
+#: .\templates\partials\navbar.html:81 .\templates\partials\navbar.html:150
+msgid "Contact"
+msgstr "联系我们"
+
+#: .\templates\pages\account_delete.html:62
+msgid ""
+"If you have any questions about the deletion process or your data, please "
+"contact us:"
+msgstr "如果您对删除过程或数据有任何问题,请联系我们:"
+
+#: .\templates\pages\account_delete.html:63
+#: .\templates\pages\auth\forgot_password.html:16
+#: .\templates\pages\auth\login.html:23
+#: .\templates\pages\auth\register.html:21 .\templates\pages\checkout.html:23
+#: .\templates\pages\contact.html:20 .\templates\pages\contact.html:48
+#: .\templates\pages\restaurant_menu.html:1537
+#: .\templates\pages\restaurant_menu.html:1583
+#: .\templates\pages\restaurant_orders.html:521
+#: .\templates\pages\restaurant_orders.html:555
+#: .\templates\pages\restaurant_reservation.html:148
+#: .\templates\pages\restaurant_reservation.html:149
+#: .\templates\partials\customer_navbar.html:102
+#: .\templates\partials\customer_navbar.html:116
+#: .\templates\partials\customer_navbar.html:158
+msgid "Email"
+msgstr "邮箱"
+
+#: .\templates\pages\account_delete.html:64
+#: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:81
+#: .\templates\pages\panel\settings.html:29
+#: .\templates\pages\restaurant_menu.html:1256
+#: .\templates\pages\restaurant_menu.html:1405
+#: .\templates\pages\restaurant_menu.html:1538
+#: .\templates\pages\restaurant_menu.html:1587
+#: .\templates\pages\restaurant_orders.html:522
+#: .\templates\pages\restaurant_reservation.html:144
+#: .\templates\pages\restaurant_reservation.html:145
+#: .\templates\partials\customer_navbar.html:103
+msgid "Phone"
+msgstr "电话"
+
 #: .\templates\pages\auth\forgot_password.html:3
+#: .\templates\partials\customer_navbar.html:77
 msgid "Forgot password"
 msgstr "忘记密码"
 
 #: .\templates\pages\auth\forgot_password.html:9
+#: .\templates\partials\customer_navbar.html:135
 msgid "Reset password"
 msgstr "重置密码"
 
@@ -721,17 +908,9 @@ msgstr "重置密码"
 msgid "Enter your email and we'll send you a 6-digit code."
 msgstr "输入邮箱，我们将发送 6 位验证码。"
 
-#: .\templates\pages\auth\forgot_password.html:16
-#: .\templates\pages\auth\login.html:23 .\templates\pages\auth\register.html:21
-#: .\templates\pages\checkout.html:23 .\templates\pages\contact.html:20
-#: .\templates\pages\contact.html:43
-#: .\templates\pages\restaurant_reservation.html:146
-#: .\templates\pages\restaurant_reservation.html:147
-msgid "Email"
-msgstr "邮箱"
-
 #: .\templates\pages\auth\forgot_password.html:21
-#: .\templates\pages\auth\forgot_password.html:83
+#: .\templates\pages\auth\forgot_password.html:109
+#: .\templates\partials\customer_navbar.html:119
 msgid "Send code"
 msgstr "发送验证码"
 
@@ -759,7 +938,7 @@ msgid "Resend"
 msgstr "重新发送"
 
 #: .\templates\pages\auth\forgot_password.html:41
-#: .\templates\pages\auth\forgot_password.html:85
+#: .\templates\pages\auth\forgot_password.html:111
 msgid "Verify code"
 msgstr "验证代码"
 
@@ -768,56 +947,66 @@ msgid "Enter your new password."
 msgstr "输入您的新密码。"
 
 #: .\templates\pages\auth\forgot_password.html:52
+#: .\templates\partials\customer_navbar.html:77
 msgid "New password"
 msgstr "新密码"
 
-#: .\templates\pages\auth\forgot_password.html:57
+#: .\templates\pages\auth\forgot_password.html:56
+#: .\templates\pages\auth\forgot_password.html:74
+#: .\templates\pages\auth\login.html:32
+#: .\templates\partials\form_fields.html:21
+msgid "Toggle password visibility"
+msgstr "切换密码可见度"
+
+#: .\templates\pages\auth\forgot_password.html:70
 msgid "Confirm new password"
 msgstr "确认新密码"
 
-#: .\templates\pages\auth\forgot_password.html:62
-#: .\templates\pages\auth\forgot_password.html:87
+#: .\templates\pages\auth\forgot_password.html:88
+#: .\templates\pages\auth\forgot_password.html:113
 msgid "Update password"
 msgstr "更新密码"
 
-#: .\templates\pages\auth\forgot_password.html:67
+#: .\templates\pages\auth\forgot_password.html:93
+#: .\templates\partials\customer_navbar.html:122
 msgid "Back to login"
 msgstr "返回登录"
 
-#: .\templates\pages\auth\forgot_password.html:82
-#: .\templates\pages\restaurant_reservation.html:177
+#: .\templates\pages\auth\forgot_password.html:108
+#: .\templates\pages\restaurant_reservation.html:179
 msgid "Sending…"
 msgstr "发送中…"
 
-#: .\templates\pages\auth\forgot_password.html:84
+#: .\templates\pages\auth\forgot_password.html:110
 msgid "Verifying…"
 msgstr "验证中…"
 
-#: .\templates\pages\auth\forgot_password.html:86
+#: .\templates\pages\auth\forgot_password.html:112
 msgid "Updating…"
 msgstr "更新中…"
 
-#: .\templates\pages\auth\forgot_password.html:88
+#: .\templates\pages\auth\forgot_password.html:114
 msgid "Failed to send code. Check your email."
 msgstr "发送验证码失败，请检查邮箱。"
 
-#: .\templates\pages\auth\forgot_password.html:89
+#: .\templates\pages\auth\forgot_password.html:115
+#: .\templates\partials\customer_navbar.html:397
 msgid "Invalid or expired code."
 msgstr "验证码无效或已过期。"
 
-#: .\templates\pages\auth\forgot_password.html:90
+#: .\templates\pages\auth\forgot_password.html:116
 msgid "Passwords do not match."
 msgstr "两次输入的密码不一致。"
 
-#: .\templates\pages\auth\forgot_password.html:91
+#: .\templates\pages\auth\forgot_password.html:117
 msgid "Failed to update password."
 msgstr "更新密码失败。"
 
-#: .\templates\pages\auth\forgot_password.html:92
+#: .\templates\pages\auth\forgot_password.html:118
 msgid "Network error. Try again."
 msgstr "网络错误，请重试。"
 
-#: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:32
+#: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:45
 #: .\templates\pages\auth\register.html:57
 #: .\templates\pages\panel\dashboard_simple.html:18
 #: .\templates\partials\navbar.html:124 .\templates\partials\navbar.html:170
@@ -840,20 +1029,30 @@ msgstr "注册成功，请在下方登录。"
 msgid "Password updated. You can log in with your new password."
 msgstr "密码已更新，您可以使用新密码登录。"
 
-#: .\templates\pages\auth\login.html:28 .\templates\pages\auth\register.html:23
+#: .\templates\pages\auth\login.html:28
+#: .\templates\pages\auth\register.html:23
+#: .\templates\pages\restaurant_menu.html:1522
+#: .\templates\pages\restaurant_orders.html:507
+#: .\templates\partials\customer_navbar.html:87
 msgid "Password"
 msgstr "密码"
 
-#: .\templates\pages\auth\login.html:34
+#: .\templates\pages\auth\login.html:47
+#: .\templates\partials\customer_navbar.html:93
 msgid "Forgot password?"
 msgstr "忘记密码？"
 
-#: .\templates\pages\auth\login.html:37
+#: .\templates\pages\auth\login.html:50
 msgid "No account?"
 msgstr "还没有账户？"
 
-#: .\templates\pages\auth\login.html:37 .\templates\pages\auth\register.html:3
+#: .\templates\pages\auth\login.html:50 .\templates\pages\auth\register.html:3
 #: .\templates\pages\panel\dashboard_simple.html:17
+#: .\templates\pages\restaurant_menu.html:1516
+#: .\templates\pages\restaurant_menu.html:1566
+#: .\templates\pages\restaurant_orders.html:502
+#: .\templates\partials\customer_navbar.html:51
+#: .\templates\partials\customer_navbar.html:82
 msgid "Register"
 msgstr "注册"
 
@@ -874,14 +1073,6 @@ msgstr "餐厅名称"
 msgid "Orange Bistro"
 msgstr "Orange Bistro"
 
-#: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
-#: .\templates\pages\order_payment.html:72
-#: .\templates\pages\panel\settings.html:29
-#: .\templates\pages\restaurant_reservation.html:142
-#: .\templates\pages\restaurant_reservation.html:143
-msgid "Phone"
-msgstr "电话"
-
 #: .\templates\pages\auth\register.html:26
 msgid "I accept the terms and conditions"
 msgstr "我接受条款和条件"
@@ -891,8 +1082,8 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "我确认以企业身份（B2B）使用。"
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I"
-msgstr "请完成「我不是机器人」验证。"
+msgid "Please complete the \"I'm not a robot\" check."
+msgstr "请完成\"我不是机器人\"的检查."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
@@ -917,6 +1108,7 @@ msgid "Use a different email"
 msgstr "使用其他邮箱"
 
 #: .\templates\pages\auth\register.html:57
+#: .\templates\pages\restaurant_menu.html:1562
 msgid "Already have an account?"
 msgstr "已有账户？"
 
@@ -936,8 +1128,11 @@ msgstr "全名"
 msgid "John Doe"
 msgstr "张三"
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:89
 #: .\templates\pages\panel\settings.html:30
+#: .\templates\pages\restaurant_menu.html:1599
+#: .\templates\pages\restaurant_orders.html:579
+#: .\templates\partials\customer_navbar.html:179
 msgid "Address"
 msgstr "地址"
 
@@ -994,25 +1189,20 @@ msgid "CVC"
 msgstr "CVC 安全码"
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:591
-#: .\templates\pages\restaurant_menu.html:731
+#: .\templates\pages\restaurant_menu.html:1317
+#: .\templates\pages\restaurant_menu.html:1474
+#: .\templates\pages\restaurant_menu.html:1626
 msgid "Place Order"
 msgstr "下单"
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:741
+#: .\templates\pages\restaurant_menu.html:1484
 msgid "Order Summary"
 msgstr "订单摘要"
 
 #: .\templates\pages\checkout.html:65 .\templates\partials\cart_drawer.html:46
 msgid "Subtotal"
 msgstr "小计"
-
-#: .\templates\pages\contact.html:3 .\templates\partials\footer.html:30
-#: .\templates\partials\footer.html:35 .\templates\partials\navbar.html:81
-#: .\templates\partials\navbar.html:150
-msgid "Contact"
-msgstr "联系我们"
 
 #: .\templates\pages\contact.html:4
 msgid ""
@@ -1048,44 +1238,45 @@ msgstr "在 WhatsApp 上聊天"
 msgid "Send a message"
 msgstr "发送消息"
 
-#: .\templates\pages\contact.html:42 .\templates\pages\panel\categories.html:20
+#: .\templates\pages\contact.html:47
+#: .\templates\pages\panel\categories.html:20
 #: .\templates\pages\panel\menu_item_form.html:13
-#: .\templates\pages\restaurant_reservation.html:139
+#: .\templates\pages\restaurant_reservation.html:141
 msgid "Name"
 msgstr "姓名"
 
-#: .\templates\pages\contact.html:42
+#: .\templates\pages\contact.html:47
 msgid "Your name"
 msgstr "您的姓名"
 
-#: .\templates\pages\contact.html:43
+#: .\templates\pages\contact.html:48
 msgid "you@example.com"
 msgstr "you@example.com"
 
-#: .\templates\pages\contact.html:44
+#: .\templates\pages\contact.html:49
 msgid "Subject"
 msgstr "主题"
 
-#: .\templates\pages\contact.html:44
+#: .\templates\pages\contact.html:49
 msgid "How can we help?"
 msgstr "有什么我们可以帮忙的？"
 
-#: .\templates\pages\contact.html:45
+#: .\templates\pages\contact.html:50
 msgid "Message"
 msgstr "留言"
 
-#: .\templates\pages\contact.html:45
+#: .\templates\pages\contact.html:50
 msgid "Your message"
 msgstr "您的消息"
 
-#: .\templates\pages\contact.html:46
+#: .\templates\pages\contact.html:55
 msgid "Send message"
 msgstr "发送消息"
 
 #: .\templates\pages\features.html:3 .\templates\partials\footer.html:22
 #: .\templates\partials\navbar.html:36 .\templates\partials\navbar.html:145
-#: .\templates_bonusweb\base.html:203 .\templates_bonusweb\base.html:280
-#: .\templates_bonusweb\base.html:336
+#: .\templates_bonusweb\base.html:204 .\templates_bonusweb\base.html:281
+#: .\templates_bonusweb\base.html:337
 msgid "Features"
 msgstr "功能"
 
@@ -1105,8 +1296,8 @@ msgid ""
 msgstr "数字化菜单、开展促销和提升订单所需的一切。"
 
 #: .\templates\pages\features.html:29
-msgid "Dashboard and analytics view"
-msgstr "仪表盘与分析视图"
+msgid "Restaurant with digital menu"
+msgstr "带有数字菜单的餐厅"
 
 #: .\templates\pages\features.html:35
 msgid "One dashboard for menu, orders, and campaigns."
@@ -1120,9 +1311,9 @@ msgstr "常见问题"
 msgid "See pricing"
 msgstr "查看价格"
 
-#: .\templates\pages\how_it_works.html:3 .\templates\pages\how_it_works.html:10
-#: .\templates\partials\footer.html:23 .\templates\partials\navbar.html:63
-#: .\templates\partials\navbar.html:147
+#: .\templates\pages\how_it_works.html:3
+#: .\templates\pages\how_it_works.html:10 .\templates\partials\footer.html:23
+#: .\templates\partials\navbar.html:63 .\templates\partials\navbar.html:147
 msgid "How it works"
 msgstr "如何运作"
 
@@ -1137,8 +1328,8 @@ msgid "Get your digital menu live and start taking orders in minutes."
 msgstr "上线数字菜单，几分钟内即可开始接单。"
 
 #: .\templates\pages\how_it_works.html:30
-msgid "QR code and digital ordering"
-msgstr "二维码与数字点单"
+msgid "Restaurant menu ordering"
+msgstr "餐厅菜单排序"
 
 #: .\templates\pages\how_it_works.html:36
 msgid "Scan, browse, order — no app download required."
@@ -1194,7 +1385,8 @@ msgstr "查看示例"
 msgid "Download on the App Store"
 msgstr "在 App Store 下载"
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
+#: .\templates\pages\landing.html:61
+#: .\templates\pages\restaurant_menu.html:1174
 msgid "Orders"
 msgstr "订单"
 
@@ -1211,20 +1403,16 @@ msgid "Setup"
 msgstr "配置"
 
 #: .\templates\pages\landing.html:79
-msgid "Tablet menu preview"
-msgstr "平板菜单预览"
+msgid "Restaurant tables with digital menu"
+msgstr "带有数字菜单的餐桌"
 
 #: .\templates\pages\landing.html:90 .\templates\pages\landing.html:111
-msgid "Phone menu"
-msgstr "手机菜单"
+msgid "Menu dish"
+msgstr "菜单盘"
 
-#: .\templates\pages\landing.html:101
-msgid "Phone menu analytics"
-msgstr "手机菜单分析"
-
-#: .\templates\pages\landing.html:116
-msgid "Phone analytics"
-msgstr "手机分析"
+#: .\templates\pages\landing.html:101 .\templates\pages\landing.html:116
+msgid "Menu item"
+msgstr "菜单项目"
 
 #: .\templates\pages\landing.html:122
 msgid "Open Live Menu"
@@ -1278,8 +1466,8 @@ msgstr "互动式视觉展示"
 
 #: .\templates\pages\landing.html:161
 msgid ""
-"Beautiful sections that feel alive and premium, built for conversion and wow "
-"effect."
+"Beautiful sections that feel alive and premium, built for conversion and wow"
+" effect."
 msgstr "生动而高端的精美版块，为转化和惊艳效果打造。"
 
 #: .\templates\pages\landing.html:165
@@ -1327,8 +1515,8 @@ msgid "Menu Action"
 msgstr "菜单操作"
 
 #: .\templates\pages\landing.html:210
-msgid "Premium phone mockup"
-msgstr "高端手机样机"
+msgid "Menu on phone"
+msgstr "手机菜单"
 
 #: .\templates\pages\landing.html:215
 msgid "Immersive Mobile"
@@ -1373,8 +1561,8 @@ msgid "More About QR Menu"
 msgstr "了解更多二维码菜单"
 
 #: .\templates\pages\landing.html:246
-msgid "Color portrait style"
-msgstr "彩色人像风格"
+msgid "Signature dish"
+msgstr "签名盘"
 
 #: .\templates\pages\landing.html:261 .\templates\pages\landing.html:275
 msgid "There is more<br>to this menu world"
@@ -1402,114 +1590,238 @@ msgstr "长而专业的着陆页体验，包含精美版块、流畅动效和高
 msgid "See Menus"
 msgstr "查看菜单"
 
-#: .\templates\pages\order_payment.html:3
+#: .\templates\pages\order_payment.html:5
 #, python-format
-msgid "Payment — %(name)s"
-msgstr "付款 — %(name)s"
+msgid "Payment - %(name)s"
+msgstr "支付 - %(name)s"
 
-#: .\templates\pages\order_payment.html:10
-#: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:87
-#: .\templates\pages\restaurant_reservation.html:108
-#: .\templates\pages\restaurant_reservation.html:182
-#: .\templates\pages\restaurant_schedule.html:34
+#: .\templates\pages\order_payment.html:29
+#: .\templates\pages\order_payment.html:58
+#: .\templates\pages\order_payment.html:149
+#: .\templates\pages\order_payment.html:160
+#: .\templates\pages\order_payment.html:172
+#: .\templates\pages\restaurant_reservation.html:110
+#: .\templates\pages\restaurant_reservation.html:184
+#: .\templates\pages\restaurant_schedule.html:36
 msgid "Back to menu"
 msgstr "返回菜单"
 
-#: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:550
-#: .\templates\pages\restaurant_menu.html:682
-#: .\templates\pages\restaurant_reservation.html:163
+#: .\templates\pages\order_payment.html:34
+msgid "Secure checkout"
+msgstr "安全检出"
+
+#: .\templates\pages\order_payment.html:35
+#: .\templates\pages\order_payment.html:126
+#: .\templates\pages\restaurant_menu.html:1260
+#: .\templates\pages\restaurant_menu.html:1409
+#: .\templates\pages\restaurant_orders.html:483
+#: .\templates\pages\restaurant_reservation.html:165
 msgid "Payment"
 msgstr "支付"
 
-#: .\templates\pages\order_payment.html:15
+#: .\templates\pages\order_payment.html:36
 #, python-format
-msgid "%(name)s — Order #%(id)s"
-msgstr "%(name)s — 订单 #%(id)s"
+msgid "%(name)s - Order #%(id)s"
+msgstr "%(name)s - 秩序%(id)s"
 
-#: .\templates\pages\order_payment.html:18
+#: .\templates\pages\order_payment.html:42
 msgid "Order summary"
 msgstr "订单摘要"
 
-#: .\templates\pages\order_payment.html:24
+#: .\templates\pages\order_payment.html:51
 msgid "Total:"
 msgstr "合计："
 
-#: .\templates\pages\order_payment.html:28
-msgid "Payment method"
-msgstr "支付方式"
-
-#: .\templates\pages\order_payment.html:30
+#: .\templates\pages\order_payment.html:56
 msgid ""
 "This restaurant does not accept online payment. Please pay by cash when you "
 "pick up or dine in."
 msgstr "本餐厅不接受在线付款，请在取餐或堂食时以现金付款。"
 
-#: .\templates\pages\order_payment.html:35
-#, python-format
-msgid "Pay with card. The payment goes to %(name)s."
-msgstr "使用银行卡付款。款项将支付给 %(name)s。"
+#: .\templates\pages\order_payment.html:63
+msgid "Payment received"
+msgstr "收到付款"
 
-#: .\templates\pages\order_payment.html:42
-#, python-format
-msgid "Pay %(currency)s %(total)s"
-msgstr "支付 %(currency)s %(total)s"
+#: .\templates\pages\order_payment.html:64
+msgid "Sending your order to the restaurant..."
+msgstr "把你的订单送到餐厅..."
 
-#: .\templates\pages\order_payment.html:47
-msgid "Payment successful."
-msgstr "支付成功。"
-
-#: .\templates\pages\order_payment.html:49
+#: .\templates\pages\order_payment.html:69
 msgid ""
-"Please enter your delivery details so the restaurant can receive the order."
-msgstr "请填写配送信息，以便餐厅接收订单。"
+"We'll use these details to send you the invoice and create an account so you"
+" can track this order later. All fields are required."
+msgstr "我们会用这些细节给你发发票 并建立一个账户 这样你就可以跟踪这个订单了 需要所有栏目。"
 
-#: .\templates\pages\order_payment.html:51
-msgid "Your order has been sent to the restaurant."
-msgstr "订单已发送至餐厅。"
-
-#: .\templates\pages\order_payment.html:59
+#: .\templates\pages\order_payment.html:72
+#: .\templates\pages\restaurant_menu.html:1534
+#: .\templates\pages\restaurant_menu.html:1574
+#: .\templates\pages\restaurant_orders.html:518
+#: .\templates\pages\restaurant_orders.html:546
+#: .\templates\partials\customer_navbar.html:99
+#: .\templates\partials\customer_navbar.html:155
 msgid "First name"
 msgstr "名字"
 
-#: .\templates\pages\order_payment.html:63
+#: .\templates\pages\order_payment.html:76
+#: .\templates\pages\restaurant_menu.html:1535
+#: .\templates\pages\restaurant_menu.html:1578
+#: .\templates\pages\restaurant_orders.html:519
+#: .\templates\pages\restaurant_orders.html:550
+#: .\templates\partials\customer_navbar.html:100
+#: .\templates\partials\customer_navbar.html:156
 msgid "Last name"
 msgstr "姓氏"
 
-#: .\templates\pages\order_payment.html:77
-#, fuzzy
-#| msgid "View orders"
+#: .\templates\pages\order_payment.html:85
+msgid "Email (for invoice)"
+msgstr "电子邮件(发票)"
+
+#: .\templates\pages\order_payment.html:94
 msgid "Submit order"
-msgstr "提交订单"
+msgstr "提交顺序"
 
-#: .\templates\pages\order_payment.html:82
-#, fuzzy
-#| msgid "Full feature set for modern restaurants"
+#: .\templates\pages\order_payment.html:98
 msgid "Order sent to the restaurant."
-msgstr "订单已发送到餐厅。"
+msgstr "给餐厅的订单"
 
-#: .\templates\pages\order_payment.html:83
-msgid "You can follow the order status in order tracking."
-msgstr "您可以在订单跟踪中查看订单状态。"
+#: .\templates\pages\order_payment.html:102
+msgid "Purchase invoice"
+msgstr "采购发票"
 
-#: .\templates\pages\order_payment.html:84
-#, fuzzy
-#| msgid "Order management"
-msgid "Order tracking"
-msgstr "订单跟踪"
+#: .\templates\pages\order_payment.html:106
+msgid "Invoice"
+msgstr "发票"
 
-#: .\templates\pages\order_payment.html:113
+#: .\templates\pages\order_payment.html:109
+#: .\templates\pages\restaurant_menu.html:1224
+#: .\templates\pages\restaurant_menu.html:1374
+#: .\templates\pages\restaurant_menu.html:1490
+msgid "Total"
+msgstr "合计"
+
+#: .\templates\pages\order_payment.html:117
+#: .\templates\pages\panel\dashboard.html:35
+msgid "Customer"
+msgstr "顾客"
+
+#: .\templates\pages\order_payment.html:123
+#: .\templates\pages\panel\dashboard.html:34
+msgid "Order"
+msgstr "订单"
+
+#: .\templates\pages\order_payment.html:124
+#: .\templates\pages\panel\dashboard.html:37
+#: .\templates\pages\panel\dashboard_simple.html:27
+msgid "Status"
+msgstr "状态"
+
+#: .\templates\pages\order_payment.html:125
+#: .\templates\pages\restaurant_orders.html:479
+#: .\templates\pages\service_detail.html:18
+msgid "Service"
+msgstr "服务"
+
+#: .\templates\pages\order_payment.html:127
+#: .\templates\pages\restaurant_reservation.html:117
+msgid "Date"
+msgstr "日期"
+
+#: .\templates\pages\order_payment.html:131
+#: .\templates\pages\restaurant_orders.html:475
+msgid "Items"
+msgstr "商品"
+
+#: .\templates\pages\order_payment.html:136
+msgid "Item"
+msgstr "项目"
+
+#: .\templates\pages\order_payment.html:137
+msgid "Qty"
+msgstr "齐哥"
+
+#: .\templates\pages\order_payment.html:138
+#: .\templates\pages\panel\menu_item_form.html:14
+msgid "Price"
+msgstr "价格"
+
+#: .\templates\pages\order_payment.html:147
+msgid "Download invoice"
+msgstr "下载发票"
+
+#: .\templates\pages\order_payment.html:156
+msgid "Payment was cancelled."
+msgstr "付款被取消。"
+
+#: .\templates\pages\order_payment.html:157
+msgid "No order has been sent to the restaurant."
+msgstr "餐厅没有接到订单"
+
+#: .\templates\pages\order_payment.html:164
+msgid "Redirecting to secure payment..."
+msgstr "重定向到安全支付..."
+
+#: .\templates\pages\order_payment.html:165
+msgid "Please wait while Stripe Checkout opens."
+msgstr "请稍候 。"
+
+#: .\templates\pages\order_payment.html:213
+#: .\templates\pages\restaurant_menu.html:691
+#: .\templates\pages\restaurant_orders.html:251
+msgid "In Store"
+msgstr "店内用餐"
+
+#: .\templates\pages\order_payment.html:214
+#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:1233
+#: .\templates\pages\restaurant_menu.html:1382
+#: .\templates\pages\restaurant_orders.html:252
+msgid "Pickup"
+msgstr "自取"
+
+#: .\templates\pages\order_payment.html:215
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:1235
+#: .\templates\pages\restaurant_menu.html:1384
+#: .\templates\pages\restaurant_orders.html:253
+#: .\templates\pages\restaurant_orders.html:450
+msgid "Delivery"
+msgstr "配送"
+
+#: .\templates\pages\order_payment.html:222
+#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:1263
+#: .\templates\pages\restaurant_menu.html:1412
+#: .\templates\pages\restaurant_orders.html:258
+msgid "Cash"
+msgstr "现金"
+
+#: .\templates\pages\order_payment.html:223
+#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:1266
+#: .\templates\pages\restaurant_menu.html:1415
+#: .\templates\pages\restaurant_orders.html:258
+msgid "Online"
+msgstr "在线"
+
+#: .\templates\pages\order_payment.html:264
+#: .\templates\pages\order_payment.html:285
+#: .\templates\pages\order_payment.html:288
 msgid "Could not start payment."
 msgstr "无法开始支付。"
 
-#: .\templates\pages\order_payment.html:114
-msgid "Payment failed."
-msgstr "支付失败。"
+#: .\templates\pages\order_payment.html:306
+msgid "Could not submit order."
+msgstr "无法提交命令 。"
 
-#: .\templates\pages\order_payment.html:115
-msgid "Something went wrong."
-msgstr "出错了。"
+#: .\templates\pages\order_payment.html:324
+msgid ""
+"Complete your details to send the order to the restaurant. We will create an"
+" account for you."
+msgstr "完成你的细节 发送订单到餐厅。 我将为你们创造一个账户。"
+
+#: .\templates\pages\order_payment.html:372
+msgid "All fields are required."
+msgstr "需要所有栏目。"
 
 #: .\templates\pages\panel\campaigns.html:3
 #: .\templates\pages\panel\campaigns.html:11
@@ -1595,6 +1907,8 @@ msgstr "操作"
 
 #: .\templates\pages\panel\categories.html:30
 #: .\templates\pages\panel\menu_items_list.html:33
+#: .\templates\pages\restaurant_orders.html:585
+#: .\templates\partials\customer_navbar.html:185
 msgid "Delete"
 msgstr "删除"
 
@@ -1620,7 +1934,8 @@ msgstr "使用这个基于 Alpine 的弹窗，稍后添加分类创建表单。"
 #: .\templates\pages\panel\dashboard_simple.html:3
 #: .\templates\partials\navbar.html:119 .\templates\partials\navbar.html:167
 #: .\templates\partials\panel_navbar.html:10
-#: .\templates\partials\panel_navbar.html:34 .\templates_bonusweb\base.html:248
+#: .\templates\partials\panel_navbar.html:34
+#: .\templates_bonusweb\base.html:249
 msgid "Dashboard"
 msgstr "仪表盘"
 
@@ -1628,22 +1943,9 @@ msgstr "仪表盘"
 msgid "Recent Orders"
 msgstr "最近订单"
 
-#: .\templates\pages\panel\dashboard.html:34
-msgid "Order"
-msgstr "订单"
-
-#: .\templates\pages\panel\dashboard.html:35
-msgid "Customer"
-msgstr "顾客"
-
 #: .\templates\pages\panel\dashboard.html:36
 msgid "Amount"
 msgstr "金额"
-
-#: .\templates\pages\panel\dashboard.html:37
-#: .\templates\pages\panel\dashboard_simple.html:27
-msgid "Status"
-msgstr "状态"
 
 #: .\templates\pages\panel\dashboard.html:56
 msgid "Quick Actions"
@@ -1698,7 +2000,6 @@ msgid "Expires"
 msgstr "到期"
 
 #: .\templates\pages\panel\dashboard_simple.html:52
-#: .\templates_bonusweb\business_menu\subscribe.html:7
 msgid "Subscribe to continue"
 msgstr "订阅以继续"
 
@@ -1723,14 +2024,11 @@ msgstr "连接 Stripe"
 
 #: .\templates\pages\panel\dashboard_simple.html:69
 msgid ""
-"If you want your customers' online payments to be processed from the digital "
-"menu, pay 200 Euros now to upgrade your plan."
+"If you want your customers' online payments to be processed from the digital"
+" menu, pay 200 Euros now to upgrade your plan."
 msgstr "如需通过数字菜单处理顾客的在线付款，请立即支付 200 欧元升级您的套餐。"
 
 #: .\templates\pages\panel\dashboard_simple.html:71
-#: .\templates_bonusweb\business_menu\subscribe.html:13
-#: .\templates_bonusweb\business_menu\subscribe.html:35
-#: .\templates_bonusweb\business_menu\subscribe.html:39
 msgid "Start Plan"
 msgstr "开始套餐"
 
@@ -1751,10 +2049,6 @@ msgstr "编辑菜品"
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Create Menu Item"
 msgstr "创建菜品"
-
-#: .\templates\pages\panel\menu_item_form.html:14
-msgid "Price"
-msgstr "价格"
 
 #: .\templates\pages\panel\menu_item_form.html:15
 msgid "Image URL"
@@ -1777,6 +2071,7 @@ msgid "Save item"
 msgstr "保存菜品"
 
 #: .\templates\pages\panel\menu_item_form.html:29
+#: .\templates\pages\restaurant_orders.html:427
 msgid "Cancel"
 msgstr "取消"
 
@@ -1842,6 +2137,8 @@ msgid "Postal code"
 msgstr "邮政编码"
 
 #: .\templates\pages\panel\settings.html:41
+#: .\templates\partials\restaurant_location_public.html:5
+#: .\templates\partials\restaurant_location_public.html:34
 msgid "Restaurant location"
 msgstr "餐厅位置"
 
@@ -1856,7 +2153,9 @@ msgid ""
 "Google Maps is not configured. Set <code class=\"rounded bg-rose-100 px-1 "
 "dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in the server environment to "
 "enable the map."
-msgstr "Google Maps 尚未配置。请在服务器环境中设置 <code class=\"rounded bg-rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> 以启用地图。"
+msgstr ""
+"Google Maps 尚未配置。请在服务器环境中设置 <code class=\"rounded bg-rose-100 px-1 dark:bg-"
+"rose-800\">GOOGLE_MAPS_API_KEY</code> 以启用地图。"
 
 #: .\templates\pages\panel\settings.html:53
 msgid "Search address"
@@ -1895,6 +2194,8 @@ msgid "Clear location"
 msgstr "清除位置"
 
 #: .\templates\pages\panel\settings.html:91
+#: .\templates\pages\restaurant_orders.html:564
+#: .\templates\partials\customer_navbar.html:165
 msgid "Save changes"
 msgstr "保存更改"
 
@@ -1917,8 +2218,8 @@ msgstr "前往管理面板"
 #: .\templates\pages\payment_cancel.html:10
 #: .\templates\pages\payment_success.html:10
 #: .\templates\partials\navbar.html:30 .\templates\partials\navbar.html:144
-#: .\templates_bonusweb\base.html:195 .\templates_bonusweb\base.html:272
-#: .\templates_bonusweb\base.html:334
+#: .\templates_bonusweb\base.html:196 .\templates_bonusweb\base.html:273
+#: .\templates_bonusweb\base.html:335
 msgid "Home"
 msgstr "首页"
 
@@ -1935,17 +2236,17 @@ msgstr "您的套餐已升级。要通过数字菜单接收在线付款，请前
 
 #: .\templates\pages\pricing.html:3 .\templates\partials\footer.html:24
 #: .\templates\partials\navbar.html:69 .\templates\partials\navbar.html:148
-#: .\templates_bonusweb\base.html:215 .\templates_bonusweb\base.html:292
-#: .\templates_bonusweb\base.html:340
+#: .\templates_bonusweb\base.html:216 .\templates_bonusweb\base.html:293
+#: .\templates_bonusweb\base.html:341
 msgid "Pricing"
 msgstr "价格"
 
 #: .\templates\pages\pricing.html:4
 #, python-format
 msgid ""
-"One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT "
-"(€238 total). Everything included."
-msgstr "简单的年度方案：二维码菜单和在线点单 €200/年 + 19% 增值税（合计 €238），全部包含。"
+"One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT"
+" (€238 total). Everything included."
+msgstr "简单的年度方案：二维码菜单和在线点单 €200/年 + 19%% 增值税（合计 €238），全部包含。"
 
 #: .\templates\pages\pricing.html:10
 msgid "Simple annual pricing"
@@ -1972,7 +2273,7 @@ msgstr "年"
 #: .\templates\pages\pricing.html:20
 #, python-format
 msgid "plus 19%% VAT"
-msgstr "另加 19% 增值税"
+msgstr "另加 19%% 增值税"
 
 #: .\templates\pages\pricing.html:21
 #, python-format
@@ -2003,8 +2304,111 @@ msgstr "联系我们"
 msgid "Get started — €200/year"
 msgstr "开始 — €200/年"
 
+#: .\templates\pages\privacy_policy.html:4
+#: .\templates\pages\privacy_policy.html:11 .\templates_bonusweb\base.html:371
+#: .\templates_bonusweb\business_menu\subscribe.html:96
+msgid "Privacy Policy"
+msgstr "隐私政策"
+
+#: .\templates\pages\privacy_policy.html:5
+msgid "Privacy Policy for My Bonus QR Menu and PreisMenu services."
+msgstr "My Binus QR菜单和PreisMenu服务的隐私政策."
+
+#: .\templates\pages\privacy_policy.html:10
+#: .\templates\pages\terms_conditions.html:10
+#: .\templates_bonusweb\base.html:365
+msgid "Legal"
+msgstr "法律"
+
+#: .\templates\pages\privacy_policy.html:12
+#: .\templates\pages\terms_conditions.html:12
+msgid "Last updated: August 15, 2026"
+msgstr "最后更新:2026年8月15日"
+
+#: .\templates\pages\privacy_policy.html:15
+msgid ""
+"This Privacy Policy explains how My Bonus QR Menu collects, uses, and "
+"protects information when restaurants, staff, and guests use our QR menu, "
+"ordering, campaign, and administration services."
+msgstr "当餐馆、员工和客人使用我们的QR菜单、订货、竞选和管理服务时,"
+
+#: .\templates\pages\privacy_policy.html:17
+msgid "Information We Collect"
+msgstr "我们收集的信息"
+
+#: .\templates\pages\privacy_policy.html:18
+msgid ""
+"We may collect account details, restaurant profile information, menu "
+"content, order information, contact messages, device and log data, and "
+"information needed to provide payment, support, security, and analytics "
+"features."
+msgstr "我们可以收集账户细节、餐厅简介信息、菜单内容、订单信息、联系信息、设备和日志数据,以及提供付款、支助、安全和分析功能所需的信息。"
+
+#: .\templates\pages\privacy_policy.html:20
+msgid "How We Use Information"
+msgstr "我们如何使用信息"
+
+#: .\templates\pages\privacy_policy.html:21
+msgid ""
+"We use information to provide and improve the service, manage accounts, "
+"process orders, support restaurants and customers, prevent abuse, maintain "
+"security, comply with legal obligations, and communicate important service "
+"updates."
+msgstr "我们利用信息提供和改进服务,管理账户,处理订单,支持餐馆和客户,防止滥用,维护安全,遵守法律义务,并沟通重要的服务更新."
+
+#: .\templates\pages\privacy_policy.html:23
+msgid "Sharing and Processors"
+msgstr "共享和处理器"
+
+#: .\templates\pages\privacy_policy.html:24
+msgid ""
+"We do not sell personal information. We may share limited information with "
+"service providers that help us operate the platform, such as hosting, email,"
+" analytics, payment, security, and customer support providers, where needed "
+"for the service."
+msgstr ""
+"我们不卖个人信息。 我们可以与帮助我们运行该平台的服务提供商分享有限的信息,例如托管、电子邮件、分析、支付、安全和客户支持供应商,视服务需要而定。"
+
+#: .\templates\pages\privacy_policy.html:26
+msgid "Data Retention"
+msgstr "数据保留"
+
+#: .\templates\pages\privacy_policy.html:27
+msgid ""
+"We keep information only as long as needed for the purposes described in "
+"this policy, unless a longer retention period is required by law, accounting"
+" rules, security needs, or dispute resolution."
+msgstr "除非法律、会计规则、安全需要或争端解决需要更长的留存期,否则我们只按本政策所述目的的需要保存资料。"
+
+#: .\templates\pages\privacy_policy.html:29
+msgid "Your Rights"
+msgstr "权利"
+
+#: .\templates\pages\privacy_policy.html:30
+msgid ""
+"Depending on your location, you may have rights to access, correct, delete, "
+"restrict, or export your personal information, or object to certain "
+"processing. You can contact us to exercise these rights."
+msgstr "根据您所处的位置,您可能有权访问、更正、删除、限制或输出您的个人信息,或反对某些处理。 你可以联系我们行使这些权利。"
+
+#: .\templates\pages\privacy_policy.html:32
+msgid "Security"
+msgstr "警卫"
+
+#: .\templates\pages\privacy_policy.html:33
+msgid ""
+"We use reasonable technical and organizational measures to protect "
+"information. No online service can guarantee absolute security, but we work "
+"to protect data against unauthorized access, loss, misuse, or alteration."
+msgstr "我们使用合理的技术和组织措施保护信息。 任何在线服务都无法保证绝对安全,但我们努力保护数据不被未经授权的访问、丢失、滥用或篡改。"
+
+#: .\templates\pages\privacy_policy.html:36
+msgid "For privacy questions, contact us at"
+msgstr "关于隐私问题 请联系我们"
+
 #: .\templates\pages\public_menu.html:3
 #: .\templates\pages\restaurant_menu.html:3
+#: .\templates\pages\restaurant_orders.html:383
 #: .\templates_bonusweb\business_menu\menu_display.html:4
 msgid "Menu"
 msgstr "菜单"
@@ -2031,450 +2435,899 @@ msgstr "将 %(name)s 加入购物车"
 msgid "Open cart"
 msgstr "打开购物车"
 
-#: .\templates\pages\restaurant_menu.html:39
+#: .\templates\pages\restaurant_menu.html:397
 msgid "Added"
 msgstr "已添加"
 
-#: .\templates\pages\restaurant_menu.html:41
+#: .\templates\pages\restaurant_menu.html:399
 msgid "Added to cart"
 msgstr "已加入购物车"
 
-#: .\templates\pages\restaurant_menu.html:42
+#: .\templates\pages\restaurant_menu.html:400
 msgid "Table number is required for Dine In"
 msgstr "堂食需要填写餐桌号"
 
-#: .\templates\pages\restaurant_menu.html:43
+#: .\templates\pages\restaurant_menu.html:401
+msgid "Ordering is only available during opening hours."
+msgstr "只有在营业时间才能订货。"
+
+#: .\templates\pages\restaurant_menu.html:402
 msgid "Could not place order"
 msgstr "无法下单"
 
-#: .\templates\pages\restaurant_menu.html:44
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:831
+#: .\templates\pages\restaurant_orders.html:119
+#: .\templates\pages\restaurant_orders.html:159
+#: .\templates\pages\restaurant_orders.html:196
+#: .\templates\pages\restaurant_orders.html:345
+#: .\templates\pages\restaurant_orders.html:370
+#: .\templates\partials\customer_navbar.html:315
+#: .\templates\partials\customer_navbar.html:357
+#: .\templates\partials\customer_navbar.html:378
+#: .\templates\partials\customer_navbar.html:406
+#: .\templates\partials\customer_navbar.html:438
 msgid "Network error"
 msgstr "网络错误"
 
-#: .\templates\pages\restaurant_menu.html:237
-msgid ""
-"You have order(s) pending or in progress. Check status and when it's ready "
-"in the Orders panel."
-msgstr "您有待处理或进行中的订单。请在订单面板查看状态。"
+#: .\templates\pages\restaurant_menu.html:484
+#: .\templates\pages\restaurant_orders.html:96
+#: .\templates\partials\customer_navbar.html:291
+msgid "Please enter your email/phone and password."
+msgstr "请输入您的电子邮件/ 电话和密码 。"
 
-#: .\templates\pages\restaurant_menu.html:238
+#: .\templates\pages\restaurant_menu.html:498
+#: .\templates\pages\restaurant_orders.html:107
+msgid "Invalid email/phone or password."
+msgstr "无效的电子邮件/电话或密码 。"
+
+#: .\templates\pages\restaurant_menu.html:499
+#: .\templates\pages\restaurant_orders.html:107
+#: .\templates\partials\customer_navbar.html:306
+msgid "Login failed."
+msgstr "登录失败 。"
+
+#: .\templates\pages\restaurant_menu.html:513
+#: .\templates\pages\restaurant_orders.html:124
+#: .\templates\partials\customer_navbar.html:320
+msgid "Please fill in the required fields."
+msgstr "请填写所需字段 。"
+
+#: .\templates\pages\restaurant_menu.html:517
+#: .\templates\pages\restaurant_menu.html:538
+#: .\templates\pages\restaurant_orders.html:125
+#: .\templates\pages\restaurant_orders.html:144
+#: .\templates\partials\customer_navbar.html:321
+#: .\templates\partials\customer_navbar.html:339
+#: .\templates\partials\customer_navbar.html:386
+#: .\templates\partials\customer_navbar.html:398
+msgid "Password must be at least 6 characters."
+msgstr "密码必须是至少6个字符 。"
+
+#: .\templates\pages\restaurant_menu.html:535
+#: .\templates\pages\restaurant_orders.html:141
+msgid "This phone number is already registered. Please log in instead."
+msgstr "这个电话号码已经注册了 。 请登录"
+
+#: .\templates\pages\restaurant_menu.html:536
+#: .\templates\pages\restaurant_orders.html:142
+msgid "This email is already registered. Please log in instead."
+msgstr "此邮件已经注册 。 请登录"
+
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_orders.html:143
+#: .\templates\partials\customer_navbar.html:363
+msgid "Please enter a valid email."
+msgstr "请输入有效的电子邮件 。"
+
+#: .\templates\pages\restaurant_menu.html:539
+#: .\templates\partials\customer_navbar.html:340
+msgid "First name is required."
+msgstr "须名."
+
+#: .\templates\pages\restaurant_menu.html:540
+#: .\templates\pages\restaurant_menu.html:626
+msgid "Phone is required."
+msgstr "需要电话。"
+
+#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_orders.html:150
+#: .\templates\partials\customer_navbar.html:348
+msgid "Registration failed."
+msgstr "注册失败 。"
+
+#: .\templates\pages\restaurant_menu.html:595
+msgid "Could not save address."
+msgstr "无法保存地址 。"
+
+#: .\templates\pages\restaurant_menu.html:616
+msgid "Could not update profile."
+msgstr "无法更新配置文件 。"
+
+#: .\templates\pages\restaurant_menu.html:630
+msgid "Please select or add a delivery address."
+msgstr "请选择或添加发送地址 。"
+
+#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:680
+#: .\templates\pages\restaurant_orders.html:239
+#: .\templates\pages\restaurant_orders.html:240
+#: .\templates\pages\restaurant_orders.html:448
+msgid "Received"
+msgstr "已接单"
+
+#: .\templates\pages\restaurant_menu.html:681
+#: .\templates\pages\restaurant_orders.html:241
+#: .\templates\pages\restaurant_orders.html:449
+msgid "Preparing"
+msgstr "准备中"
+
+#: .\templates\pages\restaurant_menu.html:682
+#: .\templates\pages\restaurant_orders.html:242
+msgid "Out for delivery"
+msgstr "配送中"
+
+#: .\templates\pages\restaurant_menu.html:683
+#: .\templates\pages\restaurant_orders.html:243
+msgid "Completed"
+msgstr "已完成"
+
+#: .\templates\pages\restaurant_menu.html:684
+#: .\templates\pages\restaurant_orders.html:244
+msgid "Cancelled"
+msgstr "已取消"
+
+#: .\templates\pages\restaurant_menu.html:685
+#: .\templates\pages\restaurant_orders.html:245
+msgid "Refunded"
+msgstr "已退款"
+
+#: .\templates\pages\restaurant_menu.html:704
+msgid "The restaurant is preparing your order."
+msgstr "餐厅正在准备你的订单"
+
+#: .\templates\pages\restaurant_menu.html:705
+msgid "Your order is out for delivery."
+msgstr "您的订单是外送。"
+
+#: .\templates\pages\restaurant_menu.html:706
+msgid "Your order is completed."
+msgstr "你的命令结束了"
+
+#: .\templates\pages\restaurant_menu.html:707
+#: .\templates\pages\restaurant_orders.html:266
+msgid "This order was cancelled."
+msgstr "此命令被取消 。"
+
+#: .\templates\pages\restaurant_menu.html:708
+#: .\templates\pages\restaurant_orders.html:267
+msgid "This order was refunded."
+msgstr "该命令被退还。"
+
+#: .\templates\pages\restaurant_menu.html:709
+msgid "Your order was received and is waiting for the restaurant."
+msgstr "你的订单收到 正在等待餐厅。"
+
+#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_orders.html:285
+msgid "No item details"
+msgstr "无项目细节"
+
+#: .\templates\pages\restaurant_menu.html:811
+#: .\templates\pages\restaurant_orders.html:310
+#: .\templates\pages\restaurant_orders.html:352
+msgid "Enter your phone number."
+msgstr "输入你的电话号码。"
+
+#: .\templates\pages\restaurant_menu.html:821
+#: .\templates\pages\restaurant_orders.html:362
+msgid "Could not load orders."
+msgstr "无法装入命令 。"
+
+#: .\templates\pages\restaurant_menu.html:827
+#: .\templates\pages\restaurant_orders.html:366
+msgid "No orders found for this phone number."
+msgstr "找不到这个电话号码的命令 。"
+
+#: .\templates\pages\restaurant_menu.html:919
+msgid ""
+"You have order(s) pending or in progress. Check status and details in your "
+"orders page."
+msgstr "您有待处理或正在进行的订单。请在订单页面查看状态和详情。"
+
+#: .\templates\pages\restaurant_menu.html:920
 msgid "View orders"
 msgstr "查看订单"
 
-#: .\templates\pages\restaurant_menu.html:241
+#: .\templates\pages\restaurant_menu.html:924
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
 msgstr "餐厅目前歇业。您可以预约在营业时段下单。"
 
-#: .\templates\pages\restaurant_menu.html:242
+#: .\templates\pages\restaurant_menu.html:925
 msgid "Schedule for later"
 msgstr "稍后预约"
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:936
 msgid "All Categories"
 msgstr "所有分类"
 
-#: .\templates\pages\restaurant_menu.html:266
+#: .\templates\pages\restaurant_menu.html:949
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(counter)s 个项目"
 
-#: .\templates\pages\restaurant_menu.html:284
-msgid "Toggle night mode"
-msgstr "切换夜间模式"
-
-#: .\templates\pages\restaurant_menu.html:314
+#: .\templates\pages\restaurant_menu.html:984
 msgid "Address:"
 msgstr "地址："
 
-#: .\templates\pages\restaurant_menu.html:317
+#: .\templates\pages\restaurant_menu.html:987
 msgid "Phone:"
 msgstr "电话："
 
-#: .\templates\pages\restaurant_menu.html:320
+#: .\templates\pages\restaurant_menu.html:990
 msgid "Email:"
 msgstr "邮箱："
 
-#: .\templates\pages\restaurant_menu.html:325
+#: .\templates\pages\restaurant_menu.html:995
 msgid "Opening Hours"
 msgstr "营业时间"
 
-#: .\templates\pages\restaurant_menu.html:326
+#: .\templates\pages\restaurant_menu.html:996
 msgid "Not provided yet"
 msgstr "尚未提供"
 
-#: .\templates\pages\restaurant_menu.html:335
+#: .\templates\pages\restaurant_menu.html:1005
 msgid "Search menu items..."
 msgstr "搜索菜单..."
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:1013
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr "全部"
 
-#: .\templates\pages\restaurant_menu.html:356
+#: .\templates\pages\restaurant_menu.html:1026
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
 msgstr "套餐"
 
-#: .\templates\pages\restaurant_menu.html:377
+#: .\templates\pages\restaurant_menu.html:1047
 msgid "No menu items available."
 msgstr "暂无可用菜品。"
 
-#: .\templates\pages\restaurant_menu.html:403
-#: .\templates\pages\restaurant_menu.html:417
+#: .\templates\pages\restaurant_menu.html:1073
+#: .\templates\pages\restaurant_menu.html:1093
 msgid "Learn More"
 msgstr "了解更多"
 
-#: .\templates\pages\restaurant_menu.html:457
+#: .\templates\pages\restaurant_menu.html:1127
 msgid "Cart"
 msgstr "购物车"
 
-#: .\templates\pages\restaurant_menu.html:467
-#: .\templates\pages\restaurant_menu.html:472
-#: .\templates\pages\restaurant_menu.html:532
-#: .\templates\pages\restaurant_menu.html:543
-#: .\templates\pages\restaurant_menu.html:664
-#: .\templates\pages\restaurant_menu.html:675
-#: .\templates\pages\restaurant_menu.html:722
+#: .\templates\pages\restaurant_menu.html:1142
+msgid "Order status"
+msgstr "顺序状态"
+
+#: .\templates\pages\restaurant_menu.html:1155
+msgid "View order"
+msgstr "查看订单"
+
+#: .\templates\pages\restaurant_menu.html:1162
+#: .\templates\partials\customer_navbar.html:19
+#: .\templates\partials\customer_navbar.html:62
+#: .\templates\partials\customer_navbar.html:209
+msgid "My orders"
+msgstr "我的命令"
+
+#: .\templates\pages\restaurant_menu.html:1163
+msgid "Track previous orders by phone number."
+msgstr "按电话号码追踪先前的订单 。"
+
+#: .\templates\pages\restaurant_menu.html:1165
+msgid "Open"
+msgstr "打开"
+
+#: .\templates\pages\restaurant_menu.html:1176
+#: .\templates\pages\restaurant_menu.html:1181
+#: .\templates\pages\restaurant_menu.html:1238
+#: .\templates\pages\restaurant_menu.html:1249
+#: .\templates\pages\restaurant_menu.html:1387
+#: .\templates\pages\restaurant_menu.html:1398
+#: .\templates\pages\restaurant_menu.html:1465
 msgid "Reservation"
 msgstr "预订"
 
-#: .\templates\pages\restaurant_menu.html:474
+#: .\templates\pages\restaurant_menu.html:1183
 msgid "Close"
 msgstr "关闭"
 
-#: .\templates\pages\restaurant_menu.html:495
-#: .\templates\pages\restaurant_menu.html:628
+#: .\templates\pages\restaurant_menu.html:1204
+#: .\templates\pages\restaurant_menu.html:1354
 msgid "Cart Items"
 msgstr "购物车商品"
 
-#: .\templates\pages\restaurant_menu.html:497
-#: .\templates\pages\restaurant_menu.html:630
+#: .\templates\pages\restaurant_menu.html:1206
+#: .\templates\pages\restaurant_menu.html:1356
 msgid "Cart is empty."
 msgstr "购物车为空。"
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:644
+#: .\templates\pages\restaurant_menu.html:1220
+#: .\templates\pages\restaurant_menu.html:1370
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr "移除"
 
-#: .\templates\pages\restaurant_menu.html:515
-#: .\templates\pages\restaurant_menu.html:648
-#: .\templates\pages\restaurant_menu.html:747
-msgid "Total"
-msgstr "合计"
-
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:653
+#: .\templates\pages\restaurant_menu.html:1230
+#: .\templates\pages\restaurant_menu.html:1379
 msgid "Service Type"
 msgstr "服务类型"
 
-#: .\templates\pages\restaurant_menu.html:523
-#: .\templates\pages\restaurant_menu.html:655
+#: .\templates\pages\restaurant_menu.html:1232
+#: .\templates\pages\restaurant_menu.html:1381
 msgid "Dine In"
 msgstr "堂食"
 
-#: .\templates\pages\restaurant_menu.html:524
-#: .\templates\pages\restaurant_menu.html:656
-msgid "Pickup"
-msgstr "自取"
-
-#: .\templates\pages\restaurant_menu.html:526
-#: .\templates\pages\restaurant_menu.html:658
-msgid "Delivery"
-msgstr "配送"
-
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:669
+#: .\templates\pages\restaurant_menu.html:1243
+#: .\templates\pages\restaurant_menu.html:1392
 msgid "Table Number"
 msgstr "餐桌号"
 
-#: .\templates\pages\restaurant_menu.html:538
+#: .\templates\pages\restaurant_menu.html:1244
 msgid "e.g. 22"
 msgstr "例如 22"
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:677
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:1250
+msgid ""
+"Choose a <strong>day and time</strong> within opening hours. Pay "
+"<strong>Cash</strong> on the day or <strong>Online</strong> now. If "
+"cancelled, online payment is refunded."
+msgstr ""
+"选择一个 <strong>白天和时间</strong> 在营业时间之内。 报酬 <strong>现金</strong> 当天或 "
+"<strong>在线</strong> 现在 取消的,网上支付予以退票."
+
+#: .\templates\pages\restaurant_menu.html:1251
+#: .\templates\pages\restaurant_menu.html:1308
+#: .\templates\pages\restaurant_menu.html:1400
+#: .\templates\pages\restaurant_menu.html:1467
 msgid "Select date & time →"
 msgstr "选择日期和时间 →"
 
-#: .\templates\pages\restaurant_menu.html:553
-#: .\templates\pages\restaurant_menu.html:685
-msgid "Cash"
-msgstr "现金"
+#: .\templates\pages\restaurant_menu.html:1257
+#: .\templates\pages\restaurant_menu.html:1406
+msgid "Phone number"
+msgstr "电话号码"
 
-#: .\templates\pages\restaurant_menu.html:556
-#: .\templates\pages\restaurant_menu.html:688
-msgid "Online"
-msgstr "在线"
-
-#: .\templates\pages\restaurant_menu.html:561
-#: .\templates\pages\restaurant_menu.html:693
-#: .\templates\pages\restaurant_menu.html:694
+#: .\templates\pages\restaurant_menu.html:1287
+#: .\templates\pages\restaurant_menu.html:1436
+#: .\templates\pages\restaurant_menu.html:1437
 msgid "Order Note"
 msgstr "订单备注"
 
-#: .\templates\pages\restaurant_menu.html:562
-#: .\templates\pages\restaurant_reservation.html:151
+#: .\templates\pages\restaurant_menu.html:1288
+#: .\templates\pages\restaurant_reservation.html:153
 msgid "Special requests…"
 msgstr "特殊要求…"
 
-#: .\templates\pages\restaurant_menu.html:567
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:1293
+#: .\templates\pages\restaurant_menu.html:1461
 msgid "Confirm Order"
 msgstr "确认订单"
 
-#: .\templates\pages\restaurant_menu.html:568
+#: .\templates\pages\restaurant_menu.html:1294
 msgid "Add items and set options on the left."
 msgstr "在左侧添加菜品并设置选项。"
 
-#: .\templates\pages\restaurant_menu.html:571
-#: .\templates\pages\restaurant_menu.html:597
-#: .\templates\pages\restaurant_menu.html:750
+#: .\templates\pages\restaurant_menu.html:1297
+#: .\templates\pages\restaurant_menu.html:1323
+#: .\templates\pages\restaurant_menu.html:1493
 msgid "Order placed successfully"
 msgstr "订单已成功提交"
 
-#: .\templates\pages\restaurant_menu.html:572
+#: .\templates\pages\restaurant_menu.html:1298
 msgid "Your order is pending. Check status in Order history below."
 msgstr "订单待处理，请在下方订单历史中查看状态。"
 
-#: .\templates\pages\restaurant_menu.html:573
-#: .\templates\pages\restaurant_menu.html:599
-#: .\templates\pages\restaurant_menu.html:752
+#: .\templates\pages\restaurant_menu.html:1299
+#: .\templates\pages\restaurant_menu.html:1325
+#: .\templates\pages\restaurant_menu.html:1495
 msgid "Add more items"
 msgstr "继续添加菜品"
 
-#: .\templates\pages\restaurant_menu.html:578
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:719
+#: .\templates\pages\restaurant_menu.html:1304
+#: .\templates\pages\restaurant_menu.html:1314
+#: .\templates\pages\restaurant_menu.html:1462
 msgid "total"
 msgstr "合计"
 
-#: .\templates\pages\restaurant_menu.html:580
+#: .\templates\pages\restaurant_menu.html:1306
 msgid "Reservation with pre-order"
 msgstr "预订并预点单"
 
-#: .\templates\pages\restaurant_menu.html:592
-#: .\templates\pages\restaurant_menu.html:732
-#, fuzzy
-#| msgid "Online"
-msgid "Pay Online"
-msgstr "在线"
+#: .\templates\pages\restaurant_menu.html:1307
+msgid ""
+"Select a <strong>day and time</strong> (within opening hours), guests, and "
+"contact. Pay <strong>Cash</strong> on the day or <strong>Online</strong> now"
+" — if cancelled, online payment is refunded."
+msgstr ""
+"选择一个 <strong>白天和时间</strong> (在开放时间之内),客人,和联系。 报酬 <strong>现金</strong> 当天或 "
+"<strong>在线</strong> 现在——如果取消,网上支付则退款."
 
-#: .\templates\pages\restaurant_menu.html:593
+#: .\templates\pages\restaurant_menu.html:1318
+#: .\templates\pages\restaurant_menu.html:1475
+#: .\templates\pages\restaurant_menu.html:1627
+msgid "Pay Online"
+msgstr "在线支付"
+
+#: .\templates\pages\restaurant_menu.html:1319
 msgid "Placing…"
 msgstr "下单中…"
 
-#: .\templates\pages\restaurant_menu.html:598
+#: .\templates\pages\restaurant_menu.html:1324
 msgid ""
-"Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
-"span>. Check status in Order history below."
+"Your order is pending. Total € <span "
+"x-text=\"lastOrder.total_amount\"></span>. Check status in Order history "
+"below."
 msgstr "订单待处理，合计 € <span x-text=\"lastOrder.total_amount\"></span>。请在下方订单历史查看状态。"
 
-#: .\templates\pages\restaurant_menu.html:605
-#: .\templates\pages\restaurant_menu.html:697
+#: .\templates\pages\restaurant_menu.html:1331
+#: .\templates\pages\restaurant_menu.html:1440
 msgid "Order history"
 msgstr "订单历史"
 
-#: .\templates\pages\restaurant_menu.html:607
+#: .\templates\pages\restaurant_menu.html:1333
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
 msgstr "暂无订单。下单后会在此显示（待处理 → 制作中 → 已完成）。"
 
-#: .\templates\pages\restaurant_menu.html:670
+#: .\templates\pages\restaurant_menu.html:1393
 msgid "Table #"
 msgstr "餐桌号"
 
-#: .\templates\pages\restaurant_menu.html:699
+#: .\templates\pages\restaurant_menu.html:1399
+msgid ""
+"Pick <strong>day & time</strong> (opening hours). Pay <strong>Cash</strong> "
+"on the day or <strong>Online</strong> now — refund if cancelled."
+msgstr ""
+"选择 <strong>天数( T)</strong> (营业时间). 报酬 <strong>现金</strong> 当天或 "
+"<strong>在线</strong> 现在——取消后退款."
+
+#: .\templates\pages\restaurant_menu.html:1442
+#: .\templates\partials\customer_navbar.html:217
 msgid "No orders yet."
 msgstr "暂无订单。"
 
-#: .\templates\pages\restaurant_menu.html:712
+#: .\templates\pages\restaurant_menu.html:1455
 msgid "Next →"
 msgstr "下一步 →"
 
-#: .\templates\pages\restaurant_menu.html:716
+#: .\templates\pages\restaurant_menu.html:1459
 msgid "Back"
 msgstr "返回"
 
-#: .\templates\pages\restaurant_menu.html:748
+#: .\templates\pages\restaurant_menu.html:1466
+msgid ""
+"Select <strong>day & time</strong> (opening hours), guests, contact. Pay "
+"<strong>Cash</strong> on the day or <strong>Online</strong> now — refund if "
+"cancelled."
+msgstr ""
+"选择 <strong>天数( T)</strong> (营业时间),客人,联系人. 报酬 <strong>现金</strong> 当天或 "
+"<strong>在线</strong> 现在——取消后退款."
+
+#: .\templates\pages\restaurant_menu.html:1491
 msgid "Service:"
 msgstr "服务："
 
-#: .\templates\pages\restaurant_menu.html:748
+#: .\templates\pages\restaurant_menu.html:1491
 msgid "Payment:"
 msgstr "付款："
 
-#: .\templates\pages\restaurant_menu.html:751
+#: .\templates\pages\restaurant_menu.html:1494
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
 msgstr "订单待处理。餐厅会更新状态（例如制作中、已完成）。"
 
-#: .\templates\pages\restaurant_menu.html:757
+#: .\templates\pages\restaurant_menu.html:1500
+#: .\templates\pages\restaurant_orders.html:451
 msgid "Done"
 msgstr "完成"
 
-#: .\templates\pages\restaurant_reservation.html:3
+#: .\templates\pages\restaurant_menu.html:1510
+#: .\templates\pages\restaurant_menu.html:1515
+#: .\templates\pages\restaurant_menu.html:1525
+#: .\templates\pages\restaurant_menu.html:1565
+#: .\templates\pages\restaurant_orders.html:497
+#: .\templates\pages\restaurant_orders.html:501
+#: .\templates\pages\restaurant_orders.html:510
+#: .\templates\partials\customer_navbar.html:48
+#: .\templates\partials\customer_navbar.html:77
+#: .\templates\partials\customer_navbar.html:81
+#: .\templates\partials\customer_navbar.html:90
+msgid "Log in"
+msgstr "登录"
+
+#: .\templates\pages\restaurant_menu.html:1510
+#: .\templates\pages\restaurant_menu.html:1543
+#: .\templates\pages\restaurant_orders.html:497
+#: .\templates\pages\restaurant_orders.html:527
+#: .\templates\partials\customer_navbar.html:77
+#: .\templates\partials\customer_navbar.html:108
+msgid "Create account"
+msgstr "创建账户"
+
+#: .\templates\pages\restaurant_menu.html:1521
+#: .\templates\pages\restaurant_orders.html:506
+#: .\templates\partials\customer_navbar.html:86
+msgid "Email or phone"
+msgstr "电子邮件或电话"
+
+#: .\templates\pages\restaurant_menu.html:1526
+#: .\templates\pages\restaurant_orders.html:511
+#: .\templates\partials\customer_navbar.html:91
+msgid "Logging in..."
+msgstr "正在登录..."
+
+#: .\templates\pages\restaurant_menu.html:1539
+#: .\templates\pages\restaurant_orders.html:523
+#: .\templates\partials\customer_navbar.html:104
+msgid "Address (optional)"
+msgstr "地址( 可选)"
+
+#: .\templates\pages\restaurant_menu.html:1540
+#: .\templates\pages\restaurant_orders.html:524
+#: .\templates\partials\customer_navbar.html:105
+msgid "Password (min 6 chars)"
+msgstr "密码( min 6 字符)"
+
+#: .\templates\pages\restaurant_menu.html:1544
+#: .\templates\pages\restaurant_orders.html:528
+#: .\templates\partials\customer_navbar.html:109
+msgid "Creating..."
+msgstr "正在创建..."
+
+#: .\templates\pages\restaurant_menu.html:1556
+msgid "Confirm your details"
+msgstr "确认您的信息"
+
+#: .\templates\pages\restaurant_menu.html:1563
+msgid "Log in to auto-fill your saved details and addresses."
+msgstr "登录后可自动填写已保存的信息和地址。"
+
+#: .\templates\pages\restaurant_menu.html:1587
+msgid "Phone (account ID — cannot be changed)"
+msgstr "电话(账户编号——不能更改)"
+
+#: .\templates\pages\restaurant_menu.html:1593
+#: .\templates\pages\restaurant_menu.html:1611
+msgid "Delivery address"
+msgstr "发送地址"
+
+#: .\templates\pages\restaurant_menu.html:1602
+#: .\templates\pages\restaurant_orders.html:583
+#: .\templates\partials\customer_navbar.html:183
+msgid "Default"
+msgstr "默认"
+
+#: .\templates\pages\restaurant_menu.html:1612
+msgid "Or add a new address"
+msgstr "或者添加一个新的地址"
+
+#: .\templates\pages\restaurant_menu.html:1614
+#: .\templates\pages\restaurant_orders.html:593
+#: .\templates\partials\customer_navbar.html:193
+msgid "Street, number, city"
+msgstr "街道、数字、城市"
+
+#: .\templates\pages\restaurant_menu.html:1617
+msgid "Save this address to my account"
+msgstr "把这个地址存到我的帐户上"
+
+#: .\templates\pages\restaurant_menu.html:1618
+#: .\templates\pages\restaurant_orders.html:565
+#: .\templates\pages\restaurant_orders.html:596
+#: .\templates\partials\customer_navbar.html:166
+#: .\templates\partials\customer_navbar.html:196
+msgid "Saving..."
+msgstr "正在保存..."
+
+#: .\templates\pages\restaurant_menu.html:1628
+msgid "Placing..."
+msgstr "放置中..."
+
+#: .\templates\pages\restaurant_orders.html:3
+#, python-format
+msgid "Orders - %(name)s"
+msgstr "命令 %(name)s"
+
+#: .\templates\pages\restaurant_orders.html:183
+#: .\templates\partials\customer_navbar.html:429
+msgid "No changes to save."
+msgstr "无更改可保存 。"
+
+#: .\templates\pages\restaurant_orders.html:190
+#: .\templates\partials\customer_navbar.html:436
+msgid "Update failed."
+msgstr "更新失败 。"
+
+#: .\templates\pages\restaurant_orders.html:193
+#: .\templates\partials\customer_navbar.html:437
+msgid "Profile updated."
+msgstr "简介更新。"
+
+#: .\templates\pages\restaurant_orders.html:263
+msgid "The restaurant is preparing this order."
+msgstr "餐厅正在准备这个订单。"
+
+#: .\templates\pages\restaurant_orders.html:264
+msgid "This order is out for delivery."
+msgstr "此令出送."
+
+#: .\templates\pages\restaurant_orders.html:265
+msgid "This order is completed."
+msgstr "此订单已完成。"
+
+#: .\templates\pages\restaurant_orders.html:268
+msgid "The order was received and is waiting for restaurant confirmation."
+msgstr "订单已经收到,正在等待餐厅确认。"
+
+#: .\templates\pages\restaurant_orders.html:301
+msgid "Refund"
+msgstr "退款"
+
+#: .\templates\pages\restaurant_orders.html:333
+msgid "This order can no longer be cancelled."
+msgstr "此命令不能再取消 。"
+
+#: .\templates\pages\restaurant_orders.html:335
+msgid "Refund failed. Please contact the restaurant."
+msgstr "退款失败，请联系餐厅。"
+
+#: .\templates\pages\restaurant_orders.html:336
+msgid "Could not cancel order."
+msgstr "无法取消命令 。"
+
+#: .\templates\pages\restaurant_orders.html:342
+msgid "Order cancelled and refund requested."
+msgstr "取消订单,并要求退款。"
+
+#: .\templates\pages\restaurant_orders.html:343
+msgid "Order cancelled."
+msgstr "订单取消。"
+
+#: .\templates\pages\restaurant_orders.html:380
+msgid "Order tracker"
+msgstr "订单跟踪"
+
+#: .\templates\pages\restaurant_orders.html:388
+msgid "Enter phone number"
+msgstr "输入电话号码"
+
+#: .\templates\pages\restaurant_orders.html:390
+msgid "Find my orders"
+msgstr "查找我的订单"
+
+#: .\templates\pages\restaurant_orders.html:391
+#: .\templates\partials\customer_navbar.html:214
+msgid "Loading..."
+msgstr "正在装入..."
+
+#: .\templates\pages\restaurant_orders.html:400
+msgid "No visible orders yet"
+msgstr "还没有可见的命令"
+
+#: .\templates\pages\restaurant_orders.html:401
+msgid ""
+"After payment and customer details, orders appear here by phone number."
+msgstr "在支付和客户细节之后,这里的订单 以电话号码出现。"
+
+#: .\templates\pages\restaurant_orders.html:428
+msgid "Cancelling..."
+msgstr "正在取消..."
+
+#: .\templates\pages\restaurant_orders.html:459
+msgid "Your courier"
+msgstr "您的配送员"
+
+#: .\templates\pages\restaurant_orders.html:460
+msgid "Courier assigned"
+msgstr "已分配配送员"
+
+#: .\templates\pages\restaurant_orders.html:461
+msgid "Call the courier directly if there is an issue with the address."
+msgstr "如果地址有问题，请直接致电配送员。"
+
+#: .\templates\pages\restaurant_orders.html:539
+#: .\templates\partials\customer_navbar.html:61
+#: .\templates\partials\customer_navbar.html:150
+msgid "My profile"
+msgstr "我的档案"
+
+#: .\templates\pages\restaurant_orders.html:559
+#: .\templates\partials\customer_navbar.html:160
+msgid "Phone (cannot be changed — this is your account ID)"
+msgstr "电话( 不能更改 —— 这是您的账户 ID)"
+
+#: .\templates\pages\restaurant_orders.html:570
+#: .\templates\partials\customer_navbar.html:170
+msgid "My addresses"
+msgstr "我住的地址是... 我的住址是..."
+
+#: .\templates\pages\restaurant_orders.html:572
+#: .\templates\partials\customer_navbar.html:172
+msgid "No addresses saved yet."
+msgstr "尚未保存地址 。"
+
+#: .\templates\pages\restaurant_orders.html:584
+#: .\templates\partials\customer_navbar.html:184
+msgid "Set default"
+msgstr "设定默认"
+
+#: .\templates\pages\restaurant_orders.html:592
+#: .\templates\partials\customer_navbar.html:192
+msgid "Label (e.g. Home, Work)"
+msgstr "标签(如家、工作)"
+
+#: .\templates\pages\restaurant_orders.html:595
+#: .\templates\partials\customer_navbar.html:195
+msgid "Add address"
+msgstr "添加地址"
+
+#: .\templates\pages\restaurant_reservation.html:5
 #, python-format
 msgid "Reservation — %(name)s"
 msgstr "预订 — %(name)s"
 
-#: .\templates\pages\restaurant_reservation.html:26
+#: .\templates\pages\restaurant_reservation.html:28
 msgid "Name is required."
 msgstr "姓名为必填。"
 
-#: .\templates\pages\restaurant_reservation.html:27
+#: .\templates\pages\restaurant_reservation.html:29
 msgid "Please select a date."
 msgstr "请选择日期。"
 
-#: .\templates\pages\restaurant_reservation.html:28
+#: .\templates\pages\restaurant_reservation.html:30
 msgid "Please select a time."
 msgstr "请选择时间。"
 
-#: .\templates\pages\restaurant_reservation.html:29
+#: .\templates\pages\restaurant_reservation.html:31
 msgid "Request failed."
 msgstr "请求失败。"
 
-#: .\templates\pages\restaurant_reservation.html:30
+#: .\templates\pages\restaurant_reservation.html:32
 msgid "Network error. Please try again."
 msgstr "网络错误，请稍后再试。"
 
-#: .\templates\pages\restaurant_reservation.html:98
+#: .\templates\pages\restaurant_reservation.html:100
 msgid "Table reservation"
 msgstr "预订餐桌"
 
-#: .\templates\pages\restaurant_reservation.html:101
-#: .\templates\pages\restaurant_schedule.html:11
+#: .\templates\pages\restaurant_reservation.html:103
+#: .\templates\pages\restaurant_schedule.html:13
 msgid "Opening hours:"
 msgstr "营业时间："
 
-#: .\templates\pages\restaurant_reservation.html:106
+#: .\templates\pages\restaurant_reservation.html:108
 msgid "Reservation request sent"
 msgstr "预订请求已发送"
 
-#: .\templates\pages\restaurant_reservation.html:107
+#: .\templates\pages\restaurant_reservation.html:109
 msgid ""
-"Your reservation for <span x-text=\"successReservation.requested_date\"></"
-"span> at <span x-text=\"successReservation.requested_time\"></span> (<span x-"
-"text=\"successReservation.guests_count\"></span> guests) is pending. The "
+"Your reservation for <span "
+"x-text=\"successReservation.requested_date\"></span> at <span "
+"x-text=\"successReservation.requested_time\"></span> (<span "
+"x-text=\"successReservation.guests_count\"></span> guests) is pending. The "
 "restaurant will confirm by email."
-msgstr "您在 <span x-text=\"successReservation.requested_date\"></span> <span x-text=\"successReservation.requested_time\"></span>（<span x-text=\"successReservation.guests_count\"></span> 位客人）的预订正在等待。餐厅将通过邮件确认。"
+msgstr ""
+"您在 <span x-text=\"successReservation.requested_date\"></span> <span "
+"x-text=\"successReservation.requested_time\"></span>（<span "
+"x-text=\"successReservation.guests_count\"></span> 位客人）的预订正在等待。餐厅将通过邮件确认。"
 
-#: .\templates\pages\restaurant_reservation.html:115
-msgid "Date"
-msgstr "日期"
-
-#: .\templates\pages\restaurant_reservation.html:123
+#: .\templates\pages\restaurant_reservation.html:125
 msgid "Time"
 msgstr "时间"
 
-#: .\templates\pages\restaurant_reservation.html:124
+#: .\templates\pages\restaurant_reservation.html:126
 msgid "This day is fully booked. Please choose another date."
 msgstr "当日已订满，请选择其他日期。"
 
-#: .\templates\pages\restaurant_reservation.html:126
+#: .\templates\pages\restaurant_reservation.html:128
 msgid "Select time"
 msgstr "选择时间"
 
-#: .\templates\pages\restaurant_reservation.html:131
+#: .\templates\pages\restaurant_reservation.html:133
 msgid "Loading…"
 msgstr "加载中…"
 
-#: .\templates\pages\restaurant_reservation.html:134
+#: .\templates\pages\restaurant_reservation.html:136
 msgid "Number of guests"
 msgstr "客人数量"
 
-#: .\templates\pages\restaurant_reservation.html:138
+#: .\templates\pages\restaurant_reservation.html:140
 msgid "Your name *"
 msgstr "您的姓名 *"
 
-#: .\templates\pages\restaurant_reservation.html:150
+#: .\templates\pages\restaurant_reservation.html:152
 msgid "Notes"
 msgstr "备注"
 
-#: .\templates\pages\restaurant_reservation.html:155
+#: .\templates\pages\restaurant_reservation.html:157
 msgid "Pre-order (from cart)"
 msgstr "预点单（来自购物车）"
 
-#: .\templates\pages\restaurant_reservation.html:161
+#: .\templates\pages\restaurant_reservation.html:163
 msgid "Subtotal:"
 msgstr "小计："
 
-#: .\templates\pages\restaurant_reservation.html:164
+#: .\templates\pages\restaurant_reservation.html:166
 msgid ""
 "Cash = pay on the day. Online = pay now; refunded if reservation is "
 "cancelled."
 msgstr "现金＝当天付款；在线＝立即付款，若取消预订将退款。"
 
-#: .\templates\pages\restaurant_reservation.html:166
+#: .\templates\pages\restaurant_reservation.html:168
 msgid "Cash (on the day)"
 msgstr "现金（当天）"
 
-#: .\templates\pages\restaurant_reservation.html:168
+#: .\templates\pages\restaurant_reservation.html:170
 msgid "Online (refund if cancelled)"
 msgstr "在线（取消退款）"
 
-#: .\templates\pages\restaurant_reservation.html:176
+#: .\templates\pages\restaurant_reservation.html:178
 msgid "Request reservation"
 msgstr "申请预订"
 
-#: .\templates\pages\restaurant_schedule.html:3
+#: .\templates\pages\restaurant_schedule.html:5
 #, python-format
 msgid "Schedule your order — %(name)s"
 msgstr "预约下单 — %(name)s"
 
-#: .\templates\pages\restaurant_schedule.html:8
+#: .\templates\pages\restaurant_schedule.html:10
 msgid "Schedule your order"
 msgstr "预约下单"
 
-#: .\templates\pages\restaurant_schedule.html:16
+#: .\templates\pages\restaurant_schedule.html:18
 msgid "No opening hours set"
 msgstr "尚未设置营业时间"
 
-#: .\templates\pages\restaurant_schedule.html:17
+#: .\templates\pages\restaurant_schedule.html:19
 msgid ""
 "The restaurant has not set specific opening times. You can place an order "
 "from the menu."
 msgstr "餐厅未设置具体营业时间，您可直接从菜单下单。"
 
-#: .\templates\pages\restaurant_schedule.html:18
+#: .\templates\pages\restaurant_schedule.html:20
 msgid "Go to menu"
 msgstr "前往菜单"
 
-#: .\templates\pages\restaurant_schedule.html:21
+#: .\templates\pages\restaurant_schedule.html:23
 msgid ""
 "Choose a date and time for your order. You will then go to the menu to add "
 "items and place the order for that time."
 msgstr "选择下单的日期和时间，然后前往菜单添加菜品并按该时段下单。"
 
-#: .\templates\pages\restaurants_list.html:3
-#: .\templates\pages\restaurants_list.html:10
+#: .\templates\pages\restaurants_list.html:5
+#: .\templates\pages\restaurants_list.html:12
 #: .\templates\partials\navbar.html:75 .\templates\partials\navbar.html:149
 msgid "Restaurants & Cafes"
 msgstr "餐厅与咖啡馆"
 
-#: .\templates\pages\restaurants_list.html:4
-msgid "Browse our partner restaurants and cafes. Open a menu and order online."
+#: .\templates\pages\restaurants_list.html:6
+msgid ""
+"Browse our partner restaurants and cafes. Open a menu and order online."
 msgstr "浏览我们的合作餐厅与咖啡馆，打开菜单在线点单。"
 
-#: .\templates\pages\restaurants_list.html:11
+#: .\templates\pages\restaurants_list.html:13
 msgid "Choose a place and open its menu."
 msgstr "选择一家店铺并打开菜单。"
 
-#: .\templates\pages\restaurants_list.html:16
+#: .\templates\pages\restaurants_list.html:18
 msgid "No restaurants yet. Check back later."
 msgstr "暂无餐厅，请稍后再来。"
 
-#: .\templates\pages\restaurants_list.html:40
+#: .\templates\pages\restaurants_list.html:42
 msgid "View menu"
 msgstr "查看菜单"
 
@@ -2482,10 +3335,6 @@ msgstr "查看菜单"
 #: .\templates\pages\service_detail.html:10 .\templates\pages\services.html:3
 #: .\templates\partials\navbar.html:41 .\templates\partials\navbar.html:146
 msgid "Services"
-msgstr "服务"
-
-#: .\templates\pages\service_detail.html:18
-msgid "Service"
 msgstr "服务"
 
 #: .\templates\pages\service_detail.html:26
@@ -2533,13 +3382,101 @@ msgstr "我们的服务"
 
 #: .\templates\pages\services.html:12
 msgid ""
-"Open each service to view a full, dedicated page with benefits, visuals, and "
-"practical use cases."
+"Open each service to view a full, dedicated page with benefits, visuals, and"
+" practical use cases."
 msgstr "点击每项服务，查看完整页面，包含优势、视觉和实际用例。"
 
 #: .\templates\pages\services.html:25
 msgid "Open service page"
 msgstr "打开服务页面"
+
+#: .\templates\pages\terms_conditions.html:4
+#: .\templates\pages\terms_conditions.html:11
+#: .\templates_bonusweb\base.html:367
+msgid "Terms & Conditions"
+msgstr "条款与条件"
+
+#: .\templates\pages\terms_conditions.html:5
+msgid "Terms and Conditions for My Bonus QR Menu and PreisMenu services."
+msgstr "My Binus QR Menu和PreisMenu服务的条款和条件."
+
+#: .\templates\pages\terms_conditions.html:15
+msgid ""
+"These Terms & Conditions govern access to and use of My Bonus QR Menu, "
+"including QR menu pages, restaurant dashboards, online ordering, campaigns, "
+"and related services."
+msgstr "这些条款和条件规范了My Bonus QR菜单的访问和使用,包括QR菜单页,餐厅仪表板,在线订购,活动,以及相关服务."
+
+#: .\templates\pages\terms_conditions.html:17
+msgid "Use of the Service"
+msgstr "该处的使用"
+
+#: .\templates\pages\terms_conditions.html:18
+msgid ""
+"You agree to use the service lawfully and to provide accurate account, "
+"restaurant, menu, pricing, and contact information. You are responsible for "
+"activity under your account and for keeping login details secure."
+msgstr "您同意合法使用此项服务,并提供准确的账号、餐厅、菜单、定价和联系方式。 您负责账户下的活动, 并负责确保登录细节的安全 。"
+
+#: .\templates\pages\terms_conditions.html:20
+msgid "Restaurant Content"
+msgstr "餐厅内容"
+
+#: .\templates\pages\terms_conditions.html:21
+msgid ""
+"Restaurants are responsible for their menu items, prices, images, "
+"descriptions, availability, allergens, taxes, fees, opening hours, and order"
+" handling. Content must not infringe third-party rights or violate "
+"applicable law."
+msgstr "餐厅负责其菜单项目,价格,图像,描述,可用性,过敏性,税收,收费,营业时间,以及订单处理. 内容不得侵犯第三方权利或违反适用法律。"
+
+#: .\templates\pages\terms_conditions.html:23
+msgid "Orders and Payments"
+msgstr "命令和付款"
+
+#: .\templates\pages\terms_conditions.html:24
+msgid ""
+"Where ordering or payment features are enabled, the restaurant remains "
+"responsible for accepting, preparing, fulfilling, refunding, and supporting "
+"customer orders unless otherwise agreed in writing."
+msgstr "在订单或付款功能得以实现的情况下,餐馆仍负责接收、准备、履行、退还和支持客户订单,除非另有书面协议。"
+
+#: .\templates\pages\terms_conditions.html:26
+msgid "Subscriptions"
+msgstr "订阅"
+
+#: .\templates\pages\terms_conditions.html:27
+msgid ""
+"Paid plans, trial periods, renewals, taxes, cancellation, and refund rules "
+"are shown during checkout or in the relevant subscription communication. "
+"Continued use after a billing period may require payment of applicable fees."
+msgstr "支付计划、试用期、续约、税款、注销和退款规则在离职或相关订阅函件中列出。 在计费期结束后继续使用可能需要支付适用的费用。"
+
+#: .\templates\pages\terms_conditions.html:29
+msgid "Availability and Changes"
+msgstr "可用性和变化"
+
+#: .\templates\pages\terms_conditions.html:30
+msgid ""
+"We work to keep the service reliable, but we do not guarantee uninterrupted "
+"availability. We may update, suspend, or discontinue features when needed "
+"for security, maintenance, compliance, or product improvements."
+msgstr "我们努力使服务可靠,但我们不能保证不间断地提供服务。 在安全、维护、遵守或产品改进需要时,我们可更新、暂停或中止功能。"
+
+#: .\templates\pages\terms_conditions.html:32
+msgid "Limitation of Liability"
+msgstr "赔偿责任限制"
+
+#: .\templates\pages\terms_conditions.html:33
+msgid ""
+"To the fullest extent permitted by law, we are not liable for indirect, "
+"incidental, special, consequential, or lost-profit damages arising from use "
+"of the service."
+msgstr "在法律允许的最大限度内,我们对因使用服务而造成的间接、附带、特别、间接或利润损失不负赔偿责任。"
+
+#: .\templates\pages\terms_conditions.html:36
+msgid "For questions about these terms, contact us at"
+msgstr "关于这些术语,请联系我们"
 
 #: .\templates\partials\alerts.html:3
 msgid "Notifications"
@@ -2573,6 +3510,125 @@ msgstr "移除商品"
 msgid "Proceed to Checkout"
 msgstr "前往结账"
 
+#: .\templates\partials\customer_navbar.html:17
+#: .\templates\partials\customer_navbar.html:63
+msgid "Restaurants"
+msgstr "餐厅"
+
+#: .\templates\partials\customer_navbar.html:22
+msgid "Profile"
+msgstr "简介"
+
+#: .\templates\partials\customer_navbar.html:28
+#: .\templates\partials\navbar.html:89
+msgid "Change language"
+msgstr "更改语言"
+
+#: .\templates\partials\customer_navbar.html:64
+msgid "Log out"
+msgstr "注销"
+
+#: .\templates\partials\customer_navbar.html:77
+msgid "Enter reset code"
+msgstr "输入重设代码"
+
+#: .\templates\partials\customer_navbar.html:115
+msgid ""
+"Enter your account email. We'll send a 6-digit code to reset your password."
+msgstr "输入您的账户电子邮件 。 我们会发送一个6位数的代码来重置你的密码."
+
+#: .\templates\partials\customer_navbar.html:120
+msgid "Sending..."
+msgstr "正在发送..."
+
+#: .\templates\partials\customer_navbar.html:128
+msgid "Enter the 6-digit code sent to"
+msgstr "输入发送给的六位数代码"
+
+#: .\templates\partials\customer_navbar.html:128
+msgid "and choose a new password."
+msgstr "并选择新的密码。"
+
+#: .\templates\partials\customer_navbar.html:130
+msgid "6-digit code"
+msgstr "6位数代码"
+
+#: .\templates\partials\customer_navbar.html:131
+msgid "New password (min 6 chars)"
+msgstr "新密码( min 6 字符)"
+
+#: .\templates\partials\customer_navbar.html:136
+msgid "Resetting..."
+msgstr "重设置..."
+
+#: .\templates\partials\customer_navbar.html:138
+msgid "Resend code"
+msgstr "重新发送代码"
+
+#: .\templates\partials\customer_navbar.html:212
+msgid ""
+"Open a restaurant to view its order-tracking page for full status and "
+"cancellation."
+msgstr "开一家餐厅查看其订单跟踪页面以获取完整状态和取消."
+
+#: .\templates\partials\customer_navbar.html:302
+msgid ""
+"Invalid email/phone or password. Please try again or use \"Forgot "
+"password\"."
+msgstr "无效的电子邮件/电话或密码 。 请再次尝试或使用\"忘却密码\"."
+
+#: .\templates\partials\customer_navbar.html:303
+msgid "Please enter both your email/phone and your password."
+msgstr "请同时输入您的电子邮件/ 电话和密码 。"
+
+#: .\templates\partials\customer_navbar.html:304
+msgid "Server error. Please try again in a moment."
+msgstr "服务器错误 。 请稍候再试一次"
+
+#: .\templates\partials\customer_navbar.html:336
+msgid ""
+"This phone number is already registered. We switched you to Log in — please "
+"enter your password."
+msgstr "这个电话号码已经注册了 。 我们把你切换到Log了 请输入密码"
+
+#: .\templates\partials\customer_navbar.html:337
+msgid ""
+"This email is already registered. We switched you to Log in — please enter "
+"your password."
+msgstr "此邮件已经注册 。 我们把你切换到Log了 请输入密码"
+
+#: .\templates\partials\customer_navbar.html:338
+msgid "Please enter a valid email address (e.g. name@example.com)."
+msgstr "请输入有效的电子邮件地址( 如 name@ example.com) 。"
+
+#: .\templates\partials\customer_navbar.html:341
+msgid "Phone number is required."
+msgstr "需要电话号码。"
+
+#: .\templates\partials\customer_navbar.html:342
+msgid "Server error while creating your account. Please try again."
+msgstr "创建您的账户时服务器出错 。 请再试一次"
+
+#: .\templates\partials\customer_navbar.html:373
+msgid "If the email exists, a code has been sent."
+msgstr "如果电子邮件存在, 则发送了代码 。"
+
+#: .\templates\partials\customer_navbar.html:376
+msgid "Could not send code."
+msgstr "无法发送代码 。"
+
+#: .\templates\partials\customer_navbar.html:385
+msgid "Enter the 6-digit code."
+msgstr "输入6位数代码。"
+
+#: .\templates\partials\customer_navbar.html:398
+msgid "Reset failed."
+msgstr "重置失败 。"
+
+#: .\templates\partials\customer_navbar.html:404
+msgid "Password reset. You can log in now."
+msgstr "密码重置 。 你现在可以登录了"
+
 #: .\templates\partials\footer.html:8
 msgid "SaaS platform for QR menus, online ordering, campaigns, and analytics."
 msgstr "面向二维码菜单、在线点单、营销和分析的 SaaS 平台。"
@@ -2602,15 +3658,16 @@ msgid ""
 "transition underline decoration-slate-300 dark:decoration-slate-600 "
 "hover:decoration-primary-500\">Angraweb</a> — Professional Web Design &amp; "
 "Software Development."
-msgstr "本网站由 <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500\">Angraweb</a> 开发——专业网站设计与软件开发。"
+msgstr ""
+"本网站由 <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener "
+"noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-"
+"primary-600 dark:hover:text-orange-400 transition underline decoration-"
+"slate-300 dark:decoration-slate-600 hover:decoration-"
+"primary-500\">Angraweb</a> 开发——专业网站设计与软件开发。"
 
 #: .\templates\partials\navbar.html:45
 msgid "All Services"
 msgstr "全部服务"
-
-#: .\templates\partials\navbar.html:89
-msgid "Change language"
-msgstr "更改语言"
 
 #: .\templates\partials\navbar.html:108 .\templates\partials\navbar.html:130
 #: .\templates\partials\panel_navbar_simple.html:11
@@ -2625,7 +3682,7 @@ msgstr "你好，%(name)s"
 
 #: .\templates\partials\navbar.html:120 .\templates\partials\navbar.html:168
 #: .\templates\partials\panel_navbar_simple.html:19
-#: .\templates_bonusweb\base.html:252
+#: .\templates_bonusweb\base.html:253
 msgid "Logout"
 msgstr "退出"
 
@@ -2655,119 +3712,145 @@ msgstr "返回网站"
 msgid "Site"
 msgstr "网站"
 
-#: .\templates_bonusweb\base.html:199 .\templates_bonusweb\base.html:276
-#: .\templates_bonusweb\base.html:335
+#: .\templates\partials\restaurant_location_public.html:6
+#: .\templates\partials\restaurant_location_public.html:35
+msgid "Location"
+msgstr "地点"
+
+#: .\templates\partials\restaurant_location_public.html:12
+msgid "Map loads when visible…"
+msgstr "可见地图负载时..."
+
+#: .\templates\partials\restaurant_location_public.html:23
+#: .\templates\partials\restaurant_location_public.html:40
+msgid "Open in Google Maps"
+msgstr "在 Google 地图中打开"
+
+#: .\templates\partials\restaurant_location_public.html:29
+#: .\templates\partials\restaurant_location_public.html:41
+msgid "Apple Maps"
+msgstr "苹果地图"
+
+#: .\templates\partials\restaurant_location_public.html:43
+msgid ""
+"Map preview unavailable (set GOOGLE_MAPS_API_KEY to show an embedded map)."
+msgstr "无法使用地图预览( 设置 GOGLE  MAPS  API  KEY 以显示嵌入式地图) 。"
+
+#: .\templates_bonusweb\base.html:200 .\templates_bonusweb\base.html:277
+#: .\templates_bonusweb\base.html:336
 msgid "Use Cases"
 msgstr "使用案例"
 
-#: .\templates_bonusweb\base.html:207 .\templates_bonusweb\base.html:284
-#: .\templates_bonusweb\base.html:337
+#: .\templates_bonusweb\base.html:208 .\templates_bonusweb\base.html:285
+#: .\templates_bonusweb\base.html:338
 msgid "Businesses"
 msgstr "商家"
 
-#: .\templates_bonusweb\base.html:211 .\templates_bonusweb\base.html:288
-#: .\templates_bonusweb\base.html:338
+#: .\templates_bonusweb\base.html:212 .\templates_bonusweb\base.html:289
+#: .\templates_bonusweb\base.html:339
 msgid "How It Works"
 msgstr "运作方式"
 
-#: .\templates_bonusweb\base.html:219 .\templates_bonusweb\base.html:296
-#: .\templates_bonusweb\base.html:341
+#: .\templates_bonusweb\base.html:220 .\templates_bonusweb\base.html:297
+#: .\templates_bonusweb\base.html:342
 msgid "Download"
 msgstr "下载"
 
-#: .\templates_bonusweb\base.html:259
+#: .\templates_bonusweb\base.html:242
+msgid "Hello"
+msgstr "哈罗"
+
+#: .\templates_bonusweb\base.html:260
 msgid "Admin Login"
 msgstr "管理员登录"
 
-#: .\templates_bonusweb\base.html:314
+#: .\templates_bonusweb\base.html:315
 msgid ""
 "Bonus helps local businesses run QR menus, loyalty points, rewards, and "
 "customer reviews — all in one place."
 msgstr "Bonus 帮助本地商家管理二维码菜单、忠诚积分、奖励与顾客评价，一站解决。"
 
-#: .\templates_bonusweb\base.html:317
+#: .\templates_bonusweb\base.html:318
 msgid "Website"
 msgstr "网站"
 
-#: .\templates_bonusweb\base.html:320
+#: .\templates_bonusweb\base.html:321
 msgid "Instagram"
 msgstr "Instagram"
 
-#: .\templates_bonusweb\base.html:323
+#: .\templates_bonusweb\base.html:324
 msgid "X (Twitter)"
 msgstr "X（推特）"
 
-#: .\templates_bonusweb\base.html:326
+#: .\templates_bonusweb\base.html:327
 msgid "LinkedIn"
 msgstr "领英"
 
-#: .\templates_bonusweb\base.html:332
+#: .\templates_bonusweb\base.html:333
 msgid "Platform"
 msgstr "平台"
 
-#: .\templates_bonusweb\base.html:339
+#: .\templates_bonusweb\base.html:340
 msgid "Integrations"
 msgstr "集成"
 
-#: .\templates_bonusweb\base.html:345
+#: .\templates_bonusweb\base.html:346
 msgid "For Businesses"
 msgstr "面向商家"
 
-#: .\templates_bonusweb\base.html:347
+#: .\templates_bonusweb\base.html:348
 msgid "Business Admin Panel"
 msgstr "商家管理面板"
 
-#: .\templates_bonusweb\base.html:348
+#: .\templates_bonusweb\base.html:349
 msgid "Service Agreement"
 msgstr "服务协议"
 
-#: .\templates_bonusweb\base.html:349
+#: .\templates_bonusweb\base.html:350
 msgid "Bonus Registration"
 msgstr "Bonus 注册"
 
-#: .\templates_bonusweb\base.html:351 .\templates_bonusweb\base.html:356
+#: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
 msgid "QR Code Generator"
 msgstr "二维码生成器"
 
-#: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
+#: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
 msgid "Manage Products"
 msgstr "管理商品"
 
-#: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
+#: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
 msgid "Customer Reviews"
 msgstr "顾客评价"
 
-#: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
+#: .\templates_bonusweb\base.html:355 .\templates_bonusweb\base.html:360
 msgid "Send Notification"
 msgstr "发送通知"
 
-#: .\templates_bonusweb\base.html:364
-msgid "Legal"
-msgstr "法律"
-
-#: .\templates_bonusweb\base.html:366
-msgid "Terms & Conditions"
-msgstr "条款与条件"
-
-#: .\templates_bonusweb\base.html:370
-msgid "Privacy Policy"
-msgstr "隐私政策"
-
-#: .\templates_bonusweb\base.html:371
+#: .\templates_bonusweb\base.html:372
 msgid "Account & Data Deletion"
 msgstr "账户与数据删除"
 
-#: .\templates_bonusweb\base.html:373
+#: .\templates_bonusweb\base.html:374
 msgid "API Docs"
 msgstr "API 文档"
 
-#: .\templates_bonusweb\base.html:379
+#: .\templates_bonusweb\base.html:380
 msgid "All rights reserved"
 msgstr "保留所有权利"
 
-#: .\templates_bonusweb\base.html:381
+#: .\templates_bonusweb\base.html:382
 msgid "This website was designed by"
 msgstr "本网站由以下设计："
+
+#: .\templates_bonusweb\business_menu\connect.html:8
+#: .\templates_bonusweb\business_menu\connect_done.html:9
+#: .\templates_bonusweb\business_menu\connect_done.html:11
+msgid "Back to panel"
+msgstr "返回面板"
+
+#: .\templates_bonusweb\business_menu\connect.html:10
+msgid "Redirecting to Stripe…"
+msgstr "正在重定向到 Frede..."
 
 #: .\templates_bonusweb\business_menu\connect_done.html:3
 #: .\templates_bonusweb\business_menu\connect_done.html:6
@@ -2777,11 +3860,6 @@ msgstr "Stripe 已连接"
 #: .\templates_bonusweb\business_menu\connect_done.html:7
 msgid "You can now receive customer payments."
 msgstr "现在可以接收顾客付款了。"
-
-#: .\templates_bonusweb\business_menu\connect_done.html:9
-#: .\templates_bonusweb\business_menu\connect_done.html:11
-msgid "Back to panel"
-msgstr "返回面板"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:34
 msgid "Prices"
@@ -2886,29 +3964,81 @@ msgstr "联系客服"
 msgid "Subscribe"
 msgstr "订阅"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:8
-msgid ""
-"Your trial has ended. Complete your subscription to keep using the service."
-msgstr "试用已结束，请完成订阅以继续使用服务。"
+#: .\templates_bonusweb\business_menu\subscribe.html:16
+msgid "Unlock MyBonusQrMenu"
+msgstr "解锁 MyBonusQrMenu"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:11
-msgid ""
-"Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
-"Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
-"other methods."
-msgstr "支付 200 欧元以升级套餐。您将被重定向至 Stripe Checkout，可使用银行卡、PayPal、Google Pay、Apple Pay 等付款。"
-
-#: .\templates_bonusweb\business_menu\subscribe.html:15
-msgid "You will be redirected to Stripe to complete payment."
-msgstr "您将被重定向至 Stripe 完成付款。"
+#: .\templates_bonusweb\business_menu\subscribe.html:17
+msgid "Everything you need to run your restaurant, in one app."
+msgstr "所有你需要运行的餐厅,在一个应用程序。"
 
 #: .\templates_bonusweb\business_menu\subscribe.html:25
+msgid "Digital menu, categories and QR code"
+msgstr "数字菜单、类别和 QR 代码"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:31
+msgid "Online orders, delivery and pickup"
+msgstr "在线订单、交货和接货"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:37
+msgid "Table reservations and floor plan"
+msgstr "预定餐桌和地板计划"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:43
+msgid "Courier management and assignment"
+msgstr "Courier 管理和分配"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:49
+msgid "Combo deals and package pricing"
+msgstr "组合交易和包价"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:55
+msgid "Free for 14 days"
+msgstr "免费14天"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:68
+msgid "Account email"
+msgstr "账户电子邮件"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:76
+msgid "Restaurant account email"
+msgstr "餐厅账户电子邮件"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:81
+#: .\templates_bonusweb\business_menu\subscribe.html:144
+#: .\templates_bonusweb\business_menu\subscribe.html:149
+msgid "Start 14-day free trial"
+msgstr "开始14天免费审判"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:86
+msgid ""
+"After the free trial, checkout shows the final price and renewal terms "
+"before you pay. You can manage or cancel from your account."
+msgstr "免费试用后,退票时会显示最后的价格和续约条件,然后才支付. 您可以管理或取消您的账户。"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:92
+msgid "Open subscription page"
+msgstr "开放订阅页面"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:94
+msgid "Terms of Use"
+msgstr "使用条件"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:124
+msgid "Enter the email for your restaurant account."
+msgstr "输入您的餐厅账户的电子邮件 。"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:129
 msgid "Redirecting..."
 msgstr "跳转中…"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:40
-msgid "Request failed. Try again."
-msgstr "请求失败，请重试。"
+#: .\templates_bonusweb\business_menu\subscribe.html:142
+msgid "Could not start checkout. Please try again."
+msgstr "无法开始退出 。 请再试一次"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:147
+msgid "Request failed. Please try again."
+msgstr "请求失败 。 请再试一次"
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:7
 msgid ""
@@ -2936,10 +4066,73 @@ msgstr "感谢您！"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:7
 msgid ""
-"Your subscription is active. You can now use the app and connect your Stripe "
-"account to receive customer payments."
+"Your subscription is active. You can now use the app and connect your Stripe"
+" account to receive customer payments."
 msgstr "您的订阅已生效，可以使用应用并连接 Stripe 账户接收顾客付款。"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
 msgstr "连接 Stripe 以接收付款"
+
+#~ msgid "Dashboard and analytics view"
+#~ msgstr "仪表盘与分析视图"
+
+#~ msgid "QR code and digital ordering"
+#~ msgstr "二维码与数字点单"
+
+#~ msgid "Tablet menu preview"
+#~ msgstr "平板菜单预览"
+
+#~ msgid "Phone menu analytics"
+#~ msgstr "手机菜单分析"
+
+#~ msgid "Phone analytics"
+#~ msgstr "手机分析"
+
+#~ msgid "Premium phone mockup"
+#~ msgstr "高端手机样机"
+
+#~ msgid "Color portrait style"
+#~ msgstr "彩色人像风格"
+
+#~ msgid "Payment method"
+#~ msgstr "支付方式"
+
+#, python-format
+#~ msgid "Pay with card. The payment goes to %(name)s."
+#~ msgstr "使用银行卡付款。款项将支付给 %(name)s。"
+
+#, python-format
+#~ msgid "Pay %(currency)s %(total)s"
+#~ msgstr "支付 %(currency)s %(total)s"
+
+#~ msgid "Payment successful."
+#~ msgstr "支付成功。"
+
+#~ msgid ""
+#~ "Please enter your delivery details so the restaurant can receive the order."
+#~ msgstr "请填写配送信息，以便餐厅接收订单。"
+
+#~ msgid "You can follow the order status in order tracking."
+#~ msgstr "您可以在订单跟踪中查看订单状态。"
+
+#~ msgid "Something went wrong."
+#~ msgstr "出错了。"
+
+#~ msgid "Toggle night mode"
+#~ msgstr "切换夜间模式"
+
+#~ msgid ""
+#~ "Your trial has ended. Complete your subscription to keep using the service."
+#~ msgstr "试用已结束，请完成订阅以继续使用服务。"
+
+#~ msgid ""
+#~ "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
+#~ "Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
+#~ "other methods."
+#~ msgstr ""
+#~ "支付 200 欧元以升级套餐。您将被重定向至 Stripe Checkout，可使用银行卡、PayPal、Google Pay、Apple Pay "
+#~ "等付款。"
+
+#~ msgid "You will be redirected to Stripe to complete payment."
+#~ msgstr "您将被重定向至 Stripe 完成付款。"

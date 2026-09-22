@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 12:24+0330\n"
+"POT-Creation-Date: 2026-09-22 13:09+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,605 +18,635 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\core\views.py:106
+#: .\core\views.py:122
 msgid "Owner, Basil House"
 msgstr "사장, Basil House"
 
-#: .\core\views.py:106
+#: .\core\views.py:122
 msgid "We increased table turnover with faster ordering."
 msgstr "더 빠른 주문으로 테이블 회전율을 높였습니다."
 
-#: .\core\views.py:107
+#: .\core\views.py:123
 msgid "Manager, South Fork"
 msgstr "매니저, South Fork"
 
-#: .\core\views.py:107
+#: .\core\views.py:123
 msgid "Campaigns helped us fill off-peak hours."
 msgstr "캠페인 덕분에 한산한 시간대를 채울 수 있었습니다."
 
-#: .\core\views.py:108
+#: .\core\views.py:124
 msgid "Founder, Luna Cafe"
 msgstr "창립자, Luna Cafe"
 
-#: .\core\views.py:108
+#: .\core\views.py:124
 msgid "Our staff now spends less time taking manual orders."
 msgstr "직원들이 이제 수동으로 주문 받는 시간이 줄었습니다."
 
-#: .\core\views.py:111 .\core\views.py:133
+#: .\core\views.py:127 .\core\views.py:149
 msgid "AI menu import"
 msgstr "AI 메뉴 가져오기"
 
-#: .\core\views.py:112 .\core\views.py:134
+#: .\core\views.py:128 .\core\views.py:150
 msgid "Multilingual menus"
 msgstr "다국어 메뉴"
 
-#: .\core\views.py:113 .\core\views.py:135
+#: .\core\views.py:129 .\core\views.py:151
 msgid "QR code generation"
 msgstr "QR 코드 생성"
 
-#: .\core\views.py:114 .\core\views.py:136
+#: .\core\views.py:130 .\core\views.py:152
 msgid "Order management"
 msgstr "주문 관리"
 
-#: .\core\views.py:115 .\core\views.py:137
+#: .\core\views.py:131 .\core\views.py:153
 msgid "Campaign engine"
 msgstr "캠페인 엔진"
 
-#: .\core\views.py:116 .\core\views.py:138
+#: .\core\views.py:132 .\core\views.py:154
 msgid "Daily analytics"
 msgstr "일일 분석"
 
-#: .\core\views.py:117 .\core\views.py:139
+#: .\core\views.py:133 .\core\views.py:155
 msgid "Category controls"
 msgstr "카테고리 관리"
 
-#: .\core\views.py:118 .\core\views.py:140
+#: .\core\views.py:134 .\core\views.py:156
 msgid "Live availability"
 msgstr "실시간 재고"
 
-#: .\core\views.py:119 .\core\views.py:141
+#: .\core\views.py:135 .\core\views.py:157
 msgid "POS-ready payloads"
 msgstr "POS 대응 데이터"
 
-#: .\core\views.py:120 .\core\views.py:142
+#: .\core\views.py:136 .\core\views.py:158
 msgid "Mobile-first pages"
 msgstr "모바일 우선 페이지"
 
-#: .\core\views.py:121 .\core\views.py:143
+#: .\core\views.py:137 .\core\views.py:159
 msgid "Role-ready panel"
 msgstr "역할 지원 패널"
 
-#: .\core\views.py:122 .\core\views.py:144
+#: .\core\views.py:138 .\core\views.py:160
 msgid "Conversion focused UI"
 msgstr "전환 최적화 UI"
 
-#: .\core\views.py:133
+#: .\core\views.py:149
 msgid ""
 "Upload a PDF or photo and we extract your dishes and prices automatically."
 msgstr "PDF나 사진을 업로드하면 요리와 가격을 자동으로 추출합니다."
 
-#: .\core\views.py:134
+#: .\core\views.py:150
 msgid ""
 "Serve your menu in multiple languages and switch by customer preference."
 msgstr "메뉴를 여러 언어로 제공하고 고객 선호에 따라 전환하세요."
 
-#: .\core\views.py:135
+#: .\core\views.py:151
 msgid "Generate and download QR codes for tables, takeaway, and delivery."
 msgstr "테이블·포장·배달용 QR 코드를 생성하고 다운로드하세요."
 
-#: .\core\views.py:136
+#: .\core\views.py:152
 msgid ""
 "Receive, track, and fulfill orders from one dashboard with status updates."
 msgstr "하나의 대시보드에서 주문을 접수·추적·처리하고 상태를 업데이트하세요."
 
-#: .\core\views.py:137
+#: .\core\views.py:153
 msgid ""
 "Create time-based discounts, happy hours, and target specific categories."
 msgstr "시간대별 할인·해피아워를 만들고 특정 카테고리를 타겟팅하세요."
 
-#: .\core\views.py:138
+#: .\core\views.py:154
 msgid "View orders, revenue, and top items with simple charts and exports."
 msgstr "간단한 차트와 내보내기로 주문·매출·인기 항목을 확인하세요."
 
-#: .\core\views.py:139
+#: .\core\views.py:155
 msgid "Organize items into categories and reorder with drag-and-drop."
 msgstr "항목을 카테고리로 정리하고 드래그 앤 드롭으로 순서를 바꾸세요."
 
-#: .\core\views.py:140
+#: .\core\views.py:156
 msgid "Mark items as out of stock and hide or show sections by schedule."
 msgstr "품절 상태를 표시하고 스케줄에 따라 섹션을 숨기거나 표시하세요."
 
-#: .\core\views.py:141
+#: .\core\views.py:157
 msgid "Send orders to your POS or kitchen display via webhooks or API."
 msgstr "Webhook 또는 API로 주문을 POS나 주방 디스플레이에 전송하세요."
 
-#: .\core\views.py:142
+#: .\core\views.py:158
 msgid "Menus and checkout are optimized for phones and tablets."
 msgstr "메뉴와 결제는 스마트폰과 태블릿에 최적화되어 있습니다."
 
-#: .\core\views.py:143
+#: .\core\views.py:159
 msgid "Invite staff with roles: admin, manager, or view-only."
 msgstr "관리자, 매니저, 조회 전용 등 역할별로 직원을 초대하세요."
 
-#: .\core\views.py:144
+#: .\core\views.py:160
 msgid "Clean design and clear CTAs to maximize add-to-cart and checkout."
 msgstr "깔끔한 디자인과 명확한 CTA로 장바구니와 결제를 극대화합니다."
 
-#: .\core\views.py:147
+#: .\core\views.py:163
 msgid "Can I use my own domain?"
 msgstr "제 도메인을 사용할 수 있나요?"
 
-#: .\core\views.py:147
+#: .\core\views.py:163
 msgid ""
-"Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the "
-"settings panel."
+"Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the"
+" settings panel."
 msgstr "네. 설정 패널에서 커스텀 도메인(예: menu.yourrestaurant.com)을 연결할 수 있습니다."
 
-#: .\core\views.py:148
+#: .\core\views.py:164
 msgid "Is there a mobile app for staff?"
 msgstr "직원용 모바일 앱이 있나요?"
 
-#: .\core\views.py:148
+#: .\core\views.py:164
 msgid ""
 "The panel is fully responsive; you can use it from any browser. Native apps "
 "are on our roadmap."
 msgstr "패널은 완전 반응형이며 어떤 브라우저에서도 사용할 수 있습니다. 네이티브 앱은 로드맵에 있습니다."
 
-#: .\core\views.py:149
+#: .\core\views.py:165
 msgid "How do I print QR codes?"
 msgstr "QR 코드는 어떻게 인쇄하나요?"
 
-#: .\core\views.py:149
+#: .\core\views.py:165
 msgid ""
 "Generate QR codes from the dashboard and download as PNG or SVG. Print on "
 "table tents or stickers."
 msgstr "대시보드에서 QR 코드를 생성하고 PNG 또는 SVG로 다운로드하세요. 테이블 카드나 스티커에 인쇄합니다."
 
-#: .\core\views.py:150
+#: .\core\views.py:166
 msgid "Do you integrate with POS?"
 msgstr "POS와 연동되나요?"
 
-#: .\core\views.py:150
+#: .\core\views.py:166
 msgid ""
-"We support webhooks and an API so you can push orders to your POS or kitchen "
-"display system."
+"We support webhooks and an API so you can push orders to your POS or kitchen"
+" display system."
 msgstr "Webhook과 API를 지원하여 주문을 POS나 주방 디스플레이 시스템으로 전송할 수 있습니다."
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid "Set up your menu"
 msgstr "메뉴 설정"
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid ""
 "Create categories, add dishes with prices and photos, and set availability."
 msgstr "카테고리를 만들고 가격과 사진이 있는 요리를 추가하며 재고 상태를 설정하세요."
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid "Drag-and-drop reorder, bulk edit, or import from spreadsheet."
 msgstr "드래그 앤 드롭으로 순서를 바꾸고, 일괄 편집하거나 스프레드시트에서 가져오세요."
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid "Generate your QR"
 msgstr "QR 생성"
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid ""
 "Print QR codes for each table or area. Customers scan to open your menu."
 msgstr "테이블이나 구역마다 QR 코드를 인쇄하세요. 고객이 스캔하여 메뉴를 엽니다."
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid "Download PNG or SVG, print on table tents or stickers."
 msgstr "PNG 또는 SVG로 다운로드하고 테이블 카드나 스티커에 인쇄하세요."
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid "Get online orders"
 msgstr "온라인 주문 받기"
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid ""
 "Customers browse, add to cart, and checkout. You receive and fulfill orders."
 msgstr "고객이 둘러보고 장바구니에 담아 결제합니다. 사장님은 주문을 받아 처리하세요."
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid "Optional: connect to POS or kitchen display."
 msgstr "선택 사항: POS 또는 주방 디스플레이 연결."
 
-#: .\core\views.py:170
+#: .\core\views.py:186
 msgid "QR menu — customers scan and browse your menu on their phone"
 msgstr "QR 메뉴 — 고객이 휴대폰으로 스캔하고 메뉴를 봅니다."
 
-#: .\core\views.py:171
+#: .\core\views.py:187
 msgid "Unlimited menu items and categories"
 msgstr "무제한 메뉴 항목과 카테고리"
 
-#: .\core\views.py:172
+#: .\core\views.py:188
 msgid "Unlimited QR codes for tables and takeaway"
 msgstr "테이블 및 포장용 무제한 QR 코드"
 
-#: .\core\views.py:173
+#: .\core\views.py:189
 msgid "Online ordering — guests order and pay from the same link"
 msgstr "온라인 주문 — 같은 링크에서 주문과 결제가 완료됩니다."
 
-#: .\core\views.py:174
+#: .\core\views.py:190
 msgid "Customizable themes to match your brand"
 msgstr "브랜드에 맞는 커스터마이징 테마"
 
-#: .\core\views.py:175
+#: .\core\views.py:191
 msgid "Campaigns & discounts (happy hour, daily specials)"
 msgstr "캠페인 및 할인 (해피아워, 일일 특가)"
 
-#: .\core\views.py:176
+#: .\core\views.py:192
 msgid "Multilingual menu support"
 msgstr "다국어 메뉴 지원"
 
-#: .\core\views.py:177
+#: .\core\views.py:193
 msgid "Real-time updates — change prices and availability instantly"
 msgstr "실시간 업데이트 — 가격과 재고를 즉시 반영합니다."
 
-#: .\core\views.py:178
+#: .\core\views.py:194
 msgid "Basic analytics — see what sells"
 msgstr "기본 분석 — 무엇이 팔리는지 확인하세요."
 
-#: .\core\views.py:179
+#: .\core\views.py:195
 msgid "Email & WhatsApp support"
 msgstr "이메일 및 WhatsApp 지원"
 
-#: .\core\views.py:183
+#: .\core\views.py:199
 msgid "Win more orders"
 msgstr "더 많은 주문 확보"
 
-#: .\core\views.py:183
+#: .\core\views.py:199
 msgid ""
-"Guests order directly from the QR menu. No waiting for staff—faster turnover "
-"and higher revenue."
+"Guests order directly from the QR menu. No waiting for staff—faster turnover"
+" and higher revenue."
 msgstr "고객이 QR 메뉴에서 바로 주문합니다. 직원을 기다릴 필요 없이 회전율과 매출이 상승합니다."
 
-#: .\core\views.py:184
+#: .\core\views.py:200
 msgid "Look professional"
 msgstr "전문가답게 보이기"
 
-#: .\core\views.py:184
+#: .\core\views.py:200
 msgid ""
 "A clean digital menu and your own domain build trust. Stand out from "
 "competitors still using paper."
 msgstr "깔끔한 디지털 메뉴와 자체 도메인이 신뢰를 만듭니다. 아직 종이 메뉴를 쓰는 경쟁자들과 차별화하세요."
 
-#: .\core\views.py:185
+#: .\core\views.py:201
 msgid "One subscription, everything included"
 msgstr "구독 하나로 모든 기능 포함"
 
-#: .\core\views.py:185
+#: .\core\views.py:201
 msgid ""
-"No per-order fees or hidden costs. One annual fee covers menu, ordering, and "
-"support."
+"No per-order fees or hidden costs. One annual fee covers menu, ordering, and"
+" support."
 msgstr "주문당 수수료나 숨겨진 비용이 없습니다. 연회비 하나로 메뉴·주문·지원 모두 포함."
 
-#: .\core\views.py:186
+#: .\core\views.py:202
 msgid "Launch in minutes"
 msgstr "몇 분 만에 시작"
 
-#: .\core\views.py:186
+#: .\core\views.py:202
 msgid ""
-"Add your dishes, print a QR code, and go live. No IT or design skills needed."
+"Add your dishes, print a QR code, and go live. No IT or design skills "
+"needed."
 msgstr "요리를 추가하고 QR 코드를 인쇄하면 바로 시작할 수 있습니다. IT나 디자인 기술이 필요 없습니다."
 
-#: .\core\views.py:189
+#: .\core\views.py:205
 msgid "What is included in the price?"
 msgstr "가격에 무엇이 포함되나요?"
 
-#: .\core\views.py:189
+#: .\core\views.py:205
 msgid ""
 "Everything: QR menu, online ordering, unlimited items and QR codes, "
 "campaigns, custom domain option, themes, and support. One annual "
 "subscription, no per-order fees."
-msgstr "모든 것: QR 메뉴, 온라인 주문, 무제한 항목과 QR 코드, 캠페인, 커스텀 도메인 옵션, 테마, 지원. 연간 구독 한 번이면 주문당 수수료도 없습니다."
+msgstr ""
+"모든 것: QR 메뉴, 온라인 주문, 무제한 항목과 QR 코드, 캠페인, 커스텀 도메인 옵션, 테마, 지원. 연간 구독 한 번이면 주문당"
+" 수수료도 없습니다."
 
-#: .\core\views.py:190
+#: .\core\views.py:206
 msgid "Is there a free trial?"
 msgstr "무료 체험이 있나요?"
 
-#: .\core\views.py:190
+#: .\core\views.py:206
 msgid ""
 "Yes. Start with a free trial to build your menu and test ordering. No card "
 "required until you go live."
 msgstr "네. 무료 체험으로 메뉴를 만들고 주문을 테스트하세요. 실제 서비스 시작 전까지 카드가 필요 없습니다."
 
-#: .\core\views.py:191
+#: .\core\views.py:207
 msgid "Why 19% VAT?"
 msgstr "왜 19% 부가세인가요?"
 
-#: .\core\views.py:191
-#, python-format
+#: .\core\views.py:207
 msgid ""
-"We are VAT-registered in the EU. If you are in the EU and liable for VAT, "
-"19% is added at checkout (total €238/year). If you are outside the EU or VAT-"
-"exempt, the amount may differ."
-msgstr "저희는 EU에서 VAT 등록 사업자입니다. EU 내 VAT 대상이면 결제 시 19%가 추가됩니다(연간 총 €238). EU 외 지역이거나 VAT 면제인 경우 금액이 다를 수 있습니다."
+"We are VAT-registered in the EU. If you are in the EU and liable for VAT, a "
+"19 percent VAT charge is added at checkout (total €238/year). If you are "
+"outside the EU or VAT-exempt, the amount may differ."
+msgstr ""
+"저희는 EU에서 VAT 등록 사업자입니다. EU 내 VAT 대상이면 결제 시 19%가 추가됩니다(연간 총 €238). EU 외 지역이거나"
+" VAT 면제인 경우 금액이 다를 수 있습니다."
 
-#: .\core\views.py:211 .\templates\partials\navbar.html:47
+#: .\core\views.py:244
+msgid "Security check failed. Please reload the page and try again."
+msgstr "보안 검사 실패. 페이지를 다시로드하고 다시 시도하십시오."
+
+#: .\core\views.py:247 .\core\views.py:291
+msgid "Thanks. If your message needs a reply, we will contact you."
+msgstr "감사합니다. 당신의 메시지가 대답을 필요로 하는 경우에, 우리는 당신에게 연락할 것입니다."
+
+#: .\core\views.py:250
+msgid "Security check failed. Please try again."
+msgstr "보안 검사 실패. 다시 시도하십시오."
+
+#: .\core\views.py:259
+msgid "Please check the form fields and try again."
+msgstr "양식 필드를 확인하고 다시 시도하십시오."
+
+#: .\core\views.py:262
+msgid "Please complete all fields."
+msgstr "모든 필드를 완료하십시오."
+
+#: .\core\views.py:267
+msgid "Too many messages. Please try again later."
+msgstr "너무 많은 메시지. 나중에 다시 시도하십시오."
+
+#: .\core\views.py:270
+msgid "Please wait before sending another message."
+msgstr "다른 메시지를 보내기 전에 대기하십시오."
+
+#: .\core\views.py:298 .\templates\partials\navbar.html:47
 msgid "AI Menu Import"
 msgstr "AI 메뉴 가져오기"
 
-#: .\core\views.py:212
+#: .\core\views.py:299
 msgid "Turn paper menus into digital menus in minutes."
 msgstr "종이 메뉴를 몇 분 만에 디지털 메뉴로 전환하세요."
 
-#: .\core\views.py:213
+#: .\core\views.py:300
 msgid ""
 "Upload a photo or PDF and let AI extract dish names, descriptions, and "
 "prices automatically."
 msgstr "사진이나 PDF를 업로드하면 AI가 요리 이름·설명·가격을 자동으로 추출합니다."
 
-#: .\core\views.py:216
+#: .\core\views.py:303
 msgid "Save hours of manual typing"
 msgstr "수동 입력 시간을 대폭 절약"
 
-#: .\core\views.py:217
+#: .\core\views.py:304
 msgid "Launch your QR menu faster"
 msgstr "QR 메뉴를 더 빠르게 출시"
 
-#: .\core\views.py:218
+#: .\core\views.py:305
 msgid "Reduce human data-entry errors"
 msgstr "사람의 입력 실수를 줄이세요"
 
-#: .\core\views.py:223 .\templates\partials\navbar.html:48
+#: .\core\views.py:310 .\templates\partials\navbar.html:48
 msgid "Customizable Themes"
 msgstr "커스터마이징 가능한 테마"
 
-#: .\core\views.py:224
+#: .\core\views.py:311
 msgid "Match your menu design to your restaurant brand."
 msgstr "메뉴 디자인을 레스토랑 브랜드와 맞추세요."
 
-#: .\core\views.py:225
+#: .\core\views.py:312
 msgid ""
 "Choose from modern themes and customize colors, typography, and layout in a "
 "few clicks."
 msgstr "모던한 테마 중에서 선택하고 클릭 몇 번으로 색상·서체·레이아웃을 조정하세요."
 
-#: .\core\views.py:228
+#: .\core\views.py:315
 msgid "Consistent brand identity"
 msgstr "일관된 브랜드 아이덴티티"
 
-#: .\core\views.py:229
+#: .\core\views.py:316
 msgid "Better visual experience for guests"
 msgstr "고객에게 더 나은 시각적 경험"
 
-#: .\core\views.py:230
+#: .\core\views.py:317
 msgid "Faster edits with pre-built styles"
 msgstr "미리 만든 스타일로 빠르게 편집"
 
-#: .\core\views.py:235 .\templates\partials\navbar.html:49
+#: .\core\views.py:322 .\templates\partials\navbar.html:49
 msgid "Dedicated Support"
 msgstr "전담 지원"
 
-#: .\core\views.py:236
+#: .\core\views.py:323
 msgid "Real help when you need it most."
 msgstr "가장 필요할 때 진짜 도움을 드립니다."
 
-#: .\core\views.py:237
+#: .\core\views.py:324
 msgid ""
 "Our team helps with setup, menu updates, and optimization so your staff can "
 "focus on service."
 msgstr "저희 팀이 설정, 메뉴 업데이트, 최적화를 도와 직원이 서비스에 집중할 수 있게 합니다."
 
-#: .\core\views.py:240
+#: .\core\views.py:327
 msgid "Priority support for urgent issues"
 msgstr "긴급 문제에 대한 우선 지원"
 
-#: .\core\views.py:241
+#: .\core\views.py:328
 msgid "Faster onboarding for new branches"
 msgstr "신규 매장의 빠른 온보딩"
 
-#: .\core\views.py:242
+#: .\core\views.py:329
 msgid "Better uptime and smoother operations"
 msgstr "높은 가동 시간과 원활한 운영"
 
-#: .\core\views.py:247 .\templates\partials\navbar.html:50
+#: .\core\views.py:334 .\templates\partials\navbar.html:50
 msgid "Menu Creation"
 msgstr "메뉴 만들기"
 
-#: .\core\views.py:248
+#: .\core\views.py:335
 msgid "Build clean, organized menus your guests love."
 msgstr "고객이 좋아할 깔끔하고 정돈된 메뉴를 만드세요."
 
-#: .\core\views.py:249
+#: .\core\views.py:336
 msgid ""
 "Create categories, add dish photos, set prices, and reorder items with a "
 "simple dashboard."
 msgstr "간단한 대시보드에서 카테고리를 만들고 요리 사진과 가격을 설정하며 항목 순서를 바꾸세요."
 
-#: .\core\views.py:252
+#: .\core\views.py:339
 msgid "Unlimited menu items"
 msgstr "무제한 메뉴 항목"
 
-#: .\core\views.py:253
+#: .\core\views.py:340
 msgid "Quick editing for daily changes"
 msgstr "일일 변경에 대응하는 빠른 편집"
 
-#: .\core\views.py:254
+#: .\core\views.py:341
 msgid "Clear structure for better ordering"
 msgstr "더 나은 주문을 위한 명확한 구조"
 
-#: .\core\views.py:259 .\templates\partials\navbar.html:51
+#: .\core\views.py:346 .\templates\partials\navbar.html:51
 msgid "Multi-Service Management"
 msgstr "다중 서비스 관리"
 
-#: .\core\views.py:260
+#: .\core\views.py:347
 msgid "Run dine-in, takeaway, and delivery from one panel."
 msgstr "매장, 포장, 배달을 하나의 패널에서 관리하세요."
 
-#: .\core\views.py:261
+#: .\core\views.py:348
 msgid ""
 "Manage service types, availability, and order flow in one place without "
 "switching tools."
 msgstr "서비스 유형, 재고, 주문 흐름을 도구 전환 없이 한곳에서 관리하세요."
 
-#: .\core\views.py:264
+#: .\core\views.py:351
 msgid "One dashboard for all channels"
 msgstr "모든 채널을 위한 대시보드 하나"
 
-#: .\core\views.py:265
+#: .\core\views.py:352
 msgid "Less staff confusion"
 msgstr "직원 혼선 감소"
 
-#: .\core\views.py:266
+#: .\core\views.py:353
 msgid "Higher operational speed"
 msgstr "더 빠른 운영 속도"
 
-#: .\core\views.py:271 .\templates\partials\navbar.html:52
+#: .\core\views.py:358 .\templates\partials\navbar.html:52
 msgid "Multilingual Support"
 msgstr "다국어 지원"
 
-#: .\core\views.py:272
+#: .\core\views.py:359
 msgid "Serve local and international guests better."
 msgstr "현지 및 해외 고객 모두에게 더 나은 서비스를."
 
-#: .\core\views.py:273
+#: .\core\views.py:360
 msgid ""
 "Offer your menu in multiple languages and let customers switch language "
 "instantly."
 msgstr "메뉴를 여러 언어로 제공하고 고객이 즉시 언어를 전환할 수 있게 하세요."
 
-#: .\core\views.py:276
+#: .\core\views.py:363
 msgid "Better guest experience for tourists"
 msgstr "관광객에게 더 나은 경험"
 
-#: .\core\views.py:277
+#: .\core\views.py:364
 msgid "Fewer ordering mistakes"
 msgstr "주문 실수 감소"
 
-#: .\core\views.py:278
+#: .\core\views.py:365
 msgid "Higher conversion on the menu page"
 msgstr "메뉴 페이지 전환율 향상"
 
-#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:661
-#: .\templates\partials\navbar.html:53
+#: .\core\views.py:370 .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr "온라인 주문"
 
-#: .\core\views.py:284
+#: .\core\views.py:371
 msgid "Take orders directly from the QR menu."
 msgstr "QR 메뉴에서 바로 주문을 받으세요."
 
-#: .\core\views.py:285
+#: .\core\views.py:372
 msgid ""
 "Guests browse, add to cart, and checkout from their phone with a smooth "
 "mobile-first flow."
 msgstr "고객이 모바일 우선의 매끄러운 흐름으로 폰에서 둘러보고, 담고, 결제합니다."
 
-#: .\core\views.py:288
+#: .\core\views.py:375
 msgid "Increase average order value"
 msgstr "평균 주문 금액 상승"
 
-#: .\core\views.py:289
+#: .\core\views.py:376
 msgid "Reduce table waiting time"
 msgstr "테이블 대기 시간 단축"
 
-#: .\core\views.py:290
+#: .\core\views.py:377
 msgid "Capture more takeaway orders"
 msgstr "포장 주문 확대"
 
-#: .\core\views.py:295 .\templates\partials\navbar.html:54
+#: .\core\views.py:382 .\templates\partials\navbar.html:54
 msgid "PDF Export"
 msgstr "PDF 내보내기"
 
-#: .\core\views.py:296
+#: .\core\views.py:383
 msgid "Keep digital and printed menus in sync."
 msgstr "디지털 메뉴와 인쇄 메뉴를 동기화하세요."
 
-#: .\core\views.py:297
+#: .\core\views.py:384
 msgid ""
 "Export your latest menu as PDF for table cards, flyers, and offline sharing."
 msgstr "최신 메뉴를 PDF로 내보내 테이블 카드, 전단, 오프라인 공유에 사용하세요."
 
-#: .\core\views.py:300
+#: .\core\views.py:387
 msgid "Ready-to-print output"
 msgstr "즉시 인쇄 가능한 출력"
 
-#: .\core\views.py:301
+#: .\core\views.py:388
 msgid "Consistent branding across channels"
 msgstr "모든 채널에서 일관된 브랜딩"
 
-#: .\core\views.py:302
+#: .\core\views.py:389
 msgid "Simple backup of menu data"
 msgstr "간단한 메뉴 데이터 백업"
 
-#: .\core\views.py:307 .\templates\partials\navbar.html:55
+#: .\core\views.py:394 .\templates\partials\navbar.html:55
 msgid "Real-Time Updates"
 msgstr "실시간 업데이트"
 
-#: .\core\views.py:308
+#: .\core\views.py:395
 msgid "Update prices and stock instantly."
 msgstr "가격과 재고를 즉시 업데이트하세요."
 
-#: .\core\views.py:309
+#: .\core\views.py:396
 msgid ""
 "Publish menu changes live in seconds so guests always see accurate "
 "information."
 msgstr "몇 초 만에 메뉴 변경 사항을 게시하여 고객이 항상 정확한 정보를 볼 수 있게 하세요."
 
-#: .\core\views.py:312
+#: .\core\views.py:399
 msgid "No stale menu data"
 msgstr "오래된 메뉴 데이터 없음"
 
-#: .\core\views.py:313
+#: .\core\views.py:400
 msgid "Fewer customer complaints"
 msgstr "고객 불만 감소"
 
-#: .\core\views.py:314
+#: .\core\views.py:401
 msgid "Faster reaction to peak-hour demand"
 msgstr "피크 시간 수요에 빠른 대응"
 
-#: .\core\views.py:319 .\templates\partials\navbar.html:56
+#: .\core\views.py:406 .\templates\partials\navbar.html:56
 msgid "Secure Payment Processing"
 msgstr "안전한 결제 처리"
 
-#: .\core\views.py:320
+#: .\core\views.py:407
 msgid "Accept payments safely and confidently."
 msgstr "안전하고 확실하게 결제를 수락하세요."
 
-#: .\core\views.py:321
+#: .\core\views.py:408
 msgid ""
 "Support secure online checkout with trusted gateways and encrypted "
 "transaction flow."
 msgstr "신뢰할 수 있는 게이트웨이와 암호화된 거래 흐름으로 안전한 온라인 결제를 지원합니다."
 
-#: .\core\views.py:324
+#: .\core\views.py:411
 msgid "Safer transactions"
 msgstr "더 안전한 거래"
 
-#: .\core\views.py:325
+#: .\core\views.py:412
 msgid "More trust from customers"
 msgstr "고객 신뢰 상승"
 
-#: .\core\views.py:326
+#: .\core\views.py:413
 msgid "Higher checkout completion"
 msgstr "결제 완료율 상승"
 
-#: .\core\views.py:331 .\templates\partials\navbar.html:57
+#: .\core\views.py:418 .\templates\partials\navbar.html:57
 msgid "Smart Order Management"
 msgstr "스마트 주문 관리"
 
-#: .\core\views.py:332
+#: .\core\views.py:419
 msgid "Track every order in one clean queue."
 msgstr "모든 주문을 하나의 깔끔한 대기열에서 추적하세요."
 
-#: .\core\views.py:333
+#: .\core\views.py:420
 msgid ""
-"Filter by status, prioritize prep, and keep front-of-house and kitchen fully "
-"synchronized."
+"Filter by status, prioritize prep, and keep front-of-house and kitchen fully"
+" synchronized."
 msgstr "상태별 필터링, 준비 우선순위 지정, 홀과 주방을 완벽하게 동기화하세요."
 
-#: .\core\views.py:336
+#: .\core\views.py:423
 msgid "Clear workflow for staff"
 msgstr "직원을 위한 명확한 워크플로"
 
-#: .\core\views.py:337
+#: .\core\views.py:424
 msgid "Faster fulfillment"
 msgstr "빠른 주문 처리"
 
-#: .\core\views.py:338
+#: .\core\views.py:425
 msgid "Improved customer satisfaction"
 msgstr "고객 만족도 향상"
 
@@ -634,9 +664,9 @@ msgstr "변경 또는 목록 보기 링크"
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:404
-#: .\templates\pages\restaurant_menu.html:418
-#: .\templates\pages\restaurant_menu.html:449
+#: .\templates\pages\restaurant_menu.html:1074
+#: .\templates\pages\restaurant_menu.html:1094
+#: .\templates\pages\restaurant_menu.html:1119
 msgid "Add"
 msgstr "추가"
 
@@ -693,7 +723,7 @@ msgid "The page you are looking for does not exist or has been moved."
 msgstr "찾으시는 페이지가 없거나 이동되었습니다."
 
 #: .\templates\errors\404.html:10 .\templates\errors\500.html:10
-#: .\templates\pages\restaurants_list.html:17
+#: .\templates\pages\restaurants_list.html:19
 msgid "Back to home"
 msgstr "홈으로 돌아가기"
 
@@ -709,11 +739,174 @@ msgstr "문제가 발생했습니다"
 msgid "We are working on the issue. Please try again in a few minutes."
 msgstr "문제를 해결 중입니다. 잠시 후 다시 시도해 주세요."
 
+#: .\templates\pages\account_delete.html:4
+msgid "Delete Account"
+msgstr "계정 삭제"
+
+#: .\templates\pages\account_delete.html:5
+msgid ""
+"Request deletion of your MyQrMenu / PreisMenu account and associated data."
+msgstr "MyQrMenu / PreisMenu 계정 및 관련 데이터의 삭제 요청."
+
+#: .\templates\pages\account_delete.html:10
+msgid "Account & Data"
+msgstr "계정 및 데이터"
+
+#: .\templates\pages\account_delete.html:12
+msgid "Delete your account"
+msgstr "계정 삭제"
+
+#: .\templates\pages\account_delete.html:15
+msgid "MyQrMenu / PreisMenu — Account deletion request"
+msgstr "MyQrMenu / PreisMenu - 계정 삭제 요청"
+
+#: .\templates\pages\account_delete.html:19
+msgid "How to request account deletion"
+msgstr "계정 삭제를 요청하는 방법"
+
+#: .\templates\pages\account_delete.html:21
+#, python-format
+msgid ""
+"\n"
+"        To delete your account and all associated data, please send an email to\n"
+"        <a href=\"mailto:%(email)s?subject=Account%%20Deletion%%20Request\">%(email)s</a>\n"
+"        from the email address you used to register.\n"
+"        "
+msgstr ""
+"\n"
+"        계정 및 모든 관련 데이터를 삭제하려면 이메일을 보내주십시오.\n"
+"        <a href=\"mailto:%(email)s?subject=Account%%20Deletion%%20Request\">%(email)s</a>\n"
+"        등록에 사용되는 이메일 주소에서.\n"
+"        "
+
+#: .\templates\pages\account_delete.html:28
+msgid "Please include the following information in your email:"
+msgstr "이메일에 다음 정보를 포함하십시오:"
+
+#: .\templates\pages\account_delete.html:30
+msgid "Subject: 'Account Deletion Request'"
+msgstr "제목 : 'Account Deletion Request'"
+
+#: .\templates\pages\account_delete.html:31
+msgid "The email address associated with your account"
+msgstr "계정과 관련된 이메일 주소"
+
+#: .\templates\pages\account_delete.html:32
+msgid "Your restaurant / business name (if applicable)"
+msgstr "레스토랑 / 비즈니스 이름 (해당되는 경우)"
+
+#: .\templates\pages\account_delete.html:36
+msgid ""
+"We will process your request and permanently delete your account within 7 "
+"business days. You will receive a confirmation email once the deletion is "
+"complete."
+msgstr "우리는 귀하의 요청을 처리하고 영구적으로 7 영업일 이내에 계정을 삭제합니다. 삭제가 완료되면 확인 이메일을 받게됩니다."
+
+#: .\templates\pages\account_delete.html:39
+msgid "What data will be deleted"
+msgstr "어떤 데이터가 삭제됩니다."
+
+#: .\templates\pages\account_delete.html:41
+msgid "Your account profile (name, email, phone number, password)"
+msgstr "계정 프로필 (이름, 이메일, 전화 번호, 비밀번호)"
+
+#: .\templates\pages\account_delete.html:42
+msgid "Your restaurant / business information and settings"
+msgstr "레스토랑 / 업무 정보 및 설정"
+
+#: .\templates\pages\account_delete.html:43
+msgid "Menu items, categories, campaigns and images you uploaded"
+msgstr "Menu items, 카테고리, 캠페인 및 이미지 업로드"
+
+#: .\templates\pages\account_delete.html:44
+msgid ""
+"Customer orders, reservations and related activity linked to your account"
+msgstr "고객 주문, 예약 및 관련 활동"
+
+#: .\templates\pages\account_delete.html:45
+msgid "Session and authentication data"
+msgstr "세션 및 인증 데이터"
+
+#: .\templates\pages\account_delete.html:48
+msgid "What data may be retained"
+msgstr "어떤 자료가 유지될 수 있습니다"
+
+#: .\templates\pages\account_delete.html:50
+msgid ""
+"For legal, tax, accounting and fraud-prevention reasons, we may retain the "
+"following data for the periods required by applicable law (typically up to "
+"10 years under German commercial and tax law):"
+msgstr ""
+"법률, 세금, 회계 및 사기 방지 이유를 위해, 우리는 적용 가능한 법률에 의해 요구되는 기간에 대한 다음 데이터를 유지할 수 있습니다 "
+"(독일 상업 및 세금 법에 따라 10 년까지 전형적으로):"
+
+#: .\templates\pages\account_delete.html:53
+msgid "Invoices, payment records and subscription history"
+msgstr "청구서, 결제 기록 및 구독 기록"
+
+#: .\templates\pages\account_delete.html:54
+msgid "Records required to comply with legal obligations (e.g. GoBD, HGB, AO)"
+msgstr "법적 의무 준수에 필요한 기록 (예 : GoBD, HGB, AO)"
+
+#: .\templates\pages\account_delete.html:57
+msgid ""
+"This retained data is stored securely and used only to comply with legal "
+"obligations."
+msgstr "이 유지된 데이터는 안전하게 저장되며 법적 의무를 준수해야 합니다."
+
+#: .\templates\pages\account_delete.html:60 .\templates\pages\contact.html:3
+#: .\templates\pages\privacy_policy.html:35
+#: .\templates\pages\terms_conditions.html:35
+#: .\templates\partials\footer.html:30 .\templates\partials\footer.html:35
+#: .\templates\partials\navbar.html:81 .\templates\partials\navbar.html:150
+msgid "Contact"
+msgstr "문의"
+
+#: .\templates\pages\account_delete.html:62
+msgid ""
+"If you have any questions about the deletion process or your data, please "
+"contact us:"
+msgstr "삭제 과정 또는 귀하의 데이터에 대한 질문이 있으시면 언제든지 문의하십시오."
+
+#: .\templates\pages\account_delete.html:63
+#: .\templates\pages\auth\forgot_password.html:16
+#: .\templates\pages\auth\login.html:23
+#: .\templates\pages\auth\register.html:21 .\templates\pages\checkout.html:23
+#: .\templates\pages\contact.html:20 .\templates\pages\contact.html:48
+#: .\templates\pages\restaurant_menu.html:1537
+#: .\templates\pages\restaurant_menu.html:1583
+#: .\templates\pages\restaurant_orders.html:521
+#: .\templates\pages\restaurant_orders.html:555
+#: .\templates\pages\restaurant_reservation.html:148
+#: .\templates\pages\restaurant_reservation.html:149
+#: .\templates\partials\customer_navbar.html:102
+#: .\templates\partials\customer_navbar.html:116
+#: .\templates\partials\customer_navbar.html:158
+msgid "Email"
+msgstr "이메일"
+
+#: .\templates\pages\account_delete.html:64
+#: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:81
+#: .\templates\pages\panel\settings.html:29
+#: .\templates\pages\restaurant_menu.html:1256
+#: .\templates\pages\restaurant_menu.html:1405
+#: .\templates\pages\restaurant_menu.html:1538
+#: .\templates\pages\restaurant_menu.html:1587
+#: .\templates\pages\restaurant_orders.html:522
+#: .\templates\pages\restaurant_reservation.html:144
+#: .\templates\pages\restaurant_reservation.html:145
+#: .\templates\partials\customer_navbar.html:103
+msgid "Phone"
+msgstr "전화"
+
 #: .\templates\pages\auth\forgot_password.html:3
+#: .\templates\partials\customer_navbar.html:77
 msgid "Forgot password"
 msgstr "비밀번호 찾기"
 
 #: .\templates\pages\auth\forgot_password.html:9
+#: .\templates\partials\customer_navbar.html:135
 msgid "Reset password"
 msgstr "비밀번호 재설정"
 
@@ -721,17 +914,9 @@ msgstr "비밀번호 재설정"
 msgid "Enter your email and we'll send you a 6-digit code."
 msgstr "이메일을 입력하시면 6자리 코드를 보내드립니다."
 
-#: .\templates\pages\auth\forgot_password.html:16
-#: .\templates\pages\auth\login.html:23 .\templates\pages\auth\register.html:21
-#: .\templates\pages\checkout.html:23 .\templates\pages\contact.html:20
-#: .\templates\pages\contact.html:43
-#: .\templates\pages\restaurant_reservation.html:146
-#: .\templates\pages\restaurant_reservation.html:147
-msgid "Email"
-msgstr "이메일"
-
 #: .\templates\pages\auth\forgot_password.html:21
-#: .\templates\pages\auth\forgot_password.html:83
+#: .\templates\pages\auth\forgot_password.html:109
+#: .\templates\partials\customer_navbar.html:119
 msgid "Send code"
 msgstr "코드 전송"
 
@@ -759,7 +944,7 @@ msgid "Resend"
 msgstr "재전송"
 
 #: .\templates\pages\auth\forgot_password.html:41
-#: .\templates\pages\auth\forgot_password.html:85
+#: .\templates\pages\auth\forgot_password.html:111
 msgid "Verify code"
 msgstr "코드 확인"
 
@@ -768,56 +953,66 @@ msgid "Enter your new password."
 msgstr "새 비밀번호를 입력하세요."
 
 #: .\templates\pages\auth\forgot_password.html:52
+#: .\templates\partials\customer_navbar.html:77
 msgid "New password"
 msgstr "새 비밀번호"
 
-#: .\templates\pages\auth\forgot_password.html:57
+#: .\templates\pages\auth\forgot_password.html:56
+#: .\templates\pages\auth\forgot_password.html:74
+#: .\templates\pages\auth\login.html:32
+#: .\templates\partials\form_fields.html:21
+msgid "Toggle password visibility"
+msgstr "비밀번호 찾기"
+
+#: .\templates\pages\auth\forgot_password.html:70
 msgid "Confirm new password"
 msgstr "새 비밀번호 확인"
 
-#: .\templates\pages\auth\forgot_password.html:62
-#: .\templates\pages\auth\forgot_password.html:87
+#: .\templates\pages\auth\forgot_password.html:88
+#: .\templates\pages\auth\forgot_password.html:113
 msgid "Update password"
 msgstr "비밀번호 업데이트"
 
-#: .\templates\pages\auth\forgot_password.html:67
+#: .\templates\pages\auth\forgot_password.html:93
+#: .\templates\partials\customer_navbar.html:122
 msgid "Back to login"
 msgstr "로그인으로 돌아가기"
 
-#: .\templates\pages\auth\forgot_password.html:82
-#: .\templates\pages\restaurant_reservation.html:177
+#: .\templates\pages\auth\forgot_password.html:108
+#: .\templates\pages\restaurant_reservation.html:179
 msgid "Sending…"
 msgstr "전송 중…"
 
-#: .\templates\pages\auth\forgot_password.html:84
+#: .\templates\pages\auth\forgot_password.html:110
 msgid "Verifying…"
 msgstr "확인 중…"
 
-#: .\templates\pages\auth\forgot_password.html:86
+#: .\templates\pages\auth\forgot_password.html:112
 msgid "Updating…"
 msgstr "업데이트 중…"
 
-#: .\templates\pages\auth\forgot_password.html:88
+#: .\templates\pages\auth\forgot_password.html:114
 msgid "Failed to send code. Check your email."
 msgstr "코드 전송에 실패했습니다. 이메일을 확인하세요."
 
-#: .\templates\pages\auth\forgot_password.html:89
+#: .\templates\pages\auth\forgot_password.html:115
+#: .\templates\partials\customer_navbar.html:397
 msgid "Invalid or expired code."
 msgstr "잘못되었거나 만료된 코드입니다."
 
-#: .\templates\pages\auth\forgot_password.html:90
+#: .\templates\pages\auth\forgot_password.html:116
 msgid "Passwords do not match."
 msgstr "비밀번호가 일치하지 않습니다."
 
-#: .\templates\pages\auth\forgot_password.html:91
+#: .\templates\pages\auth\forgot_password.html:117
 msgid "Failed to update password."
 msgstr "비밀번호 업데이트에 실패했습니다."
 
-#: .\templates\pages\auth\forgot_password.html:92
+#: .\templates\pages\auth\forgot_password.html:118
 msgid "Network error. Try again."
 msgstr "네트워크 오류. 다시 시도하세요."
 
-#: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:32
+#: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:45
 #: .\templates\pages\auth\register.html:57
 #: .\templates\pages\panel\dashboard_simple.html:18
 #: .\templates\partials\navbar.html:124 .\templates\partials\navbar.html:170
@@ -840,20 +1035,30 @@ msgstr "가입이 완료되었습니다. 아래에서 로그인하세요."
 msgid "Password updated. You can log in with your new password."
 msgstr "비밀번호가 업데이트되었습니다. 새 비밀번호로 로그인하세요."
 
-#: .\templates\pages\auth\login.html:28 .\templates\pages\auth\register.html:23
+#: .\templates\pages\auth\login.html:28
+#: .\templates\pages\auth\register.html:23
+#: .\templates\pages\restaurant_menu.html:1522
+#: .\templates\pages\restaurant_orders.html:507
+#: .\templates\partials\customer_navbar.html:87
 msgid "Password"
 msgstr "비밀번호"
 
-#: .\templates\pages\auth\login.html:34
+#: .\templates\pages\auth\login.html:47
+#: .\templates\partials\customer_navbar.html:93
 msgid "Forgot password?"
 msgstr "비밀번호를 잊으셨나요?"
 
-#: .\templates\pages\auth\login.html:37
+#: .\templates\pages\auth\login.html:50
 msgid "No account?"
 msgstr "계정이 없나요?"
 
-#: .\templates\pages\auth\login.html:37 .\templates\pages\auth\register.html:3
+#: .\templates\pages\auth\login.html:50 .\templates\pages\auth\register.html:3
 #: .\templates\pages\panel\dashboard_simple.html:17
+#: .\templates\pages\restaurant_menu.html:1516
+#: .\templates\pages\restaurant_menu.html:1566
+#: .\templates\pages\restaurant_orders.html:502
+#: .\templates\partials\customer_navbar.html:51
+#: .\templates\partials\customer_navbar.html:82
 msgid "Register"
 msgstr "가입"
 
@@ -874,14 +1079,6 @@ msgstr "레스토랑 이름"
 msgid "Orange Bistro"
 msgstr "Orange Bistro"
 
-#: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
-#: .\templates\pages\order_payment.html:72
-#: .\templates\pages\panel\settings.html:29
-#: .\templates\pages\restaurant_reservation.html:142
-#: .\templates\pages\restaurant_reservation.html:143
-msgid "Phone"
-msgstr "전화"
-
 #: .\templates\pages\auth\register.html:26
 msgid "I accept the terms and conditions"
 msgstr "이용약관에 동의합니다"
@@ -891,8 +1088,8 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "저는 사업자(B2B)로 활동함을 확인합니다."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I"
-msgstr "\"로봇이 아닙니다\" 인증을 완료하세요."
+msgid "Please complete the \"I'm not a robot\" check."
+msgstr "\"I'm not robot\" 체크를 완료하십시오."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
@@ -906,7 +1103,9 @@ msgstr "이메일 인증"
 msgid ""
 "We sent a 6-digit code to <strong id=\"verify-email-display\"></strong>. "
 "Enter it below to complete registration."
-msgstr "<strong id=\"verify-email-display\"></strong> 로 6자리 코드를 보냈습니다. 아래에 입력하여 가입을 완료하세요."
+msgstr ""
+"<strong id=\"verify-email-display\"></strong> 로 6자리 코드를 보냈습니다. 아래에 입력하여 가입을 "
+"완료하세요."
 
 #: .\templates\pages\auth\register.html:51
 msgid "Complete registration"
@@ -917,6 +1116,7 @@ msgid "Use a different email"
 msgstr "다른 이메일 사용"
 
 #: .\templates\pages\auth\register.html:57
+#: .\templates\pages\restaurant_menu.html:1562
 msgid "Already have an account?"
 msgstr "이미 계정이 있으신가요?"
 
@@ -936,8 +1136,11 @@ msgstr "이름 전체"
 msgid "John Doe"
 msgstr "홍길동"
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:89
 #: .\templates\pages\panel\settings.html:30
+#: .\templates\pages\restaurant_menu.html:1599
+#: .\templates\pages\restaurant_orders.html:579
+#: .\templates\partials\customer_navbar.html:179
 msgid "Address"
 msgstr "주소"
 
@@ -994,25 +1197,20 @@ msgid "CVC"
 msgstr "CVC"
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:591
-#: .\templates\pages\restaurant_menu.html:731
+#: .\templates\pages\restaurant_menu.html:1317
+#: .\templates\pages\restaurant_menu.html:1474
+#: .\templates\pages\restaurant_menu.html:1626
 msgid "Place Order"
 msgstr "주문하기"
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:741
+#: .\templates\pages\restaurant_menu.html:1484
 msgid "Order Summary"
 msgstr "주문 요약"
 
 #: .\templates\pages\checkout.html:65 .\templates\partials\cart_drawer.html:46
 msgid "Subtotal"
 msgstr "소계"
-
-#: .\templates\pages\contact.html:3 .\templates\partials\footer.html:30
-#: .\templates\partials\footer.html:35 .\templates\partials\navbar.html:81
-#: .\templates\partials\navbar.html:150
-msgid "Contact"
-msgstr "문의"
 
 #: .\templates\pages\contact.html:4
 msgid ""
@@ -1048,44 +1246,45 @@ msgstr "WhatsApp에서 채팅"
 msgid "Send a message"
 msgstr "메시지 보내기"
 
-#: .\templates\pages\contact.html:42 .\templates\pages\panel\categories.html:20
+#: .\templates\pages\contact.html:47
+#: .\templates\pages\panel\categories.html:20
 #: .\templates\pages\panel\menu_item_form.html:13
-#: .\templates\pages\restaurant_reservation.html:139
+#: .\templates\pages\restaurant_reservation.html:141
 msgid "Name"
 msgstr "이름"
 
-#: .\templates\pages\contact.html:42
+#: .\templates\pages\contact.html:47
 msgid "Your name"
 msgstr "이름"
 
-#: .\templates\pages\contact.html:43
+#: .\templates\pages\contact.html:48
 msgid "you@example.com"
 msgstr "you@example.com"
 
-#: .\templates\pages\contact.html:44
+#: .\templates\pages\contact.html:49
 msgid "Subject"
 msgstr "제목"
 
-#: .\templates\pages\contact.html:44
+#: .\templates\pages\contact.html:49
 msgid "How can we help?"
 msgstr "어떻게 도와드릴까요?"
 
-#: .\templates\pages\contact.html:45
+#: .\templates\pages\contact.html:50
 msgid "Message"
 msgstr "메시지"
 
-#: .\templates\pages\contact.html:45
+#: .\templates\pages\contact.html:50
 msgid "Your message"
 msgstr "메시지"
 
-#: .\templates\pages\contact.html:46
+#: .\templates\pages\contact.html:55
 msgid "Send message"
 msgstr "메시지 보내기"
 
 #: .\templates\pages\features.html:3 .\templates\partials\footer.html:22
 #: .\templates\partials\navbar.html:36 .\templates\partials\navbar.html:145
-#: .\templates_bonusweb\base.html:203 .\templates_bonusweb\base.html:280
-#: .\templates_bonusweb\base.html:336
+#: .\templates_bonusweb\base.html:204 .\templates_bonusweb\base.html:281
+#: .\templates_bonusweb\base.html:337
 msgid "Features"
 msgstr "기능"
 
@@ -1105,8 +1304,8 @@ msgid ""
 msgstr "메뉴 디지털화, 프로모션 진행, 주문 증가에 필요한 모든 것."
 
 #: .\templates\pages\features.html:29
-msgid "Dashboard and analytics view"
-msgstr "대시보드 및 분석 뷰"
+msgid "Restaurant with digital menu"
+msgstr "디지털 메뉴의 레스토랑"
 
 #: .\templates\pages\features.html:35
 msgid "One dashboard for menu, orders, and campaigns."
@@ -1120,9 +1319,9 @@ msgstr "자주 묻는 질문"
 msgid "See pricing"
 msgstr "요금 보기"
 
-#: .\templates\pages\how_it_works.html:3 .\templates\pages\how_it_works.html:10
-#: .\templates\partials\footer.html:23 .\templates\partials\navbar.html:63
-#: .\templates\partials\navbar.html:147
+#: .\templates\pages\how_it_works.html:3
+#: .\templates\pages\how_it_works.html:10 .\templates\partials\footer.html:23
+#: .\templates\partials\navbar.html:63 .\templates\partials\navbar.html:147
 msgid "How it works"
 msgstr "이용 방법"
 
@@ -1137,8 +1336,8 @@ msgid "Get your digital menu live and start taking orders in minutes."
 msgstr "디지털 메뉴를 몇 분 안에 공개하고 주문을 받으세요."
 
 #: .\templates\pages\how_it_works.html:30
-msgid "QR code and digital ordering"
-msgstr "QR 코드와 디지털 주문"
+msgid "Restaurant menu ordering"
+msgstr "레스토랑 메뉴 주문"
 
 #: .\templates\pages\how_it_works.html:36
 msgid "Scan, browse, order — no app download required."
@@ -1194,7 +1393,8 @@ msgstr "예시 보기"
 msgid "Download on the App Store"
 msgstr "App Store에서 다운로드"
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
+#: .\templates\pages\landing.html:61
+#: .\templates\pages\restaurant_menu.html:1174
 msgid "Orders"
 msgstr "주문"
 
@@ -1211,20 +1411,16 @@ msgid "Setup"
 msgstr "설정"
 
 #: .\templates\pages\landing.html:79
-msgid "Tablet menu preview"
-msgstr "태블릿 메뉴 미리보기"
+msgid "Restaurant tables with digital menu"
+msgstr "디지털 메뉴의 레스토랑 테이블"
 
 #: .\templates\pages\landing.html:90 .\templates\pages\landing.html:111
-msgid "Phone menu"
-msgstr "폰 메뉴"
+msgid "Menu dish"
+msgstr "메뉴 요리"
 
-#: .\templates\pages\landing.html:101
-msgid "Phone menu analytics"
-msgstr "폰 메뉴 분석"
-
-#: .\templates\pages\landing.html:116
-msgid "Phone analytics"
-msgstr "폰 분석"
+#: .\templates\pages\landing.html:101 .\templates\pages\landing.html:116
+msgid "Menu item"
+msgstr "메뉴 항목"
 
 #: .\templates\pages\landing.html:122
 msgid "Open Live Menu"
@@ -1278,8 +1474,8 @@ msgstr "인터랙티브 비주얼 쇼케이스"
 
 #: .\templates\pages\landing.html:161
 msgid ""
-"Beautiful sections that feel alive and premium, built for conversion and wow "
-"effect."
+"Beautiful sections that feel alive and premium, built for conversion and wow"
+" effect."
 msgstr "생동감 있고 프리미엄한 아름다운 섹션 — 전환과 와우 효과를 위해 설계."
 
 #: .\templates\pages\landing.html:165
@@ -1327,8 +1523,8 @@ msgid "Menu Action"
 msgstr "메뉴 액션"
 
 #: .\templates\pages\landing.html:210
-msgid "Premium phone mockup"
-msgstr "프리미엄 폰 목업"
+msgid "Menu on phone"
+msgstr "본문 바로가기"
 
 #: .\templates\pages\landing.html:215
 msgid "Immersive Mobile"
@@ -1373,8 +1569,8 @@ msgid "More About QR Menu"
 msgstr "QR 메뉴 더 알아보기"
 
 #: .\templates\pages\landing.html:246
-msgid "Color portrait style"
-msgstr "컬러 초상 스타일"
+msgid "Signature dish"
+msgstr "회사 소개"
 
 #: .\templates\pages\landing.html:261 .\templates\pages\landing.html:275
 msgid "There is more<br>to this menu world"
@@ -1402,114 +1598,239 @@ msgstr "아름다운 섹션, 부드러운 애니메이션, 프리미엄 오렌�
 msgid "See Menus"
 msgstr "메뉴 보기"
 
-#: .\templates\pages\order_payment.html:3
+#: .\templates\pages\order_payment.html:5
 #, python-format
-msgid "Payment — %(name)s"
-msgstr "결제 — %(name)s"
+msgid "Payment - %(name)s"
+msgstr "결제 - %(name)s"
 
-#: .\templates\pages\order_payment.html:10
-#: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:87
-#: .\templates\pages\restaurant_reservation.html:108
-#: .\templates\pages\restaurant_reservation.html:182
-#: .\templates\pages\restaurant_schedule.html:34
+#: .\templates\pages\order_payment.html:29
+#: .\templates\pages\order_payment.html:58
+#: .\templates\pages\order_payment.html:149
+#: .\templates\pages\order_payment.html:160
+#: .\templates\pages\order_payment.html:172
+#: .\templates\pages\restaurant_reservation.html:110
+#: .\templates\pages\restaurant_reservation.html:184
+#: .\templates\pages\restaurant_schedule.html:36
 msgid "Back to menu"
 msgstr "메뉴로 돌아가기"
 
-#: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:550
-#: .\templates\pages\restaurant_menu.html:682
-#: .\templates\pages\restaurant_reservation.html:163
+#: .\templates\pages\order_payment.html:34
+msgid "Secure checkout"
+msgstr "보안 체크 아웃"
+
+#: .\templates\pages\order_payment.html:35
+#: .\templates\pages\order_payment.html:126
+#: .\templates\pages\restaurant_menu.html:1260
+#: .\templates\pages\restaurant_menu.html:1409
+#: .\templates\pages\restaurant_orders.html:483
+#: .\templates\pages\restaurant_reservation.html:165
 msgid "Payment"
 msgstr "결제"
 
-#: .\templates\pages\order_payment.html:15
+#: .\templates\pages\order_payment.html:36
 #, python-format
-msgid "%(name)s — Order #%(id)s"
-msgstr "%(name)s — 주문 #%(id)s"
+msgid "%(name)s - Order #%(id)s"
+msgstr "%(name)s - 주문 #%(id)s"
 
-#: .\templates\pages\order_payment.html:18
+#: .\templates\pages\order_payment.html:42
 msgid "Order summary"
 msgstr "주문 요약"
 
-#: .\templates\pages\order_payment.html:24
+#: .\templates\pages\order_payment.html:51
 msgid "Total:"
 msgstr "합계:"
 
-#: .\templates\pages\order_payment.html:28
-msgid "Payment method"
-msgstr "결제 방법"
-
-#: .\templates\pages\order_payment.html:30
+#: .\templates\pages\order_payment.html:56
 msgid ""
 "This restaurant does not accept online payment. Please pay by cash when you "
 "pick up or dine in."
 msgstr "이 레스토랑은 온라인 결제를 지원하지 않습니다. 픽업 또는 매장에서 현금으로 결제해 주세요."
 
-#: .\templates\pages\order_payment.html:35
-#, python-format
-msgid "Pay with card. The payment goes to %(name)s."
-msgstr "카드로 결제하세요. 결제는 %(name)s(으)로 전달됩니다."
+#: .\templates\pages\order_payment.html:63
+msgid "Payment received"
+msgstr "지불받은"
 
-#: .\templates\pages\order_payment.html:42
-#, python-format
-msgid "Pay %(currency)s %(total)s"
-msgstr "%(currency)s %(total)s 결제"
+#: .\templates\pages\order_payment.html:64
+msgid "Sending your order to the restaurant..."
+msgstr "레스토랑에 주문 보내기 ..."
 
-#: .\templates\pages\order_payment.html:47
-msgid "Payment successful."
-msgstr "결제가 완료되었습니다."
-
-#: .\templates\pages\order_payment.html:49
+#: .\templates\pages\order_payment.html:69
 msgid ""
-"Please enter your delivery details so the restaurant can receive the order."
-msgstr "레스토랑이 주문을 받을 수 있도록 배송 정보를 입력하세요."
+"We'll use these details to send you the invoice and create an account so you"
+" can track this order later. All fields are required."
+msgstr ""
+"우리는이 세부 사항을 사용하여 청구서를 보내고 계정을 만들 수 있으므로 나중에이 주문을 추적 할 수 있습니다. 모든 분야가 필요합니다."
 
-#: .\templates\pages\order_payment.html:51
-msgid "Your order has been sent to the restaurant."
-msgstr "주문이 레스토랑에 전송되었습니다."
-
-#: .\templates\pages\order_payment.html:59
+#: .\templates\pages\order_payment.html:72
+#: .\templates\pages\restaurant_menu.html:1534
+#: .\templates\pages\restaurant_menu.html:1574
+#: .\templates\pages\restaurant_orders.html:518
+#: .\templates\pages\restaurant_orders.html:546
+#: .\templates\partials\customer_navbar.html:99
+#: .\templates\partials\customer_navbar.html:155
 msgid "First name"
 msgstr "이름"
 
-#: .\templates\pages\order_payment.html:63
+#: .\templates\pages\order_payment.html:76
+#: .\templates\pages\restaurant_menu.html:1535
+#: .\templates\pages\restaurant_menu.html:1578
+#: .\templates\pages\restaurant_orders.html:519
+#: .\templates\pages\restaurant_orders.html:550
+#: .\templates\partials\customer_navbar.html:100
+#: .\templates\partials\customer_navbar.html:156
 msgid "Last name"
 msgstr "성"
 
-#: .\templates\pages\order_payment.html:77
-#, fuzzy
-#| msgid "View orders"
+#: .\templates\pages\order_payment.html:85
+msgid "Email (for invoice)"
+msgstr "이메일(invoice)"
+
+#: .\templates\pages\order_payment.html:94
 msgid "Submit order"
-msgstr "주문 제출"
+msgstr "자주 묻는 질문"
 
-#: .\templates\pages\order_payment.html:82
-#, fuzzy
-#| msgid "Full feature set for modern restaurants"
+#: .\templates\pages\order_payment.html:98
 msgid "Order sent to the restaurant."
-msgstr "주문이 레스토랑에 전송되었습니다."
+msgstr "레스토랑에 보내진 주문."
 
-#: .\templates\pages\order_payment.html:83
-msgid "You can follow the order status in order tracking."
-msgstr "주문 추적에서 상태를 확인할 수 있습니다."
+#: .\templates\pages\order_payment.html:102
+msgid "Purchase invoice"
+msgstr "구매 청구서"
 
-#: .\templates\pages\order_payment.html:84
-#, fuzzy
-#| msgid "Order management"
-msgid "Order tracking"
-msgstr "주문 추적"
+#: .\templates\pages\order_payment.html:106
+msgid "Invoice"
+msgstr "회사 소개"
 
-#: .\templates\pages\order_payment.html:113
+#: .\templates\pages\order_payment.html:109
+#: .\templates\pages\restaurant_menu.html:1224
+#: .\templates\pages\restaurant_menu.html:1374
+#: .\templates\pages\restaurant_menu.html:1490
+msgid "Total"
+msgstr "합계"
+
+#: .\templates\pages\order_payment.html:117
+#: .\templates\pages\panel\dashboard.html:35
+msgid "Customer"
+msgstr "고객"
+
+#: .\templates\pages\order_payment.html:123
+#: .\templates\pages\panel\dashboard.html:34
+msgid "Order"
+msgstr "주문"
+
+#: .\templates\pages\order_payment.html:124
+#: .\templates\pages\panel\dashboard.html:37
+#: .\templates\pages\panel\dashboard_simple.html:27
+msgid "Status"
+msgstr "상태"
+
+#: .\templates\pages\order_payment.html:125
+#: .\templates\pages\restaurant_orders.html:479
+#: .\templates\pages\service_detail.html:18
+msgid "Service"
+msgstr "서비스"
+
+#: .\templates\pages\order_payment.html:127
+#: .\templates\pages\restaurant_reservation.html:117
+msgid "Date"
+msgstr "날짜"
+
+#: .\templates\pages\order_payment.html:131
+#: .\templates\pages\restaurant_orders.html:475
+msgid "Items"
+msgstr "주문 상품"
+
+#: .\templates\pages\order_payment.html:136
+msgid "Item"
+msgstr "제품 정보"
+
+#: .\templates\pages\order_payment.html:137
+msgid "Qty"
+msgstr "수량 :"
+
+#: .\templates\pages\order_payment.html:138
+#: .\templates\pages\panel\menu_item_form.html:14
+msgid "Price"
+msgstr "가격"
+
+#: .\templates\pages\order_payment.html:147
+msgid "Download invoice"
+msgstr "다운로드 invoice"
+
+#: .\templates\pages\order_payment.html:156
+msgid "Payment was cancelled."
+msgstr "결제가 취소되었습니다."
+
+#: .\templates\pages\order_payment.html:157
+msgid "No order has been sent to the restaurant."
+msgstr "주문은 레스토랑에 보내지 않았습니다."
+
+#: .\templates\pages\order_payment.html:164
+msgid "Redirecting to secure payment..."
+msgstr "지불을 확보하기 위해 Redirecting ..."
+
+#: .\templates\pages\order_payment.html:165
+msgid "Please wait while Stripe Checkout opens."
+msgstr "Stripe Checkout이 열릴 때 기다리십시오."
+
+#: .\templates\pages\order_payment.html:213
+#: .\templates\pages\restaurant_menu.html:691
+#: .\templates\pages\restaurant_orders.html:251
+msgid "In Store"
+msgstr "매장 식사"
+
+#: .\templates\pages\order_payment.html:214
+#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:1233
+#: .\templates\pages\restaurant_menu.html:1382
+#: .\templates\pages\restaurant_orders.html:252
+msgid "Pickup"
+msgstr "포장"
+
+#: .\templates\pages\order_payment.html:215
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:1235
+#: .\templates\pages\restaurant_menu.html:1384
+#: .\templates\pages\restaurant_orders.html:253
+#: .\templates\pages\restaurant_orders.html:450
+msgid "Delivery"
+msgstr "배달"
+
+#: .\templates\pages\order_payment.html:222
+#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:1263
+#: .\templates\pages\restaurant_menu.html:1412
+#: .\templates\pages\restaurant_orders.html:258
+msgid "Cash"
+msgstr "현금"
+
+#: .\templates\pages\order_payment.html:223
+#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:1266
+#: .\templates\pages\restaurant_menu.html:1415
+#: .\templates\pages\restaurant_orders.html:258
+msgid "Online"
+msgstr "온라인"
+
+#: .\templates\pages\order_payment.html:264
+#: .\templates\pages\order_payment.html:285
+#: .\templates\pages\order_payment.html:288
 msgid "Could not start payment."
 msgstr "결제를 시작할 수 없습니다."
 
-#: .\templates\pages\order_payment.html:114
-msgid "Payment failed."
-msgstr "결제 실패."
+#: .\templates\pages\order_payment.html:306
+msgid "Could not submit order."
+msgstr "주문할 수 없습니다."
 
-#: .\templates\pages\order_payment.html:115
-msgid "Something went wrong."
-msgstr "문제가 발생했습니다."
+#: .\templates\pages\order_payment.html:324
+msgid ""
+"Complete your details to send the order to the restaurant. We will create an"
+" account for you."
+msgstr "레스토랑에 주문을 보내려면 세부 사항을 완료하십시오. 우리는 당신을 위해 계정을 만들 것입니다."
+
+#: .\templates\pages\order_payment.html:372
+msgid "All fields are required."
+msgstr "모든 분야가 필요합니다."
 
 #: .\templates\pages\panel\campaigns.html:3
 #: .\templates\pages\panel\campaigns.html:11
@@ -1595,6 +1916,8 @@ msgstr "작업"
 
 #: .\templates\pages\panel\categories.html:30
 #: .\templates\pages\panel\menu_items_list.html:33
+#: .\templates\pages\restaurant_orders.html:585
+#: .\templates\partials\customer_navbar.html:185
 msgid "Delete"
 msgstr "삭제"
 
@@ -1620,7 +1943,8 @@ msgstr "이 Alpine 기반 모달을 활용해 나중에 카테고리 생성 폼�
 #: .\templates\pages\panel\dashboard_simple.html:3
 #: .\templates\partials\navbar.html:119 .\templates\partials\navbar.html:167
 #: .\templates\partials\panel_navbar.html:10
-#: .\templates\partials\panel_navbar.html:34 .\templates_bonusweb\base.html:248
+#: .\templates\partials\panel_navbar.html:34
+#: .\templates_bonusweb\base.html:249
 msgid "Dashboard"
 msgstr "대시보드"
 
@@ -1628,22 +1952,9 @@ msgstr "대시보드"
 msgid "Recent Orders"
 msgstr "최근 주문"
 
-#: .\templates\pages\panel\dashboard.html:34
-msgid "Order"
-msgstr "주문"
-
-#: .\templates\pages\panel\dashboard.html:35
-msgid "Customer"
-msgstr "고객"
-
 #: .\templates\pages\panel\dashboard.html:36
 msgid "Amount"
 msgstr "금액"
-
-#: .\templates\pages\panel\dashboard.html:37
-#: .\templates\pages\panel\dashboard_simple.html:27
-msgid "Status"
-msgstr "상태"
 
 #: .\templates\pages\panel\dashboard.html:56
 msgid "Quick Actions"
@@ -1698,7 +2009,6 @@ msgid "Expires"
 msgstr "만료일"
 
 #: .\templates\pages\panel\dashboard_simple.html:52
-#: .\templates_bonusweb\business_menu\subscribe.html:7
 msgid "Subscribe to continue"
 msgstr "계속하려면 구독하세요"
 
@@ -1723,14 +2033,11 @@ msgstr "Stripe 연결"
 
 #: .\templates\pages\panel\dashboard_simple.html:69
 msgid ""
-"If you want your customers' online payments to be processed from the digital "
-"menu, pay 200 Euros now to upgrade your plan."
+"If you want your customers' online payments to be processed from the digital"
+" menu, pay 200 Euros now to upgrade your plan."
 msgstr "고객의 온라인 결제를 디지털 메뉴로 처리하려면 지금 200 유로를 결제해 요금제를 업그레이드하세요."
 
 #: .\templates\pages\panel\dashboard_simple.html:71
-#: .\templates_bonusweb\business_menu\subscribe.html:13
-#: .\templates_bonusweb\business_menu\subscribe.html:35
-#: .\templates_bonusweb\business_menu\subscribe.html:39
 msgid "Start Plan"
 msgstr "요금제 시작"
 
@@ -1751,10 +2058,6 @@ msgstr "메뉴 항목 편집"
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Create Menu Item"
 msgstr "메뉴 항목 만들기"
-
-#: .\templates\pages\panel\menu_item_form.html:14
-msgid "Price"
-msgstr "가격"
 
 #: .\templates\pages\panel\menu_item_form.html:15
 msgid "Image URL"
@@ -1777,6 +2080,7 @@ msgid "Save item"
 msgstr "항목 저장"
 
 #: .\templates\pages\panel\menu_item_form.html:29
+#: .\templates\pages\restaurant_orders.html:427
 msgid "Cancel"
 msgstr "취소"
 
@@ -1842,6 +2146,8 @@ msgid "Postal code"
 msgstr "우편번호"
 
 #: .\templates\pages\panel\settings.html:41
+#: .\templates\partials\restaurant_location_public.html:5
+#: .\templates\partials\restaurant_location_public.html:34
 msgid "Restaurant location"
 msgstr "레스토랑 위치"
 
@@ -1856,7 +2162,9 @@ msgid ""
 "Google Maps is not configured. Set <code class=\"rounded bg-rose-100 px-1 "
 "dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in the server environment to "
 "enable the map."
-msgstr "Google Maps 가 구성되지 않았습니다. 지도를 활성화하려면 서버 환경에 <code class=\"rounded bg-rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> 를 설정하세요."
+msgstr ""
+"Google Maps 가 구성되지 않았습니다. 지도를 활성화하려면 서버 환경에 <code class=\"rounded bg-"
+"rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> 를 설정하세요."
 
 #: .\templates\pages\panel\settings.html:53
 msgid "Search address"
@@ -1895,6 +2203,8 @@ msgid "Clear location"
 msgstr "위치 지우기"
 
 #: .\templates\pages\panel\settings.html:91
+#: .\templates\pages\restaurant_orders.html:564
+#: .\templates\partials\customer_navbar.html:165
 msgid "Save changes"
 msgstr "변경사항 저장"
 
@@ -1917,8 +2227,8 @@ msgstr "관리 패널로 이동"
 #: .\templates\pages\payment_cancel.html:10
 #: .\templates\pages\payment_success.html:10
 #: .\templates\partials\navbar.html:30 .\templates\partials\navbar.html:144
-#: .\templates_bonusweb\base.html:195 .\templates_bonusweb\base.html:272
-#: .\templates_bonusweb\base.html:334
+#: .\templates_bonusweb\base.html:196 .\templates_bonusweb\base.html:273
+#: .\templates_bonusweb\base.html:335
 msgid "Home"
 msgstr "홈"
 
@@ -1935,17 +2245,17 @@ msgstr "요금제가 업그레이드되었습니다. 디지털 메뉴에서 온�
 
 #: .\templates\pages\pricing.html:3 .\templates\partials\footer.html:24
 #: .\templates\partials\navbar.html:69 .\templates\partials\navbar.html:148
-#: .\templates_bonusweb\base.html:215 .\templates_bonusweb\base.html:292
-#: .\templates_bonusweb\base.html:340
+#: .\templates_bonusweb\base.html:216 .\templates_bonusweb\base.html:293
+#: .\templates_bonusweb\base.html:341
 msgid "Pricing"
 msgstr "요금제"
 
 #: .\templates\pages\pricing.html:4
 #, python-format
 msgid ""
-"One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT "
-"(€238 total). Everything included."
-msgstr "간단한 연간 요금제: QR 메뉴와 온라인 주문 연 €200 + 부가세 19% (총 €238). 모든 것이 포함됩니다."
+"One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT"
+" (€238 total). Everything included."
+msgstr "간단한 연간 요금제: QR 메뉴와 온라인 주문 연 €200 + 부가세 19%% (총 €238). 모든 것이 포함됩니다."
 
 #: .\templates\pages\pricing.html:10
 msgid "Simple annual pricing"
@@ -1972,7 +2282,7 @@ msgstr "년"
 #: .\templates\pages\pricing.html:20
 #, python-format
 msgid "plus 19%% VAT"
-msgstr "부가세 19% 별도"
+msgstr "부가세 19%% 별도"
 
 #: .\templates\pages\pricing.html:21
 #, python-format
@@ -2003,8 +2313,124 @@ msgstr "문의하기"
 msgid "Get started — €200/year"
 msgstr "시작하기 — €200/년"
 
+#: .\templates\pages\privacy_policy.html:4
+#: .\templates\pages\privacy_policy.html:11 .\templates_bonusweb\base.html:371
+#: .\templates_bonusweb\business_menu\subscribe.html:96
+msgid "Privacy Policy"
+msgstr "개인정보 처리방침"
+
+#: .\templates\pages\privacy_policy.html:5
+msgid "Privacy Policy for My Bonus QR Menu and PreisMenu services."
+msgstr "My Bonus QR 메뉴 및 PreisMenu 서비스에 대한 개인 정보 보호 정책."
+
+#: .\templates\pages\privacy_policy.html:10
+#: .\templates\pages\terms_conditions.html:10
+#: .\templates_bonusweb\base.html:365
+msgid "Legal"
+msgstr "법률"
+
+#: .\templates\pages\privacy_policy.html:12
+#: .\templates\pages\terms_conditions.html:12
+msgid "Last updated: August 15, 2026"
+msgstr "최근 업데이트: 8월 15, 2026"
+
+#: .\templates\pages\privacy_policy.html:15
+msgid ""
+"This Privacy Policy explains how My Bonus QR Menu collects, uses, and "
+"protects information when restaurants, staff, and guests use our QR menu, "
+"ordering, campaign, and administration services."
+msgstr ""
+"이 개인정보 보호정책은 My Bonus QR 메뉴 수집, 사용, 보호하는 방법을 설명합니다. 레스토랑, 직원, 손님은 QR 메뉴, 주문,"
+" 캠페인 및 관리 서비스를 사용합니다."
+
+#: .\templates\pages\privacy_policy.html:17
+msgid "Information We Collect"
+msgstr "정보 수집"
+
+#: .\templates\pages\privacy_policy.html:18
+msgid ""
+"We may collect account details, restaurant profile information, menu "
+"content, order information, contact messages, device and log data, and "
+"information needed to provide payment, support, security, and analytics "
+"features."
+msgstr ""
+"우리는 계정 세부 사항, 레스토랑 프로필 정보, 메뉴 내용, 주문 정보, 연락처 메시지, 장치 및 로그 데이터를 수집 할 수 있으며 "
+"지불, 지원, 보안 및 분석 기능을 제공해야합니다."
+
+#: .\templates\pages\privacy_policy.html:20
+msgid "How We Use Information"
+msgstr "오시는 길"
+
+#: .\templates\pages\privacy_policy.html:21
+msgid ""
+"We use information to provide and improve the service, manage accounts, "
+"process orders, support restaurants and customers, prevent abuse, maintain "
+"security, comply with legal obligations, and communicate important service "
+"updates."
+msgstr ""
+"우리는 서비스를 제공하고, 계정 관리, 프로세스 주문, 지원 레스토랑 및 고객, 학대를 방지하고, 보안을 유지하고, 법적 의무를 준수하며"
+" 중요한 서비스 업데이트를 의사소통합니다."
+
+#: .\templates\pages\privacy_policy.html:23
+msgid "Sharing and Processors"
+msgstr "공유 및 프로세서"
+
+#: .\templates\pages\privacy_policy.html:24
+msgid ""
+"We do not sell personal information. We may share limited information with "
+"service providers that help us operate the platform, such as hosting, email,"
+" analytics, payment, security, and customer support providers, where needed "
+"for the service."
+msgstr ""
+"개인정보를 판매하지 않습니다. 우리는 서비스 제공 업체와 제한된 정보를 공유 할 수 있습니다. 호스팅, 이메일, 분석, 지불, 보안 및 "
+"고객 지원 제공 업체와 같은 플랫폼을 운영하는 데 도움이."
+
+#: .\templates\pages\privacy_policy.html:26
+msgid "Data Retention"
+msgstr "데이터 보유"
+
+#: .\templates\pages\privacy_policy.html:27
+msgid ""
+"We keep information only as long as needed for the purposes described in "
+"this policy, unless a longer retention period is required by law, accounting"
+" rules, security needs, or dispute resolution."
+msgstr ""
+"본 방침에 명시된 목적으로만 정보를 보관합니다. 더 긴 보존 기간이 법률, 회계 규칙, 보안 요구 사항, 또는 분쟁 해결에 의해 요구되는"
+" 경우."
+
+#: .\templates\pages\privacy_policy.html:29
+msgid "Your Rights"
+msgstr "당신의 권리"
+
+#: .\templates\pages\privacy_policy.html:30
+msgid ""
+"Depending on your location, you may have rights to access, correct, delete, "
+"restrict, or export your personal information, or object to certain "
+"processing. You can contact us to exercise these rights."
+msgstr ""
+"귀하의 위치에 따라, 당신은 액세스, 정확, 삭제, 제한, 또는 특정 처리에 귀하의 개인 정보, 또는 개체를 내보내는 권리를 가질 수 "
+"있습니다. 이 권리를 행사할 수 있습니다."
+
+#: .\templates\pages\privacy_policy.html:32
+msgid "Security"
+msgstr "보안 보안"
+
+#: .\templates\pages\privacy_policy.html:33
+msgid ""
+"We use reasonable technical and organizational measures to protect "
+"information. No online service can guarantee absolute security, but we work "
+"to protect data against unauthorized access, loss, misuse, or alteration."
+msgstr ""
+"우리는 정보를 보호하기 위해 합리적인 기술적 및 조직 조치를 사용합니다. 온라인 서비스는 절대 보안을 보장 할 수 없습니다, 그러나 "
+"우리는 무단 액세스, 손실, 오용 또는 변경에 대한 데이터를 보호하기 위해 노력하고 있습니다."
+
+#: .\templates\pages\privacy_policy.html:36
+msgid "For privacy questions, contact us at"
+msgstr "개인정보 보호정책"
+
 #: .\templates\pages\public_menu.html:3
 #: .\templates\pages\restaurant_menu.html:3
+#: .\templates\pages\restaurant_orders.html:383
 #: .\templates_bonusweb\business_menu\menu_display.html:4
 msgid "Menu"
 msgstr "메뉴"
@@ -2031,450 +2457,902 @@ msgstr "%(name)s(을) 장바구니에 담기"
 msgid "Open cart"
 msgstr "장바구니 열기"
 
-#: .\templates\pages\restaurant_menu.html:39
+#: .\templates\pages\restaurant_menu.html:397
 msgid "Added"
 msgstr "추가됨"
 
-#: .\templates\pages\restaurant_menu.html:41
+#: .\templates\pages\restaurant_menu.html:399
 msgid "Added to cart"
 msgstr "장바구니에 담김"
 
-#: .\templates\pages\restaurant_menu.html:42
+#: .\templates\pages\restaurant_menu.html:400
 msgid "Table number is required for Dine In"
 msgstr "매장 이용 시 테이블 번호가 필요합니다"
 
-#: .\templates\pages\restaurant_menu.html:43
+#: .\templates\pages\restaurant_menu.html:401
+msgid "Ordering is only available during opening hours."
+msgstr "주문은 영업 시간 동안만 가능합니다."
+
+#: .\templates\pages\restaurant_menu.html:402
 msgid "Could not place order"
 msgstr "주문을 처리할 수 없습니다"
 
-#: .\templates\pages\restaurant_menu.html:44
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:831
+#: .\templates\pages\restaurant_orders.html:119
+#: .\templates\pages\restaurant_orders.html:159
+#: .\templates\pages\restaurant_orders.html:196
+#: .\templates\pages\restaurant_orders.html:345
+#: .\templates\pages\restaurant_orders.html:370
+#: .\templates\partials\customer_navbar.html:315
+#: .\templates\partials\customer_navbar.html:357
+#: .\templates\partials\customer_navbar.html:378
+#: .\templates\partials\customer_navbar.html:406
+#: .\templates\partials\customer_navbar.html:438
 msgid "Network error"
 msgstr "네트워크 오류"
 
-#: .\templates\pages\restaurant_menu.html:237
-msgid ""
-"You have order(s) pending or in progress. Check status and when it's ready "
-"in the Orders panel."
-msgstr "대기 중이거나 진행 중인 주문이 있습니다. 주문 패널에서 상태를 확인하세요."
+#: .\templates\pages\restaurant_menu.html:484
+#: .\templates\pages\restaurant_orders.html:96
+#: .\templates\partials\customer_navbar.html:291
+msgid "Please enter your email/phone and password."
+msgstr "이메일/전화 및 비밀번호 입력"
 
-#: .\templates\pages\restaurant_menu.html:238
+#: .\templates\pages\restaurant_menu.html:498
+#: .\templates\pages\restaurant_orders.html:107
+msgid "Invalid email/phone or password."
+msgstr "잘못된 이메일/전화 또는 비밀번호."
+
+#: .\templates\pages\restaurant_menu.html:499
+#: .\templates\pages\restaurant_orders.html:107
+#: .\templates\partials\customer_navbar.html:306
+msgid "Login failed."
+msgstr "로그인 실패."
+
+#: .\templates\pages\restaurant_menu.html:513
+#: .\templates\pages\restaurant_orders.html:124
+#: .\templates\partials\customer_navbar.html:320
+msgid "Please fill in the required fields."
+msgstr "필수 입력란을 기입해 주세요."
+
+#: .\templates\pages\restaurant_menu.html:517
+#: .\templates\pages\restaurant_menu.html:538
+#: .\templates\pages\restaurant_orders.html:125
+#: .\templates\pages\restaurant_orders.html:144
+#: .\templates\partials\customer_navbar.html:321
+#: .\templates\partials\customer_navbar.html:339
+#: .\templates\partials\customer_navbar.html:386
+#: .\templates\partials\customer_navbar.html:398
+msgid "Password must be at least 6 characters."
+msgstr "비밀번호는 최소 6자 이상이어야 합니다."
+
+#: .\templates\pages\restaurant_menu.html:535
+#: .\templates\pages\restaurant_orders.html:141
+msgid "This phone number is already registered. Please log in instead."
+msgstr "이 전화 번호는 이미 등록되어 있습니다. 자주 묻는 질문"
+
+#: .\templates\pages\restaurant_menu.html:536
+#: .\templates\pages\restaurant_orders.html:142
+msgid "This email is already registered. Please log in instead."
+msgstr "이 이메일은 이미 등록되어 있습니다. 자주 묻는 질문"
+
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_orders.html:143
+#: .\templates\partials\customer_navbar.html:363
+msgid "Please enter a valid email."
+msgstr "자주 묻는 질문"
+
+#: .\templates\pages\restaurant_menu.html:539
+#: .\templates\partials\customer_navbar.html:340
+msgid "First name is required."
+msgstr "첫 번째 이름은 필요합니다."
+
+#: .\templates\pages\restaurant_menu.html:540
+#: .\templates\pages\restaurant_menu.html:626
+msgid "Phone is required."
+msgstr "전화가 필요합니다."
+
+#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_orders.html:150
+#: .\templates\partials\customer_navbar.html:348
+msgid "Registration failed."
+msgstr "등록 실패."
+
+#: .\templates\pages\restaurant_menu.html:595
+msgid "Could not save address."
+msgstr "주소를 저장할 수 없습니다."
+
+#: .\templates\pages\restaurant_menu.html:616
+msgid "Could not update profile."
+msgstr "프로필을 업데이트 할 수 없습니다."
+
+#: .\templates\pages\restaurant_menu.html:630
+msgid "Please select or add a delivery address."
+msgstr "자주 묻는 질문"
+
+#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:680
+#: .\templates\pages\restaurant_orders.html:239
+#: .\templates\pages\restaurant_orders.html:240
+#: .\templates\pages\restaurant_orders.html:448
+msgid "Received"
+msgstr "접수됨"
+
+#: .\templates\pages\restaurant_menu.html:681
+#: .\templates\pages\restaurant_orders.html:241
+#: .\templates\pages\restaurant_orders.html:449
+msgid "Preparing"
+msgstr "준비 중"
+
+#: .\templates\pages\restaurant_menu.html:682
+#: .\templates\pages\restaurant_orders.html:242
+msgid "Out for delivery"
+msgstr "배달 중"
+
+#: .\templates\pages\restaurant_menu.html:683
+#: .\templates\pages\restaurant_orders.html:243
+msgid "Completed"
+msgstr "완료됨"
+
+#: .\templates\pages\restaurant_menu.html:684
+#: .\templates\pages\restaurant_orders.html:244
+msgid "Cancelled"
+msgstr "취소됨"
+
+#: .\templates\pages\restaurant_menu.html:685
+#: .\templates\pages\restaurant_orders.html:245
+msgid "Refunded"
+msgstr "환불됨"
+
+#: .\templates\pages\restaurant_menu.html:704
+msgid "The restaurant is preparing your order."
+msgstr "레스토랑은 주문을 준비하고 있습니다."
+
+#: .\templates\pages\restaurant_menu.html:705
+msgid "Your order is out for delivery."
+msgstr "당신의 순서는 납품을 위해 밖으로 입니다."
+
+#: .\templates\pages\restaurant_menu.html:706
+msgid "Your order is completed."
+msgstr "당신의 순서는 완료됩니다."
+
+#: .\templates\pages\restaurant_menu.html:707
+#: .\templates\pages\restaurant_orders.html:266
+msgid "This order was cancelled."
+msgstr "이 주문은 취소되었습니다."
+
+#: .\templates\pages\restaurant_menu.html:708
+#: .\templates\pages\restaurant_orders.html:267
+msgid "This order was refunded."
+msgstr "이 주문은 환불되었습니다."
+
+#: .\templates\pages\restaurant_menu.html:709
+msgid "Your order was received and is waiting for the restaurant."
+msgstr "주문은 받고 레스토랑을 기다리고 있습니다."
+
+#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_orders.html:285
+msgid "No item details"
+msgstr "상품문의"
+
+#: .\templates\pages\restaurant_menu.html:811
+#: .\templates\pages\restaurant_orders.html:310
+#: .\templates\pages\restaurant_orders.html:352
+msgid "Enter your phone number."
+msgstr "휴대폰 번호를 입력하십시오."
+
+#: .\templates\pages\restaurant_menu.html:821
+#: .\templates\pages\restaurant_orders.html:362
+msgid "Could not load orders."
+msgstr "주문할 수 없습니다."
+
+#: .\templates\pages\restaurant_menu.html:827
+#: .\templates\pages\restaurant_orders.html:366
+msgid "No orders found for this phone number."
+msgstr "이 전화 번호에 대한 주문이 없습니다."
+
+#: .\templates\pages\restaurant_menu.html:919
+msgid ""
+"You have order(s) pending or in progress. Check status and details in your "
+"orders page."
+msgstr "대기 중이거나 진행 중인 주문이 있습니다. 주문 페이지에서 상태와 상세 정보를 확인하세요."
+
+#: .\templates\pages\restaurant_menu.html:920
 msgid "View orders"
 msgstr "주문 보기"
 
-#: .\templates\pages\restaurant_menu.html:241
+#: .\templates\pages\restaurant_menu.html:924
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
 msgstr "지금은 영업이 종료되었습니다. 영업 시간에 맞춰 주문을 예약할 수 있습니다."
 
-#: .\templates\pages\restaurant_menu.html:242
+#: .\templates\pages\restaurant_menu.html:925
 msgid "Schedule for later"
 msgstr "나중으로 예약"
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:936
 msgid "All Categories"
 msgstr "모든 카테고리"
 
-#: .\templates\pages\restaurant_menu.html:266
+#: .\templates\pages\restaurant_menu.html:949
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(counter)s개 항목"
 
-#: .\templates\pages\restaurant_menu.html:284
-msgid "Toggle night mode"
-msgstr "야간 모드 전환"
-
-#: .\templates\pages\restaurant_menu.html:314
+#: .\templates\pages\restaurant_menu.html:984
 msgid "Address:"
 msgstr "주소:"
 
-#: .\templates\pages\restaurant_menu.html:317
+#: .\templates\pages\restaurant_menu.html:987
 msgid "Phone:"
 msgstr "전화:"
 
-#: .\templates\pages\restaurant_menu.html:320
+#: .\templates\pages\restaurant_menu.html:990
 msgid "Email:"
 msgstr "이메일:"
 
-#: .\templates\pages\restaurant_menu.html:325
+#: .\templates\pages\restaurant_menu.html:995
 msgid "Opening Hours"
 msgstr "영업 시간"
 
-#: .\templates\pages\restaurant_menu.html:326
+#: .\templates\pages\restaurant_menu.html:996
 msgid "Not provided yet"
 msgstr "미제공"
 
-#: .\templates\pages\restaurant_menu.html:335
+#: .\templates\pages\restaurant_menu.html:1005
 msgid "Search menu items..."
 msgstr "메뉴 검색..."
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:1013
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr "전체"
 
-#: .\templates\pages\restaurant_menu.html:356
+#: .\templates\pages\restaurant_menu.html:1026
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
 msgstr "패키지"
 
-#: .\templates\pages\restaurant_menu.html:377
+#: .\templates\pages\restaurant_menu.html:1047
 msgid "No menu items available."
 msgstr "이용 가능한 메뉴가 없습니다."
 
-#: .\templates\pages\restaurant_menu.html:403
-#: .\templates\pages\restaurant_menu.html:417
+#: .\templates\pages\restaurant_menu.html:1073
+#: .\templates\pages\restaurant_menu.html:1093
 msgid "Learn More"
 msgstr "자세히 보기"
 
-#: .\templates\pages\restaurant_menu.html:457
+#: .\templates\pages\restaurant_menu.html:1127
 msgid "Cart"
 msgstr "장바구니"
 
-#: .\templates\pages\restaurant_menu.html:467
-#: .\templates\pages\restaurant_menu.html:472
-#: .\templates\pages\restaurant_menu.html:532
-#: .\templates\pages\restaurant_menu.html:543
-#: .\templates\pages\restaurant_menu.html:664
-#: .\templates\pages\restaurant_menu.html:675
-#: .\templates\pages\restaurant_menu.html:722
+#: .\templates\pages\restaurant_menu.html:1142
+msgid "Order status"
+msgstr "주문 상태"
+
+#: .\templates\pages\restaurant_menu.html:1155
+msgid "View order"
+msgstr "주문 보기"
+
+#: .\templates\pages\restaurant_menu.html:1162
+#: .\templates\partials\customer_navbar.html:19
+#: .\templates\partials\customer_navbar.html:62
+#: .\templates\partials\customer_navbar.html:209
+msgid "My orders"
+msgstr "내 주문"
+
+#: .\templates\pages\restaurant_menu.html:1163
+msgid "Track previous orders by phone number."
+msgstr "전화 번호로 이전 주문 추적."
+
+#: .\templates\pages\restaurant_menu.html:1165
+msgid "Open"
+msgstr "기타"
+
+#: .\templates\pages\restaurant_menu.html:1176
+#: .\templates\pages\restaurant_menu.html:1181
+#: .\templates\pages\restaurant_menu.html:1238
+#: .\templates\pages\restaurant_menu.html:1249
+#: .\templates\pages\restaurant_menu.html:1387
+#: .\templates\pages\restaurant_menu.html:1398
+#: .\templates\pages\restaurant_menu.html:1465
 msgid "Reservation"
 msgstr "예약"
 
-#: .\templates\pages\restaurant_menu.html:474
+#: .\templates\pages\restaurant_menu.html:1183
 msgid "Close"
 msgstr "닫기"
 
-#: .\templates\pages\restaurant_menu.html:495
-#: .\templates\pages\restaurant_menu.html:628
+#: .\templates\pages\restaurant_menu.html:1204
+#: .\templates\pages\restaurant_menu.html:1354
 msgid "Cart Items"
 msgstr "장바구니 항목"
 
-#: .\templates\pages\restaurant_menu.html:497
-#: .\templates\pages\restaurant_menu.html:630
+#: .\templates\pages\restaurant_menu.html:1206
+#: .\templates\pages\restaurant_menu.html:1356
 msgid "Cart is empty."
 msgstr "장바구니가 비어 있습니다."
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:644
+#: .\templates\pages\restaurant_menu.html:1220
+#: .\templates\pages\restaurant_menu.html:1370
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr "제거"
 
-#: .\templates\pages\restaurant_menu.html:515
-#: .\templates\pages\restaurant_menu.html:648
-#: .\templates\pages\restaurant_menu.html:747
-msgid "Total"
-msgstr "합계"
-
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:653
+#: .\templates\pages\restaurant_menu.html:1230
+#: .\templates\pages\restaurant_menu.html:1379
 msgid "Service Type"
 msgstr "서비스 유형"
 
-#: .\templates\pages\restaurant_menu.html:523
-#: .\templates\pages\restaurant_menu.html:655
+#: .\templates\pages\restaurant_menu.html:1232
+#: .\templates\pages\restaurant_menu.html:1381
 msgid "Dine In"
 msgstr "매장 이용"
 
-#: .\templates\pages\restaurant_menu.html:524
-#: .\templates\pages\restaurant_menu.html:656
-msgid "Pickup"
-msgstr "포장"
-
-#: .\templates\pages\restaurant_menu.html:526
-#: .\templates\pages\restaurant_menu.html:658
-msgid "Delivery"
-msgstr "배달"
-
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:669
+#: .\templates\pages\restaurant_menu.html:1243
+#: .\templates\pages\restaurant_menu.html:1392
 msgid "Table Number"
 msgstr "테이블 번호"
 
-#: .\templates\pages\restaurant_menu.html:538
+#: .\templates\pages\restaurant_menu.html:1244
 msgid "e.g. 22"
 msgstr "예: 22"
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:677
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:1250
+msgid ""
+"Choose a <strong>day and time</strong> within opening hours. Pay "
+"<strong>Cash</strong> on the day or <strong>Online</strong> now. If "
+"cancelled, online payment is refunded."
+msgstr ""
+"더 보기 <strong>일 및 시간</strong> 영업 시간 이내 결제하기 <strong>현금 인출</strong> 당일 또는 "
+"<strong>- 한국어</strong> 현재 위치 취소, 온라인 결제는 환불됩니다."
+
+#: .\templates\pages\restaurant_menu.html:1251
+#: .\templates\pages\restaurant_menu.html:1308
+#: .\templates\pages\restaurant_menu.html:1400
+#: .\templates\pages\restaurant_menu.html:1467
 msgid "Select date & time →"
 msgstr "날짜 및 시간 선택 →"
 
-#: .\templates\pages\restaurant_menu.html:553
-#: .\templates\pages\restaurant_menu.html:685
-msgid "Cash"
-msgstr "현금"
+#: .\templates\pages\restaurant_menu.html:1257
+#: .\templates\pages\restaurant_menu.html:1406
+msgid "Phone number"
+msgstr "전화번호"
 
-#: .\templates\pages\restaurant_menu.html:556
-#: .\templates\pages\restaurant_menu.html:688
-msgid "Online"
-msgstr "온라인"
-
-#: .\templates\pages\restaurant_menu.html:561
-#: .\templates\pages\restaurant_menu.html:693
-#: .\templates\pages\restaurant_menu.html:694
+#: .\templates\pages\restaurant_menu.html:1287
+#: .\templates\pages\restaurant_menu.html:1436
+#: .\templates\pages\restaurant_menu.html:1437
 msgid "Order Note"
 msgstr "주문 메모"
 
-#: .\templates\pages\restaurant_menu.html:562
-#: .\templates\pages\restaurant_reservation.html:151
+#: .\templates\pages\restaurant_menu.html:1288
+#: .\templates\pages\restaurant_reservation.html:153
 msgid "Special requests…"
 msgstr "특별 요청…"
 
-#: .\templates\pages\restaurant_menu.html:567
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:1293
+#: .\templates\pages\restaurant_menu.html:1461
 msgid "Confirm Order"
 msgstr "주문 확인"
 
-#: .\templates\pages\restaurant_menu.html:568
+#: .\templates\pages\restaurant_menu.html:1294
 msgid "Add items and set options on the left."
 msgstr "왼쪽에서 항목을 추가하고 옵션을 설정하세요."
 
-#: .\templates\pages\restaurant_menu.html:571
-#: .\templates\pages\restaurant_menu.html:597
-#: .\templates\pages\restaurant_menu.html:750
+#: .\templates\pages\restaurant_menu.html:1297
+#: .\templates\pages\restaurant_menu.html:1323
+#: .\templates\pages\restaurant_menu.html:1493
 msgid "Order placed successfully"
 msgstr "주문이 정상적으로 접수되었습니다"
 
-#: .\templates\pages\restaurant_menu.html:572
+#: .\templates\pages\restaurant_menu.html:1298
 msgid "Your order is pending. Check status in Order history below."
 msgstr "주문이 대기 중입니다. 아래 주문 내역에서 상태를 확인하세요."
 
-#: .\templates\pages\restaurant_menu.html:573
-#: .\templates\pages\restaurant_menu.html:599
-#: .\templates\pages\restaurant_menu.html:752
+#: .\templates\pages\restaurant_menu.html:1299
+#: .\templates\pages\restaurant_menu.html:1325
+#: .\templates\pages\restaurant_menu.html:1495
 msgid "Add more items"
 msgstr "항목 더 추가"
 
-#: .\templates\pages\restaurant_menu.html:578
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:719
+#: .\templates\pages\restaurant_menu.html:1304
+#: .\templates\pages\restaurant_menu.html:1314
+#: .\templates\pages\restaurant_menu.html:1462
 msgid "total"
 msgstr "합계"
 
-#: .\templates\pages\restaurant_menu.html:580
+#: .\templates\pages\restaurant_menu.html:1306
 msgid "Reservation with pre-order"
 msgstr "사전 주문이 있는 예약"
 
-#: .\templates\pages\restaurant_menu.html:592
-#: .\templates\pages\restaurant_menu.html:732
-#, fuzzy
-#| msgid "Online"
-msgid "Pay Online"
-msgstr "온라인"
+#: .\templates\pages\restaurant_menu.html:1307
+msgid ""
+"Select a <strong>day and time</strong> (within opening hours), guests, and "
+"contact. Pay <strong>Cash</strong> on the day or <strong>Online</strong> now"
+" — if cancelled, online payment is refunded."
+msgstr ""
+"선택하기 <strong>일 및 시간</strong> (영업 시간), 손님 및 연락처. 결제하기 <strong>현금 인출</strong> "
+"당일 또는 <strong>- 한국어</strong> 지금 — 취소된 경우, 온라인 결제는 환불됩니다."
 
-#: .\templates\pages\restaurant_menu.html:593
+#: .\templates\pages\restaurant_menu.html:1318
+#: .\templates\pages\restaurant_menu.html:1475
+#: .\templates\pages\restaurant_menu.html:1627
+msgid "Pay Online"
+msgstr "온라인 결제"
+
+#: .\templates\pages\restaurant_menu.html:1319
 msgid "Placing…"
 msgstr "처리 중…"
 
-#: .\templates\pages\restaurant_menu.html:598
+#: .\templates\pages\restaurant_menu.html:1324
 msgid ""
-"Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
-"span>. Check status in Order history below."
-msgstr "주문이 대기 중입니다. 합계 € <span x-text=\"lastOrder.total_amount\"></span>. 아래 주문 내역에서 상태를 확인하세요."
+"Your order is pending. Total € <span "
+"x-text=\"lastOrder.total_amount\"></span>. Check status in Order history "
+"below."
+msgstr ""
+"주문이 대기 중입니다. 합계 € <span x-text=\"lastOrder.total_amount\"></span>. 아래 주문 "
+"내역에서 상태를 확인하세요."
 
-#: .\templates\pages\restaurant_menu.html:605
-#: .\templates\pages\restaurant_menu.html:697
+#: .\templates\pages\restaurant_menu.html:1331
+#: .\templates\pages\restaurant_menu.html:1440
 msgid "Order history"
 msgstr "주문 내역"
 
-#: .\templates\pages\restaurant_menu.html:607
+#: .\templates\pages\restaurant_menu.html:1333
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
 msgstr "아직 주문이 없습니다. 주문을 하면 여기에 표시됩니다 (대기 → 준비 중 → 완료)."
 
-#: .\templates\pages\restaurant_menu.html:670
+#: .\templates\pages\restaurant_menu.html:1393
 msgid "Table #"
 msgstr "테이블 번호"
 
-#: .\templates\pages\restaurant_menu.html:699
+#: .\templates\pages\restaurant_menu.html:1399
+msgid ""
+"Pick <strong>day & time</strong> (opening hours). Pay <strong>Cash</strong> "
+"on the day or <strong>Online</strong> now — refund if cancelled."
+msgstr ""
+"기타 <strong>일 & 시간</strong> (영업 시간). 결제하기 <strong>현금 인출</strong> 당일 또는 "
+"<strong>- 한국어</strong> 지금 — 취소하는 경우 환불."
+
+#: .\templates\pages\restaurant_menu.html:1442
+#: .\templates\partials\customer_navbar.html:217
 msgid "No orders yet."
 msgstr "아직 주문이 없습니다."
 
-#: .\templates\pages\restaurant_menu.html:712
+#: .\templates\pages\restaurant_menu.html:1455
 msgid "Next →"
 msgstr "다음 →"
 
-#: .\templates\pages\restaurant_menu.html:716
+#: .\templates\pages\restaurant_menu.html:1459
 msgid "Back"
 msgstr "뒤로"
 
-#: .\templates\pages\restaurant_menu.html:748
+#: .\templates\pages\restaurant_menu.html:1466
+msgid ""
+"Select <strong>day & time</strong> (opening hours), guests, contact. Pay "
+"<strong>Cash</strong> on the day or <strong>Online</strong> now — refund if "
+"cancelled."
+msgstr ""
+"제품정보 <strong>일 & 시간</strong> (영업 시간), 손님, 접촉. 결제하기 <strong>현금 인출</strong> 당일"
+" 또는 <strong>- 한국어</strong> 지금 — 취소하는 경우 환불."
+
+#: .\templates\pages\restaurant_menu.html:1491
 msgid "Service:"
 msgstr "서비스:"
 
-#: .\templates\pages\restaurant_menu.html:748
+#: .\templates\pages\restaurant_menu.html:1491
 msgid "Payment:"
 msgstr "결제:"
 
-#: .\templates\pages\restaurant_menu.html:751
+#: .\templates\pages\restaurant_menu.html:1494
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
 msgstr "주문이 대기 중입니다. 레스토랑이 상태를 업데이트합니다 (예: 준비 중, 완료)."
 
-#: .\templates\pages\restaurant_menu.html:757
+#: .\templates\pages\restaurant_menu.html:1500
+#: .\templates\pages\restaurant_orders.html:451
 msgid "Done"
 msgstr "완료"
 
-#: .\templates\pages\restaurant_reservation.html:3
+#: .\templates\pages\restaurant_menu.html:1510
+#: .\templates\pages\restaurant_menu.html:1515
+#: .\templates\pages\restaurant_menu.html:1525
+#: .\templates\pages\restaurant_menu.html:1565
+#: .\templates\pages\restaurant_orders.html:497
+#: .\templates\pages\restaurant_orders.html:501
+#: .\templates\pages\restaurant_orders.html:510
+#: .\templates\partials\customer_navbar.html:48
+#: .\templates\partials\customer_navbar.html:77
+#: .\templates\partials\customer_navbar.html:81
+#: .\templates\partials\customer_navbar.html:90
+msgid "Log in"
+msgstr "로그인"
+
+#: .\templates\pages\restaurant_menu.html:1510
+#: .\templates\pages\restaurant_menu.html:1543
+#: .\templates\pages\restaurant_orders.html:497
+#: .\templates\pages\restaurant_orders.html:527
+#: .\templates\partials\customer_navbar.html:77
+#: .\templates\partials\customer_navbar.html:108
+msgid "Create account"
+msgstr "계정 만들기"
+
+#: .\templates\pages\restaurant_menu.html:1521
+#: .\templates\pages\restaurant_orders.html:506
+#: .\templates\partials\customer_navbar.html:86
+msgid "Email or phone"
+msgstr "이메일 또는 전화"
+
+#: .\templates\pages\restaurant_menu.html:1526
+#: .\templates\pages\restaurant_orders.html:511
+#: .\templates\partials\customer_navbar.html:91
+msgid "Logging in..."
+msgstr "로깅 ..."
+
+#: .\templates\pages\restaurant_menu.html:1539
+#: .\templates\pages\restaurant_orders.html:523
+#: .\templates\partials\customer_navbar.html:104
+msgid "Address (optional)"
+msgstr "주소 (선택)"
+
+#: .\templates\pages\restaurant_menu.html:1540
+#: .\templates\pages\restaurant_orders.html:524
+#: .\templates\partials\customer_navbar.html:105
+msgid "Password (min 6 chars)"
+msgstr "비밀번호 (최소 6개)"
+
+#: .\templates\pages\restaurant_menu.html:1544
+#: .\templates\pages\restaurant_orders.html:528
+#: .\templates\partials\customer_navbar.html:109
+msgid "Creating..."
+msgstr "회사 소개"
+
+#: .\templates\pages\restaurant_menu.html:1556
+msgid "Confirm your details"
+msgstr "정보 확인"
+
+#: .\templates\pages\restaurant_menu.html:1563
+msgid "Log in to auto-fill your saved details and addresses."
+msgstr "로그인하면 저장된 정보와 주소가 자동으로 입력됩니다."
+
+#: .\templates\pages\restaurant_menu.html:1587
+msgid "Phone (account ID — cannot be changed)"
+msgstr "전화 (계좌 ID — 변경할 수 없습니다)"
+
+#: .\templates\pages\restaurant_menu.html:1593
+#: .\templates\pages\restaurant_menu.html:1611
+msgid "Delivery address"
+msgstr "배송 주소"
+
+#: .\templates\pages\restaurant_menu.html:1602
+#: .\templates\pages\restaurant_orders.html:583
+#: .\templates\partials\customer_navbar.html:183
+msgid "Default"
+msgstr "기본 정보"
+
+#: .\templates\pages\restaurant_menu.html:1612
+msgid "Or add a new address"
+msgstr "또는 새 주소를 추가"
+
+#: .\templates\pages\restaurant_menu.html:1614
+#: .\templates\pages\restaurant_orders.html:593
+#: .\templates\partials\customer_navbar.html:193
+msgid "Street, number, city"
+msgstr "거리, 번호, 도시"
+
+#: .\templates\pages\restaurant_menu.html:1617
+msgid "Save this address to my account"
+msgstr "내 계정에 이 주소를 저장"
+
+#: .\templates\pages\restaurant_menu.html:1618
+#: .\templates\pages\restaurant_orders.html:565
+#: .\templates\pages\restaurant_orders.html:596
+#: .\templates\partials\customer_navbar.html:166
+#: .\templates\partials\customer_navbar.html:196
+msgid "Saving..."
+msgstr "저장..."
+
+#: .\templates\pages\restaurant_menu.html:1628
+msgid "Placing..."
+msgstr "연락처"
+
+#: .\templates\pages\restaurant_orders.html:3
+#, python-format
+msgid "Orders - %(name)s"
+msgstr "주문 - %(name)s"
+
+#: .\templates\pages\restaurant_orders.html:183
+#: .\templates\partials\customer_navbar.html:429
+msgid "No changes to save."
+msgstr "저장하는 변화 없음."
+
+#: .\templates\pages\restaurant_orders.html:190
+#: .\templates\partials\customer_navbar.html:436
+msgid "Update failed."
+msgstr "업데이트 실패."
+
+#: .\templates\pages\restaurant_orders.html:193
+#: .\templates\partials\customer_navbar.html:437
+msgid "Profile updated."
+msgstr "업데이트 된 프로필."
+
+#: .\templates\pages\restaurant_orders.html:263
+msgid "The restaurant is preparing this order."
+msgstr "레스토랑은이 주문을 준비하고 있습니다."
+
+#: .\templates\pages\restaurant_orders.html:264
+msgid "This order is out for delivery."
+msgstr "이 순서는 납품을 위해 밖으로 입니다."
+
+#: .\templates\pages\restaurant_orders.html:265
+msgid "This order is completed."
+msgstr "이 주문은 완료되었습니다."
+
+#: .\templates\pages\restaurant_orders.html:268
+msgid "The order was received and is waiting for restaurant confirmation."
+msgstr "주문은 받고 레스토랑 확인을 기다리고 있습니다."
+
+#: .\templates\pages\restaurant_orders.html:301
+msgid "Refund"
+msgstr "환불"
+
+#: .\templates\pages\restaurant_orders.html:333
+msgid "This order can no longer be cancelled."
+msgstr "이 주문은 더 이상 취소 할 수 없습니다."
+
+#: .\templates\pages\restaurant_orders.html:335
+msgid "Refund failed. Please contact the restaurant."
+msgstr "환불에 실패했습니다. 레스토랑에 문의하세요."
+
+#: .\templates\pages\restaurant_orders.html:336
+msgid "Could not cancel order."
+msgstr "주문을 취소 할 수 없습니다."
+
+#: .\templates\pages\restaurant_orders.html:342
+msgid "Order cancelled and refund requested."
+msgstr "주문 취소 및 환불 요청."
+
+#: .\templates\pages\restaurant_orders.html:343
+msgid "Order cancelled."
+msgstr "주문 취소"
+
+#: .\templates\pages\restaurant_orders.html:380
+msgid "Order tracker"
+msgstr "주문 추적"
+
+#: .\templates\pages\restaurant_orders.html:388
+msgid "Enter phone number"
+msgstr "전화 번호"
+
+#: .\templates\pages\restaurant_orders.html:390
+msgid "Find my orders"
+msgstr "내 주문 찾기"
+
+#: .\templates\pages\restaurant_orders.html:391
+#: .\templates\partials\customer_navbar.html:214
+msgid "Loading..."
+msgstr "로드 중 ..."
+
+#: .\templates\pages\restaurant_orders.html:400
+msgid "No visible orders yet"
+msgstr "아직 볼 수 없는 주문"
+
+#: .\templates\pages\restaurant_orders.html:401
+msgid ""
+"After payment and customer details, orders appear here by phone number."
+msgstr "결제 및 고객 세부 사항 후, 주문은 전화 번호로 표시됩니다."
+
+#: .\templates\pages\restaurant_orders.html:428
+msgid "Cancelling..."
+msgstr "관련 기사"
+
+#: .\templates\pages\restaurant_orders.html:459
+msgid "Your courier"
+msgstr "담당 배달원"
+
+#: .\templates\pages\restaurant_orders.html:460
+msgid "Courier assigned"
+msgstr "배달원 배정됨"
+
+#: .\templates\pages\restaurant_orders.html:461
+msgid "Call the courier directly if there is an issue with the address."
+msgstr "주소에 문제가 있으면 배달원에게 직접 전화하세요."
+
+#: .\templates\pages\restaurant_orders.html:539
+#: .\templates\partials\customer_navbar.html:61
+#: .\templates\partials\customer_navbar.html:150
+msgid "My profile"
+msgstr "내 프로필"
+
+#: .\templates\pages\restaurant_orders.html:559
+#: .\templates\partials\customer_navbar.html:160
+msgid "Phone (cannot be changed — this is your account ID)"
+msgstr "전화 (변경 할 수 없습니다 - 이것은 계정 ID입니다)"
+
+#: .\templates\pages\restaurant_orders.html:570
+#: .\templates\partials\customer_navbar.html:170
+msgid "My addresses"
+msgstr "내 주소"
+
+#: .\templates\pages\restaurant_orders.html:572
+#: .\templates\partials\customer_navbar.html:172
+msgid "No addresses saved yet."
+msgstr "아직 주소가 없습니다."
+
+#: .\templates\pages\restaurant_orders.html:584
+#: .\templates\partials\customer_navbar.html:184
+msgid "Set default"
+msgstr "기본 설정"
+
+#: .\templates\pages\restaurant_orders.html:592
+#: .\templates\partials\customer_navbar.html:192
+msgid "Label (e.g. Home, Work)"
+msgstr "상표 (예: 가정, 일)"
+
+#: .\templates\pages\restaurant_orders.html:595
+#: .\templates\partials\customer_navbar.html:195
+msgid "Add address"
+msgstr "자주 묻는 질문"
+
+#: .\templates\pages\restaurant_reservation.html:5
 #, python-format
 msgid "Reservation — %(name)s"
 msgstr "예약 — %(name)s"
 
-#: .\templates\pages\restaurant_reservation.html:26
+#: .\templates\pages\restaurant_reservation.html:28
 msgid "Name is required."
 msgstr "이름은 필수입니다."
 
-#: .\templates\pages\restaurant_reservation.html:27
+#: .\templates\pages\restaurant_reservation.html:29
 msgid "Please select a date."
 msgstr "날짜를 선택하세요."
 
-#: .\templates\pages\restaurant_reservation.html:28
+#: .\templates\pages\restaurant_reservation.html:30
 msgid "Please select a time."
 msgstr "시간을 선택하세요."
 
-#: .\templates\pages\restaurant_reservation.html:29
+#: .\templates\pages\restaurant_reservation.html:31
 msgid "Request failed."
 msgstr "요청이 실패했습니다."
 
-#: .\templates\pages\restaurant_reservation.html:30
+#: .\templates\pages\restaurant_reservation.html:32
 msgid "Network error. Please try again."
 msgstr "네트워크 오류. 다시 시도해 주세요."
 
-#: .\templates\pages\restaurant_reservation.html:98
+#: .\templates\pages\restaurant_reservation.html:100
 msgid "Table reservation"
 msgstr "테이블 예약"
 
-#: .\templates\pages\restaurant_reservation.html:101
-#: .\templates\pages\restaurant_schedule.html:11
+#: .\templates\pages\restaurant_reservation.html:103
+#: .\templates\pages\restaurant_schedule.html:13
 msgid "Opening hours:"
 msgstr "영업 시간:"
 
-#: .\templates\pages\restaurant_reservation.html:106
+#: .\templates\pages\restaurant_reservation.html:108
 msgid "Reservation request sent"
 msgstr "예약 요청이 전송되었습니다"
 
-#: .\templates\pages\restaurant_reservation.html:107
+#: .\templates\pages\restaurant_reservation.html:109
 msgid ""
-"Your reservation for <span x-text=\"successReservation.requested_date\"></"
-"span> at <span x-text=\"successReservation.requested_time\"></span> (<span x-"
-"text=\"successReservation.guests_count\"></span> guests) is pending. The "
+"Your reservation for <span "
+"x-text=\"successReservation.requested_date\"></span> at <span "
+"x-text=\"successReservation.requested_time\"></span> (<span "
+"x-text=\"successReservation.guests_count\"></span> guests) is pending. The "
 "restaurant will confirm by email."
-msgstr "<span x-text=\"successReservation.requested_date\"></span> <span x-text=\"successReservation.requested_time\"></span> (<span x-text=\"successReservation.guests_count\"></span>명) 예약이 대기 중입니다. 레스토랑이 이메일로 확인해 드립니다."
+msgstr ""
+"<span x-text=\"successReservation.requested_date\"></span> <span "
+"x-text=\"successReservation.requested_time\"></span> (<span "
+"x-text=\"successReservation.guests_count\"></span>명) 예약이 대기 중입니다. 레스토랑이 이메일로"
+" 확인해 드립니다."
 
-#: .\templates\pages\restaurant_reservation.html:115
-msgid "Date"
-msgstr "날짜"
-
-#: .\templates\pages\restaurant_reservation.html:123
+#: .\templates\pages\restaurant_reservation.html:125
 msgid "Time"
 msgstr "시간"
 
-#: .\templates\pages\restaurant_reservation.html:124
+#: .\templates\pages\restaurant_reservation.html:126
 msgid "This day is fully booked. Please choose another date."
 msgstr "이 날은 예약이 모두 찼습니다. 다른 날을 선택하세요."
 
-#: .\templates\pages\restaurant_reservation.html:126
+#: .\templates\pages\restaurant_reservation.html:128
 msgid "Select time"
 msgstr "시간 선택"
 
-#: .\templates\pages\restaurant_reservation.html:131
+#: .\templates\pages\restaurant_reservation.html:133
 msgid "Loading…"
 msgstr "불러오는 중…"
 
-#: .\templates\pages\restaurant_reservation.html:134
+#: .\templates\pages\restaurant_reservation.html:136
 msgid "Number of guests"
 msgstr "인원 수"
 
-#: .\templates\pages\restaurant_reservation.html:138
+#: .\templates\pages\restaurant_reservation.html:140
 msgid "Your name *"
 msgstr "이름 *"
 
-#: .\templates\pages\restaurant_reservation.html:150
+#: .\templates\pages\restaurant_reservation.html:152
 msgid "Notes"
 msgstr "메모"
 
-#: .\templates\pages\restaurant_reservation.html:155
+#: .\templates\pages\restaurant_reservation.html:157
 msgid "Pre-order (from cart)"
 msgstr "사전 주문 (장바구니)"
 
-#: .\templates\pages\restaurant_reservation.html:161
+#: .\templates\pages\restaurant_reservation.html:163
 msgid "Subtotal:"
 msgstr "소계:"
 
-#: .\templates\pages\restaurant_reservation.html:164
+#: .\templates\pages\restaurant_reservation.html:166
 msgid ""
 "Cash = pay on the day. Online = pay now; refunded if reservation is "
 "cancelled."
 msgstr "현금 = 당일 결제. 온라인 = 지금 결제하며 예약 취소 시 환불됩니다."
 
-#: .\templates\pages\restaurant_reservation.html:166
+#: .\templates\pages\restaurant_reservation.html:168
 msgid "Cash (on the day)"
 msgstr "현금 (당일)"
 
-#: .\templates\pages\restaurant_reservation.html:168
+#: .\templates\pages\restaurant_reservation.html:170
 msgid "Online (refund if cancelled)"
 msgstr "온라인 (취소 시 환불)"
 
-#: .\templates\pages\restaurant_reservation.html:176
+#: .\templates\pages\restaurant_reservation.html:178
 msgid "Request reservation"
 msgstr "예약 요청"
 
-#: .\templates\pages\restaurant_schedule.html:3
+#: .\templates\pages\restaurant_schedule.html:5
 #, python-format
 msgid "Schedule your order — %(name)s"
 msgstr "주문 예약 — %(name)s"
 
-#: .\templates\pages\restaurant_schedule.html:8
+#: .\templates\pages\restaurant_schedule.html:10
 msgid "Schedule your order"
 msgstr "주문 예약"
 
-#: .\templates\pages\restaurant_schedule.html:16
+#: .\templates\pages\restaurant_schedule.html:18
 msgid "No opening hours set"
 msgstr "영업 시간이 설정되지 않음"
 
-#: .\templates\pages\restaurant_schedule.html:17
+#: .\templates\pages\restaurant_schedule.html:19
 msgid ""
 "The restaurant has not set specific opening times. You can place an order "
 "from the menu."
 msgstr "레스토랑이 특정 영업 시간을 설정하지 않았습니다. 메뉴에서 주문할 수 있습니다."
 
-#: .\templates\pages\restaurant_schedule.html:18
+#: .\templates\pages\restaurant_schedule.html:20
 msgid "Go to menu"
 msgstr "메뉴로 이동"
 
-#: .\templates\pages\restaurant_schedule.html:21
+#: .\templates\pages\restaurant_schedule.html:23
 msgid ""
 "Choose a date and time for your order. You will then go to the menu to add "
 "items and place the order for that time."
 msgstr "주문할 날짜와 시간을 선택하세요. 이후 메뉴에서 항목을 추가하고 해당 시간에 주문할 수 있습니다."
 
-#: .\templates\pages\restaurants_list.html:3
-#: .\templates\pages\restaurants_list.html:10
+#: .\templates\pages\restaurants_list.html:5
+#: .\templates\pages\restaurants_list.html:12
 #: .\templates\partials\navbar.html:75 .\templates\partials\navbar.html:149
 msgid "Restaurants & Cafes"
 msgstr "레스토랑 & 카페"
 
-#: .\templates\pages\restaurants_list.html:4
-msgid "Browse our partner restaurants and cafes. Open a menu and order online."
+#: .\templates\pages\restaurants_list.html:6
+msgid ""
+"Browse our partner restaurants and cafes. Open a menu and order online."
 msgstr "파트너 레스토랑과 카페를 둘러보고 메뉴를 열어 온라인 주문하세요."
 
-#: .\templates\pages\restaurants_list.html:11
+#: .\templates\pages\restaurants_list.html:13
 msgid "Choose a place and open its menu."
 msgstr "장소를 선택하고 메뉴를 여세요."
 
-#: .\templates\pages\restaurants_list.html:16
+#: .\templates\pages\restaurants_list.html:18
 msgid "No restaurants yet. Check back later."
 msgstr "아직 등록된 레스토랑이 없습니다. 나중에 다시 확인해 주세요."
 
-#: .\templates\pages\restaurants_list.html:40
+#: .\templates\pages\restaurants_list.html:42
 msgid "View menu"
 msgstr "메뉴 보기"
 
@@ -2482,10 +3360,6 @@ msgstr "메뉴 보기"
 #: .\templates\pages\service_detail.html:10 .\templates\pages\services.html:3
 #: .\templates\partials\navbar.html:41 .\templates\partials\navbar.html:146
 msgid "Services"
-msgstr "서비스"
-
-#: .\templates\pages\service_detail.html:18
-msgid "Service"
 msgstr "서비스"
 
 #: .\templates\pages\service_detail.html:26
@@ -2533,13 +3407,113 @@ msgstr "우리 서비스"
 
 #: .\templates\pages\services.html:12
 msgid ""
-"Open each service to view a full, dedicated page with benefits, visuals, and "
-"practical use cases."
+"Open each service to view a full, dedicated page with benefits, visuals, and"
+" practical use cases."
 msgstr "각 서비스를 열어 혜택, 이미지, 실제 사용 사례가 담긴 전용 페이지를 확인하세요."
 
 #: .\templates\pages\services.html:25
 msgid "Open service page"
 msgstr "서비스 페이지 열기"
+
+#: .\templates\pages\terms_conditions.html:4
+#: .\templates\pages\terms_conditions.html:11
+#: .\templates_bonusweb\base.html:367
+msgid "Terms & Conditions"
+msgstr "이용 약관"
+
+#: .\templates\pages\terms_conditions.html:5
+msgid "Terms and Conditions for My Bonus QR Menu and PreisMenu services."
+msgstr "My Bonus QR 메뉴 및 PreisMenu 서비스에 대한 이용 약관."
+
+#: .\templates\pages\terms_conditions.html:15
+msgid ""
+"These Terms & Conditions govern access to and use of My Bonus QR Menu, "
+"including QR menu pages, restaurant dashboards, online ordering, campaigns, "
+"and related services."
+msgstr ""
+"이 약관은 QR 메뉴 페이지, 레스토랑 대시보드, 온라인 주문, 캠페인 및 관련 서비스를 포함한 My Bonus QR 메뉴에 대한 액세스"
+" 및 사용 권한을 부여합니다."
+
+#: .\templates\pages\terms_conditions.html:17
+msgid "Use of the Service"
+msgstr "서비스 이용"
+
+#: .\templates\pages\terms_conditions.html:18
+msgid ""
+"You agree to use the service lawfully and to provide accurate account, "
+"restaurant, menu, pricing, and contact information. You are responsible for "
+"activity under your account and for keeping login details secure."
+msgstr ""
+"서비스 이용에 동의하고 정확한 계정, 레스토랑, 메뉴, 가격 및 연락처 정보를 제공하기 위해 동의합니다. 계정의 활동과 로그인 정보를 "
+"안전하게 보관할 수 있습니다."
+
+#: .\templates\pages\terms_conditions.html:20
+msgid "Restaurant Content"
+msgstr "회사 소개"
+
+#: .\templates\pages\terms_conditions.html:21
+msgid ""
+"Restaurants are responsible for their menu items, prices, images, "
+"descriptions, availability, allergens, taxes, fees, opening hours, and order"
+" handling. Content must not infringe third-party rights or violate "
+"applicable law."
+msgstr ""
+"레스토랑은 메뉴 항목, 가격, 이미지, 설명, 가용성, 알레르기, 세금, 수수료, 영업 시간 및 주문 처리에 대한 책임이 있습니다. "
+"콘텐츠는 제3자 권리 또는 위반할 수 없습니다."
+
+#: .\templates\pages\terms_conditions.html:23
+msgid "Orders and Payments"
+msgstr "주문 및 결제"
+
+#: .\templates\pages\terms_conditions.html:24
+msgid ""
+"Where ordering or payment features are enabled, the restaurant remains "
+"responsible for accepting, preparing, fulfilling, refunding, and supporting "
+"customer orders unless otherwise agreed in writing."
+msgstr ""
+"주문 또는 결제 기능이 활성화되어있는 경우, 레스토랑은 다른 서면으로 동의하지 않는 한, 수락, 준비, 완료, 환불 및 고객 주문을 지원"
+" 할 책임이 있습니다."
+
+#: .\templates\pages\terms_conditions.html:26
+msgid "Subscriptions"
+msgstr "이름 *"
+
+#: .\templates\pages\terms_conditions.html:27
+msgid ""
+"Paid plans, trial periods, renewals, taxes, cancellation, and refund rules "
+"are shown during checkout or in the relevant subscription communication. "
+"Continued use after a billing period may require payment of applicable fees."
+msgstr ""
+"유료 계획, 재판 기간, 갱신, 세금, 취소 및 환불 규칙은 체크 아웃 또는 관련 가입 의사소통에 표시됩니다. 청구 기간 후 계속 사용은"
+" 해당 수수료의 지불이 필요할 수 있습니다."
+
+#: .\templates\pages\terms_conditions.html:29
+msgid "Availability and Changes"
+msgstr "가용성 및 변화"
+
+#: .\templates\pages\terms_conditions.html:30
+msgid ""
+"We work to keep the service reliable, but we do not guarantee uninterrupted "
+"availability. We may update, suspend, or discontinue features when needed "
+"for security, maintenance, compliance, or product improvements."
+msgstr ""
+"우리는 믿을 수 있는 서비스를 지키는 일, 그러나 우리는 uninterrupted 가용성을 보장하지 않습니다. 보안, 유지 보수, 준수 "
+"또는 제품 개선에 필요한 경우 업데이트, 중단 또는 중단 기능."
+
+#: .\templates\pages\terms_conditions.html:32
+msgid "Limitation of Liability"
+msgstr "책임의 한계"
+
+#: .\templates\pages\terms_conditions.html:33
+msgid ""
+"To the fullest extent permitted by law, we are not liable for indirect, "
+"incidental, special, consequential, or lost-profit damages arising from use "
+"of the service."
+msgstr "법에 의해 허용되는 전체 범위에, 우리는 간접, 사건, 특별, 비상등, 또는 손실 손실 된 손실 서비스의 사용으로 인해."
+
+#: .\templates\pages\terms_conditions.html:36
+msgid "For questions about these terms, contact us at"
+msgstr "이 약관에 대한 질문은, 저희에게 연락하십시오"
 
 #: .\templates\partials\alerts.html:3
 msgid "Notifications"
@@ -2573,6 +3547,125 @@ msgstr "항목 제거"
 msgid "Proceed to Checkout"
 msgstr "결제로 이동"
 
+#: .\templates\partials\customer_navbar.html:17
+#: .\templates\partials\customer_navbar.html:63
+msgid "Restaurants"
+msgstr "레스토랑"
+
+#: .\templates\partials\customer_navbar.html:22
+msgid "Profile"
+msgstr "제품정보"
+
+#: .\templates\partials\customer_navbar.html:28
+#: .\templates\partials\navbar.html:89
+msgid "Change language"
+msgstr "언어 변경"
+
+#: .\templates\partials\customer_navbar.html:64
+msgid "Log out"
+msgstr "기타 제품"
+
+#: .\templates\partials\customer_navbar.html:77
+msgid "Enter reset code"
+msgstr "재설정 코드"
+
+#: .\templates\partials\customer_navbar.html:115
+msgid ""
+"Enter your account email. We'll send a 6-digit code to reset your password."
+msgstr "자주 묻는 질문 비밀번호를 재설정하기 위해 6자리 코드를 보낼 수 있습니다."
+
+#: .\templates\partials\customer_navbar.html:120
+msgid "Sending..."
+msgstr "이름 *"
+
+#: .\templates\partials\customer_navbar.html:128
+msgid "Enter the 6-digit code sent to"
+msgstr "6자리 코드를 입력합니다."
+
+#: .\templates\partials\customer_navbar.html:128
+msgid "and choose a new password."
+msgstr "새로운 암호를 선택하십시오."
+
+#: .\templates\partials\customer_navbar.html:130
+msgid "6-digit code"
+msgstr "6자리 코드"
+
+#: .\templates\partials\customer_navbar.html:131
+msgid "New password (min 6 chars)"
+msgstr "새로운 암호 (분 6 숯)"
+
+#: .\templates\partials\customer_navbar.html:136
+msgid "Resetting..."
+msgstr "지원하다"
+
+#: .\templates\partials\customer_navbar.html:138
+msgid "Resend code"
+msgstr "비밀번호"
+
+#: .\templates\partials\customer_navbar.html:212
+msgid ""
+"Open a restaurant to view its order-tracking page for full status and "
+"cancellation."
+msgstr "주문 추적 페이지를 보려면 레스토랑을 엽니다."
+
+#: .\templates\partials\customer_navbar.html:302
+msgid ""
+"Invalid email/phone or password. Please try again or use \"Forgot "
+"password\"."
+msgstr "잘못된 이메일/전화 또는 비밀번호. 다시 시도하거나 \"Forgot password\"."
+
+#: .\templates\partials\customer_navbar.html:303
+msgid "Please enter both your email/phone and your password."
+msgstr "이메일/전화 및 비밀번호를 모두 입력하세요."
+
+#: .\templates\partials\customer_navbar.html:304
+msgid "Server error. Please try again in a moment."
+msgstr "서버 오류. 잠시 다시 시도하십시오."
+
+#: .\templates\partials\customer_navbar.html:336
+msgid ""
+"This phone number is already registered. We switched you to Log in — please "
+"enter your password."
+msgstr "이 전화 번호는 이미 등록되어 있습니다. 로그인을 하시면 됩니다."
+
+#: .\templates\partials\customer_navbar.html:337
+msgid ""
+"This email is already registered. We switched you to Log in — please enter "
+"your password."
+msgstr "이 이메일은 이미 등록되어 있습니다. 로그인을 하시면 됩니다."
+
+#: .\templates\partials\customer_navbar.html:338
+msgid "Please enter a valid email address (e.g. name@example.com)."
+msgstr "유효한 이메일 주소를 입력하십시오 (예: name@example.com)."
+
+#: .\templates\partials\customer_navbar.html:341
+msgid "Phone number is required."
+msgstr "전화 번호가 필요합니다."
+
+#: .\templates\partials\customer_navbar.html:342
+msgid "Server error while creating your account. Please try again."
+msgstr "서버 오류는 계정 만들기. 다시 시도하십시오."
+
+#: .\templates\partials\customer_navbar.html:373
+msgid "If the email exists, a code has been sent."
+msgstr "이메일이 존재하는 경우, 코드가 전송되었습니다."
+
+#: .\templates\partials\customer_navbar.html:376
+msgid "Could not send code."
+msgstr "코드를 보낼 수 없습니다."
+
+#: .\templates\partials\customer_navbar.html:385
+msgid "Enter the 6-digit code."
+msgstr "6자리 코드를 입력하십시오."
+
+#: .\templates\partials\customer_navbar.html:398
+msgid "Reset failed."
+msgstr "재설정 실패."
+
+#: .\templates\partials\customer_navbar.html:404
+msgid "Password reset. You can log in now."
+msgstr "비밀번호 재설정. 지금 로그인할 수 있습니다."
+
 #: .\templates\partials\footer.html:8
 msgid "SaaS platform for QR menus, online ordering, campaigns, and analytics."
 msgstr "QR 메뉴, 온라인 주문, 캠페인, 분석을 위한 SaaS 플랫폼."
@@ -2602,15 +3695,16 @@ msgid ""
 "transition underline decoration-slate-300 dark:decoration-slate-600 "
 "hover:decoration-primary-500\">Angraweb</a> — Professional Web Design &amp; "
 "Software Development."
-msgstr "이 웹사이트는 <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500\">Angraweb</a> 가 개발했습니다 — 전문 웹 디자인 및 소프트웨어 개발."
+msgstr ""
+"이 웹사이트는 <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener "
+"noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-"
+"primary-600 dark:hover:text-orange-400 transition underline decoration-"
+"slate-300 dark:decoration-slate-600 hover:decoration-"
+"primary-500\">Angraweb</a> 가 개발했습니다 — 전문 웹 디자인 및 소프트웨어 개발."
 
 #: .\templates\partials\navbar.html:45
 msgid "All Services"
 msgstr "모든 서비스"
-
-#: .\templates\partials\navbar.html:89
-msgid "Change language"
-msgstr "언어 변경"
 
 #: .\templates\partials\navbar.html:108 .\templates\partials\navbar.html:130
 #: .\templates\partials\panel_navbar_simple.html:11
@@ -2625,7 +3719,7 @@ msgstr "안녕하세요, %(name)s 님"
 
 #: .\templates\partials\navbar.html:120 .\templates\partials\navbar.html:168
 #: .\templates\partials\panel_navbar_simple.html:19
-#: .\templates_bonusweb\base.html:252
+#: .\templates_bonusweb\base.html:253
 msgid "Logout"
 msgstr "로그아웃"
 
@@ -2655,119 +3749,145 @@ msgstr "사이트로 돌아가기"
 msgid "Site"
 msgstr "사이트"
 
-#: .\templates_bonusweb\base.html:199 .\templates_bonusweb\base.html:276
-#: .\templates_bonusweb\base.html:335
+#: .\templates\partials\restaurant_location_public.html:6
+#: .\templates\partials\restaurant_location_public.html:35
+msgid "Location"
+msgstr "- 연혁"
+
+#: .\templates\partials\restaurant_location_public.html:12
+msgid "Map loads when visible…"
+msgstr "볼 때 맵로드 ..."
+
+#: .\templates\partials\restaurant_location_public.html:23
+#: .\templates\partials\restaurant_location_public.html:40
+msgid "Open in Google Maps"
+msgstr "Google지도에서 열기"
+
+#: .\templates\partials\restaurant_location_public.html:29
+#: .\templates\partials\restaurant_location_public.html:41
+msgid "Apple Maps"
+msgstr "Apple 지도"
+
+#: .\templates\partials\restaurant_location_public.html:43
+msgid ""
+"Map preview unavailable (set GOOGLE_MAPS_API_KEY to show an embedded map)."
+msgstr "Map 미리보기 사용 가능 (setGOOGLE_MAPS_API_KEY임베디드 맵을 표시합니다."
+
+#: .\templates_bonusweb\base.html:200 .\templates_bonusweb\base.html:277
+#: .\templates_bonusweb\base.html:336
 msgid "Use Cases"
 msgstr "활용 사례"
 
-#: .\templates_bonusweb\base.html:207 .\templates_bonusweb\base.html:284
-#: .\templates_bonusweb\base.html:337
+#: .\templates_bonusweb\base.html:208 .\templates_bonusweb\base.html:285
+#: .\templates_bonusweb\base.html:338
 msgid "Businesses"
 msgstr "비즈니스"
 
-#: .\templates_bonusweb\base.html:211 .\templates_bonusweb\base.html:288
-#: .\templates_bonusweb\base.html:338
+#: .\templates_bonusweb\base.html:212 .\templates_bonusweb\base.html:289
+#: .\templates_bonusweb\base.html:339
 msgid "How It Works"
 msgstr "이용 방법"
 
-#: .\templates_bonusweb\base.html:219 .\templates_bonusweb\base.html:296
-#: .\templates_bonusweb\base.html:341
+#: .\templates_bonusweb\base.html:220 .\templates_bonusweb\base.html:297
+#: .\templates_bonusweb\base.html:342
 msgid "Download"
 msgstr "다운로드"
 
-#: .\templates_bonusweb\base.html:259
+#: .\templates_bonusweb\base.html:242
+msgid "Hello"
+msgstr "이름 *"
+
+#: .\templates_bonusweb\base.html:260
 msgid "Admin Login"
 msgstr "관리자 로그인"
 
-#: .\templates_bonusweb\base.html:314
+#: .\templates_bonusweb\base.html:315
 msgid ""
 "Bonus helps local businesses run QR menus, loyalty points, rewards, and "
 "customer reviews — all in one place."
 msgstr "Bonus는 지역 비즈니스가 QR 메뉴, 로열티 포인트, 보상, 고객 리뷰를 한곳에서 관리하도록 돕습니다."
 
-#: .\templates_bonusweb\base.html:317
+#: .\templates_bonusweb\base.html:318
 msgid "Website"
 msgstr "웹사이트"
 
-#: .\templates_bonusweb\base.html:320
+#: .\templates_bonusweb\base.html:321
 msgid "Instagram"
 msgstr "Instagram"
 
-#: .\templates_bonusweb\base.html:323
+#: .\templates_bonusweb\base.html:324
 msgid "X (Twitter)"
 msgstr "X (트위터)"
 
-#: .\templates_bonusweb\base.html:326
+#: .\templates_bonusweb\base.html:327
 msgid "LinkedIn"
 msgstr "LinkedIn"
 
-#: .\templates_bonusweb\base.html:332
+#: .\templates_bonusweb\base.html:333
 msgid "Platform"
 msgstr "플랫폼"
 
-#: .\templates_bonusweb\base.html:339
+#: .\templates_bonusweb\base.html:340
 msgid "Integrations"
 msgstr "연동"
 
-#: .\templates_bonusweb\base.html:345
+#: .\templates_bonusweb\base.html:346
 msgid "For Businesses"
 msgstr "비즈니스용"
 
-#: .\templates_bonusweb\base.html:347
+#: .\templates_bonusweb\base.html:348
 msgid "Business Admin Panel"
 msgstr "비즈니스 관리 패널"
 
-#: .\templates_bonusweb\base.html:348
+#: .\templates_bonusweb\base.html:349
 msgid "Service Agreement"
 msgstr "서비스 계약"
 
-#: .\templates_bonusweb\base.html:349
+#: .\templates_bonusweb\base.html:350
 msgid "Bonus Registration"
 msgstr "Bonus 등록"
 
-#: .\templates_bonusweb\base.html:351 .\templates_bonusweb\base.html:356
+#: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
 msgid "QR Code Generator"
 msgstr "QR 코드 생성기"
 
-#: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
+#: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
 msgid "Manage Products"
 msgstr "상품 관리"
 
-#: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
+#: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
 msgid "Customer Reviews"
 msgstr "고객 리뷰"
 
-#: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
+#: .\templates_bonusweb\base.html:355 .\templates_bonusweb\base.html:360
 msgid "Send Notification"
 msgstr "알림 보내기"
 
-#: .\templates_bonusweb\base.html:364
-msgid "Legal"
-msgstr "법률"
-
-#: .\templates_bonusweb\base.html:366
-msgid "Terms & Conditions"
-msgstr "이용 약관"
-
-#: .\templates_bonusweb\base.html:370
-msgid "Privacy Policy"
-msgstr "개인정보 처리방침"
-
-#: .\templates_bonusweb\base.html:371
+#: .\templates_bonusweb\base.html:372
 msgid "Account & Data Deletion"
 msgstr "계정 및 데이터 삭제"
 
-#: .\templates_bonusweb\base.html:373
+#: .\templates_bonusweb\base.html:374
 msgid "API Docs"
 msgstr "API 문서"
 
-#: .\templates_bonusweb\base.html:379
+#: .\templates_bonusweb\base.html:380
 msgid "All rights reserved"
 msgstr "모든 권리 보유"
 
-#: .\templates_bonusweb\base.html:381
+#: .\templates_bonusweb\base.html:382
 msgid "This website was designed by"
 msgstr "이 웹사이트를 디자인한 곳:"
+
+#: .\templates_bonusweb\business_menu\connect.html:8
+#: .\templates_bonusweb\business_menu\connect_done.html:9
+#: .\templates_bonusweb\business_menu\connect_done.html:11
+msgid "Back to panel"
+msgstr "패널로 돌아가기"
+
+#: .\templates_bonusweb\business_menu\connect.html:10
+msgid "Redirecting to Stripe…"
+msgstr "관련 기사Stripe·"
 
 #: .\templates_bonusweb\business_menu\connect_done.html:3
 #: .\templates_bonusweb\business_menu\connect_done.html:6
@@ -2777,11 +3897,6 @@ msgstr "Stripe 연결됨"
 #: .\templates_bonusweb\business_menu\connect_done.html:7
 msgid "You can now receive customer payments."
 msgstr "이제 고객 결제를 받을 수 있습니다."
-
-#: .\templates_bonusweb\business_menu\connect_done.html:9
-#: .\templates_bonusweb\business_menu\connect_done.html:11
-msgid "Back to panel"
-msgstr "패널로 돌아가기"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:34
 msgid "Prices"
@@ -2886,35 +4001,89 @@ msgstr "지원 문의"
 msgid "Subscribe"
 msgstr "구독하기"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:8
-msgid ""
-"Your trial has ended. Complete your subscription to keep using the service."
-msgstr "체험이 종료되었습니다. 서비스를 계속 이용하려면 구독을 완료하세요."
+#: .\templates_bonusweb\business_menu\subscribe.html:16
+msgid "Unlock MyBonusQrMenu"
+msgstr "MyBonusQrMenu의 잠금 해제"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:11
-msgid ""
-"Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
-"Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
-"other methods."
-msgstr "요금제 업그레이드를 위해 200 유로를 결제하세요. Stripe Checkout으로 이동하며 카드, PayPal, Google Pay, Apple Pay 등으로 결제할 수 있습니다."
-
-#: .\templates_bonusweb\business_menu\subscribe.html:15
-msgid "You will be redirected to Stripe to complete payment."
-msgstr "결제를 완료하려면 Stripe로 이동합니다."
+#: .\templates_bonusweb\business_menu\subscribe.html:17
+msgid "Everything you need to run your restaurant, in one app."
+msgstr "레스토랑을 실행해야 할 모든 것, 한 앱에서."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:25
+msgid "Digital menu, categories and QR code"
+msgstr "디지털 메뉴, 카테고리 및 QR 코드"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:31
+msgid "Online orders, delivery and pickup"
+msgstr "온라인 주문, 배달 및 픽업"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:37
+msgid "Table reservations and floor plan"
+msgstr "테이블 예약 및 층 플랜"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:43
+msgid "Courier management and assignment"
+msgstr "Courier 관리 및 할당"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:49
+msgid "Combo deals and package pricing"
+msgstr "콤보 거래 및 패키지 가격"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:55
+msgid "Free for 14 days"
+msgstr "14 일 동안 무료"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:68
+msgid "Account email"
+msgstr "계정 이메일"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:76
+msgid "Restaurant account email"
+msgstr "레스토랑 계정 이메일"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:81
+#: .\templates_bonusweb\business_menu\subscribe.html:144
+#: .\templates_bonusweb\business_menu\subscribe.html:149
+msgid "Start 14-day free trial"
+msgstr "14일 무료 체험 시작"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:86
+msgid ""
+"After the free trial, checkout shows the final price and renewal terms "
+"before you pay. You can manage or cancel from your account."
+msgstr ""
+"무료 평가판 후, 체크 아웃은 당신이 지불하기 전에 최종 가격과 갱신 조건을 보여줍니다. 계정에서 관리 또는 취소할 수 있습니다."
+
+#: .\templates_bonusweb\business_menu\subscribe.html:92
+msgid "Open subscription page"
+msgstr "비밀번호"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:94
+msgid "Terms of Use"
+msgstr "이용 약관"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:124
+msgid "Enter the email for your restaurant account."
+msgstr "자주 묻는 질문"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:129
 msgid "Redirecting..."
 msgstr "이동 중…"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:40
-msgid "Request failed. Try again."
-msgstr "요청 실패. 다시 시도하세요."
+#: .\templates_bonusweb\business_menu\subscribe.html:142
+msgid "Could not start checkout. Please try again."
+msgstr "체크 아웃을 시작할 수 없습니다. 다시 시도하십시오."
+
+#: .\templates_bonusweb\business_menu\subscribe.html:147
+msgid "Request failed. Please try again."
+msgstr "요청 실패. 다시 시도하십시오."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:7
 msgid ""
 "You cancelled the payment. No charge was made. You can try again anytime to "
 "upgrade your plan and enable online payments from your digital menu."
-msgstr "결제를 취소하셨습니다. 청구된 금액은 없습니다. 언제든 다시 시도하여 요금제를 업그레이드하고 온라인 결제를 활성화할 수 있습니다."
+msgstr ""
+"결제를 취소하셨습니다. 청구된 금액은 없습니다. 언제든 다시 시도하여 요금제를 업그레이드하고 온라인 결제를 활성화할 수 있습니다."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:10
 msgid "Try again – Start Plan"
@@ -2936,10 +4105,73 @@ msgstr "감사합니다!"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:7
 msgid ""
-"Your subscription is active. You can now use the app and connect your Stripe "
-"account to receive customer payments."
+"Your subscription is active. You can now use the app and connect your Stripe"
+" account to receive customer payments."
 msgstr "구독이 활성화되었습니다. 이제 앱을 사용하고 Stripe 계정을 연결해 고객 결제를 받을 수 있습니다."
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
 msgstr "결제를 받으려면 Stripe 연결"
+
+#~ msgid "Dashboard and analytics view"
+#~ msgstr "대시보드 및 분석 뷰"
+
+#~ msgid "QR code and digital ordering"
+#~ msgstr "QR 코드와 디지털 주문"
+
+#~ msgid "Tablet menu preview"
+#~ msgstr "태블릿 메뉴 미리보기"
+
+#~ msgid "Phone menu analytics"
+#~ msgstr "폰 메뉴 분석"
+
+#~ msgid "Phone analytics"
+#~ msgstr "폰 분석"
+
+#~ msgid "Premium phone mockup"
+#~ msgstr "프리미엄 폰 목업"
+
+#~ msgid "Color portrait style"
+#~ msgstr "컬러 초상 스타일"
+
+#~ msgid "Payment method"
+#~ msgstr "결제 방법"
+
+#, python-format
+#~ msgid "Pay with card. The payment goes to %(name)s."
+#~ msgstr "카드로 결제하세요. 결제는 %(name)s(으)로 전달됩니다."
+
+#, python-format
+#~ msgid "Pay %(currency)s %(total)s"
+#~ msgstr "%(currency)s %(total)s 결제"
+
+#~ msgid "Payment successful."
+#~ msgstr "결제가 완료되었습니다."
+
+#~ msgid ""
+#~ "Please enter your delivery details so the restaurant can receive the order."
+#~ msgstr "레스토랑이 주문을 받을 수 있도록 배송 정보를 입력하세요."
+
+#~ msgid "You can follow the order status in order tracking."
+#~ msgstr "주문 추적에서 상태를 확인할 수 있습니다."
+
+#~ msgid "Something went wrong."
+#~ msgstr "문제가 발생했습니다."
+
+#~ msgid "Toggle night mode"
+#~ msgstr "야간 모드 전환"
+
+#~ msgid ""
+#~ "Your trial has ended. Complete your subscription to keep using the service."
+#~ msgstr "체험이 종료되었습니다. 서비스를 계속 이용하려면 구독을 완료하세요."
+
+#~ msgid ""
+#~ "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
+#~ "Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
+#~ "other methods."
+#~ msgstr ""
+#~ "요금제 업그레이드를 위해 200 유로를 결제하세요. Stripe Checkout으로 이동하며 카드, PayPal, Google Pay, "
+#~ "Apple Pay 등으로 결제할 수 있습니다."
+
+#~ msgid "You will be redirected to Stripe to complete payment."
+#~ msgstr "결제를 완료하려면 Stripe로 이동합니다."

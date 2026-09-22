@@ -1,7 +1,8 @@
 {% load i18n %}
 {% load static %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_BIDI %} dir="rtl"{% else %} dir="ltr"{% endif %}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -238,7 +239,7 @@
             <div class="relative group" style="overflow: visible;">
               <button type="button" class="px-3 py-2 sm:px-4 min-h-[44px] rounded-xl bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 flex items-center gap-1 sm:gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onclick="toggleUserDropdown(event)" id="user-dropdown-btn" aria-haspopup="true" aria-expanded="false">
                 <i data-lucide="user" class="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0"></i>
-                <span class="hidden sm:inline">Hello {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}</span>
+                <span class="hidden sm:inline">{% trans "Hello" %} {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}</span>
                 <span class="sm:hidden">{% if user.get_full_name %}{{ user.get_full_name|truncatewords:1 }}{% else %}{{ user.username|truncatewords:1 }}{% endif %}</span>
                 <i data-lucide="chevron-down" class="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 transition-transform duration-200" id="user-dropdown-arrow"></i>
               </button>

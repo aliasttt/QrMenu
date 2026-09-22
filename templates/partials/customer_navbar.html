@@ -299,14 +299,11 @@
           const data = await r.json().catch(() => ({}));
           if (!r.ok) {
             const loginMap = {
-              invalid_credentials: '{% trans "Invalid email/phone or password. Please try again or use \"Forgot password\"." %}',
+              invalid_credentials: '{% trans 'Invalid email/phone or password. Please try again or use "Forgot password".' %}',
               credentials_required: '{% trans "Please enter both your email/phone and your password." %}',
               server_error: '{% trans "Server error. Please try again in a moment." %}',
             };
-            this.authError = loginMap[data.detail]
-              || (data.message ? (data.detail || 'error') + ': ' + data.message : '')
-              || (data.detail ? String(data.detail) : '')
-              || ('{% trans "Login failed." %}' + ' (HTTP ' + r.status + ')');
+            this.authError = loginMap[data.detail] || '{% trans "Login failed." %}';
           } else {
             this.currentUser = data;
             this.profileEdits = { first_name: data.first_name || '', last_name: data.last_name || '', email: data.email || '', phone: data.phone || '' };
@@ -348,10 +345,7 @@
               this.authMode = 'login';
               this.authIdentifier = data.detail === 'phone_already_registered' ? this.regPhone : this.regEmail;
             }
-            this.authError = map[data.detail]
-              || (data.message ? (data.detail || 'error') + ': ' + data.message : '')
-              || (data.detail ? String(data.detail) : '')
-              || ('{% trans "Registration failed." %}' + ' (HTTP ' + r.status + ')');
+            this.authError = map[data.detail] || '{% trans "Registration failed." %}';
           } else {
             this.currentUser = data;
             this.profileEdits = { first_name: data.first_name || '', last_name: data.last_name || '', email: data.email || '', phone: data.phone || '' };
@@ -379,7 +373,7 @@
             this.authInfo = '{% trans "If the email exists, a code has been sent." %}';
           } else {
             const data = await r.json().catch(() => ({}));
-            this.authError = data.detail || '{% trans "Could not send code." %}';
+            this.authError = '{% trans "Could not send code." %}';
           }
         } catch (e) { this.authError = '{% trans "Network error" %}'; }
         this.authLoading = false;
@@ -401,7 +395,7 @@
           if (!r.ok) {
             this.authError = data.detail === 'invalid_or_expired_code'
               ? '{% trans "Invalid or expired code." %}'
-              : (data.detail === 'password_min_6' ? '{% trans "Password must be at least 6 characters." %}' : (data.detail || '{% trans "Reset failed." %}'));
+              : (data.detail === 'password_min_6' ? '{% trans "Password must be at least 6 characters." %}' : '{% trans "Reset failed." %}');
           } else {
             this.authMode = 'login';
             this.authIdentifier = this.forgotEmail;
@@ -439,7 +433,7 @@
             body: JSON.stringify(patch),
           });
           const data = await r.json().catch(() => ({}));
-          if (!r.ok) { this.profileMessage = data.detail || '{% trans "Update failed." %}'; }
+          if (!r.ok) { this.profileMessage = '{% trans "Update failed." %}'; }
           else { this.currentUser = data; this.profileMessage = '{% trans "Profile updated." %}'; window.__menuCustomer = data; }
         } catch (e) { this.profileMessage = '{% trans "Network error" %}'; }
         this.profileSaving = false;

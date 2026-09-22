@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 12:24+0330\n"
+"POT-Creation-Date: 2026-09-22 13:09+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,605 +18,708 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\core\views.py:106
+#: .\core\views.py:122
 msgid "Owner, Basil House"
 msgstr "Inhaberin, Basil House"
 
-#: .\core\views.py:106
+#: .\core\views.py:122
 msgid "We increased table turnover with faster ordering."
 msgstr "Wir haben den Tischumsatz mit schnelleren Bestellungen erhöht."
 
-#: .\core\views.py:107
+#: .\core\views.py:123
 msgid "Manager, South Fork"
-msgstr "Manager, South Fork"
+msgstr "Leitung, South Fork"
 
-#: .\core\views.py:107
+#: .\core\views.py:123
 msgid "Campaigns helped us fill off-peak hours."
 msgstr "Kampagnen halfen uns, Nebenzeiten zu füllen."
 
-#: .\core\views.py:108
+#: .\core\views.py:124
 msgid "Founder, Luna Cafe"
 msgstr "Gründerin, Luna Cafe"
 
-#: .\core\views.py:108
+#: .\core\views.py:124
 msgid "Our staff now spends less time taking manual orders."
-msgstr "Unser Personal verbringt jetzt weniger Zeit mit manuellen Bestellungen."
+msgstr ""
+"Unser Personal verbringt jetzt weniger Zeit mit manuellen Bestellungen."
 
-#: .\core\views.py:111 .\core\views.py:133
+#: .\core\views.py:127 .\core\views.py:149
 msgid "AI menu import"
 msgstr "KI-Menü-Import"
 
-#: .\core\views.py:112 .\core\views.py:134
+#: .\core\views.py:128 .\core\views.py:150
 msgid "Multilingual menus"
 msgstr "Mehrsprachige Menüs"
 
-#: .\core\views.py:113 .\core\views.py:135
+#: .\core\views.py:129 .\core\views.py:151
 msgid "QR code generation"
 msgstr "QR-Code-Generierung"
 
-#: .\core\views.py:114 .\core\views.py:136
+#: .\core\views.py:130 .\core\views.py:152
 msgid "Order management"
 msgstr "Bestellverwaltung"
 
-#: .\core\views.py:115 .\core\views.py:137
+#: .\core\views.py:131 .\core\views.py:153
 msgid "Campaign engine"
 msgstr "Kampagnen-Engine"
 
-#: .\core\views.py:116 .\core\views.py:138
+#: .\core\views.py:132 .\core\views.py:154
 msgid "Daily analytics"
 msgstr "Tägliche Analytik"
 
-#: .\core\views.py:117 .\core\views.py:139
+#: .\core\views.py:133 .\core\views.py:155
 msgid "Category controls"
 msgstr "Kategoriesteuerung"
 
-#: .\core\views.py:118 .\core\views.py:140
+#: .\core\views.py:134 .\core\views.py:156
 msgid "Live availability"
 msgstr "Live-Verfügbarkeit"
 
-#: .\core\views.py:119 .\core\views.py:141
+#: .\core\views.py:135 .\core\views.py:157
 msgid "POS-ready payloads"
 msgstr "POS-fertige Datenpakete"
 
-#: .\core\views.py:120 .\core\views.py:142
+#: .\core\views.py:136 .\core\views.py:158
 msgid "Mobile-first pages"
 msgstr "Mobile-first Seiten"
 
-#: .\core\views.py:121 .\core\views.py:143
+#: .\core\views.py:137 .\core\views.py:159
 msgid "Role-ready panel"
 msgstr "Rollenfähiges Panel"
 
-#: .\core\views.py:122 .\core\views.py:144
+#: .\core\views.py:138 .\core\views.py:160
 msgid "Conversion focused UI"
 msgstr "Conversion-fokussierte Oberfläche"
 
-#: .\core\views.py:133
+#: .\core\views.py:149
 msgid ""
 "Upload a PDF or photo and we extract your dishes and prices automatically."
-msgstr "Laden Sie ein PDF oder Foto hoch und wir extrahieren automatisch Gerichte und Preise."
+msgstr ""
+"Laden Sie ein PDF oder Foto hoch und wir extrahieren automatisch Gerichte "
+"und Preise."
 
-#: .\core\views.py:134
+#: .\core\views.py:150
 msgid ""
 "Serve your menu in multiple languages and switch by customer preference."
-msgstr "Bieten Sie Ihre Speisekarte in mehreren Sprachen an und wechseln Sie nach Kundenwunsch."
+msgstr ""
+"Bieten Sie Ihre Speisekarte in mehreren Sprachen an und wechseln Sie nach "
+"Kundenwunsch."
 
-#: .\core\views.py:135
+#: .\core\views.py:151
 msgid "Generate and download QR codes for tables, takeaway, and delivery."
-msgstr "QR-Codes für Tische, Abholung und Lieferung erstellen und herunterladen."
+msgstr ""
+"QR-Codes für Tische, Abholung und Lieferung erstellen und herunterladen."
 
-#: .\core\views.py:136
+#: .\core\views.py:152
 msgid ""
 "Receive, track, and fulfill orders from one dashboard with status updates."
-msgstr "Bestellungen empfangen, verfolgen und ausführen — alles in einem Dashboard mit Statusaktualisierungen."
+msgstr ""
+"Bestellungen empfangen, verfolgen und ausführen — alles in einem Dashboard "
+"mit Statusaktualisierungen."
 
-#: .\core\views.py:137
+#: .\core\views.py:153
 msgid ""
 "Create time-based discounts, happy hours, and target specific categories."
-msgstr "Erstellen Sie zeitbasierte Rabatte, Happy Hours und zielen Sie auf bestimmte Kategorien."
+msgstr ""
+"Erstellen Sie zeitbasierte Rabatte, Happy Hours und zielen Sie auf bestimmte"
+" Kategorien."
 
-#: .\core\views.py:138
+#: .\core\views.py:154
 msgid "View orders, revenue, and top items with simple charts and exports."
-msgstr "Bestellungen, Umsatz und Top-Artikel mit einfachen Diagrammen und Exporten anzeigen."
+msgstr ""
+"Bestellungen, Umsatz und Top-Artikel mit einfachen Diagrammen und Exporten "
+"anzeigen."
 
-#: .\core\views.py:139
+#: .\core\views.py:155
 msgid "Organize items into categories and reorder with drag-and-drop."
 msgstr "Artikel in Kategorien organisieren und per Drag & Drop neu anordnen."
 
-#: .\core\views.py:140
+#: .\core\views.py:156
 msgid "Mark items as out of stock and hide or show sections by schedule."
-msgstr "Artikel als ausverkauft markieren und Bereiche zeitgesteuert ein-/ausblenden."
+msgstr ""
+"Artikel als ausverkauft markieren und Bereiche zeitgesteuert "
+"ein-/ausblenden."
 
-#: .\core\views.py:141
+#: .\core\views.py:157
 msgid "Send orders to your POS or kitchen display via webhooks or API."
-msgstr "Bestellungen per Webhook oder API an Ihr POS oder Küchendisplay senden."
+msgstr ""
+"Bestellungen per Webhook oder API an Ihr POS oder Küchendisplay senden."
 
-#: .\core\views.py:142
+#: .\core\views.py:158
 msgid "Menus and checkout are optimized for phones and tablets."
 msgstr "Menüs und Checkout sind für Smartphones und Tablets optimiert."
 
-#: .\core\views.py:143
+#: .\core\views.py:159
 msgid "Invite staff with roles: admin, manager, or view-only."
 msgstr "Personal mit Rollen einladen: Admin, Manager oder nur Ansicht."
 
-#: .\core\views.py:144
+#: .\core\views.py:160
 msgid "Clean design and clear CTAs to maximize add-to-cart and checkout."
-msgstr "Klares Design und deutliche CTAs für maximale Warenkorb- und Checkout-Aktionen."
+msgstr ""
+"Klares Design und deutliche CTAs für maximale Warenkorb- und Checkout-"
+"Aktionen."
 
-#: .\core\views.py:147
+#: .\core\views.py:163
 msgid "Can I use my own domain?"
 msgstr "Kann ich meine eigene Domain verwenden?"
 
-#: .\core\views.py:147
+#: .\core\views.py:163
 msgid ""
-"Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the "
-"settings panel."
-msgstr "Ja. Sie können eine benutzerdefinierte Domain (z. B. menu.ihrrestaurant.com) im Einstellungspanel verbinden."
+"Yes. You can connect a custom domain (e.g. menu.yourrestaurant.com) from the"
+" settings panel."
+msgstr ""
+"Ja. Sie können eine benutzerdefinierte Domain (z. B. menu.ihrrestaurant.com)"
+" im Einstellungspanel verbinden."
 
-#: .\core\views.py:148
+#: .\core\views.py:164
 msgid "Is there a mobile app for staff?"
 msgstr "Gibt es eine Mobile App für das Personal?"
 
-#: .\core\views.py:148
+#: .\core\views.py:164
 msgid ""
 "The panel is fully responsive; you can use it from any browser. Native apps "
 "are on our roadmap."
-msgstr "Das Panel ist vollständig responsiv und funktioniert in jedem Browser. Native Apps sind auf unserer Roadmap."
+msgstr ""
+"Das Panel ist vollständig responsiv und funktioniert in jedem Browser. "
+"Native Apps sind auf unserer Roadmap."
 
-#: .\core\views.py:149
+#: .\core\views.py:165
 msgid "How do I print QR codes?"
 msgstr "Wie drucke ich QR-Codes?"
 
-#: .\core\views.py:149
+#: .\core\views.py:165
 msgid ""
 "Generate QR codes from the dashboard and download as PNG or SVG. Print on "
 "table tents or stickers."
-msgstr "QR-Codes im Dashboard erstellen und als PNG oder SVG herunterladen. Auf Tischaufsteller oder Aufkleber drucken."
+msgstr ""
+"QR-Codes im Dashboard erstellen und als PNG oder SVG herunterladen. Auf "
+"Tischaufsteller oder Aufkleber drucken."
 
-#: .\core\views.py:150
+#: .\core\views.py:166
 msgid "Do you integrate with POS?"
 msgstr "Integrieren Sie mit POS?"
 
-#: .\core\views.py:150
+#: .\core\views.py:166
 msgid ""
-"We support webhooks and an API so you can push orders to your POS or kitchen "
-"display system."
-msgstr "Wir unterstützen Webhooks und eine API, damit Sie Bestellungen an Ihr POS oder Küchendisplay-System senden können."
+"We support webhooks and an API so you can push orders to your POS or kitchen"
+" display system."
+msgstr ""
+"Wir unterstützen Webhooks und eine API, damit Sie Bestellungen an Ihr POS "
+"oder Küchendisplay-System senden können."
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid "Set up your menu"
 msgstr "Speisekarte einrichten"
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid ""
 "Create categories, add dishes with prices and photos, and set availability."
-msgstr "Kategorien anlegen, Gerichte mit Preisen und Fotos hinzufügen, Verfügbarkeit festlegen."
+msgstr ""
+"Kategorien anlegen, Gerichte mit Preisen und Fotos hinzufügen, Verfügbarkeit"
+" festlegen."
 
-#: .\core\views.py:157
+#: .\core\views.py:173
 msgid "Drag-and-drop reorder, bulk edit, or import from spreadsheet."
-msgstr "Per Drag & Drop sortieren, in Massen bearbeiten oder aus einer Tabelle importieren."
+msgstr ""
+"Per Drag & Drop sortieren, in Massen bearbeiten oder aus einer Tabelle "
+"importieren."
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid "Generate your QR"
 msgstr "QR-Code erstellen"
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid ""
 "Print QR codes for each table or area. Customers scan to open your menu."
-msgstr "QR-Codes für jeden Tisch oder Bereich drucken. Kunden scannen, um Ihr Menü zu öffnen."
+msgstr ""
+"QR-Codes für jeden Tisch oder Bereich drucken. Kunden scannen, um Ihr Menü "
+"zu öffnen."
 
-#: .\core\views.py:158
+#: .\core\views.py:174
 msgid "Download PNG or SVG, print on table tents or stickers."
-msgstr "Als PNG oder SVG herunterladen, auf Tischaufsteller oder Aufkleber drucken."
+msgstr ""
+"Als PNG oder SVG herunterladen, auf Tischaufsteller oder Aufkleber drucken."
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid "Get online orders"
 msgstr "Online-Bestellungen erhalten"
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid ""
 "Customers browse, add to cart, and checkout. You receive and fulfill orders."
-msgstr "Kunden stöbern, legen in den Warenkorb und bezahlen. Sie erhalten und erfüllen die Bestellungen."
+msgstr ""
+"Kunden stöbern, legen in den Warenkorb und bezahlen. Sie erhalten und "
+"erfüllen die Bestellungen."
 
-#: .\core\views.py:159
+#: .\core\views.py:175
 msgid "Optional: connect to POS or kitchen display."
 msgstr "Optional: Verbindung zu POS oder Küchendisplay."
 
-#: .\core\views.py:170
+#: .\core\views.py:186
 msgid "QR menu — customers scan and browse your menu on their phone"
 msgstr "QR-Menü — Kunden scannen und stöbern per Smartphone."
 
-#: .\core\views.py:171
+#: .\core\views.py:187
 msgid "Unlimited menu items and categories"
 msgstr "Unbegrenzte Menüartikel und Kategorien"
 
-#: .\core\views.py:172
+#: .\core\views.py:188
 msgid "Unlimited QR codes for tables and takeaway"
 msgstr "Unbegrenzte QR-Codes für Tische und Abholung"
 
-#: .\core\views.py:173
+#: .\core\views.py:189
 msgid "Online ordering — guests order and pay from the same link"
 msgstr "Online-Bestellung — Gäste bestellen und zahlen über denselben Link."
 
-#: .\core\views.py:174
+#: .\core\views.py:190
 msgid "Customizable themes to match your brand"
 msgstr "Anpassbare Themes passend zu Ihrer Marke"
 
-#: .\core\views.py:175
+#: .\core\views.py:191
 msgid "Campaigns & discounts (happy hour, daily specials)"
 msgstr "Kampagnen & Rabatte (Happy Hour, Tagesangebote)"
 
-#: .\core\views.py:176
+#: .\core\views.py:192
 msgid "Multilingual menu support"
 msgstr "Mehrsprachige Menüunterstützung"
 
-#: .\core\views.py:177
+#: .\core\views.py:193
 msgid "Real-time updates — change prices and availability instantly"
 msgstr "Echtzeit-Updates — Preise und Verfügbarkeit sofort ändern."
 
-#: .\core\views.py:178
+#: .\core\views.py:194
 msgid "Basic analytics — see what sells"
 msgstr "Grundlegende Analysen — sehen Sie, was sich verkauft."
 
-#: .\core\views.py:179
+#: .\core\views.py:195
 msgid "Email & WhatsApp support"
 msgstr "Support per E-Mail & WhatsApp"
 
-#: .\core\views.py:183
+#: .\core\views.py:199
 msgid "Win more orders"
 msgstr "Mehr Bestellungen gewinnen"
 
-#: .\core\views.py:183
+#: .\core\views.py:199
 msgid ""
-"Guests order directly from the QR menu. No waiting for staff—faster turnover "
-"and higher revenue."
-msgstr "Gäste bestellen direkt über die QR-Speisekarte. Kein Warten auf Personal — schnellerer Tischwechsel und höhere Einnahmen."
+"Guests order directly from the QR menu. No waiting for staff—faster turnover"
+" and higher revenue."
+msgstr ""
+"Gäste bestellen direkt über die QR-Speisekarte. Kein Warten auf Personal — "
+"schnellerer Tischwechsel und höhere Einnahmen."
 
-#: .\core\views.py:184
+#: .\core\views.py:200
 msgid "Look professional"
 msgstr "Professionell wirken"
 
-#: .\core\views.py:184
+#: .\core\views.py:200
 msgid ""
 "A clean digital menu and your own domain build trust. Stand out from "
 "competitors still using paper."
-msgstr "Eine saubere digitale Speisekarte und eine eigene Domain schaffen Vertrauen. Heben Sie sich von Papier-Konkurrenten ab."
+msgstr ""
+"Eine saubere digitale Speisekarte und eine eigene Domain schaffen Vertrauen."
+" Heben Sie sich von Papier-Konkurrenten ab."
 
-#: .\core\views.py:185
+#: .\core\views.py:201
 msgid "One subscription, everything included"
 msgstr "Ein Abonnement, alles inklusive"
 
-#: .\core\views.py:185
+#: .\core\views.py:201
 msgid ""
-"No per-order fees or hidden costs. One annual fee covers menu, ordering, and "
-"support."
-msgstr "Keine Bestell- oder versteckten Gebühren. Eine Jahresgebühr deckt Menü, Bestellung und Support ab."
+"No per-order fees or hidden costs. One annual fee covers menu, ordering, and"
+" support."
+msgstr ""
+"Keine Bestell- oder versteckten Gebühren. Eine Jahresgebühr deckt Menü, "
+"Bestellung und Support ab."
 
-#: .\core\views.py:186
+#: .\core\views.py:202
 msgid "Launch in minutes"
 msgstr "In Minuten starten"
 
-#: .\core\views.py:186
+#: .\core\views.py:202
 msgid ""
-"Add your dishes, print a QR code, and go live. No IT or design skills needed."
-msgstr "Gerichte hinzufügen, QR-Code drucken und live gehen. Keine IT- oder Designkenntnisse nötig."
+"Add your dishes, print a QR code, and go live. No IT or design skills "
+"needed."
+msgstr ""
+"Gerichte hinzufügen, QR-Code drucken und live gehen. Keine IT- oder "
+"Designkenntnisse nötig."
 
-#: .\core\views.py:189
+#: .\core\views.py:205
 msgid "What is included in the price?"
 msgstr "Was ist im Preis enthalten?"
 
-#: .\core\views.py:189
+#: .\core\views.py:205
 msgid ""
 "Everything: QR menu, online ordering, unlimited items and QR codes, "
 "campaigns, custom domain option, themes, and support. One annual "
 "subscription, no per-order fees."
-msgstr "Alles: QR-Menü, Online-Bestellung, unbegrenzte Artikel und QR-Codes, Kampagnen, benutzerdefinierte Domain, Themes und Support. Ein Jahresabo ohne Bestellgebühren."
+msgstr ""
+"Alles: QR-Menü, Online-Bestellung, unbegrenzte Artikel und QR-Codes, "
+"Kampagnen, benutzerdefinierte Domain, Themes und Support. Ein Jahresabo ohne"
+" Bestellgebühren."
 
-#: .\core\views.py:190
+#: .\core\views.py:206
 msgid "Is there a free trial?"
 msgstr "Gibt es eine kostenlose Testversion?"
 
-#: .\core\views.py:190
+#: .\core\views.py:206
 msgid ""
 "Yes. Start with a free trial to build your menu and test ordering. No card "
 "required until you go live."
-msgstr "Ja. Starten Sie mit einer kostenlosen Testversion, um Ihr Menü zu erstellen und Bestellungen zu testen. Keine Karte nötig, bis Sie live gehen."
+msgstr ""
+"Ja. Starten Sie mit einer kostenlosen Testversion, um Ihr Menü zu erstellen "
+"und Bestellungen zu testen. Keine Karte nötig, bis Sie live gehen."
 
-#: .\core\views.py:191
+#: .\core\views.py:207
 msgid "Why 19% VAT?"
 msgstr "Warum 19 % MwSt.?"
 
-#: .\core\views.py:191
-#, python-format
+#: .\core\views.py:207
 msgid ""
-"We are VAT-registered in the EU. If you are in the EU and liable for VAT, "
-"19% is added at checkout (total €238/year). If you are outside the EU or VAT-"
-"exempt, the amount may differ."
-msgstr "Wir sind umsatzsteuerpflichtig in der EU. In der EU wird beim Checkout 19 % MwSt. hinzugefügt (Gesamt 238 €/Jahr). Außerhalb der EU oder bei MwSt.-Befreiung kann der Betrag abweichen."
+"We are VAT-registered in the EU. If you are in the EU and liable for VAT, a "
+"19 percent VAT charge is added at checkout (total €238/year). If you are "
+"outside the EU or VAT-exempt, the amount may differ."
+msgstr ""
+"Wir sind umsatzsteuerpflichtig in der EU. In der EU wird beim Checkout 19 % "
+"MwSt. hinzugefügt (Gesamt 238 €/Jahr). Außerhalb der EU oder bei "
+"MwSt.-Befreiung kann der Betrag abweichen."
 
-#: .\core\views.py:211 .\templates\partials\navbar.html:47
+#: .\core\views.py:244
+msgid "Security check failed. Please reload the page and try again."
+msgstr ""
+"Der Sicherheitscheck ist gescheitert. Bitte laden Sie die Seite neu und "
+"versuchen Sie es erneut."
+
+#: .\core\views.py:247 .\core\views.py:291
+msgid "Thanks. If your message needs a reply, we will contact you."
+msgstr ""
+"Danke. Wenn Ihre Nachricht eine Antwort benötigt, werden wir Sie "
+"kontaktieren."
+
+#: .\core\views.py:250
+msgid "Security check failed. Please try again."
+msgstr ""
+"Der Sicherheitscheck ist gescheitert. Bitte versuchen Sie es noch mal."
+
+#: .\core\views.py:259
+msgid "Please check the form fields and try again."
+msgstr "Bitte überprüfen Sie die Formularfelder und versuchen Sie es erneut."
+
+#: .\core\views.py:262
+msgid "Please complete all fields."
+msgstr "Bitte füllen Sie alle Felder aus."
+
+#: .\core\views.py:267
+msgid "Too many messages. Please try again later."
+msgstr "Zu viele Nachrichten. Bitte versuchen Sie es später wieder."
+
+#: .\core\views.py:270
+msgid "Please wait before sending another message."
+msgstr "Bitte warten Sie, bevor Sie eine weitere Nachricht senden."
+
+#: .\core\views.py:298 .\templates\partials\navbar.html:47
 msgid "AI Menu Import"
 msgstr "KI-Menü-Import"
 
-#: .\core\views.py:212
+#: .\core\views.py:299
 msgid "Turn paper menus into digital menus in minutes."
 msgstr "Papierspeisekarten in Minuten in digitale verwandeln."
 
-#: .\core\views.py:213
+#: .\core\views.py:300
 msgid ""
 "Upload a photo or PDF and let AI extract dish names, descriptions, and "
 "prices automatically."
-msgstr "Foto oder PDF hochladen — KI extrahiert automatisch Gerichte, Beschreibungen und Preise."
+msgstr ""
+"Foto oder PDF hochladen — KI extrahiert automatisch Gerichte, Beschreibungen"
+" und Preise."
 
-#: .\core\views.py:216
+#: .\core\views.py:303
 msgid "Save hours of manual typing"
 msgstr "Sparen Sie Stunden manueller Eingabe"
 
-#: .\core\views.py:217
+#: .\core\views.py:304
 msgid "Launch your QR menu faster"
 msgstr "QR-Menü schneller starten"
 
-#: .\core\views.py:218
+#: .\core\views.py:305
 msgid "Reduce human data-entry errors"
 msgstr "Menschliche Eingabefehler reduzieren"
 
-#: .\core\views.py:223 .\templates\partials\navbar.html:48
+#: .\core\views.py:310 .\templates\partials\navbar.html:48
 msgid "Customizable Themes"
 msgstr "Anpassbare Themes"
 
-#: .\core\views.py:224
+#: .\core\views.py:311
 msgid "Match your menu design to your restaurant brand."
 msgstr "Passen Sie das Menüdesign an Ihre Marke an."
 
-#: .\core\views.py:225
+#: .\core\views.py:312
 msgid ""
 "Choose from modern themes and customize colors, typography, and layout in a "
 "few clicks."
-msgstr "Wählen Sie moderne Themes und passen Farben, Typografie und Layout mit wenigen Klicks an."
+msgstr ""
+"Wählen Sie moderne Themes und passen Farben, Typografie und Layout mit "
+"wenigen Klicks an."
 
-#: .\core\views.py:228
+#: .\core\views.py:315
 msgid "Consistent brand identity"
 msgstr "Konsistente Markenidentität"
 
-#: .\core\views.py:229
+#: .\core\views.py:316
 msgid "Better visual experience for guests"
 msgstr "Besseres visuelles Erlebnis für Gäste"
 
-#: .\core\views.py:230
+#: .\core\views.py:317
 msgid "Faster edits with pre-built styles"
 msgstr "Schnellere Bearbeitung mit vorgefertigten Stilen"
 
-#: .\core\views.py:235 .\templates\partials\navbar.html:49
+#: .\core\views.py:322 .\templates\partials\navbar.html:49
 msgid "Dedicated Support"
 msgstr "Dedizierter Support"
 
-#: .\core\views.py:236
+#: .\core\views.py:323
 msgid "Real help when you need it most."
 msgstr "Echte Hilfe, wenn Sie sie am dringendsten brauchen."
 
-#: .\core\views.py:237
+#: .\core\views.py:324
 msgid ""
 "Our team helps with setup, menu updates, and optimization so your staff can "
 "focus on service."
-msgstr "Unser Team hilft bei Einrichtung, Menü-Updates und Optimierung, damit sich Ihr Team auf den Service konzentrieren kann."
+msgstr ""
+"Unser Team hilft bei Einrichtung, Menü-Updates und Optimierung, damit sich "
+"Ihr Team auf den Service konzentrieren kann."
 
-#: .\core\views.py:240
+#: .\core\views.py:327
 msgid "Priority support for urgent issues"
 msgstr "Priorisierter Support für dringende Fälle"
 
-#: .\core\views.py:241
+#: .\core\views.py:328
 msgid "Faster onboarding for new branches"
 msgstr "Schnelleres Onboarding für neue Filialen"
 
-#: .\core\views.py:242
+#: .\core\views.py:329
 msgid "Better uptime and smoother operations"
 msgstr "Bessere Verfügbarkeit und reibungsloserer Betrieb"
 
-#: .\core\views.py:247 .\templates\partials\navbar.html:50
+#: .\core\views.py:334 .\templates\partials\navbar.html:50
 msgid "Menu Creation"
 msgstr "Menü-Erstellung"
 
-#: .\core\views.py:248
+#: .\core\views.py:335
 msgid "Build clean, organized menus your guests love."
 msgstr "Erstellen Sie saubere, gut organisierte Menüs, die Ihre Gäste lieben."
 
-#: .\core\views.py:249
+#: .\core\views.py:336
 msgid ""
 "Create categories, add dish photos, set prices, and reorder items with a "
 "simple dashboard."
-msgstr "Erstellen Sie Kategorien, fügen Sie Gerichtfotos hinzu, setzen Sie Preise und ordnen Sie Artikel neu — mit einem einfachen Dashboard."
+msgstr ""
+"Erstellen Sie Kategorien, fügen Sie Gerichtfotos hinzu, setzen Sie Preise "
+"und ordnen Sie Artikel neu — mit einem einfachen Dashboard."
 
-#: .\core\views.py:252
+#: .\core\views.py:339
 msgid "Unlimited menu items"
 msgstr "Unbegrenzte Menüartikel"
 
-#: .\core\views.py:253
+#: .\core\views.py:340
 msgid "Quick editing for daily changes"
 msgstr "Schnelle Bearbeitung für tägliche Änderungen"
 
-#: .\core\views.py:254
+#: .\core\views.py:341
 msgid "Clear structure for better ordering"
 msgstr "Klare Struktur für bessere Bestellungen"
 
-#: .\core\views.py:259 .\templates\partials\navbar.html:51
+#: .\core\views.py:346 .\templates\partials\navbar.html:51
 msgid "Multi-Service Management"
 msgstr "Multi-Service-Verwaltung"
 
-#: .\core\views.py:260
+#: .\core\views.py:347
 msgid "Run dine-in, takeaway, and delivery from one panel."
 msgstr "Verwalten Sie Restaurant, Abholung und Lieferung aus einem Panel."
 
-#: .\core\views.py:261
+#: .\core\views.py:348
 msgid ""
 "Manage service types, availability, and order flow in one place without "
 "switching tools."
-msgstr "Servicearten, Verfügbarkeit und Bestellablauf an einem Ort verwalten — ohne Tools zu wechseln."
+msgstr ""
+"Servicearten, Verfügbarkeit und Bestellablauf an einem Ort verwalten — ohne "
+"Tools zu wechseln."
 
-#: .\core\views.py:264
+#: .\core\views.py:351
 msgid "One dashboard for all channels"
 msgstr "Ein Dashboard für alle Kanäle"
 
-#: .\core\views.py:265
+#: .\core\views.py:352
 msgid "Less staff confusion"
 msgstr "Weniger Verwirrung beim Personal"
 
-#: .\core\views.py:266
+#: .\core\views.py:353
 msgid "Higher operational speed"
 msgstr "Höhere Betriebsgeschwindigkeit"
 
-#: .\core\views.py:271 .\templates\partials\navbar.html:52
+#: .\core\views.py:358 .\templates\partials\navbar.html:52
 msgid "Multilingual Support"
 msgstr "Mehrsprachige Unterstützung"
 
-#: .\core\views.py:272
+#: .\core\views.py:359
 msgid "Serve local and international guests better."
 msgstr "Lokale und internationale Gäste besser bedienen."
 
-#: .\core\views.py:273
+#: .\core\views.py:360
 msgid ""
 "Offer your menu in multiple languages and let customers switch language "
 "instantly."
-msgstr "Bieten Sie Ihr Menü in mehreren Sprachen an — Kunden wechseln die Sprache sofort."
+msgstr ""
+"Bieten Sie Ihr Menü in mehreren Sprachen an — Kunden wechseln die Sprache "
+"sofort."
 
-#: .\core\views.py:276
+#: .\core\views.py:363
 msgid "Better guest experience for tourists"
 msgstr "Besseres Gästeerlebnis für Touristen"
 
-#: .\core\views.py:277
+#: .\core\views.py:364
 msgid "Fewer ordering mistakes"
 msgstr "Weniger Bestellfehler"
 
-#: .\core\views.py:278
+#: .\core\views.py:365
 msgid "Higher conversion on the menu page"
 msgstr "Höhere Conversion auf der Menüseite"
 
-#: .\core\views.py:283 .\templates\pages\restaurant_menu.html:529
-#: .\templates\pages\restaurant_menu.html:661
-#: .\templates\partials\navbar.html:53
+#: .\core\views.py:370 .\templates\partials\navbar.html:53
 msgid "Online Ordering"
 msgstr "Online-Bestellung"
 
-#: .\core\views.py:284
+#: .\core\views.py:371
 msgid "Take orders directly from the QR menu."
 msgstr "Bestellungen direkt über die QR-Speisekarte annehmen."
 
-#: .\core\views.py:285
+#: .\core\views.py:372
 msgid ""
 "Guests browse, add to cart, and checkout from their phone with a smooth "
 "mobile-first flow."
-msgstr "Gäste stöbern, legen in den Warenkorb und bezahlen vom Handy — mit einem reibungslosen Mobile-first-Ablauf."
+msgstr ""
+"Gäste stöbern, legen in den Warenkorb und bezahlen vom Handy — mit einem "
+"reibungslosen Mobile-first-Ablauf."
 
-#: .\core\views.py:288
+#: .\core\views.py:375
 msgid "Increase average order value"
 msgstr "Durchschnittlichen Bestellwert erhöhen"
 
-#: .\core\views.py:289
+#: .\core\views.py:376
 msgid "Reduce table waiting time"
 msgstr "Wartezeit am Tisch reduzieren"
 
-#: .\core\views.py:290
+#: .\core\views.py:377
 msgid "Capture more takeaway orders"
 msgstr "Mehr Abhol-Bestellungen erfassen"
 
-#: .\core\views.py:295 .\templates\partials\navbar.html:54
+#: .\core\views.py:382 .\templates\partials\navbar.html:54
 msgid "PDF Export"
 msgstr "PDF-Export"
 
-#: .\core\views.py:296
+#: .\core\views.py:383
 msgid "Keep digital and printed menus in sync."
 msgstr "Digitale und gedruckte Menüs synchron halten."
 
-#: .\core\views.py:297
+#: .\core\views.py:384
 msgid ""
 "Export your latest menu as PDF for table cards, flyers, and offline sharing."
-msgstr "Aktuelle Speisekarte als PDF für Tischkarten, Flyer und Offline-Freigabe exportieren."
+msgstr ""
+"Aktuelle Speisekarte als PDF für Tischkarten, Flyer und Offline-Freigabe "
+"exportieren."
 
-#: .\core\views.py:300
+#: .\core\views.py:387
 msgid "Ready-to-print output"
 msgstr "Druckfertige Ausgabe"
 
-#: .\core\views.py:301
+#: .\core\views.py:388
 msgid "Consistent branding across channels"
 msgstr "Konsistentes Branding über alle Kanäle"
 
-#: .\core\views.py:302
+#: .\core\views.py:389
 msgid "Simple backup of menu data"
 msgstr "Einfaches Backup der Menüdaten"
 
-#: .\core\views.py:307 .\templates\partials\navbar.html:55
+#: .\core\views.py:394 .\templates\partials\navbar.html:55
 msgid "Real-Time Updates"
 msgstr "Echtzeit-Updates"
 
-#: .\core\views.py:308
+#: .\core\views.py:395
 msgid "Update prices and stock instantly."
 msgstr "Preise und Bestand sofort aktualisieren."
 
-#: .\core\views.py:309
+#: .\core\views.py:396
 msgid ""
 "Publish menu changes live in seconds so guests always see accurate "
 "information."
-msgstr "Menüänderungen in Sekunden live schalten, damit Gäste stets korrekte Infos sehen."
+msgstr ""
+"Menüänderungen in Sekunden live schalten, damit Gäste stets korrekte Infos "
+"sehen."
 
-#: .\core\views.py:312
+#: .\core\views.py:399
 msgid "No stale menu data"
 msgstr "Keine veralteten Menüdaten"
 
-#: .\core\views.py:313
+#: .\core\views.py:400
 msgid "Fewer customer complaints"
 msgstr "Weniger Kundenbeschwerden"
 
-#: .\core\views.py:314
+#: .\core\views.py:401
 msgid "Faster reaction to peak-hour demand"
 msgstr "Schnellere Reaktion auf Spitzenzeiten"
 
-#: .\core\views.py:319 .\templates\partials\navbar.html:56
+#: .\core\views.py:406 .\templates\partials\navbar.html:56
 msgid "Secure Payment Processing"
 msgstr "Sichere Zahlungsabwicklung"
 
-#: .\core\views.py:320
+#: .\core\views.py:407
 msgid "Accept payments safely and confidently."
 msgstr "Zahlungen sicher und mit Vertrauen entgegennehmen."
 
-#: .\core\views.py:321
+#: .\core\views.py:408
 msgid ""
 "Support secure online checkout with trusted gateways and encrypted "
 "transaction flow."
-msgstr "Sicherer Online-Checkout mit vertrauenswürdigen Gateways und verschlüsseltem Transaktionsfluss."
+msgstr ""
+"Sicherer Online-Checkout mit vertrauenswürdigen Gateways und verschlüsseltem"
+" Transaktionsfluss."
 
-#: .\core\views.py:324
+#: .\core\views.py:411
 msgid "Safer transactions"
 msgstr "Sicherere Transaktionen"
 
-#: .\core\views.py:325
+#: .\core\views.py:412
 msgid "More trust from customers"
 msgstr "Mehr Kundenvertrauen"
 
-#: .\core\views.py:326
+#: .\core\views.py:413
 msgid "Higher checkout completion"
 msgstr "Höhere Checkout-Abschlussrate"
 
-#: .\core\views.py:331 .\templates\partials\navbar.html:57
+#: .\core\views.py:418 .\templates\partials\navbar.html:57
 msgid "Smart Order Management"
 msgstr "Intelligente Bestellverwaltung"
 
-#: .\core\views.py:332
+#: .\core\views.py:419
 msgid "Track every order in one clean queue."
 msgstr "Jede Bestellung in einer aufgeräumten Warteschlange verfolgen."
 
-#: .\core\views.py:333
+#: .\core\views.py:420
 msgid ""
-"Filter by status, prioritize prep, and keep front-of-house and kitchen fully "
-"synchronized."
-msgstr "Nach Status filtern, Zubereitung priorisieren und Front-of-House und Küche voll synchron halten."
+"Filter by status, prioritize prep, and keep front-of-house and kitchen fully"
+" synchronized."
+msgstr ""
+"Nach Status filtern, Zubereitung priorisieren und Front-of-House und Küche "
+"voll synchron halten."
 
-#: .\core\views.py:336
+#: .\core\views.py:423
 msgid "Clear workflow for staff"
 msgstr "Klarer Arbeitsablauf für das Personal"
 
-#: .\core\views.py:337
+#: .\core\views.py:424
 msgid "Faster fulfillment"
 msgstr "Schnellere Erfüllung"
 
-#: .\core\views.py:338
+#: .\core\views.py:425
 msgid "Improved customer satisfaction"
 msgstr "Höhere Kundenzufriedenheit"
 
@@ -634,9 +737,9 @@ msgstr "Ändern/Ansicht-Link"
 
 #: .\templates\admin\business_menu_section.html:27
 #: .\templates\pages\public_menu.html:116
-#: .\templates\pages\restaurant_menu.html:404
-#: .\templates\pages\restaurant_menu.html:418
-#: .\templates\pages\restaurant_menu.html:449
+#: .\templates\pages\restaurant_menu.html:1074
+#: .\templates\pages\restaurant_menu.html:1094
+#: .\templates\pages\restaurant_menu.html:1119
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -693,7 +796,7 @@ msgid "The page you are looking for does not exist or has been moved."
 msgstr "Die gesuchte Seite existiert nicht oder wurde verschoben."
 
 #: .\templates\errors\404.html:10 .\templates\errors\500.html:10
-#: .\templates\pages\restaurants_list.html:17
+#: .\templates\pages\restaurants_list.html:19
 msgid "Back to home"
 msgstr "Zurück zur Startseite"
 
@@ -707,31 +810,205 @@ msgstr "Etwas ist schiefgelaufen"
 
 #: .\templates\errors\500.html:9
 msgid "We are working on the issue. Please try again in a few minutes."
-msgstr "Wir arbeiten am Problem. Bitte versuchen Sie es in wenigen Minuten erneut."
+msgstr ""
+"Wir arbeiten am Problem. Bitte versuchen Sie es in wenigen Minuten erneut."
+
+#: .\templates\pages\account_delete.html:4
+msgid "Delete Account"
+msgstr "Konto löschen"
+
+#: .\templates\pages\account_delete.html:5
+msgid ""
+"Request deletion of your MyQrMenu / PreisMenu account and associated data."
+msgstr ""
+"Fordern Sie die Löschung Ihres MyQrMenu / PreisMenu-Kontos und damit "
+"zusammenhängende Daten an."
+
+#: .\templates\pages\account_delete.html:10
+msgid "Account & Data"
+msgstr "Konten und Daten"
+
+#: .\templates\pages\account_delete.html:12
+msgid "Delete your account"
+msgstr "Ihr Konto löschen"
+
+#: .\templates\pages\account_delete.html:15
+msgid "MyQrMenu / PreisMenu — Account deletion request"
+msgstr "MyQrMenu / PreisMenu — Kontoauslöschungsanfrage"
+
+#: .\templates\pages\account_delete.html:19
+msgid "How to request account deletion"
+msgstr "Wie man Kontoauslöschung anfordert"
+
+#: .\templates\pages\account_delete.html:21
+#, python-format
+msgid ""
+"\n"
+"        To delete your account and all associated data, please send an email to\n"
+"        <a href=\"mailto:%(email)s?subject=Account%%20Deletion%%20Request\">%(email)s</a>\n"
+"        from the email address you used to register.\n"
+"        "
+msgstr ""
+"\n"
+"        Um Ihr Konto und alle zugehörigen Daten zu löschen, senden Sie bitte eine E-Mail an\n"
+"        <a href=\"mailto:%(email)s?subject=Account%%20Deletion%%20Request\">%(email)s</a>\n"
+"        aus der E-Mail-Adresse, die Sie zur Anmeldung verwendet haben.\n"
+"        "
+
+#: .\templates\pages\account_delete.html:28
+msgid "Please include the following information in your email:"
+msgstr "Bitte geben Sie die folgenden Informationen in Ihre E-Mail ein:"
+
+#: .\templates\pages\account_delete.html:30
+msgid "Subject: 'Account Deletion Request'"
+msgstr "Betrifft: „Anfrage zur Kontoauslöschung\""
+
+#: .\templates\pages\account_delete.html:31
+msgid "The email address associated with your account"
+msgstr "Die E-Mail-Adresse, die mit Ihrem Konto verbunden ist"
+
+#: .\templates\pages\account_delete.html:32
+msgid "Your restaurant / business name (if applicable)"
+msgstr "Ihr Restaurant / Geschäftsname (falls zutreffend)"
+
+#: .\templates\pages\account_delete.html:36
+msgid ""
+"We will process your request and permanently delete your account within 7 "
+"business days. You will receive a confirmation email once the deletion is "
+"complete."
+msgstr ""
+"Wir verarbeiten Ihre Anfrage und löschen Ihr Konto innerhalb von 7 Werktagen"
+" dauerhaft. Sie erhalten eine Bestätigungs-E-Mail, sobald die Löschung "
+"abgeschlossen ist."
+
+#: .\templates\pages\account_delete.html:39
+msgid "What data will be deleted"
+msgstr "Welche Daten werden gelöscht?"
+
+#: .\templates\pages\account_delete.html:41
+msgid "Your account profile (name, email, phone number, password)"
+msgstr "Ihr Kontoprofil (Name, E-Mail, Telefonnummer, Passwort)"
+
+#: .\templates\pages\account_delete.html:42
+msgid "Your restaurant / business information and settings"
+msgstr "Ihr Restaurant / Geschäftsinformationen und Einstellungen"
+
+#: .\templates\pages\account_delete.html:43
+msgid "Menu items, categories, campaigns and images you uploaded"
+msgstr ""
+"Menüpunkte, Kategorien, Kampagnen und Bilder, die Sie hochgeladen haben"
+
+#: .\templates\pages\account_delete.html:44
+msgid ""
+"Customer orders, reservations and related activity linked to your account"
+msgstr ""
+"Kundenaufträge, Reservierungen und damit verbundene Aktivitäten im "
+"Zusammenhang mit Ihrem Konto"
+
+#: .\templates\pages\account_delete.html:45
+msgid "Session and authentication data"
+msgstr "Sitzungs- und Authentifizierungsdaten"
+
+#: .\templates\pages\account_delete.html:48
+msgid "What data may be retained"
+msgstr "Welche Daten können gespeichert werden"
+
+#: .\templates\pages\account_delete.html:50
+msgid ""
+"For legal, tax, accounting and fraud-prevention reasons, we may retain the "
+"following data for the periods required by applicable law (typically up to "
+"10 years under German commercial and tax law):"
+msgstr ""
+"Aus rechtlichen, steuerlichen, buchhalterischen und betrügerischen Gründen "
+"können wir die folgenden Daten für die gesetzlich vorgeschriebenen Fristen "
+"(typischerweise bis zu 10 Jahre nach deutschem Handels- und Steuerrecht) "
+"speichern:"
+
+#: .\templates\pages\account_delete.html:53
+msgid "Invoices, payment records and subscription history"
+msgstr "Rechnungen, Zahlungsaufzeichnungen und Abonnementhistorie"
+
+#: .\templates\pages\account_delete.html:54
+msgid "Records required to comply with legal obligations (e.g. GoBD, HGB, AO)"
+msgstr ""
+"Aufzeichnungen zur Einhaltung gesetzlicher Verpflichtungen (z.B. GoBD, HGB, "
+"AO)"
+
+#: .\templates\pages\account_delete.html:57
+msgid ""
+"This retained data is stored securely and used only to comply with legal "
+"obligations."
+msgstr ""
+"Diese gespeicherten Daten werden sicher gespeichert und nur zur Erfüllung "
+"gesetzlicher Verpflichtungen verwendet."
+
+#: .\templates\pages\account_delete.html:60 .\templates\pages\contact.html:3
+#: .\templates\pages\privacy_policy.html:35
+#: .\templates\pages\terms_conditions.html:35
+#: .\templates\partials\footer.html:30 .\templates\partials\footer.html:35
+#: .\templates\partials\navbar.html:81 .\templates\partials\navbar.html:150
+msgid "Contact"
+msgstr "Kontakt"
+
+#: .\templates\pages\account_delete.html:62
+msgid ""
+"If you have any questions about the deletion process or your data, please "
+"contact us:"
+msgstr ""
+"Wenn Sie Fragen zum Löschungsprozess oder zu Ihren Daten haben, kontaktieren"
+" Sie uns bitte:"
+
+#: .\templates\pages\account_delete.html:63
+#: .\templates\pages\auth\forgot_password.html:16
+#: .\templates\pages\auth\login.html:23
+#: .\templates\pages\auth\register.html:21 .\templates\pages\checkout.html:23
+#: .\templates\pages\contact.html:20 .\templates\pages\contact.html:48
+#: .\templates\pages\restaurant_menu.html:1537
+#: .\templates\pages\restaurant_menu.html:1583
+#: .\templates\pages\restaurant_orders.html:521
+#: .\templates\pages\restaurant_orders.html:555
+#: .\templates\pages\restaurant_reservation.html:148
+#: .\templates\pages\restaurant_reservation.html:149
+#: .\templates\partials\customer_navbar.html:102
+#: .\templates\partials\customer_navbar.html:116
+#: .\templates\partials\customer_navbar.html:158
+msgid "Email"
+msgstr "E-Mail"
+
+#: .\templates\pages\account_delete.html:64
+#: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
+#: .\templates\pages\order_payment.html:81
+#: .\templates\pages\panel\settings.html:29
+#: .\templates\pages\restaurant_menu.html:1256
+#: .\templates\pages\restaurant_menu.html:1405
+#: .\templates\pages\restaurant_menu.html:1538
+#: .\templates\pages\restaurant_menu.html:1587
+#: .\templates\pages\restaurant_orders.html:522
+#: .\templates\pages\restaurant_reservation.html:144
+#: .\templates\pages\restaurant_reservation.html:145
+#: .\templates\partials\customer_navbar.html:103
+msgid "Phone"
+msgstr "Telefon"
 
 #: .\templates\pages\auth\forgot_password.html:3
+#: .\templates\partials\customer_navbar.html:77
 msgid "Forgot password"
 msgstr "Passwort vergessen"
 
 #: .\templates\pages\auth\forgot_password.html:9
+#: .\templates\partials\customer_navbar.html:135
 msgid "Reset password"
 msgstr "Passwort zurücksetzen"
 
 #: .\templates\pages\auth\forgot_password.html:12
 msgid "Enter your email and we'll send you a 6-digit code."
-msgstr "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen 6-stelligen Code."
-
-#: .\templates\pages\auth\forgot_password.html:16
-#: .\templates\pages\auth\login.html:23 .\templates\pages\auth\register.html:21
-#: .\templates\pages\checkout.html:23 .\templates\pages\contact.html:20
-#: .\templates\pages\contact.html:43
-#: .\templates\pages\restaurant_reservation.html:146
-#: .\templates\pages\restaurant_reservation.html:147
-msgid "Email"
-msgstr "E-Mail"
+msgstr ""
+"Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen 6-stelligen "
+"Code."
 
 #: .\templates\pages\auth\forgot_password.html:21
-#: .\templates\pages\auth\forgot_password.html:83
+#: .\templates\pages\auth\forgot_password.html:109
+#: .\templates\partials\customer_navbar.html:119
 msgid "Send code"
 msgstr "Code senden"
 
@@ -739,7 +1016,9 @@ msgstr "Code senden"
 msgid ""
 "We sent a 6-digit code to <strong id=\"code-email\"></strong>. Enter it "
 "below."
-msgstr "Wir haben einen 6-stelligen Code an <strong id=\"code-email\"></strong> gesendet. Bitte unten eingeben."
+msgstr ""
+"Wir haben einen 6-stelligen Code an <strong id=\"code-email\"></strong> "
+"gesendet. Bitte unten eingeben."
 
 #: .\templates\pages\auth\forgot_password.html:27
 msgid "Code expires in 10 minutes."
@@ -759,7 +1038,7 @@ msgid "Resend"
 msgstr "Erneut senden"
 
 #: .\templates\pages\auth\forgot_password.html:41
-#: .\templates\pages\auth\forgot_password.html:85
+#: .\templates\pages\auth\forgot_password.html:111
 msgid "Verify code"
 msgstr "Code prüfen"
 
@@ -768,56 +1047,66 @@ msgid "Enter your new password."
 msgstr "Geben Sie Ihr neues Passwort ein."
 
 #: .\templates\pages\auth\forgot_password.html:52
+#: .\templates\partials\customer_navbar.html:77
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: .\templates\pages\auth\forgot_password.html:57
+#: .\templates\pages\auth\forgot_password.html:56
+#: .\templates\pages\auth\forgot_password.html:74
+#: .\templates\pages\auth\login.html:32
+#: .\templates\partials\form_fields.html:21
+msgid "Toggle password visibility"
+msgstr "Passwort anzeigen"
+
+#: .\templates\pages\auth\forgot_password.html:70
 msgid "Confirm new password"
 msgstr "Neues Passwort bestätigen"
 
-#: .\templates\pages\auth\forgot_password.html:62
-#: .\templates\pages\auth\forgot_password.html:87
+#: .\templates\pages\auth\forgot_password.html:88
+#: .\templates\pages\auth\forgot_password.html:113
 msgid "Update password"
 msgstr "Passwort aktualisieren"
 
-#: .\templates\pages\auth\forgot_password.html:67
+#: .\templates\pages\auth\forgot_password.html:93
+#: .\templates\partials\customer_navbar.html:122
 msgid "Back to login"
 msgstr "Zurück zur Anmeldung"
 
-#: .\templates\pages\auth\forgot_password.html:82
-#: .\templates\pages\restaurant_reservation.html:177
+#: .\templates\pages\auth\forgot_password.html:108
+#: .\templates\pages\restaurant_reservation.html:179
 msgid "Sending…"
 msgstr "Wird gesendet…"
 
-#: .\templates\pages\auth\forgot_password.html:84
+#: .\templates\pages\auth\forgot_password.html:110
 msgid "Verifying…"
 msgstr "Wird geprüft…"
 
-#: .\templates\pages\auth\forgot_password.html:86
+#: .\templates\pages\auth\forgot_password.html:112
 msgid "Updating…"
 msgstr "Wird aktualisiert…"
 
-#: .\templates\pages\auth\forgot_password.html:88
+#: .\templates\pages\auth\forgot_password.html:114
 msgid "Failed to send code. Check your email."
 msgstr "Code konnte nicht gesendet werden. Prüfen Sie Ihre E-Mail."
 
-#: .\templates\pages\auth\forgot_password.html:89
+#: .\templates\pages\auth\forgot_password.html:115
+#: .\templates\partials\customer_navbar.html:397
 msgid "Invalid or expired code."
 msgstr "Ungültiger oder abgelaufener Code."
 
-#: .\templates\pages\auth\forgot_password.html:90
+#: .\templates\pages\auth\forgot_password.html:116
 msgid "Passwords do not match."
 msgstr "Passwörter stimmen nicht überein."
 
-#: .\templates\pages\auth\forgot_password.html:91
+#: .\templates\pages\auth\forgot_password.html:117
 msgid "Failed to update password."
 msgstr "Passwort konnte nicht aktualisiert werden."
 
-#: .\templates\pages\auth\forgot_password.html:92
+#: .\templates\pages\auth\forgot_password.html:118
 msgid "Network error. Try again."
 msgstr "Netzwerkfehler. Bitte erneut versuchen."
 
-#: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:32
+#: .\templates\pages\auth\login.html:3 .\templates\pages\auth\login.html:45
 #: .\templates\pages\auth\register.html:57
 #: .\templates\pages\panel\dashboard_simple.html:18
 #: .\templates\partials\navbar.html:124 .\templates\partials\navbar.html:170
@@ -838,22 +1127,34 @@ msgstr "Registrierung erfolgreich. Bitte unten anmelden."
 
 #: .\templates\pages\auth\login.html:18
 msgid "Password updated. You can log in with your new password."
-msgstr "Passwort aktualisiert. Sie können sich jetzt mit dem neuen Passwort anmelden."
+msgstr ""
+"Passwort aktualisiert. Sie können sich jetzt mit dem neuen Passwort "
+"anmelden."
 
-#: .\templates\pages\auth\login.html:28 .\templates\pages\auth\register.html:23
+#: .\templates\pages\auth\login.html:28
+#: .\templates\pages\auth\register.html:23
+#: .\templates\pages\restaurant_menu.html:1522
+#: .\templates\pages\restaurant_orders.html:507
+#: .\templates\partials\customer_navbar.html:87
 msgid "Password"
 msgstr "Passwort"
 
-#: .\templates\pages\auth\login.html:34
+#: .\templates\pages\auth\login.html:47
+#: .\templates\partials\customer_navbar.html:93
 msgid "Forgot password?"
 msgstr "Passwort vergessen?"
 
-#: .\templates\pages\auth\login.html:37
+#: .\templates\pages\auth\login.html:50
 msgid "No account?"
 msgstr "Kein Konto?"
 
-#: .\templates\pages\auth\login.html:37 .\templates\pages\auth\register.html:3
+#: .\templates\pages\auth\login.html:50 .\templates\pages\auth\register.html:3
 #: .\templates\pages\panel\dashboard_simple.html:17
+#: .\templates\pages\restaurant_menu.html:1516
+#: .\templates\pages\restaurant_menu.html:1566
+#: .\templates\pages\restaurant_orders.html:502
+#: .\templates\partials\customer_navbar.html:51
+#: .\templates\partials\customer_navbar.html:82
 msgid "Register"
 msgstr "Registrieren"
 
@@ -863,7 +1164,8 @@ msgstr "Konto erstellen"
 
 #: .\templates\pages\auth\register.html:17
 msgid "Start your 12-day free trial. No payment required."
-msgstr "Starten Sie Ihre 12-tägige kostenlose Testphase. Keine Zahlung erforderlich."
+msgstr ""
+"Starten Sie Ihre 12-tägige kostenlose Testphase. Keine Zahlung erforderlich."
 
 #: .\templates\pages\auth\register.html:20
 #: .\templates\pages\panel\settings.html:28
@@ -874,14 +1176,6 @@ msgstr "Restaurantname"
 msgid "Orange Bistro"
 msgstr "Orange Bistro"
 
-#: .\templates\pages\auth\register.html:22 .\templates\pages\checkout.html:22
-#: .\templates\pages\order_payment.html:72
-#: .\templates\pages\panel\settings.html:29
-#: .\templates\pages\restaurant_reservation.html:142
-#: .\templates\pages\restaurant_reservation.html:143
-msgid "Phone"
-msgstr "Telefon"
-
 #: .\templates\pages\auth\register.html:26
 msgid "I accept the terms and conditions"
 msgstr "Ich akzeptiere die Nutzungsbedingungen"
@@ -891,8 +1185,8 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "Ich bestätige, dass ich als Unternehmen handle (B2B)."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I"
-msgstr "Bitte vervollständigen Sie „Ich bin kein Roboter\"."
+msgid "Please complete the \"I'm not a robot\" check."
+msgstr "Bitte füllen Sie den \"Ich bin kein Roboter\"-Check aus."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
@@ -906,7 +1200,10 @@ msgstr "E-Mail bestätigen"
 msgid ""
 "We sent a 6-digit code to <strong id=\"verify-email-display\"></strong>. "
 "Enter it below to complete registration."
-msgstr "Wir haben einen 6-stelligen Code an <strong id=\"verify-email-display\"></strong> gesendet. Geben Sie ihn unten ein, um die Registrierung abzuschließen."
+msgstr ""
+"Wir haben einen 6-stelligen Code an <strong id=\"verify-email-"
+"display\"></strong> gesendet. Geben Sie ihn unten ein, um die Registrierung "
+"abzuschließen."
 
 #: .\templates\pages\auth\register.html:51
 msgid "Complete registration"
@@ -917,6 +1214,7 @@ msgid "Use a different email"
 msgstr "Andere E-Mail verwenden"
 
 #: .\templates\pages\auth\register.html:57
+#: .\templates\pages\restaurant_menu.html:1562
 msgid "Already have an account?"
 msgstr "Bereits ein Konto?"
 
@@ -936,8 +1234,11 @@ msgstr "Vollständiger Name"
 msgid "John Doe"
 msgstr "Max Mustermann"
 
-#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:68
+#: .\templates\pages\checkout.html:28 .\templates\pages\order_payment.html:89
 #: .\templates\pages\panel\settings.html:30
+#: .\templates\pages\restaurant_menu.html:1599
+#: .\templates\pages\restaurant_orders.html:579
+#: .\templates\partials\customer_navbar.html:179
 msgid "Address"
 msgstr "Adresse"
 
@@ -994,13 +1295,14 @@ msgid "CVC"
 msgstr "CVC"
 
 #: .\templates\pages\checkout.html:50
-#: .\templates\pages\restaurant_menu.html:591
-#: .\templates\pages\restaurant_menu.html:731
+#: .\templates\pages\restaurant_menu.html:1317
+#: .\templates\pages\restaurant_menu.html:1474
+#: .\templates\pages\restaurant_menu.html:1626
 msgid "Place Order"
 msgstr "Bestellung aufgeben"
 
 #: .\templates\pages\checkout.html:54
-#: .\templates\pages\restaurant_menu.html:741
+#: .\templates\pages\restaurant_menu.html:1484
 msgid "Order Summary"
 msgstr "Bestellübersicht"
 
@@ -1008,17 +1310,13 @@ msgstr "Bestellübersicht"
 msgid "Subtotal"
 msgstr "Zwischensumme"
 
-#: .\templates\pages\contact.html:3 .\templates\partials\footer.html:30
-#: .\templates\partials\footer.html:35 .\templates\partials\navbar.html:81
-#: .\templates\partials\navbar.html:150
-msgid "Contact"
-msgstr "Kontakt"
-
 #: .\templates\pages\contact.html:4
 msgid ""
 "Get in touch for support, sales, or partnerships. Email, phone, and "
 "WhatsApp. We reply within 24 hours."
-msgstr "Kontaktieren Sie uns für Support, Verkauf oder Partnerschaften. E-Mail, Telefon und WhatsApp. Wir antworten innerhalb von 24 Stunden."
+msgstr ""
+"Kontaktieren Sie uns für Support, Verkauf oder Partnerschaften. E-Mail, "
+"Telefon und WhatsApp. Wir antworten innerhalb von 24 Stunden."
 
 #: .\templates\pages\contact.html:10
 msgid "Get in touch"
@@ -1026,7 +1324,8 @@ msgstr "Kontakt aufnehmen"
 
 #: .\templates\pages\contact.html:11
 msgid "Support, sales, or partnerships. We reply within 24 hours."
-msgstr "Support, Vertrieb oder Partnerschaften. Antwort innerhalb von 24 Stunden."
+msgstr ""
+"Support, Vertrieb oder Partnerschaften. Antwort innerhalb von 24 Stunden."
 
 #: .\templates\pages\contact.html:17
 msgid "Contact & Support"
@@ -1048,44 +1347,45 @@ msgstr "Auf WhatsApp chatten"
 msgid "Send a message"
 msgstr "Nachricht senden"
 
-#: .\templates\pages\contact.html:42 .\templates\pages\panel\categories.html:20
+#: .\templates\pages\contact.html:47
+#: .\templates\pages\panel\categories.html:20
 #: .\templates\pages\panel\menu_item_form.html:13
-#: .\templates\pages\restaurant_reservation.html:139
+#: .\templates\pages\restaurant_reservation.html:141
 msgid "Name"
 msgstr "Name"
 
-#: .\templates\pages\contact.html:42
+#: .\templates\pages\contact.html:47
 msgid "Your name"
 msgstr "Ihr Name"
 
-#: .\templates\pages\contact.html:43
+#: .\templates\pages\contact.html:48
 msgid "you@example.com"
 msgstr "sie@beispiel.de"
 
-#: .\templates\pages\contact.html:44
+#: .\templates\pages\contact.html:49
 msgid "Subject"
 msgstr "Betreff"
 
-#: .\templates\pages\contact.html:44
+#: .\templates\pages\contact.html:49
 msgid "How can we help?"
 msgstr "Wie können wir helfen?"
 
-#: .\templates\pages\contact.html:45
+#: .\templates\pages\contact.html:50
 msgid "Message"
 msgstr "Nachricht"
 
-#: .\templates\pages\contact.html:45
+#: .\templates\pages\contact.html:50
 msgid "Your message"
 msgstr "Ihre Nachricht"
 
-#: .\templates\pages\contact.html:46
+#: .\templates\pages\contact.html:55
 msgid "Send message"
 msgstr "Nachricht senden"
 
 #: .\templates\pages\features.html:3 .\templates\partials\footer.html:22
 #: .\templates\partials\navbar.html:36 .\templates\partials\navbar.html:145
-#: .\templates_bonusweb\base.html:203 .\templates_bonusweb\base.html:280
-#: .\templates_bonusweb\base.html:336
+#: .\templates_bonusweb\base.html:204 .\templates_bonusweb\base.html:281
+#: .\templates_bonusweb\base.html:337
 msgid "Features"
 msgstr "Funktionen"
 
@@ -1093,7 +1393,9 @@ msgstr "Funktionen"
 msgid ""
 "Explore all features: QR menu, online ordering, campaigns, analytics, multi-"
 "language support, and more."
-msgstr "Alle Funktionen entdecken: QR-Menü, Online-Bestellung, Kampagnen, Analysen, Mehrsprachigkeit und mehr."
+msgstr ""
+"Alle Funktionen entdecken: QR-Menü, Online-Bestellung, Kampagnen, Analysen, "
+"Mehrsprachigkeit und mehr."
 
 #: .\templates\pages\features.html:10
 msgid "Full feature set for modern restaurants"
@@ -1102,11 +1404,13 @@ msgstr "Vollständiger Funktionsumfang für moderne Restaurants"
 #: .\templates\pages\features.html:11
 msgid ""
 "Everything you need to digitize your menu, run promotions, and grow orders."
-msgstr "Alles, was Sie brauchen, um Ihre Speisekarte zu digitalisieren, Werbeaktionen durchzuführen und Bestellungen zu steigern."
+msgstr ""
+"Alles, was Sie brauchen, um Ihre Speisekarte zu digitalisieren, "
+"Werbeaktionen durchzuführen und Bestellungen zu steigern."
 
 #: .\templates\pages\features.html:29
-msgid "Dashboard and analytics view"
-msgstr "Dashboard- und Analyseansicht"
+msgid "Restaurant with digital menu"
+msgstr "Restaurant mit digitalem Menü"
 
 #: .\templates\pages\features.html:35
 msgid "One dashboard for menu, orders, and campaigns."
@@ -1120,9 +1424,9 @@ msgstr "Häufig gestellte Fragen"
 msgid "See pricing"
 msgstr "Preise ansehen"
 
-#: .\templates\pages\how_it_works.html:3 .\templates\pages\how_it_works.html:10
-#: .\templates\partials\footer.html:23 .\templates\partials\navbar.html:63
-#: .\templates\partials\navbar.html:147
+#: .\templates\pages\how_it_works.html:3
+#: .\templates\pages\how_it_works.html:10 .\templates\partials\footer.html:23
+#: .\templates\partials\navbar.html:63 .\templates\partials\navbar.html:147
 msgid "How it works"
 msgstr "Wie es funktioniert"
 
@@ -1130,15 +1434,18 @@ msgstr "Wie es funktioniert"
 msgid ""
 "Set up your menu, generate QR codes, and start receiving orders in three "
 "simple steps."
-msgstr "Richten Sie Ihr Menü ein, erstellen Sie QR-Codes und beginnen Sie in drei einfachen Schritten mit dem Bestellempfang."
+msgstr ""
+"Richten Sie Ihr Menü ein, erstellen Sie QR-Codes und beginnen Sie in drei "
+"einfachen Schritten mit dem Bestellempfang."
 
 #: .\templates\pages\how_it_works.html:11
 msgid "Get your digital menu live and start taking orders in minutes."
-msgstr "Digitales Menü in Minuten live schalten und Bestellungen entgegennehmen."
+msgstr ""
+"Digitales Menü in Minuten live schalten und Bestellungen entgegennehmen."
 
 #: .\templates\pages\how_it_works.html:30
-msgid "QR code and digital ordering"
-msgstr "QR-Code und digitale Bestellung"
+msgid "Restaurant menu ordering"
+msgstr "Restaurant Menü bestellen"
 
 #: .\templates\pages\how_it_works.html:36
 msgid "Scan, browse, order — no app download required."
@@ -1156,7 +1463,9 @@ msgstr "QR-Menü + Bestellung"
 msgid ""
 "Launch your branded QR menu, run campaigns, and receive online orders from "
 "one dashboard. Built for modern restaurants."
-msgstr "Starten Sie Ihr Marken-QR-Menü, führen Sie Kampagnen durch und empfangen Sie Online-Bestellungen aus einem Dashboard. Für moderne Restaurants gemacht."
+msgstr ""
+"Starten Sie Ihr Marken-QR-Menü, führen Sie Kampagnen durch und empfangen Sie"
+" Online-Bestellungen aus einem Dashboard. Für moderne Restaurants gemacht."
 
 #: .\templates\pages\landing.html:31
 msgid "My Bonus QR Menu"
@@ -1178,7 +1487,9 @@ msgstr "Mehr Umsatz."
 msgid ""
 "Grow your revenue with a professional QR menu, online ordering, and a "
 "stunning mobile experience."
-msgstr "Steigern Sie Ihren Umsatz mit einer professionellen QR-Speisekarte, Online-Bestellung und einem beeindruckenden mobilen Erlebnis."
+msgstr ""
+"Steigern Sie Ihren Umsatz mit einer professionellen QR-Speisekarte, Online-"
+"Bestellung und einem beeindruckenden mobilen Erlebnis."
 
 #: .\templates\pages\landing.html:45 .\templates\pages\landing.html:311
 #: .\templates\partials\navbar.html:125 .\templates\partials\navbar.html:171
@@ -1194,7 +1505,8 @@ msgstr "Beispiel ansehen"
 msgid "Download on the App Store"
 msgstr "Im App Store laden"
 
-#: .\templates\pages\landing.html:61 .\templates\pages\restaurant_menu.html:465
+#: .\templates\pages\landing.html:61
+#: .\templates\pages\restaurant_menu.html:1174
 msgid "Orders"
 msgstr "Bestellungen"
 
@@ -1211,20 +1523,16 @@ msgid "Setup"
 msgstr "Einrichtung"
 
 #: .\templates\pages\landing.html:79
-msgid "Tablet menu preview"
-msgstr "Tablet-Menü-Vorschau"
+msgid "Restaurant tables with digital menu"
+msgstr "Restauranttische mit digitalem Menü"
 
 #: .\templates\pages\landing.html:90 .\templates\pages\landing.html:111
-msgid "Phone menu"
-msgstr "Smartphone-Menü"
+msgid "Menu dish"
+msgstr "Menüteller"
 
-#: .\templates\pages\landing.html:101
-msgid "Phone menu analytics"
-msgstr "Menü-Analysen auf dem Smartphone"
-
-#: .\templates\pages\landing.html:116
-msgid "Phone analytics"
-msgstr "Smartphone-Analysen"
+#: .\templates\pages\landing.html:101 .\templates\pages\landing.html:116
+msgid "Menu item"
+msgstr "Menüpunkt"
 
 #: .\templates\pages\landing.html:122
 msgid "Open Live Menu"
@@ -1238,7 +1546,9 @@ msgstr "Premium-Erlebnisse für jeden Gast"
 msgid ""
 "Modern UI components, strong visual hierarchy, and smooth animations for a "
 "luxury digital dining brand."
-msgstr "Moderne UI-Komponenten, starke visuelle Hierarchie und flüssige Animationen für eine luxuriöse digitale Gastronomie-Marke."
+msgstr ""
+"Moderne UI-Komponenten, starke visuelle Hierarchie und flüssige Animationen "
+"für eine luxuriöse digitale Gastronomie-Marke."
 
 #: .\templates\pages\landing.html:137
 msgid "Live Menu Sync"
@@ -1278,9 +1588,11 @@ msgstr "Interaktive visuelle Präsentation"
 
 #: .\templates\pages\landing.html:161
 msgid ""
-"Beautiful sections that feel alive and premium, built for conversion and wow "
-"effect."
-msgstr "Wunderschöne Sektionen, die lebendig und hochwertig wirken — gebaut für Conversion und Wow-Effekt."
+"Beautiful sections that feel alive and premium, built for conversion and wow"
+" effect."
+msgstr ""
+"Wunderschöne Sektionen, die lebendig und hochwertig wirken — gebaut für "
+"Conversion und Wow-Effekt."
 
 #: .\templates\pages\landing.html:165
 msgid "Uptime"
@@ -1327,8 +1639,8 @@ msgid "Menu Action"
 msgstr "Menü-Aktion"
 
 #: .\templates\pages\landing.html:210
-msgid "Premium phone mockup"
-msgstr "Premium-Smartphone-Mockup"
+msgid "Menu on phone"
+msgstr "Menü am Telefon"
 
 #: .\templates\pages\landing.html:215
 msgid "Immersive Mobile"
@@ -1342,7 +1654,9 @@ msgstr "Vom Scan zur Bestellung in einem schönen Ablauf."
 msgid ""
 "Elevate guest experience with cinematic visuals, smooth motion, and ultra-"
 "clean interaction patterns crafted for QR Menu."
-msgstr "Werten Sie das Gästeerlebnis mit filmischer Optik, weichen Bewegungen und ultra-klaren Interaktionen für QR-Menü auf."
+msgstr ""
+"Werten Sie das Gästeerlebnis mit filmischer Optik, weichen Bewegungen und "
+"ultra-klaren Interaktionen für QR-Menü auf."
 
 #: .\templates\pages\landing.html:220
 msgid "Explore Demo Menus"
@@ -1358,7 +1672,9 @@ msgstr "Restaurant-Lifestyle"
 
 #: .\templates\pages\landing.html:239
 msgid "Smart QR cards guide guests naturally from discovery to checkout."
-msgstr "Intelligente QR-Karten führen Gäste natürlich von der Entdeckung bis zum Checkout."
+msgstr ""
+"Intelligente QR-Karten führen Gäste natürlich von der Entdeckung bis zum "
+"Checkout."
 
 #: .\templates\pages\landing.html:240
 msgid "Motion and hierarchy improve readability and increase item conversion."
@@ -1373,8 +1689,8 @@ msgid "More About QR Menu"
 msgstr "Mehr über QR-Menü"
 
 #: .\templates\pages\landing.html:246
-msgid "Color portrait style"
-msgstr "Farbenfroher Porträtstil"
+msgid "Signature dish"
+msgstr "Unterschriftsschale"
 
 #: .\templates\pages\landing.html:261 .\templates\pages\landing.html:275
 msgid "There is more<br>to this menu world"
@@ -1396,120 +1712,253 @@ msgstr "Bringen Sie Besucher schon in der ersten Sekunde zum Staunen."
 msgid ""
 "A long, professional landing experience with beautiful sections, fluid "
 "animation, and premium orange branding."
-msgstr "Eine lange, professionelle Landingpage-Erfahrung mit schönen Sektionen, flüssigen Animationen und Premium-Orange-Branding."
+msgstr ""
+"Eine lange, professionelle Landingpage-Erfahrung mit schönen Sektionen, "
+"flüssigen Animationen und Premium-Orange-Branding."
 
 #: .\templates\pages\landing.html:312
 msgid "See Menus"
 msgstr "Menüs ansehen"
 
-#: .\templates\pages\order_payment.html:3
+#: .\templates\pages\order_payment.html:5
 #, python-format
-msgid "Payment — %(name)s"
-msgstr "Zahlung — %(name)s"
+msgid "Payment - %(name)s"
+msgstr "Zahlung - %(name)s"
 
-#: .\templates\pages\order_payment.html:10
-#: .\templates\pages\order_payment.html:32
-#: .\templates\pages\order_payment.html:87
-#: .\templates\pages\restaurant_reservation.html:108
-#: .\templates\pages\restaurant_reservation.html:182
-#: .\templates\pages\restaurant_schedule.html:34
+#: .\templates\pages\order_payment.html:29
+#: .\templates\pages\order_payment.html:58
+#: .\templates\pages\order_payment.html:149
+#: .\templates\pages\order_payment.html:160
+#: .\templates\pages\order_payment.html:172
+#: .\templates\pages\restaurant_reservation.html:110
+#: .\templates\pages\restaurant_reservation.html:184
+#: .\templates\pages\restaurant_schedule.html:36
 msgid "Back to menu"
 msgstr "Zurück zum Menü"
 
-#: .\templates\pages\order_payment.html:14
-#: .\templates\pages\restaurant_menu.html:550
-#: .\templates\pages\restaurant_menu.html:682
-#: .\templates\pages\restaurant_reservation.html:163
+#: .\templates\pages\order_payment.html:34
+msgid "Secure checkout"
+msgstr "Sicherer Check-out"
+
+#: .\templates\pages\order_payment.html:35
+#: .\templates\pages\order_payment.html:126
+#: .\templates\pages\restaurant_menu.html:1260
+#: .\templates\pages\restaurant_menu.html:1409
+#: .\templates\pages\restaurant_orders.html:483
+#: .\templates\pages\restaurant_reservation.html:165
 msgid "Payment"
 msgstr "Zahlung"
 
-#: .\templates\pages\order_payment.html:15
+#: .\templates\pages\order_payment.html:36
 #, python-format
-msgid "%(name)s — Order #%(id)s"
-msgstr "%(name)s — Bestellung Nr. %(id)s"
+msgid "%(name)s - Order #%(id)s"
+msgstr "%(name)s - Bestellung #%(id)s"
 
-#: .\templates\pages\order_payment.html:18
+#: .\templates\pages\order_payment.html:42
 msgid "Order summary"
 msgstr "Bestellübersicht"
 
-#: .\templates\pages\order_payment.html:24
+#: .\templates\pages\order_payment.html:51
 msgid "Total:"
 msgstr "Gesamt:"
 
-#: .\templates\pages\order_payment.html:28
-msgid "Payment method"
-msgstr "Zahlungsmethode"
-
-#: .\templates\pages\order_payment.html:30
+#: .\templates\pages\order_payment.html:56
 msgid ""
 "This restaurant does not accept online payment. Please pay by cash when you "
 "pick up or dine in."
-msgstr "Dieses Restaurant akzeptiert keine Online-Zahlung. Bitte bar bezahlen bei Abholung oder im Restaurant."
+msgstr ""
+"Dieses Restaurant akzeptiert keine Online-Zahlung. Bitte bar bezahlen bei "
+"Abholung oder im Restaurant."
 
-#: .\templates\pages\order_payment.html:35
-#, python-format
-msgid "Pay with card. The payment goes to %(name)s."
-msgstr "Mit Karte bezahlen. Die Zahlung geht an %(name)s."
+#: .\templates\pages\order_payment.html:63
+msgid "Payment received"
+msgstr "Zahlungseingang"
 
-#: .\templates\pages\order_payment.html:42
-#, python-format
-msgid "Pay %(currency)s %(total)s"
-msgstr "%(currency)s %(total)s zahlen"
+#: .\templates\pages\order_payment.html:64
+msgid "Sending your order to the restaurant..."
+msgstr "Senden Sie Ihre Bestellung an das Restaurant..."
 
-#: .\templates\pages\order_payment.html:47
-msgid "Payment successful."
-msgstr "Zahlung erfolgreich."
-
-#: .\templates\pages\order_payment.html:49
+#: .\templates\pages\order_payment.html:69
 msgid ""
-"Please enter your delivery details so the restaurant can receive the order."
-msgstr "Bitte geben Sie Ihre Lieferdaten ein, damit das Restaurant die Bestellung erhalten kann."
+"We'll use these details to send you the invoice and create an account so you"
+" can track this order later. All fields are required."
+msgstr ""
+"Wir verwenden diese Daten, um Ihnen die Rechnung zu senden und ein Konto zu "
+"erstellen, damit Sie diese Bestellung später verfolgen können. Alle Felder "
+"sind erforderlich."
 
-#: .\templates\pages\order_payment.html:51
-msgid "Your order has been sent to the restaurant."
-msgstr "Ihre Bestellung wurde an das Restaurant gesendet."
-
-#: .\templates\pages\order_payment.html:59
+#: .\templates\pages\order_payment.html:72
+#: .\templates\pages\restaurant_menu.html:1534
+#: .\templates\pages\restaurant_menu.html:1574
+#: .\templates\pages\restaurant_orders.html:518
+#: .\templates\pages\restaurant_orders.html:546
+#: .\templates\partials\customer_navbar.html:99
+#: .\templates\partials\customer_navbar.html:155
 msgid "First name"
 msgstr "Vorname"
 
-#: .\templates\pages\order_payment.html:63
+#: .\templates\pages\order_payment.html:76
+#: .\templates\pages\restaurant_menu.html:1535
+#: .\templates\pages\restaurant_menu.html:1578
+#: .\templates\pages\restaurant_orders.html:519
+#: .\templates\pages\restaurant_orders.html:550
+#: .\templates\partials\customer_navbar.html:100
+#: .\templates\partials\customer_navbar.html:156
 msgid "Last name"
 msgstr "Nachname"
 
-#: .\templates\pages\order_payment.html:77
-#, fuzzy
-#| msgid "View orders"
+#: .\templates\pages\order_payment.html:85
+msgid "Email (for invoice)"
+msgstr "E-Mail (für Rechnung)"
+
+#: .\templates\pages\order_payment.html:94
 msgid "Submit order"
-msgstr "Bestellung absenden"
+msgstr "Bestellung einreichen"
 
-#: .\templates\pages\order_payment.html:82
-#, fuzzy
-#| msgid "Full feature set for modern restaurants"
+#: .\templates\pages\order_payment.html:98
 msgid "Order sent to the restaurant."
-msgstr "Bestellung an das Restaurant gesendet."
+msgstr "Bestellung ins Restaurant geschickt."
 
-#: .\templates\pages\order_payment.html:83
-msgid "You can follow the order status in order tracking."
-msgstr "Sie können den Bestellstatus in der Bestellverfolgung sehen."
+#: .\templates\pages\order_payment.html:102
+msgid "Purchase invoice"
+msgstr "Kaufrechnung"
 
-#: .\templates\pages\order_payment.html:84
-#, fuzzy
-#| msgid "Order management"
-msgid "Order tracking"
-msgstr "Bestellverfolgung"
+#: .\templates\pages\order_payment.html:106
+msgid "Invoice"
+msgstr "Rechnung"
 
-#: .\templates\pages\order_payment.html:113
+#: .\templates\pages\order_payment.html:109
+#: .\templates\pages\restaurant_menu.html:1224
+#: .\templates\pages\restaurant_menu.html:1374
+#: .\templates\pages\restaurant_menu.html:1490
+msgid "Total"
+msgstr "Gesamt"
+
+#: .\templates\pages\order_payment.html:117
+#: .\templates\pages\panel\dashboard.html:35
+msgid "Customer"
+msgstr "Kunde"
+
+#: .\templates\pages\order_payment.html:123
+#: .\templates\pages\panel\dashboard.html:34
+msgid "Order"
+msgstr "Bestellung"
+
+#: .\templates\pages\order_payment.html:124
+#: .\templates\pages\panel\dashboard.html:37
+#: .\templates\pages\panel\dashboard_simple.html:27
+msgid "Status"
+msgstr "Status"
+
+#: .\templates\pages\order_payment.html:125
+#: .\templates\pages\restaurant_orders.html:479
+#: .\templates\pages\service_detail.html:18
+msgid "Service"
+msgstr "Dienstleistung"
+
+#: .\templates\pages\order_payment.html:127
+#: .\templates\pages\restaurant_reservation.html:117
+msgid "Date"
+msgstr "Datum"
+
+#: .\templates\pages\order_payment.html:131
+#: .\templates\pages\restaurant_orders.html:475
+msgid "Items"
+msgstr "Artikel"
+
+#: .\templates\pages\order_payment.html:136
+msgid "Item"
+msgstr "Gegenstand"
+
+#: .\templates\pages\order_payment.html:137
+msgid "Qty"
+msgstr "Q"
+
+#: .\templates\pages\order_payment.html:138
+#: .\templates\pages\panel\menu_item_form.html:14
+msgid "Price"
+msgstr "Preis"
+
+#: .\templates\pages\order_payment.html:147
+msgid "Download invoice"
+msgstr "Rechnung herunterladen"
+
+#: .\templates\pages\order_payment.html:156
+msgid "Payment was cancelled."
+msgstr "Die Zahlung wurde annulliert."
+
+#: .\templates\pages\order_payment.html:157
+msgid "No order has been sent to the restaurant."
+msgstr "Es wurde keine Bestellung ins Restaurant geschickt."
+
+#: .\templates\pages\order_payment.html:164
+msgid "Redirecting to secure payment..."
+msgstr "Umleitung zur sicheren Zahlung..."
+
+#: .\templates\pages\order_payment.html:165
+msgid "Please wait while Stripe Checkout opens."
+msgstr "Bitte warten Sie, während Stripe Checkout eröffnet."
+
+#: .\templates\pages\order_payment.html:213
+#: .\templates\pages\restaurant_menu.html:691
+#: .\templates\pages\restaurant_orders.html:251
+msgid "In Store"
+msgstr "Vor Ort"
+
+#: .\templates\pages\order_payment.html:214
+#: .\templates\pages\restaurant_menu.html:692
+#: .\templates\pages\restaurant_menu.html:1233
+#: .\templates\pages\restaurant_menu.html:1382
+#: .\templates\pages\restaurant_orders.html:252
+msgid "Pickup"
+msgstr "Abholung"
+
+#: .\templates\pages\order_payment.html:215
+#: .\templates\pages\restaurant_menu.html:693
+#: .\templates\pages\restaurant_menu.html:1235
+#: .\templates\pages\restaurant_menu.html:1384
+#: .\templates\pages\restaurant_orders.html:253
+#: .\templates\pages\restaurant_orders.html:450
+msgid "Delivery"
+msgstr "Lieferung"
+
+#: .\templates\pages\order_payment.html:222
+#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:1263
+#: .\templates\pages\restaurant_menu.html:1412
+#: .\templates\pages\restaurant_orders.html:258
+msgid "Cash"
+msgstr "Bar"
+
+#: .\templates\pages\order_payment.html:223
+#: .\templates\pages\restaurant_menu.html:698
+#: .\templates\pages\restaurant_menu.html:1266
+#: .\templates\pages\restaurant_menu.html:1415
+#: .\templates\pages\restaurant_orders.html:258
+msgid "Online"
+msgstr "Online"
+
+#: .\templates\pages\order_payment.html:264
+#: .\templates\pages\order_payment.html:285
+#: .\templates\pages\order_payment.html:288
 msgid "Could not start payment."
 msgstr "Zahlung konnte nicht gestartet werden."
 
-#: .\templates\pages\order_payment.html:114
-msgid "Payment failed."
-msgstr "Zahlung fehlgeschlagen."
+#: .\templates\pages\order_payment.html:306
+msgid "Could not submit order."
+msgstr "Ich konnte keine Bestellung einreichen."
 
-#: .\templates\pages\order_payment.html:115
-msgid "Something went wrong."
-msgstr "Etwas ist schiefgelaufen."
+#: .\templates\pages\order_payment.html:324
+msgid ""
+"Complete your details to send the order to the restaurant. We will create an"
+" account for you."
+msgstr ""
+"Vervollständigen Sie Ihre Daten, um die Bestellung in das Restaurant zu "
+"senden. Wir erstellen ein Konto für Sie."
+
+#: .\templates\pages\order_payment.html:372
+msgid "All fields are required."
+msgstr "Alle Felder sind erforderlich."
 
 #: .\templates\pages\panel\campaigns.html:3
 #: .\templates\pages\panel\campaigns.html:11
@@ -1530,7 +1979,7 @@ msgstr "Kampagnen"
 #: .\templates\partials\panel_navbar_simple.html:3
 #: .\templates\partials\panel_navbar_simple.html:8
 msgid "Panel"
-msgstr "Panel"
+msgstr "Verwaltungsbereich"
 
 #: .\templates\pages\panel\campaigns.html:16
 msgid "Create Campaign"
@@ -1587,7 +2036,7 @@ msgstr "Neue Kategorie"
 
 #: .\templates\pages\panel\categories.html:21
 msgid "Slug"
-msgstr "Slug"
+msgstr "URL-Kürzel"
 
 #: .\templates\pages\panel\categories.html:22
 msgid "Actions"
@@ -1595,6 +2044,8 @@ msgstr "Aktionen"
 
 #: .\templates\pages\panel\categories.html:30
 #: .\templates\pages\panel\menu_items_list.html:33
+#: .\templates\pages\restaurant_orders.html:585
+#: .\templates\partials\customer_navbar.html:185
 msgid "Delete"
 msgstr "Löschen"
 
@@ -1613,37 +2064,27 @@ msgstr "Kategorie erstellen"
 
 #: .\templates\pages\panel\categories.html:40
 msgid "Use this Alpine-powered modal to add category creation form later."
-msgstr "Verwenden Sie dieses Alpine-Modal, um später ein Formular zur Kategorie-Erstellung hinzuzufügen."
+msgstr ""
+"Verwenden Sie dieses Alpine-Modal, um später ein Formular zur Kategorie-"
+"Erstellung hinzuzufügen."
 
 #: .\templates\pages\panel\dashboard.html:3
 #: .\templates\pages\panel\dashboard.html:10
 #: .\templates\pages\panel\dashboard_simple.html:3
 #: .\templates\partials\navbar.html:119 .\templates\partials\navbar.html:167
 #: .\templates\partials\panel_navbar.html:10
-#: .\templates\partials\panel_navbar.html:34 .\templates_bonusweb\base.html:248
+#: .\templates\partials\panel_navbar.html:34
+#: .\templates_bonusweb\base.html:249
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr "Übersicht"
 
 #: .\templates\pages\panel\dashboard.html:29
 msgid "Recent Orders"
 msgstr "Letzte Bestellungen"
 
-#: .\templates\pages\panel\dashboard.html:34
-msgid "Order"
-msgstr "Bestellung"
-
-#: .\templates\pages\panel\dashboard.html:35
-msgid "Customer"
-msgstr "Kunde"
-
 #: .\templates\pages\panel\dashboard.html:36
 msgid "Amount"
 msgstr "Betrag"
-
-#: .\templates\pages\panel\dashboard.html:37
-#: .\templates\pages\panel\dashboard_simple.html:27
-msgid "Status"
-msgstr "Status"
 
 #: .\templates\pages\panel\dashboard.html:56
 msgid "Quick Actions"
@@ -1660,13 +2101,17 @@ msgstr "QR erstellen"
 #: .\templates\pages\panel\dashboard_simple.html:12
 msgid ""
 "Payment, plan and app access. Use the app for orders, menu and settings."
-msgstr "Zahlung, Plan und App-Zugang. Nutzen Sie die App für Bestellungen, Menü und Einstellungen."
+msgstr ""
+"Zahlung, Plan und App-Zugang. Nutzen Sie die App für Bestellungen, Menü und "
+"Einstellungen."
 
 #: .\templates\pages\panel\dashboard_simple.html:16
 msgid ""
 "Open this page with your panel link (e.g. /panel/?admin_id=...) or log in "
 "from the app."
-msgstr "Öffnen Sie diese Seite über Ihren Panel-Link (z. B. /panel/?admin_id=...) oder melden Sie sich in der App an."
+msgstr ""
+"Öffnen Sie diese Seite über Ihren Panel-Link (z. B. /panel/?admin_id=...) "
+"oder melden Sie sich in der App an."
 
 #: .\templates\pages\panel\dashboard_simple.html:24
 msgid "Plan & payment"
@@ -1698,7 +2143,6 @@ msgid "Expires"
 msgstr "Läuft ab"
 
 #: .\templates\pages\panel\dashboard_simple.html:52
-#: .\templates_bonusweb\business_menu\subscribe.html:7
 msgid "Subscribe to continue"
 msgstr "Zum Weitermachen abonnieren"
 
@@ -1714,7 +2158,9 @@ msgstr "Verbunden – Sie können Kundenzahlungen empfangen."
 msgid ""
 "To accept online payments from your digital menu, you need to connect "
 "Stripe. Click below to complete setup."
-msgstr "Um Online-Zahlungen aus Ihrem digitalen Menü zu akzeptieren, verbinden Sie Stripe. Klicken Sie unten, um die Einrichtung abzuschließen."
+msgstr ""
+"Um Online-Zahlungen aus Ihrem digitalen Menü zu akzeptieren, verbinden Sie "
+"Stripe. Klicken Sie unten, um die Einrichtung abzuschließen."
 
 #: .\templates\pages\panel\dashboard_simple.html:67
 #: .\templates_bonusweb\business_menu\connect.html:3
@@ -1723,14 +2169,13 @@ msgstr "Stripe verbinden"
 
 #: .\templates\pages\panel\dashboard_simple.html:69
 msgid ""
-"If you want your customers' online payments to be processed from the digital "
-"menu, pay 200 Euros now to upgrade your plan."
-msgstr "Wenn Sie Online-Zahlungen aus dem digitalen Menü verarbeiten möchten, zahlen Sie 200 Euro, um Ihren Plan aufzuwerten."
+"If you want your customers' online payments to be processed from the digital"
+" menu, pay 200 Euros now to upgrade your plan."
+msgstr ""
+"Wenn Sie Online-Zahlungen aus dem digitalen Menü verarbeiten möchten, zahlen"
+" Sie 200 Euro, um Ihren Plan aufzuwerten."
 
 #: .\templates\pages\panel\dashboard_simple.html:71
-#: .\templates_bonusweb\business_menu\subscribe.html:13
-#: .\templates_bonusweb\business_menu\subscribe.html:35
-#: .\templates_bonusweb\business_menu\subscribe.html:39
 msgid "Start Plan"
 msgstr "Plan starten"
 
@@ -1751,10 +2196,6 @@ msgstr "Menüartikel bearbeiten"
 #: .\templates\pages\panel\menu_item_form.html:10
 msgid "Create Menu Item"
 msgstr "Menüartikel erstellen"
-
-#: .\templates\pages\panel\menu_item_form.html:14
-msgid "Price"
-msgstr "Preis"
 
 #: .\templates\pages\panel\menu_item_form.html:15
 msgid "Image URL"
@@ -1777,6 +2218,7 @@ msgid "Save item"
 msgstr "Artikel speichern"
 
 #: .\templates\pages\panel\menu_item_form.html:29
+#: .\templates\pages\restaurant_orders.html:427
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -1817,7 +2259,9 @@ msgstr "Restaurant-Einstellungen"
 msgid ""
 "Update your restaurant profile and map location. Changes are saved to your "
 "account."
-msgstr "Aktualisieren Sie Ihr Restaurantprofil und den Kartenstandort. Änderungen werden in Ihrem Konto gespeichert."
+msgstr ""
+"Aktualisieren Sie Ihr Restaurantprofil und den Kartenstandort. Änderungen "
+"werden in Ihrem Konto gespeichert."
 
 #: .\templates\pages\panel\settings.html:15
 msgid "No restaurant linked to this session."
@@ -1827,7 +2271,9 @@ msgstr "Kein Restaurant mit dieser Sitzung verknüpft."
 msgid ""
 "Sign in with your restaurant owner account or open this page from your "
 "dashboard with a valid link."
-msgstr "Melden Sie sich mit dem Restaurantbesitzer-Konto an oder öffnen Sie diese Seite über einen gültigen Link im Dashboard."
+msgstr ""
+"Melden Sie sich mit dem Restaurantbesitzer-Konto an oder öffnen Sie diese "
+"Seite über einen gültigen Link im Dashboard."
 
 #: .\templates\pages\panel\settings.html:17
 msgid "Sign in"
@@ -1842,6 +2288,8 @@ msgid "Postal code"
 msgstr "Postleitzahl"
 
 #: .\templates\pages\panel\settings.html:41
+#: .\templates\partials\restaurant_location_public.html:5
+#: .\templates\partials\restaurant_location_public.html:34
 msgid "Restaurant location"
 msgstr "Restaurantstandort"
 
@@ -1849,14 +2297,19 @@ msgstr "Restaurantstandort"
 msgid ""
 "Search for an address or click the map to set your pin. Drag the marker to "
 "adjust."
-msgstr "Adresse suchen oder auf die Karte klicken, um den Pin zu setzen. Marker zum Anpassen ziehen."
+msgstr ""
+"Adresse suchen oder auf die Karte klicken, um den Pin zu setzen. Marker zum "
+"Anpassen ziehen."
 
 #: .\templates\pages\panel\settings.html:48
 msgid ""
 "Google Maps is not configured. Set <code class=\"rounded bg-rose-100 px-1 "
 "dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in the server environment to "
 "enable the map."
-msgstr "Google Maps ist nicht konfiguriert. Setzen Sie <code class=\"rounded bg-rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in der Serverumgebung, um die Karte zu aktivieren."
+msgstr ""
+"Google Maps ist nicht konfiguriert. Setzen Sie <code class=\"rounded bg-"
+"rose-100 px-1 dark:bg-rose-800\">GOOGLE_MAPS_API_KEY</code> in der "
+"Serverumgebung, um die Karte zu aktivieren."
 
 #: .\templates\pages\panel\settings.html:53
 msgid "Search address"
@@ -1895,6 +2348,8 @@ msgid "Clear location"
 msgstr "Standort löschen"
 
 #: .\templates\pages\panel\settings.html:91
+#: .\templates\pages\restaurant_orders.html:564
+#: .\templates\partials\customer_navbar.html:165
 msgid "Save changes"
 msgstr "Änderungen speichern"
 
@@ -1907,7 +2362,9 @@ msgstr "Zahlung abgebrochen"
 
 #: .\templates\pages\payment_cancel.html:7
 msgid "No charge was made. You can try again anytime from your admin panel."
-msgstr "Es wurde keine Zahlung ausgeführt. Sie können jederzeit erneut aus dem Admin-Panel starten."
+msgstr ""
+"Es wurde keine Zahlung ausgeführt. Sie können jederzeit erneut aus dem "
+"Admin-Panel starten."
 
 #: .\templates\pages\payment_cancel.html:9
 #: .\templates\pages\payment_success.html:9
@@ -1917,8 +2374,8 @@ msgstr "Zum Admin-Panel"
 #: .\templates\pages\payment_cancel.html:10
 #: .\templates\pages\payment_success.html:10
 #: .\templates\partials\navbar.html:30 .\templates\partials\navbar.html:144
-#: .\templates_bonusweb\base.html:195 .\templates_bonusweb\base.html:272
-#: .\templates_bonusweb\base.html:334
+#: .\templates_bonusweb\base.html:196 .\templates_bonusweb\base.html:273
+#: .\templates_bonusweb\base.html:335
 msgid "Home"
 msgstr "Startseite"
 
@@ -1931,21 +2388,25 @@ msgstr "Zahlung erfolgreich"
 msgid ""
 "Your plan has been upgraded. To accept online payments from your digital "
 "menu, go to your admin panel and connect Stripe."
-msgstr "Ihr Plan wurde aktualisiert. Um Online-Zahlungen zu akzeptieren, verbinden Sie Stripe im Admin-Panel."
+msgstr ""
+"Ihr Plan wurde aktualisiert. Um Online-Zahlungen zu akzeptieren, verbinden "
+"Sie Stripe im Admin-Panel."
 
 #: .\templates\pages\pricing.html:3 .\templates\partials\footer.html:24
 #: .\templates\partials\navbar.html:69 .\templates\partials\navbar.html:148
-#: .\templates_bonusweb\base.html:215 .\templates_bonusweb\base.html:292
-#: .\templates_bonusweb\base.html:340
+#: .\templates_bonusweb\base.html:216 .\templates_bonusweb\base.html:293
+#: .\templates_bonusweb\base.html:341
 msgid "Pricing"
 msgstr "Preise"
 
 #: .\templates\pages\pricing.html:4
 #, python-format
 msgid ""
-"One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT "
-"(€238 total). Everything included."
-msgstr "Ein einfacher Jahresplan: QR-Menü und Online-Bestellung für 200 €/Jahr + 19 % MwSt. (238 € gesamt). Alles inklusive."
+"One simple annual plan: QR menu and online ordering for €200/year + 19%% VAT"
+" (€238 total). Everything included."
+msgstr ""
+"Ein einfacher Jahresplan: QR-Menü und Online-Bestellung für 200 €/Jahr + 19 "
+"%% MwSt. (238 € gesamt). Alles inklusive."
 
 #: .\templates\pages\pricing.html:10
 msgid "Simple annual pricing"
@@ -1955,7 +2416,9 @@ msgstr "Einfacher Jahrespreis"
 msgid ""
 "One plan. QR menu + online ordering. Everything you need to run digital "
 "dining—no per-order fees, no hidden costs."
-msgstr "Ein Plan. QR-Menü + Online-Bestellung. Alles, was Sie brauchen — ohne Bestell- oder versteckte Gebühren."
+msgstr ""
+"Ein Plan. QR-Menü + Online-Bestellung. Alles, was Sie brauchen — ohne "
+"Bestell- oder versteckte Gebühren."
 
 #: .\templates\pages\pricing.html:17
 msgid "Annual subscription"
@@ -1972,7 +2435,7 @@ msgstr "Jahr"
 #: .\templates\pages\pricing.html:20
 #, python-format
 msgid "plus 19%% VAT"
-msgstr "zzgl. 19 % MwSt."
+msgstr "zzgl. 19 %% MwSt."
 
 #: .\templates\pages\pricing.html:21
 #, python-format
@@ -2003,8 +2466,139 @@ msgstr "Kontaktieren Sie uns"
 msgid "Get started — €200/year"
 msgstr "Loslegen — 200 €/Jahr"
 
+#: .\templates\pages\privacy_policy.html:4
+#: .\templates\pages\privacy_policy.html:11 .\templates_bonusweb\base.html:371
+#: .\templates_bonusweb\business_menu\subscribe.html:96
+msgid "Privacy Policy"
+msgstr "Datenschutzrichtlinie"
+
+#: .\templates\pages\privacy_policy.html:5
+msgid "Privacy Policy for My Bonus QR Menu and PreisMenu services."
+msgstr ""
+"Datenschutzerklärung für My Bonus QR Menu und PreisMenu Dienstleistungen."
+
+#: .\templates\pages\privacy_policy.html:10
+#: .\templates\pages\terms_conditions.html:10
+#: .\templates_bonusweb\base.html:365
+msgid "Legal"
+msgstr "Rechtliches"
+
+#: .\templates\pages\privacy_policy.html:12
+#: .\templates\pages\terms_conditions.html:12
+msgid "Last updated: August 15, 2026"
+msgstr "Letzte Aktualisierung: 15. August 2026"
+
+#: .\templates\pages\privacy_policy.html:15
+msgid ""
+"This Privacy Policy explains how My Bonus QR Menu collects, uses, and "
+"protects information when restaurants, staff, and guests use our QR menu, "
+"ordering, campaign, and administration services."
+msgstr ""
+"Diese Datenschutzerklärung erklärt, wie My Bonus QR Menu Informationen "
+"sammelt, nutzt und schützt, wenn Restaurants, Mitarbeiter und Gäste unser "
+"QR-Menü, Bestell-, Kampagnen- und Verwaltungsdienste nutzen."
+
+#: .\templates\pages\privacy_policy.html:17
+msgid "Information We Collect"
+msgstr "Wir sammeln"
+
+#: .\templates\pages\privacy_policy.html:18
+msgid ""
+"We may collect account details, restaurant profile information, menu "
+"content, order information, contact messages, device and log data, and "
+"information needed to provide payment, support, security, and analytics "
+"features."
+msgstr ""
+"Wir können Kontodetails, Restaurantprofilinformationen, Menüinhalte, "
+"Bestellinformationen, Kontaktnachrichten, Geräte- und Logdaten und "
+"Informationen sammeln, die zur Bereitstellung von Zahlungs-, Support-, "
+"Sicherheits- und Analysefunktionen erforderlich sind."
+
+#: .\templates\pages\privacy_policy.html:20
+msgid "How We Use Information"
+msgstr "Wie wir Informationen nutzen"
+
+#: .\templates\pages\privacy_policy.html:21
+msgid ""
+"We use information to provide and improve the service, manage accounts, "
+"process orders, support restaurants and customers, prevent abuse, maintain "
+"security, comply with legal obligations, and communicate important service "
+"updates."
+msgstr ""
+"Wir verwenden Informationen, um den Service bereitzustellen und zu "
+"verbessern, Konten zu verwalten, Prozessaufträge zu verwalten, Restaurants "
+"und Kunden zu unterstützen, Missbrauch zu verhindern, Sicherheit zu "
+"bewahren, rechtlichen Verpflichtungen nachzukommen und wichtige Service-"
+"Updates zu kommunizieren."
+
+#: .\templates\pages\privacy_policy.html:23
+msgid "Sharing and Processors"
+msgstr "Teilen und Verarbeiter"
+
+#: .\templates\pages\privacy_policy.html:24
+msgid ""
+"We do not sell personal information. We may share limited information with "
+"service providers that help us operate the platform, such as hosting, email,"
+" analytics, payment, security, and customer support providers, where needed "
+"for the service."
+msgstr ""
+"Wir verkaufen keine personenbezogenen Daten. Wir können begrenzte "
+"Informationen mit Dienstleistern teilen, die uns dabei helfen, die Plattform"
+" zu betreiben, wie Hosting, E-Mail, Analytics, Zahlungs-, Sicherheits- und "
+"Kundendienstanbieter, wo dies für den Service erforderlich ist."
+
+#: .\templates\pages\privacy_policy.html:26
+msgid "Data Retention"
+msgstr "Datenretention"
+
+#: .\templates\pages\privacy_policy.html:27
+msgid ""
+"We keep information only as long as needed for the purposes described in "
+"this policy, unless a longer retention period is required by law, accounting"
+" rules, security needs, or dispute resolution."
+msgstr ""
+"Wir halten Informationen nur so lange, wie dies für die in dieser Richtlinie"
+" beschriebenen Zwecke erforderlich ist, es sei denn, eine längere "
+"Aufbewahrungsfrist ist gesetzlich, buchhaltungsregeln, sicherheitsbedürftig "
+"oder streitige Auflösung erforderlich."
+
+#: .\templates\pages\privacy_policy.html:29
+msgid "Your Rights"
+msgstr "Ihre Rechte"
+
+#: .\templates\pages\privacy_policy.html:30
+msgid ""
+"Depending on your location, you may have rights to access, correct, delete, "
+"restrict, or export your personal information, or object to certain "
+"processing. You can contact us to exercise these rights."
+msgstr ""
+"Je nach Standort haben Sie möglicherweise Rechte auf Zugriff, Berichtigung, "
+"Löschung, Einschränkung oder Export Ihrer personenbezogenen Daten oder auf "
+"eine bestimmte Verarbeitung. Sie können uns kontaktieren, um diese Rechte "
+"auszuüben."
+
+#: .\templates\pages\privacy_policy.html:32
+msgid "Security"
+msgstr "Sicherheit"
+
+#: .\templates\pages\privacy_policy.html:33
+msgid ""
+"We use reasonable technical and organizational measures to protect "
+"information. No online service can guarantee absolute security, but we work "
+"to protect data against unauthorized access, loss, misuse, or alteration."
+msgstr ""
+"Wir verwenden angemessene technische und organisatorische Maßnahmen zum "
+"Schutz von Informationen. Kein Online-Service kann absolute Sicherheit "
+"garantieren, aber wir arbeiten, um Daten vor unbefugtem Zugriff, Verlust, "
+"Missbrauch oder Veränderung zu schützen."
+
+#: .\templates\pages\privacy_policy.html:36
+msgid "For privacy questions, contact us at"
+msgstr "Für Datenschutzfragen kontaktieren Sie uns bei"
+
 #: .\templates\pages\public_menu.html:3
 #: .\templates\pages\restaurant_menu.html:3
+#: .\templates\pages\restaurant_orders.html:383
 #: .\templates_bonusweb\business_menu\menu_display.html:4
 msgid "Menu"
 msgstr "Menü"
@@ -2031,450 +2625,935 @@ msgstr "%(name)s in den Warenkorb"
 msgid "Open cart"
 msgstr "Warenkorb öffnen"
 
-#: .\templates\pages\restaurant_menu.html:39
+#: .\templates\pages\restaurant_menu.html:397
 msgid "Added"
 msgstr "Hinzugefügt"
 
-#: .\templates\pages\restaurant_menu.html:41
+#: .\templates\pages\restaurant_menu.html:399
 msgid "Added to cart"
 msgstr "Zum Warenkorb hinzugefügt"
 
-#: .\templates\pages\restaurant_menu.html:42
+#: .\templates\pages\restaurant_menu.html:400
 msgid "Table number is required for Dine In"
 msgstr "Tischnummer ist bei Vor-Ort-Bestellungen erforderlich"
 
-#: .\templates\pages\restaurant_menu.html:43
+#: .\templates\pages\restaurant_menu.html:401
+msgid "Ordering is only available during opening hours."
+msgstr "Die Bestellung ist nur während der Öffnungszeiten verfügbar."
+
+#: .\templates\pages\restaurant_menu.html:402
 msgid "Could not place order"
 msgstr "Bestellung konnte nicht aufgegeben werden"
 
-#: .\templates\pages\restaurant_menu.html:44
+#: .\templates\pages\restaurant_menu.html:403
+#: .\templates\pages\restaurant_menu.html:831
+#: .\templates\pages\restaurant_orders.html:119
+#: .\templates\pages\restaurant_orders.html:159
+#: .\templates\pages\restaurant_orders.html:196
+#: .\templates\pages\restaurant_orders.html:345
+#: .\templates\pages\restaurant_orders.html:370
+#: .\templates\partials\customer_navbar.html:315
+#: .\templates\partials\customer_navbar.html:357
+#: .\templates\partials\customer_navbar.html:378
+#: .\templates\partials\customer_navbar.html:406
+#: .\templates\partials\customer_navbar.html:438
 msgid "Network error"
 msgstr "Netzwerkfehler"
 
-#: .\templates\pages\restaurant_menu.html:237
-msgid ""
-"You have order(s) pending or in progress. Check status and when it's ready "
-"in the Orders panel."
-msgstr "Sie haben ausstehende oder laufende Bestellungen. Status und Fertigstellung im Bestellpanel prüfen."
+#: .\templates\pages\restaurant_menu.html:484
+#: .\templates\pages\restaurant_orders.html:96
+#: .\templates\partials\customer_navbar.html:291
+msgid "Please enter your email/phone and password."
+msgstr "Bitte geben Sie Ihre E-Mail/Telefon und Passwort ein."
 
-#: .\templates\pages\restaurant_menu.html:238
+#: .\templates\pages\restaurant_menu.html:498
+#: .\templates\pages\restaurant_orders.html:107
+msgid "Invalid email/phone or password."
+msgstr "Ungültige E-Mail/Telefon oder Passwort."
+
+#: .\templates\pages\restaurant_menu.html:499
+#: .\templates\pages\restaurant_orders.html:107
+#: .\templates\partials\customer_navbar.html:306
+msgid "Login failed."
+msgstr "Login fehlgeschlagen."
+
+#: .\templates\pages\restaurant_menu.html:513
+#: .\templates\pages\restaurant_orders.html:124
+#: .\templates\partials\customer_navbar.html:320
+msgid "Please fill in the required fields."
+msgstr "Bitte füllen Sie die gewünschten Felder aus."
+
+#: .\templates\pages\restaurant_menu.html:517
+#: .\templates\pages\restaurant_menu.html:538
+#: .\templates\pages\restaurant_orders.html:125
+#: .\templates\pages\restaurant_orders.html:144
+#: .\templates\partials\customer_navbar.html:321
+#: .\templates\partials\customer_navbar.html:339
+#: .\templates\partials\customer_navbar.html:386
+#: .\templates\partials\customer_navbar.html:398
+msgid "Password must be at least 6 characters."
+msgstr "Passwort muss mindestens 6 Zeichen sein."
+
+#: .\templates\pages\restaurant_menu.html:535
+#: .\templates\pages\restaurant_orders.html:141
+msgid "This phone number is already registered. Please log in instead."
+msgstr ""
+"Diese Telefonnummer ist bereits registriert. Bitte melden Sie sich "
+"stattdessen an."
+
+#: .\templates\pages\restaurant_menu.html:536
+#: .\templates\pages\restaurant_orders.html:142
+msgid "This email is already registered. Please log in instead."
+msgstr ""
+"Diese E-Mail ist bereits registriert. Bitte melden Sie sich stattdessen an."
+
+#: .\templates\pages\restaurant_menu.html:537
+#: .\templates\pages\restaurant_orders.html:143
+#: .\templates\partials\customer_navbar.html:363
+msgid "Please enter a valid email."
+msgstr "Bitte geben Sie eine gültige E-Mail ein."
+
+#: .\templates\pages\restaurant_menu.html:539
+#: .\templates\partials\customer_navbar.html:340
+msgid "First name is required."
+msgstr "Vorname ist erforderlich."
+
+#: .\templates\pages\restaurant_menu.html:540
+#: .\templates\pages\restaurant_menu.html:626
+msgid "Phone is required."
+msgstr "Telefon ist erforderlich."
+
+#: .\templates\pages\restaurant_menu.html:546
+#: .\templates\pages\restaurant_orders.html:150
+#: .\templates\partials\customer_navbar.html:348
+msgid "Registration failed."
+msgstr "Die Registrierung ist fehlgeschlagen."
+
+#: .\templates\pages\restaurant_menu.html:595
+msgid "Could not save address."
+msgstr "Könnte keine Adresse speichern."
+
+#: .\templates\pages\restaurant_menu.html:616
+msgid "Could not update profile."
+msgstr "Das Profil konnte nicht aktualisiert werden."
+
+#: .\templates\pages\restaurant_menu.html:630
+msgid "Please select or add a delivery address."
+msgstr "Bitte wählen oder eine Lieferadresse hinzufügen."
+
+#: .\templates\pages\restaurant_menu.html:679
+#: .\templates\pages\restaurant_menu.html:680
+#: .\templates\pages\restaurant_orders.html:239
+#: .\templates\pages\restaurant_orders.html:240
+#: .\templates\pages\restaurant_orders.html:448
+msgid "Received"
+msgstr "Eingegangen"
+
+#: .\templates\pages\restaurant_menu.html:681
+#: .\templates\pages\restaurant_orders.html:241
+#: .\templates\pages\restaurant_orders.html:449
+msgid "Preparing"
+msgstr "In Zubereitung"
+
+#: .\templates\pages\restaurant_menu.html:682
+#: .\templates\pages\restaurant_orders.html:242
+msgid "Out for delivery"
+msgstr "Unterwegs"
+
+#: .\templates\pages\restaurant_menu.html:683
+#: .\templates\pages\restaurant_orders.html:243
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+#: .\templates\pages\restaurant_menu.html:684
+#: .\templates\pages\restaurant_orders.html:244
+msgid "Cancelled"
+msgstr "Storniert"
+
+#: .\templates\pages\restaurant_menu.html:685
+#: .\templates\pages\restaurant_orders.html:245
+msgid "Refunded"
+msgstr "Erstattet"
+
+#: .\templates\pages\restaurant_menu.html:704
+msgid "The restaurant is preparing your order."
+msgstr "Das Restaurant bereitet Ihre Bestellung vor."
+
+#: .\templates\pages\restaurant_menu.html:705
+msgid "Your order is out for delivery."
+msgstr "Ihre Bestellung ist für die Lieferung aus."
+
+#: .\templates\pages\restaurant_menu.html:706
+msgid "Your order is completed."
+msgstr "Ihre Bestellung ist abgeschlossen."
+
+#: .\templates\pages\restaurant_menu.html:707
+#: .\templates\pages\restaurant_orders.html:266
+msgid "This order was cancelled."
+msgstr "Diese Bestellung wurde storniert."
+
+#: .\templates\pages\restaurant_menu.html:708
+#: .\templates\pages\restaurant_orders.html:267
+msgid "This order was refunded."
+msgstr "Diese Bestellung wurde zurückerstattet."
+
+#: .\templates\pages\restaurant_menu.html:709
+msgid "Your order was received and is waiting for the restaurant."
+msgstr "Ihre Bestellung wurde empfangen und wartet auf das Restaurant."
+
+#: .\templates\pages\restaurant_menu.html:727
+#: .\templates\pages\restaurant_orders.html:285
+msgid "No item details"
+msgstr "Keine Artikeldetails"
+
+#: .\templates\pages\restaurant_menu.html:811
+#: .\templates\pages\restaurant_orders.html:310
+#: .\templates\pages\restaurant_orders.html:352
+msgid "Enter your phone number."
+msgstr "Geben Sie Ihre Telefonnummer ein."
+
+#: .\templates\pages\restaurant_menu.html:821
+#: .\templates\pages\restaurant_orders.html:362
+msgid "Could not load orders."
+msgstr "Konnte keine Befehle laden."
+
+#: .\templates\pages\restaurant_menu.html:827
+#: .\templates\pages\restaurant_orders.html:366
+msgid "No orders found for this phone number."
+msgstr "Keine Bestellungen für diese Telefonnummer gefunden."
+
+#: .\templates\pages\restaurant_menu.html:919
+msgid ""
+"You have order(s) pending or in progress. Check status and details in your "
+"orders page."
+msgstr ""
+"Sie haben ausstehende oder laufende Bestellungen. Prüfen Sie Status und "
+"Details auf Ihrer Bestellseite."
+
+#: .\templates\pages\restaurant_menu.html:920
 msgid "View orders"
 msgstr "Bestellungen ansehen"
 
-#: .\templates\pages\restaurant_menu.html:241
+#: .\templates\pages\restaurant_menu.html:924
 msgid ""
 "Restaurant is currently closed. You can schedule your order for when we're "
 "open."
-msgstr "Das Restaurant ist derzeit geschlossen. Sie können Ihre Bestellung für die Öffnungszeiten planen."
+msgstr ""
+"Das Restaurant ist derzeit geschlossen. Sie können Ihre Bestellung für die "
+"Öffnungszeiten planen."
 
-#: .\templates\pages\restaurant_menu.html:242
+#: .\templates\pages\restaurant_menu.html:925
 msgid "Schedule for later"
 msgstr "Für später planen"
 
-#: .\templates\pages\restaurant_menu.html:253
+#: .\templates\pages\restaurant_menu.html:936
 msgid "All Categories"
 msgstr "Alle Kategorien"
 
-#: .\templates\pages\restaurant_menu.html:266
+#: .\templates\pages\restaurant_menu.html:949
 #, python-format
 msgid "%(counter)s item"
 msgid_plural "%(counter)s items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(counter)s Artikel"
+msgstr[1] "%(counter)s Artikel"
 
-#: .\templates\pages\restaurant_menu.html:284
-msgid "Toggle night mode"
-msgstr "Nachtmodus umschalten"
-
-#: .\templates\pages\restaurant_menu.html:314
+#: .\templates\pages\restaurant_menu.html:984
 msgid "Address:"
 msgstr "Adresse:"
 
-#: .\templates\pages\restaurant_menu.html:317
+#: .\templates\pages\restaurant_menu.html:987
 msgid "Phone:"
 msgstr "Telefon:"
 
-#: .\templates\pages\restaurant_menu.html:320
+#: .\templates\pages\restaurant_menu.html:990
 msgid "Email:"
 msgstr "E-Mail:"
 
-#: .\templates\pages\restaurant_menu.html:325
+#: .\templates\pages\restaurant_menu.html:995
 msgid "Opening Hours"
 msgstr "Öffnungszeiten"
 
-#: .\templates\pages\restaurant_menu.html:326
+#: .\templates\pages\restaurant_menu.html:996
 msgid "Not provided yet"
 msgstr "Noch nicht angegeben"
 
-#: .\templates\pages\restaurant_menu.html:335
+#: .\templates\pages\restaurant_menu.html:1005
 msgid "Search menu items..."
 msgstr "Menü-Artikel suchen..."
 
-#: .\templates\pages\restaurant_menu.html:343
+#: .\templates\pages\restaurant_menu.html:1013
 #: .\templates_bonusweb\business_menu\menu_display.html:70
 msgid "All"
 msgstr "Alle"
 
-#: .\templates\pages\restaurant_menu.html:356
+#: .\templates\pages\restaurant_menu.html:1026
 #: .\templates_bonusweb\business_menu\menu_display.html:91
 msgid "Packages"
 msgstr "Pakete"
 
-#: .\templates\pages\restaurant_menu.html:377
+#: .\templates\pages\restaurant_menu.html:1047
 msgid "No menu items available."
 msgstr "Keine Menüartikel verfügbar."
 
-#: .\templates\pages\restaurant_menu.html:403
-#: .\templates\pages\restaurant_menu.html:417
+#: .\templates\pages\restaurant_menu.html:1073
+#: .\templates\pages\restaurant_menu.html:1093
 msgid "Learn More"
 msgstr "Mehr erfahren"
 
-#: .\templates\pages\restaurant_menu.html:457
+#: .\templates\pages\restaurant_menu.html:1127
 msgid "Cart"
 msgstr "Warenkorb"
 
-#: .\templates\pages\restaurant_menu.html:467
-#: .\templates\pages\restaurant_menu.html:472
-#: .\templates\pages\restaurant_menu.html:532
-#: .\templates\pages\restaurant_menu.html:543
-#: .\templates\pages\restaurant_menu.html:664
-#: .\templates\pages\restaurant_menu.html:675
-#: .\templates\pages\restaurant_menu.html:722
+#: .\templates\pages\restaurant_menu.html:1142
+msgid "Order status"
+msgstr "Bestellstatus"
+
+#: .\templates\pages\restaurant_menu.html:1155
+msgid "View order"
+msgstr "Bestellung ansehen"
+
+#: .\templates\pages\restaurant_menu.html:1162
+#: .\templates\partials\customer_navbar.html:19
+#: .\templates\partials\customer_navbar.html:62
+#: .\templates\partials\customer_navbar.html:209
+msgid "My orders"
+msgstr "Meine Befehle"
+
+#: .\templates\pages\restaurant_menu.html:1163
+msgid "Track previous orders by phone number."
+msgstr "Verfolgen Sie die vorherigen Bestellungen per Telefonnummer."
+
+#: .\templates\pages\restaurant_menu.html:1165
+msgid "Open"
+msgstr "Öffnen"
+
+#: .\templates\pages\restaurant_menu.html:1176
+#: .\templates\pages\restaurant_menu.html:1181
+#: .\templates\pages\restaurant_menu.html:1238
+#: .\templates\pages\restaurant_menu.html:1249
+#: .\templates\pages\restaurant_menu.html:1387
+#: .\templates\pages\restaurant_menu.html:1398
+#: .\templates\pages\restaurant_menu.html:1465
 msgid "Reservation"
 msgstr "Reservierung"
 
-#: .\templates\pages\restaurant_menu.html:474
+#: .\templates\pages\restaurant_menu.html:1183
 msgid "Close"
 msgstr "Schließen"
 
-#: .\templates\pages\restaurant_menu.html:495
-#: .\templates\pages\restaurant_menu.html:628
+#: .\templates\pages\restaurant_menu.html:1204
+#: .\templates\pages\restaurant_menu.html:1354
 msgid "Cart Items"
 msgstr "Warenkorb-Artikel"
 
-#: .\templates\pages\restaurant_menu.html:497
-#: .\templates\pages\restaurant_menu.html:630
+#: .\templates\pages\restaurant_menu.html:1206
+#: .\templates\pages\restaurant_menu.html:1356
 msgid "Cart is empty."
 msgstr "Warenkorb ist leer."
 
-#: .\templates\pages\restaurant_menu.html:511
-#: .\templates\pages\restaurant_menu.html:644
+#: .\templates\pages\restaurant_menu.html:1220
+#: .\templates\pages\restaurant_menu.html:1370
 #: .\templates\partials\cart_drawer.html:37
 msgid "Remove"
 msgstr "Entfernen"
 
-#: .\templates\pages\restaurant_menu.html:515
-#: .\templates\pages\restaurant_menu.html:648
-#: .\templates\pages\restaurant_menu.html:747
-msgid "Total"
-msgstr "Gesamt"
-
-#: .\templates\pages\restaurant_menu.html:521
-#: .\templates\pages\restaurant_menu.html:653
+#: .\templates\pages\restaurant_menu.html:1230
+#: .\templates\pages\restaurant_menu.html:1379
 msgid "Service Type"
 msgstr "Servicetyp"
 
-#: .\templates\pages\restaurant_menu.html:523
-#: .\templates\pages\restaurant_menu.html:655
+#: .\templates\pages\restaurant_menu.html:1232
+#: .\templates\pages\restaurant_menu.html:1381
 msgid "Dine In"
 msgstr "Vor Ort"
 
-#: .\templates\pages\restaurant_menu.html:524
-#: .\templates\pages\restaurant_menu.html:656
-msgid "Pickup"
-msgstr "Abholung"
-
-#: .\templates\pages\restaurant_menu.html:526
-#: .\templates\pages\restaurant_menu.html:658
-msgid "Delivery"
-msgstr "Lieferung"
-
-#: .\templates\pages\restaurant_menu.html:537
-#: .\templates\pages\restaurant_menu.html:669
+#: .\templates\pages\restaurant_menu.html:1243
+#: .\templates\pages\restaurant_menu.html:1392
 msgid "Table Number"
 msgstr "Tischnummer"
 
-#: .\templates\pages\restaurant_menu.html:538
+#: .\templates\pages\restaurant_menu.html:1244
 msgid "e.g. 22"
 msgstr "z. B. 22"
 
-#: .\templates\pages\restaurant_menu.html:545
-#: .\templates\pages\restaurant_menu.html:582
-#: .\templates\pages\restaurant_menu.html:677
-#: .\templates\pages\restaurant_menu.html:724
+#: .\templates\pages\restaurant_menu.html:1250
+msgid ""
+"Choose a <strong>day and time</strong> within opening hours. Pay "
+"<strong>Cash</strong> on the day or <strong>Online</strong> now. If "
+"cancelled, online payment is refunded."
+msgstr ""
+"Wählen Sie eine <strong>Tag und Zeit</strong> innerhalb der Öffnungszeiten. "
+"Zahl <strong>Bargeld</strong> am Tag oder <strong>Online</strong> Jetzt. Bei"
+" Stornierung wird die Online-Zahlung zurückerstattet."
+
+#: .\templates\pages\restaurant_menu.html:1251
+#: .\templates\pages\restaurant_menu.html:1308
+#: .\templates\pages\restaurant_menu.html:1400
+#: .\templates\pages\restaurant_menu.html:1467
 msgid "Select date & time →"
 msgstr "Datum & Uhrzeit wählen →"
 
-#: .\templates\pages\restaurant_menu.html:553
-#: .\templates\pages\restaurant_menu.html:685
-msgid "Cash"
-msgstr "Bar"
+#: .\templates\pages\restaurant_menu.html:1257
+#: .\templates\pages\restaurant_menu.html:1406
+msgid "Phone number"
+msgstr "Telefonnummer"
 
-#: .\templates\pages\restaurant_menu.html:556
-#: .\templates\pages\restaurant_menu.html:688
-msgid "Online"
-msgstr "Online"
-
-#: .\templates\pages\restaurant_menu.html:561
-#: .\templates\pages\restaurant_menu.html:693
-#: .\templates\pages\restaurant_menu.html:694
+#: .\templates\pages\restaurant_menu.html:1287
+#: .\templates\pages\restaurant_menu.html:1436
+#: .\templates\pages\restaurant_menu.html:1437
 msgid "Order Note"
 msgstr "Bestellhinweis"
 
-#: .\templates\pages\restaurant_menu.html:562
-#: .\templates\pages\restaurant_reservation.html:151
+#: .\templates\pages\restaurant_menu.html:1288
+#: .\templates\pages\restaurant_reservation.html:153
 msgid "Special requests…"
 msgstr "Besondere Wünsche…"
 
-#: .\templates\pages\restaurant_menu.html:567
-#: .\templates\pages\restaurant_menu.html:718
+#: .\templates\pages\restaurant_menu.html:1293
+#: .\templates\pages\restaurant_menu.html:1461
 msgid "Confirm Order"
 msgstr "Bestellung bestätigen"
 
-#: .\templates\pages\restaurant_menu.html:568
+#: .\templates\pages\restaurant_menu.html:1294
 msgid "Add items and set options on the left."
 msgstr "Fügen Sie Artikel hinzu und legen Sie Optionen links fest."
 
-#: .\templates\pages\restaurant_menu.html:571
-#: .\templates\pages\restaurant_menu.html:597
-#: .\templates\pages\restaurant_menu.html:750
+#: .\templates\pages\restaurant_menu.html:1297
+#: .\templates\pages\restaurant_menu.html:1323
+#: .\templates\pages\restaurant_menu.html:1493
 msgid "Order placed successfully"
 msgstr "Bestellung erfolgreich aufgegeben"
 
-#: .\templates\pages\restaurant_menu.html:572
+#: .\templates\pages\restaurant_menu.html:1298
 msgid "Your order is pending. Check status in Order history below."
-msgstr "Ihre Bestellung ist offen. Prüfen Sie den Status im Bestellverlauf unten."
+msgstr ""
+"Ihre Bestellung ist offen. Prüfen Sie den Status im Bestellverlauf unten."
 
-#: .\templates\pages\restaurant_menu.html:573
-#: .\templates\pages\restaurant_menu.html:599
-#: .\templates\pages\restaurant_menu.html:752
+#: .\templates\pages\restaurant_menu.html:1299
+#: .\templates\pages\restaurant_menu.html:1325
+#: .\templates\pages\restaurant_menu.html:1495
 msgid "Add more items"
 msgstr "Weitere Artikel hinzufügen"
 
-#: .\templates\pages\restaurant_menu.html:578
-#: .\templates\pages\restaurant_menu.html:588
-#: .\templates\pages\restaurant_menu.html:719
+#: .\templates\pages\restaurant_menu.html:1304
+#: .\templates\pages\restaurant_menu.html:1314
+#: .\templates\pages\restaurant_menu.html:1462
 msgid "total"
 msgstr "insgesamt"
 
-#: .\templates\pages\restaurant_menu.html:580
+#: .\templates\pages\restaurant_menu.html:1306
 msgid "Reservation with pre-order"
 msgstr "Reservierung mit Vorbestellung"
 
-#: .\templates\pages\restaurant_menu.html:592
-#: .\templates\pages\restaurant_menu.html:732
-#, fuzzy
-#| msgid "Online"
-msgid "Pay Online"
-msgstr "Online"
+#: .\templates\pages\restaurant_menu.html:1307
+msgid ""
+"Select a <strong>day and time</strong> (within opening hours), guests, and "
+"contact. Pay <strong>Cash</strong> on the day or <strong>Online</strong> now"
+" — if cancelled, online payment is refunded."
+msgstr ""
+"Wählen Sie eine <strong>Tag und Zeit</strong> (innerhalb der "
+"Öffnungszeiten), Gäste und Kontakt. Zahl <strong>Bargeld</strong> am Tag "
+"oder <strong>Online</strong> jetzt — wenn storniert, wird die Online-Zahlung"
+" zurückerstattet."
 
-#: .\templates\pages\restaurant_menu.html:593
+#: .\templates\pages\restaurant_menu.html:1318
+#: .\templates\pages\restaurant_menu.html:1475
+#: .\templates\pages\restaurant_menu.html:1627
+msgid "Pay Online"
+msgstr "Online bezahlen"
+
+#: .\templates\pages\restaurant_menu.html:1319
 msgid "Placing…"
 msgstr "Wird aufgegeben…"
 
-#: .\templates\pages\restaurant_menu.html:598
+#: .\templates\pages\restaurant_menu.html:1324
 msgid ""
-"Your order is pending. Total € <span x-text=\"lastOrder.total_amount\"></"
-"span>. Check status in Order history below."
-msgstr "Ihre Bestellung ist offen. Gesamt € <span x-text=\"lastOrder.total_amount\"></span>. Status siehe Bestellverlauf unten."
+"Your order is pending. Total € <span "
+"x-text=\"lastOrder.total_amount\"></span>. Check status in Order history "
+"below."
+msgstr ""
+"Ihre Bestellung ist offen. Gesamt € <span "
+"x-text=\"lastOrder.total_amount\"></span>. Status siehe Bestellverlauf "
+"unten."
 
-#: .\templates\pages\restaurant_menu.html:605
-#: .\templates\pages\restaurant_menu.html:697
+#: .\templates\pages\restaurant_menu.html:1331
+#: .\templates\pages\restaurant_menu.html:1440
 msgid "Order history"
 msgstr "Bestellverlauf"
 
-#: .\templates\pages\restaurant_menu.html:607
+#: .\templates\pages\restaurant_menu.html:1333
 msgid ""
 "No orders yet. Place an order to see it here (pending → preparing → "
 "completed)."
-msgstr "Noch keine Bestellungen. Geben Sie eine Bestellung auf (offen → in Zubereitung → abgeschlossen)."
+msgstr ""
+"Noch keine Bestellungen. Geben Sie eine Bestellung auf (offen → in "
+"Zubereitung → abgeschlossen)."
 
-#: .\templates\pages\restaurant_menu.html:670
+#: .\templates\pages\restaurant_menu.html:1393
 msgid "Table #"
 msgstr "Tisch-Nr."
 
-#: .\templates\pages\restaurant_menu.html:699
+#: .\templates\pages\restaurant_menu.html:1399
+msgid ""
+"Pick <strong>day & time</strong> (opening hours). Pay <strong>Cash</strong> "
+"on the day or <strong>Online</strong> now — refund if cancelled."
+msgstr ""
+"Wählen <strong>Tag und Zeit</strong> (Eröffnungszeiten). Zahl "
+"<strong>Bargeld</strong> am Tag oder <strong>Online</strong> jetzt — "
+"Rückerstattung, wenn abgesagt."
+
+#: .\templates\pages\restaurant_menu.html:1442
+#: .\templates\partials\customer_navbar.html:217
 msgid "No orders yet."
 msgstr "Noch keine Bestellungen."
 
-#: .\templates\pages\restaurant_menu.html:712
+#: .\templates\pages\restaurant_menu.html:1455
 msgid "Next →"
 msgstr "Weiter →"
 
-#: .\templates\pages\restaurant_menu.html:716
+#: .\templates\pages\restaurant_menu.html:1459
 msgid "Back"
 msgstr "Zurück"
 
-#: .\templates\pages\restaurant_menu.html:748
-msgid "Service:"
-msgstr "Service:"
+#: .\templates\pages\restaurant_menu.html:1466
+msgid ""
+"Select <strong>day & time</strong> (opening hours), guests, contact. Pay "
+"<strong>Cash</strong> on the day or <strong>Online</strong> now — refund if "
+"cancelled."
+msgstr ""
+"Wählen <strong>Tag und Zeit</strong> (Eröffnungszeiten), Gäste, Kontakt. "
+"Zahl <strong>Bargeld</strong> am Tag oder <strong>Online</strong> jetzt — "
+"Rückerstattung, wenn abgesagt."
 
-#: .\templates\pages\restaurant_menu.html:748
+#: .\templates\pages\restaurant_menu.html:1491
+msgid "Service:"
+msgstr "Bestellart:"
+
+#: .\templates\pages\restaurant_menu.html:1491
 msgid "Payment:"
 msgstr "Zahlung:"
 
-#: .\templates\pages\restaurant_menu.html:751
+#: .\templates\pages\restaurant_menu.html:1494
 msgid ""
 "Your order is pending. The restaurant will update the status (e.g. "
 "preparing, completed)."
-msgstr "Ihre Bestellung ist offen. Das Restaurant aktualisiert den Status (z. B. in Zubereitung, abgeschlossen)."
+msgstr ""
+"Ihre Bestellung ist offen. Das Restaurant aktualisiert den Status (z. B. in "
+"Zubereitung, abgeschlossen)."
 
-#: .\templates\pages\restaurant_menu.html:757
+#: .\templates\pages\restaurant_menu.html:1500
+#: .\templates\pages\restaurant_orders.html:451
 msgid "Done"
 msgstr "Fertig"
 
-#: .\templates\pages\restaurant_reservation.html:3
+#: .\templates\pages\restaurant_menu.html:1510
+#: .\templates\pages\restaurant_menu.html:1515
+#: .\templates\pages\restaurant_menu.html:1525
+#: .\templates\pages\restaurant_menu.html:1565
+#: .\templates\pages\restaurant_orders.html:497
+#: .\templates\pages\restaurant_orders.html:501
+#: .\templates\pages\restaurant_orders.html:510
+#: .\templates\partials\customer_navbar.html:48
+#: .\templates\partials\customer_navbar.html:77
+#: .\templates\partials\customer_navbar.html:81
+#: .\templates\partials\customer_navbar.html:90
+msgid "Log in"
+msgstr "Anmeldung"
+
+#: .\templates\pages\restaurant_menu.html:1510
+#: .\templates\pages\restaurant_menu.html:1543
+#: .\templates\pages\restaurant_orders.html:497
+#: .\templates\pages\restaurant_orders.html:527
+#: .\templates\partials\customer_navbar.html:77
+#: .\templates\partials\customer_navbar.html:108
+msgid "Create account"
+msgstr "Konto erstellen"
+
+#: .\templates\pages\restaurant_menu.html:1521
+#: .\templates\pages\restaurant_orders.html:506
+#: .\templates\partials\customer_navbar.html:86
+msgid "Email or phone"
+msgstr "E-Mail oder Telefon"
+
+#: .\templates\pages\restaurant_menu.html:1526
+#: .\templates\pages\restaurant_orders.html:511
+#: .\templates\partials\customer_navbar.html:91
+msgid "Logging in..."
+msgstr "Einloggen..."
+
+#: .\templates\pages\restaurant_menu.html:1539
+#: .\templates\pages\restaurant_orders.html:523
+#: .\templates\partials\customer_navbar.html:104
+msgid "Address (optional)"
+msgstr "Anschrift (optional)"
+
+#: .\templates\pages\restaurant_menu.html:1540
+#: .\templates\pages\restaurant_orders.html:524
+#: .\templates\partials\customer_navbar.html:105
+msgid "Password (min 6 chars)"
+msgstr "Passwort (min 6 Zeichen)"
+
+#: .\templates\pages\restaurant_menu.html:1544
+#: .\templates\pages\restaurant_orders.html:528
+#: .\templates\partials\customer_navbar.html:109
+msgid "Creating..."
+msgstr "Erschafft..."
+
+#: .\templates\pages\restaurant_menu.html:1556
+msgid "Confirm your details"
+msgstr "Angaben bestätigen"
+
+#: .\templates\pages\restaurant_menu.html:1563
+msgid "Log in to auto-fill your saved details and addresses."
+msgstr ""
+"Melden Sie sich an, um Ihre gespeicherten Angaben und Adressen automatisch "
+"auszufüllen."
+
+#: .\templates\pages\restaurant_menu.html:1587
+msgid "Phone (account ID — cannot be changed)"
+msgstr "Telefon (Konto-ID — kann nicht geändert werden)"
+
+#: .\templates\pages\restaurant_menu.html:1593
+#: .\templates\pages\restaurant_menu.html:1611
+msgid "Delivery address"
+msgstr "Lieferadresse"
+
+#: .\templates\pages\restaurant_menu.html:1602
+#: .\templates\pages\restaurant_orders.html:583
+#: .\templates\partials\customer_navbar.html:183
+msgid "Default"
+msgstr "Fehler"
+
+#: .\templates\pages\restaurant_menu.html:1612
+msgid "Or add a new address"
+msgstr "Oder eine neue Adresse hinzufügen"
+
+#: .\templates\pages\restaurant_menu.html:1614
+#: .\templates\pages\restaurant_orders.html:593
+#: .\templates\partials\customer_navbar.html:193
+msgid "Street, number, city"
+msgstr "Straße, Nummer, Stadt"
+
+#: .\templates\pages\restaurant_menu.html:1617
+msgid "Save this address to my account"
+msgstr "Speichern Sie diese Adresse auf meinem Konto"
+
+#: .\templates\pages\restaurant_menu.html:1618
+#: .\templates\pages\restaurant_orders.html:565
+#: .\templates\pages\restaurant_orders.html:596
+#: .\templates\partials\customer_navbar.html:166
+#: .\templates\partials\customer_navbar.html:196
+msgid "Saving..."
+msgstr "Sparen..."
+
+#: .\templates\pages\restaurant_menu.html:1628
+msgid "Placing..."
+msgstr "Plazierung..."
+
+#: .\templates\pages\restaurant_orders.html:3
+#, python-format
+msgid "Orders - %(name)s"
+msgstr "Bestellungen - %(name)s"
+
+#: .\templates\pages\restaurant_orders.html:183
+#: .\templates\partials\customer_navbar.html:429
+msgid "No changes to save."
+msgstr "Keine Änderungen zu speichern."
+
+#: .\templates\pages\restaurant_orders.html:190
+#: .\templates\partials\customer_navbar.html:436
+msgid "Update failed."
+msgstr "Update versagt."
+
+#: .\templates\pages\restaurant_orders.html:193
+#: .\templates\partials\customer_navbar.html:437
+msgid "Profile updated."
+msgstr "Profil aktualisiert."
+
+#: .\templates\pages\restaurant_orders.html:263
+msgid "The restaurant is preparing this order."
+msgstr "Das Restaurant bereitet diesen Auftrag vor."
+
+#: .\templates\pages\restaurant_orders.html:264
+msgid "This order is out for delivery."
+msgstr "Diese Bestellung ist für die Lieferung aus."
+
+#: .\templates\pages\restaurant_orders.html:265
+msgid "This order is completed."
+msgstr "Diese Bestellung ist abgeschlossen."
+
+#: .\templates\pages\restaurant_orders.html:268
+msgid "The order was received and is waiting for restaurant confirmation."
+msgstr ""
+"Die Bestellung wurde empfangen und wartet auf die Restaurantbestätigung."
+
+#: .\templates\pages\restaurant_orders.html:301
+msgid "Refund"
+msgstr "Rückerstattung"
+
+#: .\templates\pages\restaurant_orders.html:333
+msgid "This order can no longer be cancelled."
+msgstr "Diese Bestellung kann nicht mehr storniert werden."
+
+#: .\templates\pages\restaurant_orders.html:335
+msgid "Refund failed. Please contact the restaurant."
+msgstr "Rückerstattung fehlgeschlagen. Bitte kontaktieren Sie das Restaurant."
+
+#: .\templates\pages\restaurant_orders.html:336
+msgid "Could not cancel order."
+msgstr "Konnte keine Bestellung stornieren."
+
+#: .\templates\pages\restaurant_orders.html:342
+msgid "Order cancelled and refund requested."
+msgstr "Bestellung storniert und Rückerstattung beantragt."
+
+#: .\templates\pages\restaurant_orders.html:343
+msgid "Order cancelled."
+msgstr "Bestellung storniert."
+
+#: .\templates\pages\restaurant_orders.html:380
+msgid "Order tracker"
+msgstr "Bestellverfolgung"
+
+#: .\templates\pages\restaurant_orders.html:388
+msgid "Enter phone number"
+msgstr "Rufnummer eingeben"
+
+#: .\templates\pages\restaurant_orders.html:390
+msgid "Find my orders"
+msgstr "Meine Bestellungen finden"
+
+#: .\templates\pages\restaurant_orders.html:391
+#: .\templates\partials\customer_navbar.html:214
+msgid "Loading..."
+msgstr "Die..."
+
+#: .\templates\pages\restaurant_orders.html:400
+msgid "No visible orders yet"
+msgstr "Noch keine sichtbaren Aufträge"
+
+#: .\templates\pages\restaurant_orders.html:401
+msgid ""
+"After payment and customer details, orders appear here by phone number."
+msgstr ""
+"Nach Zahlung und Kundendetails erscheinen hier Bestellungen per "
+"Telefonnummer."
+
+#: .\templates\pages\restaurant_orders.html:428
+msgid "Cancelling..."
+msgstr "Das ist..."
+
+#: .\templates\pages\restaurant_orders.html:459
+msgid "Your courier"
+msgstr "Ihr Kurier"
+
+#: .\templates\pages\restaurant_orders.html:460
+msgid "Courier assigned"
+msgstr "Kurier zugewiesen"
+
+#: .\templates\pages\restaurant_orders.html:461
+msgid "Call the courier directly if there is an issue with the address."
+msgstr ""
+"Rufen Sie den Kurier direkt an, wenn es ein Problem mit der Adresse gibt."
+
+#: .\templates\pages\restaurant_orders.html:539
+#: .\templates\partials\customer_navbar.html:61
+#: .\templates\partials\customer_navbar.html:150
+msgid "My profile"
+msgstr "Mein Profil"
+
+#: .\templates\pages\restaurant_orders.html:559
+#: .\templates\partials\customer_navbar.html:160
+msgid "Phone (cannot be changed — this is your account ID)"
+msgstr "Telefon (kann nicht geändert werden — das ist Ihre Konto-ID)"
+
+#: .\templates\pages\restaurant_orders.html:570
+#: .\templates\partials\customer_navbar.html:170
+msgid "My addresses"
+msgstr "Meine Adressen"
+
+#: .\templates\pages\restaurant_orders.html:572
+#: .\templates\partials\customer_navbar.html:172
+msgid "No addresses saved yet."
+msgstr "Noch keine Adressen gespeichert."
+
+#: .\templates\pages\restaurant_orders.html:584
+#: .\templates\partials\customer_navbar.html:184
+msgid "Set default"
+msgstr "Standardeinstellung"
+
+#: .\templates\pages\restaurant_orders.html:592
+#: .\templates\partials\customer_navbar.html:192
+msgid "Label (e.g. Home, Work)"
+msgstr "Label (z.B. Home, Arbeit)"
+
+#: .\templates\pages\restaurant_orders.html:595
+#: .\templates\partials\customer_navbar.html:195
+msgid "Add address"
+msgstr "Anschrift"
+
+#: .\templates\pages\restaurant_reservation.html:5
 #, python-format
 msgid "Reservation — %(name)s"
 msgstr "Reservierung — %(name)s"
 
-#: .\templates\pages\restaurant_reservation.html:26
+#: .\templates\pages\restaurant_reservation.html:28
 msgid "Name is required."
 msgstr "Name ist erforderlich."
 
-#: .\templates\pages\restaurant_reservation.html:27
+#: .\templates\pages\restaurant_reservation.html:29
 msgid "Please select a date."
 msgstr "Bitte ein Datum auswählen."
 
-#: .\templates\pages\restaurant_reservation.html:28
+#: .\templates\pages\restaurant_reservation.html:30
 msgid "Please select a time."
 msgstr "Bitte eine Uhrzeit auswählen."
 
-#: .\templates\pages\restaurant_reservation.html:29
+#: .\templates\pages\restaurant_reservation.html:31
 msgid "Request failed."
 msgstr "Anfrage fehlgeschlagen."
 
-#: .\templates\pages\restaurant_reservation.html:30
+#: .\templates\pages\restaurant_reservation.html:32
 msgid "Network error. Please try again."
 msgstr "Netzwerkfehler. Bitte erneut versuchen."
 
-#: .\templates\pages\restaurant_reservation.html:98
+#: .\templates\pages\restaurant_reservation.html:100
 msgid "Table reservation"
 msgstr "Tischreservierung"
 
-#: .\templates\pages\restaurant_reservation.html:101
-#: .\templates\pages\restaurant_schedule.html:11
+#: .\templates\pages\restaurant_reservation.html:103
+#: .\templates\pages\restaurant_schedule.html:13
 msgid "Opening hours:"
 msgstr "Öffnungszeiten:"
 
-#: .\templates\pages\restaurant_reservation.html:106
+#: .\templates\pages\restaurant_reservation.html:108
 msgid "Reservation request sent"
 msgstr "Reservierungsanfrage gesendet"
 
-#: .\templates\pages\restaurant_reservation.html:107
+#: .\templates\pages\restaurant_reservation.html:109
 msgid ""
-"Your reservation for <span x-text=\"successReservation.requested_date\"></"
-"span> at <span x-text=\"successReservation.requested_time\"></span> (<span x-"
-"text=\"successReservation.guests_count\"></span> guests) is pending. The "
+"Your reservation for <span "
+"x-text=\"successReservation.requested_date\"></span> at <span "
+"x-text=\"successReservation.requested_time\"></span> (<span "
+"x-text=\"successReservation.guests_count\"></span> guests) is pending. The "
 "restaurant will confirm by email."
-msgstr "Ihre Reservierung für <span x-text=\"successReservation.requested_date\"></span> um <span x-text=\"successReservation.requested_time\"></span> (<span x-text=\"successReservation.guests_count\"></span> Gäste) ist offen. Das Restaurant bestätigt per E-Mail."
+msgstr ""
+"Ihre Reservierung für <span "
+"x-text=\"successReservation.requested_date\"></span> um <span "
+"x-text=\"successReservation.requested_time\"></span> (<span "
+"x-text=\"successReservation.guests_count\"></span> Gäste) ist offen. Das "
+"Restaurant bestätigt per E-Mail."
 
-#: .\templates\pages\restaurant_reservation.html:115
-msgid "Date"
-msgstr "Datum"
-
-#: .\templates\pages\restaurant_reservation.html:123
+#: .\templates\pages\restaurant_reservation.html:125
 msgid "Time"
 msgstr "Uhrzeit"
 
-#: .\templates\pages\restaurant_reservation.html:124
+#: .\templates\pages\restaurant_reservation.html:126
 msgid "This day is fully booked. Please choose another date."
 msgstr "Dieser Tag ist ausgebucht. Bitte anderes Datum wählen."
 
-#: .\templates\pages\restaurant_reservation.html:126
+#: .\templates\pages\restaurant_reservation.html:128
 msgid "Select time"
 msgstr "Uhrzeit wählen"
 
-#: .\templates\pages\restaurant_reservation.html:131
+#: .\templates\pages\restaurant_reservation.html:133
 msgid "Loading…"
 msgstr "Wird geladen…"
 
-#: .\templates\pages\restaurant_reservation.html:134
+#: .\templates\pages\restaurant_reservation.html:136
 msgid "Number of guests"
 msgstr "Anzahl der Gäste"
 
-#: .\templates\pages\restaurant_reservation.html:138
+#: .\templates\pages\restaurant_reservation.html:140
 msgid "Your name *"
 msgstr "Ihr Name *"
 
-#: .\templates\pages\restaurant_reservation.html:150
+#: .\templates\pages\restaurant_reservation.html:152
 msgid "Notes"
 msgstr "Notizen"
 
-#: .\templates\pages\restaurant_reservation.html:155
+#: .\templates\pages\restaurant_reservation.html:157
 msgid "Pre-order (from cart)"
 msgstr "Vorbestellung (aus dem Warenkorb)"
 
-#: .\templates\pages\restaurant_reservation.html:161
+#: .\templates\pages\restaurant_reservation.html:163
 msgid "Subtotal:"
 msgstr "Zwischensumme:"
 
-#: .\templates\pages\restaurant_reservation.html:164
+#: .\templates\pages\restaurant_reservation.html:166
 msgid ""
 "Cash = pay on the day. Online = pay now; refunded if reservation is "
 "cancelled."
-msgstr "Bar = am Tag zahlen. Online = jetzt bezahlen; bei Stornierung erstattet."
+msgstr ""
+"Bar = am Tag zahlen. Online = jetzt bezahlen; bei Stornierung erstattet."
 
-#: .\templates\pages\restaurant_reservation.html:166
+#: .\templates\pages\restaurant_reservation.html:168
 msgid "Cash (on the day)"
 msgstr "Bar (am Tag)"
 
-#: .\templates\pages\restaurant_reservation.html:168
+#: .\templates\pages\restaurant_reservation.html:170
 msgid "Online (refund if cancelled)"
 msgstr "Online (Rückerstattung bei Stornierung)"
 
-#: .\templates\pages\restaurant_reservation.html:176
+#: .\templates\pages\restaurant_reservation.html:178
 msgid "Request reservation"
 msgstr "Reservierung anfragen"
 
-#: .\templates\pages\restaurant_schedule.html:3
+#: .\templates\pages\restaurant_schedule.html:5
 #, python-format
 msgid "Schedule your order — %(name)s"
 msgstr "Bestellung planen — %(name)s"
 
-#: .\templates\pages\restaurant_schedule.html:8
+#: .\templates\pages\restaurant_schedule.html:10
 msgid "Schedule your order"
 msgstr "Bestellung planen"
 
-#: .\templates\pages\restaurant_schedule.html:16
+#: .\templates\pages\restaurant_schedule.html:18
 msgid "No opening hours set"
 msgstr "Keine Öffnungszeiten festgelegt"
 
-#: .\templates\pages\restaurant_schedule.html:17
+#: .\templates\pages\restaurant_schedule.html:19
 msgid ""
 "The restaurant has not set specific opening times. You can place an order "
 "from the menu."
-msgstr "Das Restaurant hat keine Öffnungszeiten festgelegt. Sie können direkt aus dem Menü bestellen."
+msgstr ""
+"Das Restaurant hat keine Öffnungszeiten festgelegt. Sie können direkt aus "
+"dem Menü bestellen."
 
-#: .\templates\pages\restaurant_schedule.html:18
+#: .\templates\pages\restaurant_schedule.html:20
 msgid "Go to menu"
 msgstr "Zum Menü"
 
-#: .\templates\pages\restaurant_schedule.html:21
+#: .\templates\pages\restaurant_schedule.html:23
 msgid ""
 "Choose a date and time for your order. You will then go to the menu to add "
 "items and place the order for that time."
-msgstr "Datum und Uhrzeit wählen. Anschließend zum Menü, um Artikel hinzuzufügen und für diese Zeit zu bestellen."
+msgstr ""
+"Datum und Uhrzeit wählen. Anschließend zum Menü, um Artikel hinzuzufügen und"
+" für diese Zeit zu bestellen."
 
-#: .\templates\pages\restaurants_list.html:3
-#: .\templates\pages\restaurants_list.html:10
+#: .\templates\pages\restaurants_list.html:5
+#: .\templates\pages\restaurants_list.html:12
 #: .\templates\partials\navbar.html:75 .\templates\partials\navbar.html:149
 msgid "Restaurants & Cafes"
 msgstr "Restaurants & Cafés"
 
-#: .\templates\pages\restaurants_list.html:4
-msgid "Browse our partner restaurants and cafes. Open a menu and order online."
-msgstr "Durchsuchen Sie unsere Partnerrestaurants und -cafés. Öffnen Sie ein Menü und bestellen Sie online."
+#: .\templates\pages\restaurants_list.html:6
+msgid ""
+"Browse our partner restaurants and cafes. Open a menu and order online."
+msgstr ""
+"Durchsuchen Sie unsere Partnerrestaurants und -cafés. Öffnen Sie ein Menü "
+"und bestellen Sie online."
 
-#: .\templates\pages\restaurants_list.html:11
+#: .\templates\pages\restaurants_list.html:13
 msgid "Choose a place and open its menu."
 msgstr "Ort wählen und Menü öffnen."
 
-#: .\templates\pages\restaurants_list.html:16
+#: .\templates\pages\restaurants_list.html:18
 msgid "No restaurants yet. Check back later."
 msgstr "Noch keine Restaurants. Schauen Sie später wieder vorbei."
 
-#: .\templates\pages\restaurants_list.html:40
+#: .\templates\pages\restaurants_list.html:42
 msgid "View menu"
 msgstr "Menü ansehen"
 
@@ -2483,10 +3562,6 @@ msgstr "Menü ansehen"
 #: .\templates\partials\navbar.html:41 .\templates\partials\navbar.html:146
 msgid "Services"
 msgstr "Dienstleistungen"
-
-#: .\templates\pages\service_detail.html:18
-msgid "Service"
-msgstr "Service"
 
 #: .\templates\pages\service_detail.html:26
 msgid "Get pricing"
@@ -2511,7 +3586,9 @@ msgstr "Möchten Sie %(title)s für Ihr Restaurant aktivieren?"
 
 #: .\templates\pages\service_detail.html:55
 msgid "Start your annual plan and go live with QR menu + online ordering."
-msgstr "Starten Sie Ihren Jahresplan und gehen Sie mit QR-Menü + Online-Bestellung live."
+msgstr ""
+"Starten Sie Ihren Jahresplan und gehen Sie mit QR-Menü + Online-Bestellung "
+"live."
 
 #: .\templates\pages\service_detail.html:56
 msgid "View annual plan"
@@ -2525,7 +3602,9 @@ msgstr "Weitere Dienstleistungen"
 msgid ""
 "Explore all QR Menu Pro services. Open a dedicated page for each service "
 "with details, visuals, and benefits."
-msgstr "Entdecken Sie alle QR Menu Pro-Services. Öffnen Sie eine eigene Seite mit Details, Visuals und Vorteilen für jeden Service."
+msgstr ""
+"Entdecken Sie alle QR Menu Pro-Services. Öffnen Sie eine eigene Seite mit "
+"Details, Visuals und Vorteilen für jeden Service."
 
 #: .\templates\pages\services.html:10
 msgid "Our Services"
@@ -2533,13 +3612,129 @@ msgstr "Unsere Dienstleistungen"
 
 #: .\templates\pages\services.html:12
 msgid ""
-"Open each service to view a full, dedicated page with benefits, visuals, and "
-"practical use cases."
-msgstr "Öffnen Sie jeden Service für eine eigene Seite mit Vorteilen, Visuals und praktischen Anwendungsfällen."
+"Open each service to view a full, dedicated page with benefits, visuals, and"
+" practical use cases."
+msgstr ""
+"Öffnen Sie jeden Service für eine eigene Seite mit Vorteilen, Visuals und "
+"praktischen Anwendungsfällen."
 
 #: .\templates\pages\services.html:25
 msgid "Open service page"
 msgstr "Serviceseite öffnen"
+
+#: .\templates\pages\terms_conditions.html:4
+#: .\templates\pages\terms_conditions.html:11
+#: .\templates_bonusweb\base.html:367
+msgid "Terms & Conditions"
+msgstr "AGB"
+
+#: .\templates\pages\terms_conditions.html:5
+msgid "Terms and Conditions for My Bonus QR Menu and PreisMenu services."
+msgstr "Bedingungen für My Bonus QR Menu und PreisMenu Dienstleistungen."
+
+#: .\templates\pages\terms_conditions.html:15
+msgid ""
+"These Terms & Conditions govern access to and use of My Bonus QR Menu, "
+"including QR menu pages, restaurant dashboards, online ordering, campaigns, "
+"and related services."
+msgstr ""
+"Diese Allgemeinen Geschäftsbedingungen geben Zugriff auf und nutzen My Bonus"
+" QR Menu, einschließlich QR Menüseiten, Restaurant Dashboards, Online-"
+"Bestellung, Kampagnen und damit verbundene Dienstleistungen."
+
+#: .\templates\pages\terms_conditions.html:17
+msgid "Use of the Service"
+msgstr "Nutzung des Dienstes"
+
+#: .\templates\pages\terms_conditions.html:18
+msgid ""
+"You agree to use the service lawfully and to provide accurate account, "
+"restaurant, menu, pricing, and contact information. You are responsible for "
+"activity under your account and for keeping login details secure."
+msgstr ""
+"Sie erklären sich damit einverstanden, den Service rechtmäßig zu nutzen und "
+"genaue Konto-, Restaurant-, Menü-, Preis- und Kontaktinformationen "
+"bereitzustellen. Sie sind für die Tätigkeit unter Ihrem Konto verantwortlich"
+" und halten die Login-Daten sicher."
+
+#: .\templates\pages\terms_conditions.html:20
+msgid "Restaurant Content"
+msgstr "Restaurant Inhalt"
+
+#: .\templates\pages\terms_conditions.html:21
+msgid ""
+"Restaurants are responsible for their menu items, prices, images, "
+"descriptions, availability, allergens, taxes, fees, opening hours, and order"
+" handling. Content must not infringe third-party rights or violate "
+"applicable law."
+msgstr ""
+"Restaurants sind verantwortlich für ihre Menüpunkte, Preise, Bilder, "
+"Beschreibungen, Verfügbarkeit, Allergene, Steuern, Gebühren, Öffnungszeiten "
+"und Auftragsabwicklung. Inhalte dürfen keine Rechte Dritter verletzen oder "
+"geltendes Recht verletzen."
+
+#: .\templates\pages\terms_conditions.html:23
+msgid "Orders and Payments"
+msgstr "Bestellungen und Zahlungen"
+
+#: .\templates\pages\terms_conditions.html:24
+msgid ""
+"Where ordering or payment features are enabled, the restaurant remains "
+"responsible for accepting, preparing, fulfilling, refunding, and supporting "
+"customer orders unless otherwise agreed in writing."
+msgstr ""
+"Werden Bestellungs- oder Zahlungsmerkmale aktiviert, bleibt das Restaurant "
+"für die Annahme, Vorbereitung, Erfüllung, Rückerstattung und Unterstützung "
+"von Kundenaufträgen verantwortlich, sofern nichts anderes schriftlich "
+"vereinbart wurde."
+
+#: .\templates\pages\terms_conditions.html:26
+msgid "Subscriptions"
+msgstr "Abonnements"
+
+#: .\templates\pages\terms_conditions.html:27
+msgid ""
+"Paid plans, trial periods, renewals, taxes, cancellation, and refund rules "
+"are shown during checkout or in the relevant subscription communication. "
+"Continued use after a billing period may require payment of applicable fees."
+msgstr ""
+"Während des Check-outs oder in der entsprechenden Abonnement-Kommunikation "
+"werden kostenpflichtige Pläne, Testzeiten, Verlängerungen, Steuern, "
+"Stornierungen und Erstattungsregeln angezeigt. Die Weiterverwendung nach "
+"einer Abrechnungsfrist kann die Zahlung der Gebühren verlangen."
+
+#: .\templates\pages\terms_conditions.html:29
+msgid "Availability and Changes"
+msgstr "Verfügbarkeit und Änderungen"
+
+#: .\templates\pages\terms_conditions.html:30
+msgid ""
+"We work to keep the service reliable, but we do not guarantee uninterrupted "
+"availability. We may update, suspend, or discontinue features when needed "
+"for security, maintenance, compliance, or product improvements."
+msgstr ""
+"Wir arbeiten, um den Service zuverlässig zu halten, aber wir garantieren "
+"keine ununterbrochene Verfügbarkeit. Wir können Funktionen für die "
+"Sicherheit, Wartung, Compliance oder Produktverbesserungen aktualisieren, "
+"aussetzen oder einstellen."
+
+#: .\templates\pages\terms_conditions.html:32
+msgid "Limitation of Liability"
+msgstr "Einschränkung der Haftung"
+
+#: .\templates\pages\terms_conditions.html:33
+msgid ""
+"To the fullest extent permitted by law, we are not liable for indirect, "
+"incidental, special, consequential, or lost-profit damages arising from use "
+"of the service."
+msgstr ""
+"Soweit gesetzlich zulässig, haften wir nicht für indirekte, zufällige, "
+"spezielle, Folge- oder Verlust-Profit-Schäden, die sich aus der Nutzung des "
+"Dienstes ergeben."
+
+#: .\templates\pages\terms_conditions.html:36
+msgid "For questions about these terms, contact us at"
+msgstr "Für Fragen zu diesen Bedingungen kontaktieren Sie uns bei"
 
 #: .\templates\partials\alerts.html:3
 msgid "Notifications"
@@ -2573,9 +3768,142 @@ msgstr "Artikel entfernen"
 msgid "Proceed to Checkout"
 msgstr "Zur Kasse gehen"
 
+#: .\templates\partials\customer_navbar.html:17
+#: .\templates\partials\customer_navbar.html:63
+msgid "Restaurants"
+msgstr "Restaurants"
+
+#: .\templates\partials\customer_navbar.html:22
+msgid "Profile"
+msgstr "Profil"
+
+#: .\templates\partials\customer_navbar.html:28
+#: .\templates\partials\navbar.html:89
+msgid "Change language"
+msgstr "Sprache ändern"
+
+#: .\templates\partials\customer_navbar.html:64
+msgid "Log out"
+msgstr "Anmelden"
+
+#: .\templates\partials\customer_navbar.html:77
+msgid "Enter reset code"
+msgstr "Zurücksetzen Code"
+
+#: .\templates\partials\customer_navbar.html:115
+msgid ""
+"Enter your account email. We'll send a 6-digit code to reset your password."
+msgstr ""
+"Geben Sie Ihre Konto-E-Mail ein. Wir senden einen 6-stelligen Code, um Ihr "
+"Passwort zurückzusetzen."
+
+#: .\templates\partials\customer_navbar.html:120
+msgid "Sending..."
+msgstr "Ich schicke..."
+
+#: .\templates\partials\customer_navbar.html:128
+msgid "Enter the 6-digit code sent to"
+msgstr "Geben Sie den 6-stelligen Code ein, der an"
+
+#: .\templates\partials\customer_navbar.html:128
+msgid "and choose a new password."
+msgstr "und wählen Sie ein neues Passwort."
+
+#: .\templates\partials\customer_navbar.html:130
+msgid "6-digit code"
+msgstr "6-stelliger Code"
+
+#: .\templates\partials\customer_navbar.html:131
+msgid "New password (min 6 chars)"
+msgstr "Neues Passwort (min 6 Zeichen)"
+
+#: .\templates\partials\customer_navbar.html:136
+msgid "Resetting..."
+msgstr "Zurücksetzen..."
+
+#: .\templates\partials\customer_navbar.html:138
+msgid "Resend code"
+msgstr "Änderungscode"
+
+#: .\templates\partials\customer_navbar.html:212
+msgid ""
+"Open a restaurant to view its order-tracking page for full status and "
+"cancellation."
+msgstr ""
+"Öffne ein Restaurant, um seine Bestellseite für den vollen Status und die "
+"Stornierung anzuzeigen."
+
+#: .\templates\partials\customer_navbar.html:302
+msgid ""
+"Invalid email/phone or password. Please try again or use \"Forgot "
+"password\"."
+msgstr ""
+"Ungültige E-Mail/Telefon oder Passwort. Bitte versuchen Sie es erneut oder "
+"verwenden Sie \"Passwort vergessen\"."
+
+#: .\templates\partials\customer_navbar.html:303
+msgid "Please enter both your email/phone and your password."
+msgstr "Bitte geben Sie Ihre E-Mail/Telefon und Ihr Passwort ein."
+
+#: .\templates\partials\customer_navbar.html:304
+msgid "Server error. Please try again in a moment."
+msgstr "Serverfehler. Bitte versuchen Sie es noch einmal."
+
+#: .\templates\partials\customer_navbar.html:336
+msgid ""
+"This phone number is already registered. We switched you to Log in — please "
+"enter your password."
+msgstr ""
+"Diese Telefonnummer ist bereits registriert. Wir haben Sie zum Anmelden "
+"umgeschaltet – bitte geben Sie Ihr Passwort ein."
+
+#: .\templates\partials\customer_navbar.html:337
+msgid ""
+"This email is already registered. We switched you to Log in — please enter "
+"your password."
+msgstr ""
+"Diese E-Mail ist bereits registriert. Wir haben Sie zum Anmelden "
+"umgeschaltet – bitte geben Sie Ihr Passwort ein."
+
+#: .\templates\partials\customer_navbar.html:338
+msgid "Please enter a valid email address (e.g. name@example.com)."
+msgstr ""
+"Bitte geben Sie eine gültige E-Mail-Adresse ein (z.B. name@example.com)."
+
+#: .\templates\partials\customer_navbar.html:341
+msgid "Phone number is required."
+msgstr "Eine Telefonnummer ist erforderlich."
+
+#: .\templates\partials\customer_navbar.html:342
+msgid "Server error while creating your account. Please try again."
+msgstr ""
+"Serverfehler bei der Erstellung Ihres Kontos. Bitte versuchen Sie es noch "
+"mal."
+
+#: .\templates\partials\customer_navbar.html:373
+msgid "If the email exists, a code has been sent."
+msgstr "Wenn die E-Mail existiert, wurde ein Code gesendet."
+
+#: .\templates\partials\customer_navbar.html:376
+msgid "Could not send code."
+msgstr "Ich konnte keinen Code senden."
+
+#: .\templates\partials\customer_navbar.html:385
+msgid "Enter the 6-digit code."
+msgstr "Geben Sie den 6-stelligen Code ein."
+
+#: .\templates\partials\customer_navbar.html:398
+msgid "Reset failed."
+msgstr "Zurücksetzen scheiterte."
+
+#: .\templates\partials\customer_navbar.html:404
+msgid "Password reset. You can log in now."
+msgstr "Passwort zurücksetzen. Sie können sich jetzt anmelden."
+
 #: .\templates\partials\footer.html:8
 msgid "SaaS platform for QR menus, online ordering, campaigns, and analytics."
-msgstr "SaaS-Plattform für QR-Menüs, Online-Bestellung, Kampagnen und Analysen."
+msgstr ""
+"SaaS-Plattform für QR-Menüs, Online-Bestellung, Kampagnen und Analysen."
 
 #: .\templates\partials\footer.html:20
 msgid "Product"
@@ -2602,15 +3930,17 @@ msgid ""
 "transition underline decoration-slate-300 dark:decoration-slate-600 "
 "hover:decoration-primary-500\">Angraweb</a> — Professional Web Design &amp; "
 "Software Development."
-msgstr "Diese Website wurde von <a href=\"https://angraweb.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-orange-400 transition underline decoration-slate-300 dark:decoration-slate-600 hover:decoration-primary-500\">Angraweb</a> entwickelt — professionelles Webdesign &amp; Softwareentwicklung."
+msgstr ""
+"Diese Website wurde von <a href=\"https://angraweb.com/\" target=\"_blank\" "
+"rel=\"noopener noreferrer\" class=\"text-slate-500 dark:text-slate-400 "
+"hover:text-primary-600 dark:hover:text-orange-400 transition underline "
+"decoration-slate-300 dark:decoration-slate-600 hover:decoration-"
+"primary-500\">Angraweb</a> entwickelt — professionelles Webdesign &amp; "
+"Softwareentwicklung."
 
 #: .\templates\partials\navbar.html:45
 msgid "All Services"
 msgstr "Alle Dienstleistungen"
-
-#: .\templates\partials\navbar.html:89
-msgid "Change language"
-msgstr "Sprache ändern"
 
 #: .\templates\partials\navbar.html:108 .\templates\partials\navbar.html:130
 #: .\templates\partials\panel_navbar_simple.html:11
@@ -2625,7 +3955,7 @@ msgstr "Hallo, %(name)s"
 
 #: .\templates\partials\navbar.html:120 .\templates\partials\navbar.html:168
 #: .\templates\partials\panel_navbar_simple.html:19
-#: .\templates_bonusweb\base.html:252
+#: .\templates_bonusweb\base.html:253
 msgid "Logout"
 msgstr "Abmelden"
 
@@ -2655,119 +3985,149 @@ msgstr "Zurück zur Seite"
 msgid "Site"
 msgstr "Website"
 
-#: .\templates_bonusweb\base.html:199 .\templates_bonusweb\base.html:276
-#: .\templates_bonusweb\base.html:335
+#: .\templates\partials\restaurant_location_public.html:6
+#: .\templates\partials\restaurant_location_public.html:35
+msgid "Location"
+msgstr "Standort"
+
+#: .\templates\partials\restaurant_location_public.html:12
+msgid "Map loads when visible…"
+msgstr "Kartenlasten, wenn sichtbar..."
+
+#: .\templates\partials\restaurant_location_public.html:23
+#: .\templates\partials\restaurant_location_public.html:40
+msgid "Open in Google Maps"
+msgstr "In Google Maps öffnen"
+
+#: .\templates\partials\restaurant_location_public.html:29
+#: .\templates\partials\restaurant_location_public.html:41
+msgid "Apple Maps"
+msgstr "Apple Maps"
+
+#: .\templates\partials\restaurant_location_public.html:43
+msgid ""
+"Map preview unavailable (set GOOGLE_MAPS_API_KEY to show an embedded map)."
+msgstr ""
+"Kartenvorschau nicht verfügbar (Set)GOOGLE_MAPS_API_KEYeine eingebettete "
+"Karte anzeigen)."
+
+#: .\templates_bonusweb\base.html:200 .\templates_bonusweb\base.html:277
+#: .\templates_bonusweb\base.html:336
 msgid "Use Cases"
 msgstr "Anwendungsfälle"
 
-#: .\templates_bonusweb\base.html:207 .\templates_bonusweb\base.html:284
-#: .\templates_bonusweb\base.html:337
+#: .\templates_bonusweb\base.html:208 .\templates_bonusweb\base.html:285
+#: .\templates_bonusweb\base.html:338
 msgid "Businesses"
 msgstr "Unternehmen"
 
-#: .\templates_bonusweb\base.html:211 .\templates_bonusweb\base.html:288
-#: .\templates_bonusweb\base.html:338
+#: .\templates_bonusweb\base.html:212 .\templates_bonusweb\base.html:289
+#: .\templates_bonusweb\base.html:339
 msgid "How It Works"
 msgstr "So funktioniert's"
 
-#: .\templates_bonusweb\base.html:219 .\templates_bonusweb\base.html:296
-#: .\templates_bonusweb\base.html:341
+#: .\templates_bonusweb\base.html:220 .\templates_bonusweb\base.html:297
+#: .\templates_bonusweb\base.html:342
 msgid "Download"
 msgstr "Herunterladen"
 
-#: .\templates_bonusweb\base.html:259
+#: .\templates_bonusweb\base.html:242
+msgid "Hello"
+msgstr "Hallo."
+
+#: .\templates_bonusweb\base.html:260
 msgid "Admin Login"
 msgstr "Admin-Anmeldung"
 
-#: .\templates_bonusweb\base.html:314
+#: .\templates_bonusweb\base.html:315
 msgid ""
 "Bonus helps local businesses run QR menus, loyalty points, rewards, and "
 "customer reviews — all in one place."
-msgstr "Bonus hilft lokalen Unternehmen bei QR-Menüs, Treuepunkten, Belohnungen und Kundenbewertungen – alles an einem Ort."
+msgstr ""
+"Bonus hilft lokalen Unternehmen bei QR-Menüs, Treuepunkten, Belohnungen und "
+"Kundenbewertungen – alles an einem Ort."
 
-#: .\templates_bonusweb\base.html:317
+#: .\templates_bonusweb\base.html:318
 msgid "Website"
 msgstr "Website"
 
-#: .\templates_bonusweb\base.html:320
+#: .\templates_bonusweb\base.html:321
 msgid "Instagram"
 msgstr "Instagram"
 
-#: .\templates_bonusweb\base.html:323
+#: .\templates_bonusweb\base.html:324
 msgid "X (Twitter)"
 msgstr "X (Twitter)"
 
-#: .\templates_bonusweb\base.html:326
+#: .\templates_bonusweb\base.html:327
 msgid "LinkedIn"
 msgstr "LinkedIn"
 
-#: .\templates_bonusweb\base.html:332
+#: .\templates_bonusweb\base.html:333
 msgid "Platform"
 msgstr "Plattform"
 
-#: .\templates_bonusweb\base.html:339
+#: .\templates_bonusweb\base.html:340
 msgid "Integrations"
 msgstr "Integrationen"
 
-#: .\templates_bonusweb\base.html:345
+#: .\templates_bonusweb\base.html:346
 msgid "For Businesses"
 msgstr "Für Unternehmen"
 
-#: .\templates_bonusweb\base.html:347
+#: .\templates_bonusweb\base.html:348
 msgid "Business Admin Panel"
 msgstr "Business-Admin-Panel"
 
-#: .\templates_bonusweb\base.html:348
+#: .\templates_bonusweb\base.html:349
 msgid "Service Agreement"
 msgstr "Dienstleistungsvereinbarung"
 
-#: .\templates_bonusweb\base.html:349
+#: .\templates_bonusweb\base.html:350
 msgid "Bonus Registration"
 msgstr "Bonus-Registrierung"
 
-#: .\templates_bonusweb\base.html:351 .\templates_bonusweb\base.html:356
+#: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
 msgid "QR Code Generator"
 msgstr "QR-Code-Generator"
 
-#: .\templates_bonusweb\base.html:352 .\templates_bonusweb\base.html:357
+#: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
 msgid "Manage Products"
 msgstr "Produkte verwalten"
 
-#: .\templates_bonusweb\base.html:353 .\templates_bonusweb\base.html:358
+#: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
 msgid "Customer Reviews"
 msgstr "Kundenbewertungen"
 
-#: .\templates_bonusweb\base.html:354 .\templates_bonusweb\base.html:359
+#: .\templates_bonusweb\base.html:355 .\templates_bonusweb\base.html:360
 msgid "Send Notification"
 msgstr "Benachrichtigung senden"
 
-#: .\templates_bonusweb\base.html:364
-msgid "Legal"
-msgstr "Rechtliches"
-
-#: .\templates_bonusweb\base.html:366
-msgid "Terms & Conditions"
-msgstr "AGB"
-
-#: .\templates_bonusweb\base.html:370
-msgid "Privacy Policy"
-msgstr "Datenschutzrichtlinie"
-
-#: .\templates_bonusweb\base.html:371
+#: .\templates_bonusweb\base.html:372
 msgid "Account & Data Deletion"
 msgstr "Konto- & Datenlöschung"
 
-#: .\templates_bonusweb\base.html:373
+#: .\templates_bonusweb\base.html:374
 msgid "API Docs"
 msgstr "API-Dokumentation"
 
-#: .\templates_bonusweb\base.html:379
+#: .\templates_bonusweb\base.html:380
 msgid "All rights reserved"
 msgstr "Alle Rechte vorbehalten"
 
-#: .\templates_bonusweb\base.html:381
+#: .\templates_bonusweb\base.html:382
 msgid "This website was designed by"
 msgstr "Diese Website wurde entwickelt von"
+
+#: .\templates_bonusweb\business_menu\connect.html:8
+#: .\templates_bonusweb\business_menu\connect_done.html:9
+#: .\templates_bonusweb\business_menu\connect_done.html:11
+msgid "Back to panel"
+msgstr "Zurück zum Panel"
+
+#: .\templates_bonusweb\business_menu\connect.html:10
+msgid "Redirecting to Stripe…"
+msgstr "Umleitung anStripe..."
 
 #: .\templates_bonusweb\business_menu\connect_done.html:3
 #: .\templates_bonusweb\business_menu\connect_done.html:6
@@ -2777,11 +4137,6 @@ msgstr "Stripe verbunden"
 #: .\templates_bonusweb\business_menu\connect_done.html:7
 msgid "You can now receive customer payments."
 msgstr "Sie können nun Kundenzahlungen empfangen."
-
-#: .\templates_bonusweb\business_menu\connect_done.html:9
-#: .\templates_bonusweb\business_menu\connect_done.html:11
-msgid "Back to panel"
-msgstr "Zurück zum Panel"
 
 #: .\templates_bonusweb\business_menu\menu_display.html:34
 msgid "Prices"
@@ -2854,7 +4209,8 @@ msgstr "Registrierung abschließen"
 
 #: .\templates_bonusweb\business_menu\payment.html:9
 msgid "Please complete the payment to finish your registration"
-msgstr "Bitte schließen Sie die Zahlung ab, um Ihre Registrierung abzuschließen."
+msgstr ""
+"Bitte schließen Sie die Zahlung ab, um Ihre Registrierung abzuschließen."
 
 #: .\templates_bonusweb\business_menu\payment.html:15
 msgid "Scan QR Code to Pay"
@@ -2872,7 +4228,9 @@ msgstr "PDF herunterladen"
 msgid ""
 "To complete the registration process, please scan this QR code. After "
 "payment, contact support."
-msgstr "Zum Abschluss der Registrierung bitte diesen QR-Code scannen. Kontaktieren Sie nach der Zahlung den Support."
+msgstr ""
+"Zum Abschluss der Registrierung bitte diesen QR-Code scannen. Kontaktieren "
+"Sie nach der Zahlung den Support."
 
 #: .\templates_bonusweb\business_menu\payment.html:53
 msgid "Need help? "
@@ -2886,35 +4244,93 @@ msgstr "Support kontaktieren"
 msgid "Subscribe"
 msgstr "Abonnieren"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:8
-msgid ""
-"Your trial has ended. Complete your subscription to keep using the service."
-msgstr "Ihre Testphase ist beendet. Schließen Sie das Abonnement ab, um den Dienst weiter zu nutzen."
+#: .\templates_bonusweb\business_menu\subscribe.html:16
+msgid "Unlock MyBonusQrMenu"
+msgstr "Entsperren MyBonusQrMenu"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:11
-msgid ""
-"Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
-"Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
-"other methods."
-msgstr "Zahlen Sie 200 Euro, um Ihren Plan zu upgraden. Sie werden zu Stripe Checkout weitergeleitet und können mit Karte, PayPal, Google Pay, Apple Pay usw. bezahlen."
-
-#: .\templates_bonusweb\business_menu\subscribe.html:15
-msgid "You will be redirected to Stripe to complete payment."
-msgstr "Sie werden zu Stripe weitergeleitet, um die Zahlung abzuschließen."
+#: .\templates_bonusweb\business_menu\subscribe.html:17
+msgid "Everything you need to run your restaurant, in one app."
+msgstr "Alles, was Sie brauchen, um Ihr Restaurant in einer App zu betreiben."
 
 #: .\templates_bonusweb\business_menu\subscribe.html:25
+msgid "Digital menu, categories and QR code"
+msgstr "Digitales Menü, Kategorien und QR-Code"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:31
+msgid "Online orders, delivery and pickup"
+msgstr "Online-Bestellungen, Lieferung und Abholung"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:37
+msgid "Table reservations and floor plan"
+msgstr "Tischreservierungen und Grundriss"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:43
+msgid "Courier management and assignment"
+msgstr "Kurierverwaltung und -auftrag"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:49
+msgid "Combo deals and package pricing"
+msgstr "Combo Angebote und Paketpreise"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:55
+msgid "Free for 14 days"
+msgstr "Kostenlos für 14 Tage"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:68
+msgid "Account email"
+msgstr "Konto E-Mail"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:76
+msgid "Restaurant account email"
+msgstr "Restaurant Konto E-Mail"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:81
+#: .\templates_bonusweb\business_menu\subscribe.html:144
+#: .\templates_bonusweb\business_menu\subscribe.html:149
+msgid "Start 14-day free trial"
+msgstr "Start 14-tägige kostenlose Testversion"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:86
+msgid ""
+"After the free trial, checkout shows the final price and renewal terms "
+"before you pay. You can manage or cancel from your account."
+msgstr ""
+"Nach dem kostenlosen Test zeigt der Check-out die endgültigen Preis- und "
+"Erneuerungsbedingungen, bevor Sie bezahlen. Sie können von Ihrem Konto "
+"verwalten oder absagen."
+
+#: .\templates_bonusweb\business_menu\subscribe.html:92
+msgid "Open subscription page"
+msgstr "Abonnementseite öffnen"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:94
+msgid "Terms of Use"
+msgstr "Nutzungsbedingungen"
+
+#: .\templates_bonusweb\business_menu\subscribe.html:124
+msgid "Enter the email for your restaurant account."
+msgstr "Geben Sie die E-Mail für Ihr Restaurantkonto ein."
+
+#: .\templates_bonusweb\business_menu\subscribe.html:129
 msgid "Redirecting..."
 msgstr "Weiterleitung…"
 
-#: .\templates_bonusweb\business_menu\subscribe.html:40
-msgid "Request failed. Try again."
-msgstr "Anfrage fehlgeschlagen. Bitte erneut versuchen."
+#: .\templates_bonusweb\business_menu\subscribe.html:142
+msgid "Could not start checkout. Please try again."
+msgstr "Könnte nicht mit der Kasse beginnen. Bitte versuchen Sie es noch mal."
+
+#: .\templates_bonusweb\business_menu\subscribe.html:147
+msgid "Request failed. Please try again."
+msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es noch mal."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:7
 msgid ""
 "You cancelled the payment. No charge was made. You can try again anytime to "
 "upgrade your plan and enable online payments from your digital menu."
-msgstr "Sie haben die Zahlung abgebrochen. Es wurde nichts belastet. Sie können jederzeit erneut versuchen, Ihren Plan zu upgraden und Online-Zahlungen aus Ihrem digitalen Menü zu ermöglichen."
+msgstr ""
+"Sie haben die Zahlung abgebrochen. Es wurde nichts belastet. Sie können "
+"jederzeit erneut versuchen, Ihren Plan zu upgraden und Online-Zahlungen aus "
+"Ihrem digitalen Menü zu ermöglichen."
 
 #: .\templates_bonusweb\business_menu\subscribe_cancel.html:10
 msgid "Try again – Start Plan"
@@ -2936,10 +4352,80 @@ msgstr "Vielen Dank!"
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:7
 msgid ""
-"Your subscription is active. You can now use the app and connect your Stripe "
-"account to receive customer payments."
-msgstr "Ihr Abonnement ist aktiv. Sie können jetzt die App nutzen und Ihr Stripe-Konto verbinden, um Kundenzahlungen zu erhalten."
+"Your subscription is active. You can now use the app and connect your Stripe"
+" account to receive customer payments."
+msgstr ""
+"Ihr Abonnement ist aktiv. Sie können jetzt die App nutzen und Ihr Stripe-"
+"Konto verbinden, um Kundenzahlungen zu erhalten."
 
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
 msgstr "Stripe verbinden, um Zahlungen zu erhalten"
+
+#~ msgid "Dashboard and analytics view"
+#~ msgstr "Dashboard- und Analyseansicht"
+
+#~ msgid "QR code and digital ordering"
+#~ msgstr "QR-Code und digitale Bestellung"
+
+#~ msgid "Tablet menu preview"
+#~ msgstr "Tablet-Menü-Vorschau"
+
+#~ msgid "Phone menu analytics"
+#~ msgstr "Menü-Analysen auf dem Smartphone"
+
+#~ msgid "Phone analytics"
+#~ msgstr "Smartphone-Analysen"
+
+#~ msgid "Premium phone mockup"
+#~ msgstr "Premium-Smartphone-Mockup"
+
+#~ msgid "Color portrait style"
+#~ msgstr "Farbenfroher Porträtstil"
+
+#~ msgid "Payment method"
+#~ msgstr "Zahlungsmethode"
+
+#, python-format
+#~ msgid "Pay with card. The payment goes to %(name)s."
+#~ msgstr "Mit Karte bezahlen. Die Zahlung geht an %(name)s."
+
+#, python-format
+#~ msgid "Pay %(currency)s %(total)s"
+#~ msgstr "%(currency)s %(total)s zahlen"
+
+#~ msgid "Payment successful."
+#~ msgstr "Zahlung erfolgreich."
+
+#~ msgid ""
+#~ "Please enter your delivery details so the restaurant can receive the order."
+#~ msgstr ""
+#~ "Bitte geben Sie Ihre Lieferdaten ein, damit das Restaurant die Bestellung "
+#~ "erhalten kann."
+
+#~ msgid "You can follow the order status in order tracking."
+#~ msgstr "Sie können den Bestellstatus in der Bestellverfolgung sehen."
+
+#~ msgid "Something went wrong."
+#~ msgstr "Etwas ist schiefgelaufen."
+
+#~ msgid "Toggle night mode"
+#~ msgstr "Nachtmodus umschalten"
+
+#~ msgid ""
+#~ "Your trial has ended. Complete your subscription to keep using the service."
+#~ msgstr ""
+#~ "Ihre Testphase ist beendet. Schließen Sie das Abonnement ab, um den Dienst "
+#~ "weiter zu nutzen."
+
+#~ msgid ""
+#~ "Pay 200 Euros to upgrade your plan. You will be redirected to Stripe "
+#~ "Checkout where you can pay with card, PayPal, Google Pay, Apple Pay and "
+#~ "other methods."
+#~ msgstr ""
+#~ "Zahlen Sie 200 Euro, um Ihren Plan zu upgraden. Sie werden zu Stripe "
+#~ "Checkout weitergeleitet und können mit Karte, PayPal, Google Pay, Apple Pay "
+#~ "usw. bezahlen."
+
+#~ msgid "You will be redirected to Stripe to complete payment."
+#~ msgstr "Sie werden zu Stripe weitergeleitet, um die Zahlung abzuschließen."

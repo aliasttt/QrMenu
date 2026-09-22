@@ -1,56 +1,77 @@
-"""List msgids from any .po that have empty msgstr (untranslated)."""
+"""Fail when a non-English gettext catalog can fall back to English."""
+
+from __future__ import annotations
+
+import ast
 import re
+from collections import Counter
 from pathlib import Path
 
+
 BASE = Path(__file__).resolve().parent.parent
-po = BASE / "locale" / "de" / "LC_MESSAGES" / "django.po"
-text = po.read_text(encoding="utf-8")
-lines = text.split("\n")
+TOKEN_RE = re.compile(r"%\([^)]+\)[a-zA-Z]")
+QUESTION_MARK_ALLOWED = {"What data will be deleted"}
 
-i = 0
-result = []
-while i < len(lines):
-    if lines[i].startswith("msgid \"") and not lines[i].startswith("msgid_plural"):
-        m = re.match(r'^msgid "(.*)"$', lines[i])
-        if not m:
-            i += 1
+
+def quoted(line: str) -> str:
+    return ast.literal_eval(line[line.index('"') :])
+
+
+def value(lines: list[str], prefix: str) -> str | None:
+    for index, line in enumerate(lines):
+        if line.startswith(prefix):
+            parts = [quoted(line)]
+            for continuation in lines[index + 1 :]:
+                if not continuation.startswith('"'):
+                    break
+                parts.append(ast.literal_eval(continuation))
+            return "".join(parts)
+    return None
+
+
+def issues(path: Path) -> list[str]:
+    problems: list[str] = []
+    blocks = path.read_text(encoding="utf-8-sig").split("\n\n")
+    for block in blocks:
+        lines = block.splitlines()
+        if not lines or any(line.startswith("#~") for line in lines):
             continue
-        parts = [m.group(1)]
-        k = i + 1
-        while k < len(lines) and lines[k].startswith("\""):
-            mm = re.match(r'^"(.*)"$', lines[k])
-            if mm:
-                parts.append(mm.group(1))
-            k += 1
-        msgid = "".join(parts)
-        # skip empty header msgid
+        msgid = value(lines, "msgid ")
         if not msgid:
-            i = k
             continue
-        # check msgstr
-        if k < len(lines) and lines[k].startswith("msgstr \""):
-            msgstr_parts = []
-            m2 = re.match(r'^msgstr "(.*)"$', lines[k])
-            if m2:
-                msgstr_parts.append(m2.group(1))
-            j = k + 1
-            while j < len(lines) and lines[j].startswith("\""):
-                mm = re.match(r'^"(.*)"$', lines[j])
-                if mm:
-                    msgstr_parts.append(mm.group(1))
-                j += 1
-            msgstr = "".join(msgstr_parts)
-            if not msgstr:
-                # unescape msgid for display
-                display = msgid.replace('\\"', '"').replace("\\n", "\\n").replace("\\\\", "\\")
-                result.append(display)
-            i = j
+        if any("fuzzy" in line for line in lines if line.startswith("#,")):
+            problems.append(f"fuzzy: {msgid!r}")
+            continue
+        is_plural = value(lines, "msgid_plural ") is not None
+        if not is_plural:
+            translations = [value(lines, "msgstr ")]
         else:
-            i = k
-    else:
-        i += 1
+            translations = [
+                value(lines, f"msgstr[{index}] ")
+                for index in range(sum(line.startswith("msgstr[") for line in lines))
+            ]
+        for translation in translations:
+            if not translation:
+                problems.append(f"empty: {msgid!r}")
+            elif "�" in translation or ("?" in translation and "?" not in msgid and msgid not in QUESTION_MARK_ALLOWED):
+                problems.append(f"encoding: {msgid!r}")
+            elif not is_plural and Counter(TOKEN_RE.findall(msgid)) != Counter(TOKEN_RE.findall(translation)):
+                problems.append(f"tokens: {msgid!r}")
+    return problems
 
-for r in result:
-    print(repr(r))
-print("---")
-print(f"TOTAL: {len(result)}")
+
+def main() -> int:
+    failed = False
+    for path in sorted((BASE / "locale").glob("*/LC_MESSAGES/django.po")):
+        if path.parts[-3] == "en":
+            continue
+        found = issues(path)
+        print(f"{path.parts[-3]}: {'OK' if not found else f'{len(found)} issue(s)'}")
+        for problem in found:
+            print(f"  {problem}")
+        failed |= bool(found)
+    return int(failed)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
