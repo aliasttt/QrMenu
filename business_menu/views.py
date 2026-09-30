@@ -32,6 +32,7 @@ from business_menu.hours_utils import (
     get_open_days as _get_open_days,
     get_reservation_time_slots_for_day as _get_reservation_time_slots_for_day,
 )
+from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
 
 import qrcode
 
@@ -2565,50 +2566,15 @@ class GetQRCodeForAppView(APIView):
 
 
 def _build_menu_cards_and_sections(request, restaurant, menu_items, settings_obj):
-    """Build menu_cards, menu_sections, category_list, banner_images (same format as core restaurant_menu)."""
+    """Build the public menu collections shared with the numeric/slug routes."""
     show_images = settings_obj.show_images if settings_obj else True
-    menu_cards = []
-    sections_map = {}
-
-    for item in menu_items:
-        img_url = None
-        if show_images:
-            first_img = item.images.first()
-            if first_img:
-                img_url = first_img.get_image_url(request=request)
-        if not img_url:
-            img_url = f"https://picsum.photos/seed/menu-{item.id}/640/400"
-        category_key = str(item.category.id) if item.category else "other"
-        category_name = item.category.name if item.category else "Other"
-        menu_cards.append({
-            "id": item.id,
-            "name": item.name,
-            "description": item.description or "",
-            "price": item.price,
-            "image_url": img_url,
-            "category_id": category_key,
-            "category_name": category_name,
-            "serial": (item.serial or "") if item.serial else "",
-            "stock": (item.stock or "").strip() or "Available",
-        })
-        if category_key not in sections_map:
-            sections_map[category_key] = {"id": category_key, "name": category_name, "items": []}
-        sections_map[category_key]["items"].append(menu_cards[-1])
-
-    menu_sections = list(sections_map.values())
-    category_list = []
-    for sec in menu_sections:
-        thumb = sec["items"][0]["image_url"] if sec["items"] else ""
-        category_list.append({"id": sec["id"], "name": sec["name"], "count": len(sec["items"]), "thumb": thumb})
-
-    banner_images = []
-    for card in menu_cards:
-        img = card.get("image_url")
-        if img and img not in banner_images:
-            banner_images.append(img)
-        if len(banner_images) >= 3:
-            break
-    return menu_cards, menu_sections, category_list, banner_images
+    return build_public_menu_collections(
+        request,
+        restaurant,
+        menu_items,
+        show_images=show_images,
+        stock_fallback="Available",
+    )
 
 
 def menu_qr_display_view(request, token):
@@ -2638,7 +2604,6 @@ def menu_qr_display_view(request, token):
         if settings_obj.menu_theme and getattr(settings_obj.menu_theme, "slug", None):
             theme_slug = f"theme--{settings_obj.menu_theme.slug}"
 
-        categories = Category.objects.filter(restaurant=restaurant, is_active=True).order_by("order", "name")
         menu_items = MenuItem.objects.filter(restaurant=restaurant, is_available=True).select_related("category").prefetch_related("images", "images__cloudinary_image")
         
         if settings_obj.show_serial:
@@ -2650,9 +2615,10 @@ def menu_qr_display_view(request, token):
         else:
             menu_items = menu_items.order_by('order', 'name')
 
-        menu_cards, menu_sections, category_list, banner_images = _build_menu_cards_and_sections(
+        menu_cards, menu_sections, category_list = _build_menu_cards_and_sections(
             request, restaurant, list(menu_items), settings_obj
         )
+        public_media = get_restaurant_public_media(restaurant)
 
         packages = Package.objects.filter(restaurant=restaurant, is_active=True).order_by('-created_at')
         packages_list = []
@@ -2710,7 +2676,8 @@ def menu_qr_display_view(request, token):
                 'menu_cards': menu_cards,
                 'menu_sections': menu_sections,
                 'category_list': category_list,
-                'banner_images': banner_images,
+                'banner_images': public_media['gallery_urls'],
+                **public_media,
                 'theme_slug': theme_slug,
                 'settings': settings_obj,
                 'packages': packages_list,

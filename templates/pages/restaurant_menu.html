@@ -46,11 +46,16 @@
       background: var(--menu-bg, #f8fafc);
     }
     .restaurant-menu-banner-img,
-    .restaurant-menu-logo-img,
     .restaurant-menu-item-img {
       height: 100% !important;
       width: 100% !important;
       object-fit: cover;
+    }
+    .restaurant-menu-logo-img {
+      height: 100% !important;
+      width: 100% !important;
+      object-fit: contain;
+      padding: .25rem;
     }
     .restaurant-menu-hero-logo {
       display: block;
@@ -240,11 +245,16 @@
       background: var(--menu-bg, #f8fafc);
     }
     .restaurant-menu-banner-img,
-    .restaurant-menu-logo-img,
     .restaurant-menu-item-img {
       height: 100% !important;
       width: 100% !important;
       object-fit: cover;
+    }
+    .restaurant-menu-logo-img {
+      height: 100% !important;
+      width: 100% !important;
+      object-fit: contain;
+      padding: .25rem;
     }
     .restaurant-menu-hero-logo {
       display: block;
@@ -942,12 +952,9 @@
             :class="activeCategory === '{{ cat.id }}' ? 'menu-category-active' : 'menu-themed-surface'"
             class="w-full rounded-xl border p-2 text-left transition"
           >
-            <div class="flex items-center gap-2.5">
-              <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-11 w-11 rounded-lg object-cover menu-themed-soft" loading="lazy" />
-              <div class="min-w-0">
-                <p class="line-clamp-1 text-xs font-semibold">{{ cat.name }}</p>
-                <p class="text-[11px] menu-themed-muted">{% blocktrans count counter=cat.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}</p>
-              </div>
+            <div class="min-w-0">
+              <p class="line-clamp-1 text-sm font-semibold">{{ cat.name }}</p>
+              <p class="text-[11px] menu-themed-muted">{% blocktrans count counter=cat.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}</p>
             </div>
           </button>
           {% endfor %}
@@ -956,24 +963,24 @@
 
       <div class="min-w-0">
         <header class="restaurant-menu-hero rounded-2xl border border-slate-200 bg-white p-3.5 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card min-w-0 overflow-hidden">
-          {% if banner_images %}
-          <div class="restaurant-menu-banner-grid grid grid-cols-3 gap-1 sm:gap-2 min-w-0 w-full">
-            {% for banner in banner_images %}
-            <div class="restaurant-menu-banner-frame h-20 min-w-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800 sm:h-40">
-              <img src="{{ banner }}" alt="{{ restaurant.name }}" class="restaurant-menu-banner-img" loading="lazy">
+          {% if gallery_urls %}
+          <div class="restaurant-menu-banner-grid grid min-w-0 w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {% for gallery_image in gallery_urls %}
+            <div class="restaurant-menu-banner-frame relative h-40 min-w-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800 sm:h-48">
+              <div class="absolute inset-0 hidden items-center justify-center text-sm font-semibold text-slate-400" aria-hidden="true">{{ restaurant.name|first|upper }}</div>
+              <img src="{{ gallery_image }}" alt="{{ restaurant.name }}" class="restaurant-menu-banner-img" loading="lazy" onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden'); this.previousElementSibling.classList.add('flex')">
             </div>
             {% endfor %}
           </div>
           {% endif %}
 
           <div class="restaurant-menu-identity relative mt-3 rounded-2xl border p-4 menu-themed-soft">
-            {% if banner_images %}
             <div class="restaurant-menu-hero-logo absolute -top-8 left-1/2 h-16 w-16 -translate-x-1/2 overflow-hidden rounded-full border-2 border-white bg-white shadow">
-              <img src="{{ banner_images.0 }}" alt="{{ restaurant.name }}" class="restaurant-menu-logo-img">
+              <div class="flex h-full w-full items-center justify-center text-xl font-black text-slate-500{% if logo_url %} hidden{% endif %}" aria-hidden="true">{{ restaurant.name|first|upper }}</div>
+              {% if logo_url %}<img src="{{ logo_url }}" alt="{{ restaurant.name }}" class="restaurant-menu-logo-img" onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden')">{% endif %}
             </div>
-            {% endif %}
 
-            <h1 class="restaurant-menu-title text-2xl font-extrabold text-slate-900 dark:text-white {% if banner_images %}sm:pt-8{% endif %}">{{ restaurant.name }}</h1>
+            <h1 class="restaurant-menu-title pt-8 text-2xl font-extrabold text-slate-900 dark:text-white">{{ restaurant.name }}</h1>
 
             {% if restaurant.description %}
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ restaurant.description }}</p>
@@ -1008,14 +1015,13 @@
         </div>
 
         <div class="restaurant-mobile-categories mt-4 flex gap-3 overflow-x-auto lg:hidden">
-          <button @click="setCategory('all')" :class="activeCategory === 'all' ? 'menu-category-active' : 'menu-themed-surface'" class="w-28 shrink-0 rounded-xl border p-2 text-left">
-            <div class="h-12 rounded-lg menu-themed-soft"></div>
-            <p class="mt-1 line-clamp-1 text-xs font-semibold">{% trans "All" %}</p>
+          <button @click="setCategory('all')" :class="activeCategory === 'all' ? 'menu-category-active' : 'menu-themed-surface'" class="shrink-0 rounded-xl border px-4 py-2 text-left">
+            <p class="line-clamp-1 text-xs font-semibold">{% trans "All" %}</p>
           </button>
           {% for cat in category_list %}
-          <button @click="setCategory('{{ cat.id }}')" :class="activeCategory === '{{ cat.id }}' ? 'menu-category-active' : 'menu-themed-surface'" class="w-28 shrink-0 rounded-xl border p-2 text-left">
-            <img src="{{ cat.thumb }}" alt="{{ cat.name }}" class="h-12 w-full rounded-lg object-cover menu-themed-soft" loading="lazy">
-            <p class="mt-1 line-clamp-1 text-xs font-semibold">{{ cat.name }}</p>
+          <button @click="setCategory('{{ cat.id }}')" :class="activeCategory === '{{ cat.id }}' ? 'menu-category-active' : 'menu-themed-surface'" class="shrink-0 rounded-xl border px-4 py-2 text-left">
+            <p class="line-clamp-1 text-xs font-semibold">{{ cat.name }}</p>
+            <p class="text-[11px] menu-themed-muted">{{ cat.count }}</p>
           </button>
           {% endfor %}
         </div>
@@ -1060,7 +1066,7 @@
                   <div class="group relative hidden overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md md:block restaurant-menu-card">
                     {% if not settings or settings.show_images %}
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                      <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
+                      {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">{% else %}<div class="flex h-full w-full items-center justify-center text-3xl font-black text-slate-400">{{ item.name|first|upper }}</div>{% endif %}
                       <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full text-xl font-bold shadow-md transition disabled:opacity-50 disabled:pointer-events-none menu-themed-button">+</button>
                     </div>
                     {% endif %}
@@ -1079,7 +1085,7 @@
                   <div class="restaurant-menu-mobile-card overflow-hidden rounded-2xl border md:hidden restaurant-menu-card">
                     {% if not settings or settings.show_images %}
                     <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                      <img src="{{ item.image_url }}" alt="{{ item.name }}" class="restaurant-menu-item-img" loading="lazy">
+                      {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.name }}" class="restaurant-menu-item-img" loading="lazy">{% else %}<div class="flex h-full w-full items-center justify-center text-3xl font-black text-slate-400">{{ item.name|first|upper }}</div>{% endif %}
                       <button :disabled="!canOrderNow()" @click="addToCart({{ item.id }}, '{{ item.name|escapejs }}', '{{ item.price }}', 1)" class="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full text-xl font-bold shadow-lg disabled:opacity-50 disabled:pointer-events-none menu-themed-button">+</button>
                     </div>
                     {% endif %}
@@ -1112,7 +1118,7 @@
           <h3 class="text-lg font-bold text-slate-900 dark:text-white" x-text="modalItem.name"></h3>
           <button @click="modalOpen = false" class="rounded-lg border border-slate-300 px-2 py-1 text-sm dark:border-slate-600">×</button>
         </div>
-        <img :src="modalItem.image" :alt="modalItem.name" class="mt-3 h-48 w-full rounded-xl object-cover bg-slate-100 dark:bg-slate-800">
+        <img x-show="modalItem.image" :src="modalItem.image" :alt="modalItem.name" class="mt-3 h-48 w-full rounded-xl object-cover bg-slate-100 dark:bg-slate-800">
         <p class="mt-3 text-sm text-slate-600 dark:text-slate-400" x-text="modalItem.description"></p>
         <div class="mt-4 flex items-center justify-between">
           <p class="text-xl font-bold text-slate-900 dark:text-white">£ <span x-text="modalItem.price"></span></p>

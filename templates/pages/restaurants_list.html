@@ -23,12 +23,18 @@
         {% for r in restaurants %}
           <a href="{% url 'restaurant_menu' r.id %}" class="card-soft group block transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover dark:bg-slate-800 dark:border-slate-600 dark:hover:shadow-xl dark:shadow-slate-900/50" data-reveal>
             <div class="aspect-[4/3] overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-700">
+              <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300 text-5xl font-black text-slate-500 dark:from-slate-700 dark:to-slate-800 dark:text-slate-300{% if r.public_media.card_image_url %} hidden{% endif %}" aria-hidden="true">
+                {{ r.name|first|upper }}
+              </div>
+              {% if r.public_media.card_image_url %}
               <img
-                src="https://loremflickr.com/640/480/restaurant,food?lock={{ r.id }}"
+                src="{{ r.public_media.card_image_url }}"
                 alt="{{ r.name }}"
                 class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 loading="lazy"
+                onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden')"
               />
+              {% endif %}
             </div>
             <div class="mt-4">
               <h2 class="font-semibold text-slate-900 dark:text-white">{{ r.name }}</h2>

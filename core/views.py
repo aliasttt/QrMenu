@@ -31,6 +31,7 @@ from business_menu.hours_utils import (
     get_open_days,
     get_slots_for_day,
 )
+from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
 
 
 def _restaurant_payload(restaurant_slug="orange-bistro"):
@@ -447,7 +448,9 @@ def service_detail(request, service_slug):
 
 def restaurants_list(request):
     """صفحهٔ لیست رستوران‌ها / کافه‌ها به صورت کارت."""
-    restaurants = Restaurant.objects.filter(is_active=True).order_by("name")
+    restaurants = list(Restaurant.objects.filter(is_active=True).order_by("name"))
+    for restaurant in restaurants:
+        restaurant.public_media = get_restaurant_public_media(restaurant)
     return render(request, "pages/restaurants_list.html", {"restaurants": restaurants})
 
 
@@ -509,58 +512,11 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
             items = items.order_by("order", "name")
     else:
         items = items.order_by("order", "name")
-    menu_cards = []
-    sections_map = {}
     show_images = getattr(settings_obj, "show_images", True)
-    for item in items:
-        img_url = None
-        if show_images:
-            first_img = item.images.first()
-            if first_img:
-                img_url = first_img.get_image_url(request=request)
-        if not img_url:
-            img_url = f"https://picsum.photos/seed/menu-{item.id}/640/400"
-        category_key = str(item.category.id) if item.category else "other"
-        category_name = item.category.name if item.category else "Other"
-        menu_cards.append({
-            "id": item.id,
-            "name": item.name,
-            "description": item.description or "",
-            "price": item.price,
-            "image_url": img_url,
-            "category_id": category_key,
-            "category_name": category_name,
-            "serial": getattr(item, "serial", None) or "",
-            "stock": getattr(item, "stock", None) or "",
-        })
-
-        if category_key not in sections_map:
-            sections_map[category_key] = {
-                "id": category_key,
-                "name": category_name,
-                "items": [],
-            }
-        sections_map[category_key]["items"].append(menu_cards[-1])
-
-    menu_sections = list(sections_map.values())
-    category_list = []
-    for sec in menu_sections:
-        thumb = sec["items"][0]["image_url"] if sec["items"] else ""
-        category_list.append({
-            "id": sec["id"],
-            "name": sec["name"],
-            "count": len(sec["items"]),
-            "thumb": thumb,
-        })
-
-    # Use first menu images as top banner gallery (if available).
-    banner_images = []
-    for card in menu_cards:
-        img = card.get("image_url")
-        if img and img not in banner_images:
-            banner_images.append(img)
-        if len(banner_images) >= 3:
-            break
+    menu_cards, menu_sections, category_list = build_public_menu_collections(
+        request, restaurant, list(items), show_images=show_images
+    )
+    public_media = get_restaurant_public_media(restaurant)
 
     restaurant_hours = getattr(settings_obj, "opening_hours", None) or getattr(restaurant, "hours", None) or ""
     is_within_hours = is_within_opening_hours(settings_obj)
@@ -623,7 +579,8 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
         "menu_cards": menu_cards,
         "menu_sections": menu_sections,
         "category_list": category_list,
-        "banner_images": banner_images,
+        "banner_images": public_media["gallery_urls"],
+        **public_media,
         "theme_slug": theme_slug,
         "settings": settings_obj,
         "packages": [],
