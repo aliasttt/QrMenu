@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import uuid
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -127,6 +130,15 @@ class PendingEmailVerification(models.Model):
         ordering = ["-created_at"]
 
 
+def validate_iana_timezone(value):
+    if not value:
+        return
+    try:
+        ZoneInfo(value)
+    except (ZoneInfoNotFoundError, ValueError, TypeError) as exc:
+        raise ValidationError("Enter a valid IANA timezone, for example Europe/Berlin.") from exc
+
+
 class Restaurant(models.Model):
     """
     Restaurant or cafe managed by admin
@@ -144,6 +156,12 @@ class Restaurant(models.Model):
     phone = models.CharField(max_length=32, blank=True, help_text="Restaurant phone number")
     country = models.CharField(max_length=100, blank=True, help_text="Country")
     city = models.CharField(max_length=100, blank=True, help_text="City")
+    timezone = models.CharField(
+        max_length=64,
+        blank=True,
+        validators=[validate_iana_timezone],
+        help_text="IANA timezone used only for reservations, for example Europe/Berlin.",
+    )
     postal_code = models.CharField(max_length=20, blank=True, help_text="Postal / ZIP code")
     latitude = models.DecimalField(
         max_digits=9,
@@ -689,8 +707,31 @@ class Reservation(models.Model):
         CANCELLED = "cancelled", "Cancelled"
 
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="reservations")
+    request_id = models.UUIDField(
+        null=True,
+        blank=True,
+        unique=True,
+        editable=False,
+        help_text="Optional client idempotency key for safe reservation retries.",
+    )
+    payment_setup_failed = models.BooleanField(
+        default=False,
+        help_text="True only when initial Stripe setup failed and this request may be retried safely.",
+    )
     requested_date = models.DateField(help_text="Requested reservation date")
     requested_time = models.CharField(max_length=10, blank=True, help_text="e.g. 19:00 or 19:30")
+    requested_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Timezone-aware start instant; date/time fields remain for API compatibility.",
+    )
+    occupies_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Timezone-aware end of reservation duration plus buffer.",
+    )
     guests_count = models.PositiveIntegerField(default=1, help_text="Number of people")
     customer_name = models.CharField(max_length=200)
     customer_phone = models.CharField(max_length=32, blank=True)

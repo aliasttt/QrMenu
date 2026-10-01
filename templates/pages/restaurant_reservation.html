@@ -9,6 +9,7 @@
   selectedDate: '',
   timeSlots: [],
   isFull: false,
+  slotsDetail: '',
   loadingSlots: false,
   guestsCount: 1,
   customerName: '',
@@ -19,6 +20,7 @@
   submitLoading: false,
   submitError: '',
   successReservation: null,
+  requestId: '{{ reservation_request_id|escapejs }}',
   apiBase: '/api/business-menu',
   restaurantId: {{ restaurant.id }},
   maxGuests: {{ max_guests_per_reservation }},
@@ -36,14 +38,18 @@
     this.loadingSlots = true;
     this.timeSlots = [];
     this.isFull = false;
+    this.slotsDetail = '';
     try {
       const r = await fetch(this.apiBase + '/reservation/slots/?restaurant_id=' + this.restaurantId + '&date=' + this.selectedDate);
       const data = await r.json();
       if (r.ok) {
         this.timeSlots = data.time_slots || [];
         this.isFull = data.is_full || false;
+        this.slotsDetail = data.detail || '';
+      } else {
+        this.slotsDetail = data.detail || this.T.requestFailed;
       }
-    } catch (e) { this.timeSlots = []; }
+    } catch (e) { this.timeSlots = []; this.slotsDetail = this.T.networkError; }
     this.loadingSlots = false;
   },
   selectedTime: '',
@@ -70,6 +76,7 @@
       customer_email: this.customerEmail.trim(),
       notes: this.notes.trim(),
       payment_method: this.paymentMethod,
+      request_id: this.requestId,
     };
     if (this.hasCart()) body.order_details = this.orderDetailsPayload();
     try {
@@ -120,8 +127,13 @@
               <option value="{{ d.date }}" {% if forloop.first %}selected{% endif %}>{{ d.label }}</option>
               {% endfor %}
             </select>
+            {% if not days_available %}
+            <p class="mt-2 text-sm text-amber-700 dark:text-amber-300">
+              {% if reservation_configuration_error %}{% trans "Restaurant timezone is not configured." %}{% else %}{% trans "None available" %}{% endif %}
+            </p>
+            {% endif %}
           </div>
-          <div x-show="timeSlots.length || loadingSlots">
+          <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Time" %}</label>
             <p x-show="isFull" class="mt-1 text-sm text-amber-600 dark:text-amber-400">{% trans "This day is fully booked. Please choose another date." %}</p>
             <select x-model="selectedTime" :disabled="isFull" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
@@ -131,6 +143,7 @@
               </template>
             </select>
             <p x-show="loadingSlots" class="mt-1 text-sm text-slate-500">{% trans "Loading…" %}</p>
+            <p x-show="!loadingSlots && slotsDetail" class="mt-1 text-sm text-amber-600 dark:text-amber-400" x-text="slotsDetail"></p>
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Number of guests" %}</label>
@@ -174,7 +187,7 @@
             </div>
           </template>
           <p x-show="submitError" class="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="submitError"></p>
-          <button type="submit" :disabled="submitLoading" class="w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
+          <button type="submit" :disabled="submitLoading || !selectedDate || !timeSlots.length" class="w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
             <span x-show="!submitLoading">{% trans "Request reservation" %}</span>
             <span x-show="submitLoading">{% trans "Sending…" %}</span>
           </button>

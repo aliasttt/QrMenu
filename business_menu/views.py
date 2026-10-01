@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.urls import reverse
 from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Count, Q, Sum
@@ -15,7 +16,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from django.templatetags.static import static as static_url
 import io
 import json
@@ -24,15 +25,21 @@ import os
 import re
 import random
 import uuid
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from business_menu.hours_utils import (
     is_within_opening_hours as _is_within_opening_hours,
     is_datetime_within_hours as _is_datetime_within_hours,
-    get_open_days as _get_open_days,
-    get_reservation_time_slots_for_day as _get_reservation_time_slots_for_day,
 )
 from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
+from business_menu.reservation_services import (
+    create_reservation_with_capacity,
+    get_reservation_policy,
+    reservation_count,
+    reservation_local_today,
+    reservation_slots,
+    retry_failed_payment_reservation,
+)
 
 import qrcode
 
@@ -2659,12 +2666,13 @@ def menu_qr_display_view(request, token):
             )
             and stripe_ok
         )
+        reservation_policy = get_reservation_policy(restaurant)
         order_options = {
             "has_delivery": delivery_enabled,
             "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
             "allow_payment_online": allow_online,
             "online_ordering_enabled": bool(allow_online),
-            "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
+            "reservation_enabled": reservation_policy.enabled,
         }
         cart_items = list(request.session.get(_cart_key(restaurant.id), []))
         return render(
@@ -2686,7 +2694,7 @@ def menu_qr_display_view(request, token):
                 'is_within_hours': is_within_hours,
                 'scheduled_for': "",
                 'schedule_url': f"/restaurants/{restaurant.id}/schedule/",
-                'reservation_url': f"/restaurants/{restaurant.id}/reservation/",
+                'reservation_url': reverse("restaurant_reservation", kwargs={"restaurant_id": restaurant.id}),
                 'is_qr_menu': True,
                 'token': token,
                 'menu_url': request.build_absolute_uri(request.path),
@@ -4593,14 +4601,6 @@ class AdminOrderSettingsView(APIView):
 
 # ---------- Reservation (public + admin) ----------
 
-def _reservation_count_for_date(restaurant, req_date):
-    """Count reservations (pending + confirmed) for a date; used to check if day is full."""
-    from django.db.models import Q
-    return Reservation.objects.filter(
-        restaurant=restaurant,
-        requested_date=req_date,
-    ).exclude(status=Reservation.Status.CANCELLED).count()
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class ReservationConfigView(APIView):
@@ -4615,34 +4615,28 @@ class ReservationConfigView(APIView):
         restaurant, err = _get_restaurant_for_public(request)
         if err:
             return err
-        settings_obj, _ = RestaurantSettings.objects.get_or_create(
-            restaurant=restaurant,
-            defaults={
-                "show_prices": True,
-                "show_images": True,
-                "show_descriptions": True,
-                "show_serial": False,
-                "has_delivery": False,
-                "allow_payment_cash": True,
-                "allow_payment_online": True,
-                "reservation_enabled": False,
-                "total_tables": 10,
-                "max_guests_per_reservation": 10,
-            },
-        )
-        if not getattr(settings_obj, "reservation_enabled", False):
+        policy = get_reservation_policy(restaurant)
+        if not policy.enabled:
             return Response(
                 {"detail": "Reservations are not enabled for this restaurant."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        hours_json = getattr(settings_obj, "opening_hours_json", None) or []
+        local_today = reservation_local_today(policy)
         return Response({
             "restaurant_id": restaurant.id,
             "restaurant_name": restaurant.name,
             "reservation_enabled": True,
-            "opening_hours_json": hours_json,
-            "total_tables": getattr(settings_obj, "total_tables", 10),
-            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
+            "opening_hours_json": policy.schedule,
+            "total_tables": policy.capacity,
+            "max_guests_per_reservation": policy.max_guests,
+            "settings_source": policy.source,
+            "schedule": policy.schedule,
+            "capacity": policy.capacity,
+            "advance_booking_days": policy.advance_days,
+            "reservation_duration": policy.duration_minutes,
+            "buffer_minutes": policy.buffer_minutes,
+            "timezone": policy.timezone_name or None,
+            "configuration_complete": local_today is not None,
         }, status=status.HTTP_200_OK)
 
 
@@ -4659,15 +4653,21 @@ class ReservationSlotsView(APIView):
         restaurant, err = _get_restaurant_for_public(request)
         if err:
             return err
-        settings_obj, _ = RestaurantSettings.objects.get_or_create(
-            restaurant=restaurant,
-            defaults={"reservation_enabled": False, "total_tables": 10, "max_guests_per_reservation": 10},
-        )
-        if not getattr(settings_obj, "reservation_enabled", False):
+        policy = get_reservation_policy(restaurant)
+        if not policy.enabled:
             return Response(
                 {"detail": "Reservations are not enabled."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        if reservation_local_today(policy) is None:
+            return Response({
+                "restaurant_id": restaurant.id,
+                "date": (request.query_params.get("date") or "").strip(),
+                "time_slots": [],
+                "is_full": False,
+                "configuration_complete": False,
+                "detail": "Restaurant timezone is not configured.",
+            }, status=status.HTTP_200_OK)
         date_str = (request.query_params.get("date") or "").strip()
         if not date_str:
             return Response(
@@ -4682,21 +4682,28 @@ class ReservationSlotsView(APIView):
                 {"detail": "Invalid date format. Use YYYY-MM-DD."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if req_date < timezone.now().date():
+        if req_date < reservation_local_today(policy):
             return Response(
                 {"detail": "Date must be today or in the future."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        day_int = req_date.weekday()  # 0=Monday, 6=Sunday
-        slots = _get_reservation_time_slots_for_day(settings_obj, day_int)
-        count = _reservation_count_for_date(restaurant, req_date)
-        total_tables = getattr(settings_obj, "total_tables", 10)
-        is_full = count >= total_tables
+        configured_slots = reservation_slots(policy, req_date)
+        if policy.capacity_scope == "day":
+            is_full = policy.capacity <= 0 or reservation_count(restaurant, policy, req_date) >= policy.capacity
+            slots = [] if is_full else configured_slots
+        else:
+            slots = [
+                slot for slot in configured_slots
+                if reservation_count(restaurant, policy, req_date, slot) < policy.capacity
+            ]
+            is_full = bool(configured_slots) and not slots
         return Response({
             "restaurant_id": restaurant.id,
             "date": date_str,
             "time_slots": slots,
             "is_full": is_full,
+            "configuration_complete": True,
+            "detail": "No reservation times are available for this date." if not slots and not is_full else "",
         }, status=status.HTTP_200_OK)
 
 
@@ -4715,23 +4722,31 @@ class ReservationCreateView(APIView):
         restaurant, err = _get_restaurant_for_public(request)
         if err:
             return err
-        settings_obj, _ = RestaurantSettings.objects.get_or_create(
-            restaurant=restaurant,
-            defaults={"reservation_enabled": False, "total_tables": 10, "max_guests_per_reservation": 10},
-        )
-        if not getattr(settings_obj, "reservation_enabled", False):
+        policy = get_reservation_policy(restaurant)
+        if not policy.enabled:
             return Response(
                 {"detail": "Reservations are not enabled for this restaurant."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        local_today = reservation_local_today(policy)
+        if local_today is None:
+            return Response(
+                {"detail": "Restaurant timezone is not configured."},
+                status=status.HTTP_409_CONFLICT,
+            )
         data = request.data or {}
+        raw_request_id = str(data.get("request_id") or request.headers.get("Idempotency-Key") or "").strip()
+        try:
+            request_id = uuid.UUID(raw_request_id) if raw_request_id else uuid.uuid4()
+        except (ValueError, TypeError, AttributeError):
+            return Response({"detail": "request_id must be a UUID."}, status=status.HTTP_400_BAD_REQUEST)
         requested_date_str = (data.get("requested_date") or "").strip()
         requested_time = (data.get("requested_time") or "").strip()[:10]
         try:
             guests_count = max(1, int(data.get("guests_count", 1)))
         except (TypeError, ValueError):
             guests_count = 1
-        max_guests = getattr(settings_obj, "max_guests_per_reservation", 10)
+        max_guests = policy.max_guests
         if guests_count > max_guests:
             return Response(
                 {"detail": f"Maximum {max_guests} guests per reservation."},
@@ -4752,7 +4767,11 @@ class ReservationCreateView(APIView):
         payment_method = (data.get("payment_method") or "cash").strip().lower()
         if payment_method not in ("cash", "online"):
             payment_method = "cash"
-        if payment_method == "online" and not (getattr(settings_obj, "allow_payment_online", True)):
+        try:
+            restaurant_settings = restaurant.settings
+        except RestaurantSettings.DoesNotExist:
+            restaurant_settings = None
+        if payment_method == "online" and not getattr(restaurant_settings, "allow_payment_online", True):
             return Response(
                 {"detail": "Online payment is not available."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -4766,32 +4785,111 @@ class ReservationCreateView(APIView):
                 {"detail": "Invalid requested_date. Use YYYY-MM-DD."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if req_date < timezone.now().date():
+        if req_date < local_today:
             return Response(
                 {"detail": "Requested date must be today or in the future."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if _reservation_count_for_date(restaurant, req_date) >= getattr(settings_obj, "total_tables", 10):
+        available_slots = reservation_slots(policy, req_date)
+        if requested_time not in available_slots:
             return Response(
-                {"detail": "This date is fully booked."},
+                {"detail": "The selected reservation time is not available."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         order_details_json = list(order_details) if order_details else []
         total_amount = Decimal("0.00")
-        if order_details_json:
+        try:
             for item in order_details_json:
-                qty = int(item.get("quantity") or 1)
+                if not isinstance(item, dict):
+                    raise ValueError
+                qty = max(1, int(item.get("quantity") or 1))
                 price = Decimal(str(item.get("price", 0)).replace(",", "."))
+                if price < 0:
+                    raise ValueError
                 total_amount += price * qty
+        except (InvalidOperation, TypeError, ValueError):
+            return Response({"detail": "Invalid order details."}, status=status.HTTP_400_BAD_REQUEST)
 
-        order_created = None
-        stripe_payment_intent_id = None
-        if order_details_json and payment_method == "online" and total_amount > 0:
-            admin = getattr(restaurant, "admin", None)
-            if admin and getattr(admin, "stripe_account_id", None):
-                try:
-                    with transaction.atomic():
+        needs_online_payment = bool(order_details_json and payment_method == "online" and total_amount > 0)
+        admin = getattr(restaurant, "admin", None)
+        if needs_online_payment and (
+            not admin
+            or not getattr(admin, "stripe_account_id", None)
+            or not getattr(settings, "STRIPE_SECRET_KEY", "")
+            or total_amount < Decimal("0.50")
+        ):
+            return Response(
+                {"detail": "Online payment is not available. Choose cash."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        existing = Reservation.objects.filter(request_id=request_id).select_related("order").first()
+        if existing and existing.restaurant_id != restaurant.id:
+            return Response({"detail": "request_id is already in use."}, status=status.HTTP_409_CONFLICT)
+        if existing and (
+            existing.requested_date != req_date
+            or existing.requested_time != requested_time
+            or existing.payment_method != payment_method
+            or existing.order_details_json != order_details_json
+        ):
+            return Response({"detail": "request_id does not match the original request."}, status=status.HTTP_409_CONFLICT)
+
+        def response_payload(reservation):
+            payload = {
+                "reservation_id": reservation.id,
+                "status": reservation.status,
+                "requested_date": requested_date_str,
+                "requested_time": requested_time,
+                "guests_count": reservation.guests_count,
+            }
+            if reservation.order_id and reservation.stripe_payment_intent_id:
+                payload.update({
+                    "requires_payment": True,
+                    "payment_url": f"/restaurants/{restaurant.id}/order/{reservation.order_id}/pay/",
+                    "order_id": reservation.order_id,
+                })
+            return payload
+
+        if existing and not existing.payment_setup_failed:
+            return Response(response_payload(existing), status=status.HTTP_200_OK)
+
+        try:
+            reservation = (
+                retry_failed_payment_reservation(existing)
+                if existing
+                else create_reservation_with_capacity(
+                    restaurant=restaurant,
+                    policy=policy,
+                    requested_date=req_date,
+                    requested_time=requested_time,
+                    request_id=request_id,
+                    guests_count=guests_count,
+                    customer_name=customer_name,
+                    customer_phone=customer_phone,
+                    customer_email=customer_email,
+                    notes=notes,
+                    status=Reservation.Status.PENDING,
+                    order_details_json=order_details_json,
+                    payment_method=payment_method,
+                    payment_setup_failed=needs_online_payment,
+                )
+            )
+        except ValueError:
+            return Response(
+                {"detail": "The selected reservation time is no longer available."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        except IntegrityError:
+            return Response({"detail": "This reservation request is already processing."}, status=status.HTTP_409_CONFLICT)
+
+        order_created = reservation.order
+        if needs_online_payment:
+            try:
+                with transaction.atomic():
+                    reservation = Reservation.objects.select_for_update().get(pk=reservation.pk)
+                    order_created = reservation.order
+                    if order_created is None:
                         order_created = Order.objects.create(
                             restaurant=restaurant,
                             status=Order.Status.PENDING,
@@ -4804,51 +4902,43 @@ class ReservationCreateView(APIView):
                             payment_method=Order.PaymentMethod.ONLINE,
                             session_key=request.session.session_key or "",
                         )
-                    from django.conf import settings as django_settings
-                    if getattr(django_settings, "STRIPE_SECRET_KEY", None):
-                        import stripe
-                        stripe.api_key = django_settings.STRIPE_SECRET_KEY
-                        amount_cents = int(round(float(total_amount) * 100))
-                        if amount_cents >= 50:
-                            pi = stripe.PaymentIntent.create(
-                                amount=amount_cents,
-                                currency="eur",
-                                automatic_payment_methods={"enabled": True},
-                                transfer_data={"destination": admin.stripe_account_id},
-                                metadata={
-                                    "order_id": str(order_created.id),
-                                    "restaurant_id": str(restaurant.id),
-                                    "reservation": "1",
-                                },
-                            )
-                            stripe_payment_intent_id = pi.id
-                            order_created.stripe_payment_intent_id = pi.id
-                            order_created.save(update_fields=["stripe_payment_intent_id"])
-                except Exception as e:
-                    logger.exception("Reservation order/payment create failed: %s", e)
-                    if order_created:
-                        order_created.delete()
-                    return Response(
-                        {"detail": "Could not create payment. Try cash or try again."},
-                        status=status.HTTP_502_BAD_GATEWAY,
-                    )
+                        reservation.order = order_created
+                        reservation.save(update_fields=["order", "updated_at"])
+                    elif order_created.status == Order.Status.CANCELLED:
+                        order_created.status = Order.Status.PENDING
+                        order_created.save(update_fields=["status", "updated_at"])
 
-        with transaction.atomic():
-            reservation = Reservation.objects.create(
-                restaurant=restaurant,
-                requested_date=req_date,
-                requested_time=requested_time,
-                guests_count=guests_count,
-                customer_name=customer_name,
-                customer_phone=customer_phone,
-                customer_email=customer_email,
-                notes=notes,
-                status=Reservation.Status.PENDING,
-                order=order_created,
-                order_details_json=order_details_json,
-                payment_method=payment_method,
-                stripe_payment_intent_id=stripe_payment_intent_id or None,
-            )
+                import stripe
+                stripe.api_key = settings.STRIPE_SECRET_KEY
+                pi = stripe.PaymentIntent.create(
+                    amount=int(round(float(total_amount) * 100)),
+                    currency="eur",
+                    automatic_payment_methods={"enabled": True},
+                    transfer_data={"destination": admin.stripe_account_id},
+                    metadata={
+                        "order_id": str(order_created.id),
+                        "restaurant_id": str(restaurant.id),
+                        "reservation": "1",
+                    },
+                    idempotency_key=f"reservation-{request_id}",
+                )
+                order_created.stripe_payment_intent_id = pi.id
+                order_created.save(update_fields=["stripe_payment_intent_id", "updated_at"])
+                reservation.stripe_payment_intent_id = pi.id
+                reservation.payment_setup_failed = False
+                reservation.save(update_fields=["stripe_payment_intent_id", "payment_setup_failed", "updated_at"])
+            except Exception as exc:
+                logger.exception("Reservation order/payment create failed: %s", exc)
+                reservation.status = Reservation.Status.CANCELLED
+                reservation.payment_setup_failed = True
+                reservation.save(update_fields=["status", "payment_setup_failed", "updated_at"])
+                if order_created:
+                    order_created.status = Order.Status.CANCELLED
+                    order_created.save(update_fields=["status", "updated_at"])
+                return Response(
+                    {"detail": "Could not create payment. Try cash or try again."},
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
 
         from .reservation_emails import send_reservation_new_request_email
         try:
@@ -4856,18 +4946,7 @@ class ReservationCreateView(APIView):
         except Exception as e:
             logger.warning("Reservation new-request email failed: %s", e)
 
-        payload = {
-            "reservation_id": reservation.id,
-            "status": reservation.status,
-            "requested_date": requested_date_str,
-            "requested_time": requested_time,
-            "guests_count": guests_count,
-        }
-        if order_created and payment_method == "online" and stripe_payment_intent_id:
-            payload["requires_payment"] = True
-            payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order_created.id}/pay/"
-            payload["order_id"] = order_created.id
-        return Response(payload, status=status.HTTP_201_CREATED)
+        return Response(response_payload(reservation), status=status.HTTP_201_CREATED)
 
 
 class AdminReservationListView(APIView):

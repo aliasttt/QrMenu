@@ -345,7 +345,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = (
             'id', 'admin', 'admin_name', 'name', 'description', 'address', 'phone',
-            'country', 'city', 'is_active', 'created_at',
+            'country', 'city', 'timezone', 'is_active', 'created_at',
         )
         read_only_fields = ('id', 'created_at')
 
@@ -381,6 +381,7 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
             "address",
             "city",
             "country",
+            "timezone",
             "postal_code",
             "latitude",
             "longitude",
@@ -398,6 +399,7 @@ class RestaurantProfileSerializer(serializers.ModelSerializer):
             "website": {"allow_blank": True},
             "whatsapp": {"allow_blank": True},
             "google_place_id": {"allow_blank": True, "required": False},
+            "timezone": {"allow_blank": True, "required": False},
         }
 
     def get_google_maps_url(self, obj):

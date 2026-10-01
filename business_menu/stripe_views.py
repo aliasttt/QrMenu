@@ -424,6 +424,16 @@ class CreateOrderPaymentIntentView(APIView):
         currency = (getattr(order, "currency", None) or "eur").lower()[:3]
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        if order.stripe_payment_intent_id:
+            try:
+                pi = stripe.PaymentIntent.retrieve(order.stripe_payment_intent_id)
+            except Exception as e:
+                logger.exception("Existing PaymentIntent retrieve failed: %s", e)
+                return Response(
+                    {"success": False, "error": "Could not load the existing payment."},
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
+            return Response({"success": True, "client_secret": pi.client_secret})
         payment_intent_data = {
             "metadata": {"order_id": str(order.id), "restaurant_id": str(restaurant.id)},
         }

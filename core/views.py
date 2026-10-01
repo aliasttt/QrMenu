@@ -1,8 +1,10 @@
 import json
+import uuid
 from urllib.parse import quote
 
 from django.conf import settings as django_settings
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
@@ -32,6 +34,11 @@ from business_menu.hours_utils import (
     get_slots_for_day,
 )
 from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
+from business_menu.reservation_services import (
+    get_reservation_policy,
+    reservation_local_today,
+    reservation_slots,
+)
 
 
 def _restaurant_payload(restaurant_slug="orange-bistro"):
@@ -546,13 +553,23 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
         getattr(settings_obj, "has_delivery", False)
         or getattr(settings_obj, "delivery_enabled", False)
     )
+    reservation_policy = get_reservation_policy(restaurant)
     order_options = {
         "has_delivery": delivery_enabled,
         "allow_payment_cash": getattr(settings_obj, "allow_payment_cash", True),
         "allow_payment_online": allow_online,
         "online_ordering_enabled": bool(allow_online),
-        "reservation_enabled": getattr(settings_obj, "reservation_enabled", False),
+        "reservation_enabled": reservation_policy.enabled,
     }
+    if (
+        getattr(restaurant, "public_slug", "")
+        and getattr(getattr(request, "resolver_match", None), "url_name", "") == "public_menu"
+    ):
+        reservation_url = reverse(
+            "restaurant_reservation_slug", kwargs={"restaurant_slug": restaurant.public_slug}
+        )
+    else:
+        reservation_url = reverse("restaurant_reservation", kwargs={"restaurant_id": restaurant_id})
     has_location = bool(getattr(restaurant, "has_map_location", False))
     google_maps_link = (restaurant.google_maps_url or "") if has_location else ""
     lat_s = ""
@@ -574,7 +591,7 @@ def build_restaurant_menu_context(request, restaurant, restaurant_id: int) -> di
         "is_within_hours": is_within_hours,
         "scheduled_for": scheduled_for,
         "schedule_url": f"/restaurants/{restaurant_id}/schedule/",
-        "reservation_url": f"/restaurants/{restaurant_id}/reservation/",
+        "reservation_url": reservation_url,
         "orders_url": f"/restaurants/{restaurant_id}/orders/",
         "menu_cards": menu_cards,
         "menu_sections": menu_sections,
@@ -928,46 +945,41 @@ def restaurant_schedule(request, restaurant_id):
     )
 
 
-def restaurant_reservation(request, restaurant_id):
+def restaurant_reservation(request, restaurant_id=None, restaurant_slug=None):
     """Reservation page: pick date, time, guests; optional pre-order from cart. Shown only if reservation_enabled."""
+    lookup = {"public_slug": restaurant_slug} if restaurant_slug else {"pk": restaurant_id}
     restaurant = get_object_or_404(
-        Restaurant.objects.select_related("admin", "settings"),
-        pk=restaurant_id,
+        Restaurant.objects.select_related("admin", "settings", "reservation_settings"),
         is_active=True,
+        **lookup,
     )
-    settings_obj, _ = RestaurantSettings.objects.get_or_create(
-        restaurant=restaurant,
-        defaults={
-            "show_prices": True,
-            "show_images": True,
-            "show_descriptions": True,
-            "show_serial": False,
-            "has_delivery": False,
-            "allow_payment_cash": True,
-            "allow_payment_online": True,
-            "reservation_enabled": False,
-            "total_tables": 10,
-            "max_guests_per_reservation": 10,
-        },
-    )
-    if not getattr(settings_obj, "reservation_enabled", False):
+    policy = get_reservation_policy(restaurant)
+    if not policy.enabled:
         raise Http404("Reservations are not enabled for this restaurant.")
+    try:
+        settings_obj = restaurant.settings
+    except RestaurantSettings.DoesNotExist:
+        settings_obj = None
     restaurant_hours = getattr(settings_obj, "opening_hours", None) or ""
-    hours_json = getattr(settings_obj, "opening_hours_json", None) or []
-    open_days = get_open_days(settings_obj) if hours_json else set(range(7))
-    from datetime import date, timedelta
-    today = date.today()
+    from datetime import timedelta
+    today = reservation_local_today(policy)
     days_available = []
-    for i in range(30):
-        d = today + timedelta(days=i)
-        if d.weekday() in open_days:
-            days_available.append({"date": d.strftime("%Y-%m-%d"), "label": d.strftime("%A, %b %d")})
+    if today is not None:
+        for i in range(policy.advance_days + 1):
+            d = today + timedelta(days=i)
+            if reservation_slots(policy, d):
+                days_available.append({"date": d.strftime("%Y-%m-%d"), "label": d.strftime("%A, %b %d")})
     first_reservation_date = days_available[0]["date"] if days_available else ""
     cart_key = f"cart_restaurant_{restaurant.id}"
     cart_items = list(request.session.get(cart_key, []))
     cart_items_json = json.dumps(cart_items)
     stripe_ok = bool(getattr(django_settings, "STRIPE_SECRET_KEY", None))
     allow_online = getattr(settings_obj, "allow_payment_online", True) and stripe_ok
+    menu_url = (
+        reverse("public_menu", kwargs={"restaurant_slug": restaurant.public_slug})
+        if restaurant_slug
+        else reverse("restaurant_menu", kwargs={"restaurant_id": restaurant.id})
+    )
     return render(
         request,
         "pages/restaurant_reservation.html",
@@ -975,12 +987,14 @@ def restaurant_reservation(request, restaurant_id):
             "restaurant": restaurant,
             "restaurant_hours": restaurant_hours,
             "days_available": days_available,
-            "total_tables": getattr(settings_obj, "total_tables", 10),
-            "max_guests_per_reservation": getattr(settings_obj, "max_guests_per_reservation", 10),
+            "total_tables": policy.capacity,
+            "max_guests_per_reservation": policy.max_guests,
             "cart_items_json": cart_items_json,
             "allow_payment_online": allow_online,
-            "menu_url": f"/restaurants/{restaurant_id}/menu/",
+            "menu_url": menu_url,
             "first_reservation_date": first_reservation_date,
+            "reservation_configuration_error": "" if today is not None else "Restaurant timezone is not configured.",
+            "reservation_request_id": str(uuid.uuid4()),
         },
     )
 

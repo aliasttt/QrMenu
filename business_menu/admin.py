@@ -255,7 +255,7 @@ class RestaurantForm(forms.ModelForm):
 class RestaurantAdmin(admin.ModelAdmin):
     """مدیریت رستوران‌ها"""
     form = RestaurantForm
-    list_display = ('name', 'admin', 'admin_phone', 'admin_email', 'is_active', 'created_at')
+    list_display = ('name', 'admin', 'timezone', 'admin_phone', 'admin_email', 'is_active', 'created_at')
     list_filter = ('is_active', 'admin', 'created_at')
     search_fields = ('name', 'description', 'address', 'admin__name', 'admin__phone', 'admin__email')
     readonly_fields = ('created_at', 'updated_at')
@@ -281,7 +281,7 @@ class RestaurantAdmin(admin.ModelAdmin):
         }),
         ('اطلاعات تماس و مکان', {
             'fields': (
-                'address', 'city', 'country', 'postal_code',
+                'address', 'city', 'country', 'timezone', 'postal_code',
                 'phone', 'email', 'whatsapp', 'website',
             )
         }),

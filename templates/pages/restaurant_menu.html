@@ -1002,6 +1002,9 @@
               <p class="font-semibold menu-themed-primary">{% trans "Opening Hours" %}</p>
               <p class="mt-1 menu-themed-muted">{% if restaurant_hours %}{{ restaurant_hours }}{% else %}{% trans "Not provided yet" %}{% endif %}</p>
             </div>
+            {% if order_options.reservation_enabled %}
+            <a href="{{ reservation_url }}" class="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 sm:w-auto">{% trans "Table reservation" %}</a>
+            {% endif %}
           </div>
         </header>
 
