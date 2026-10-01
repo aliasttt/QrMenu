@@ -182,51 +182,58 @@ class CustomerLoginView(APIView):
         return Response(_serialize_customer(customer))
 
 
+def send_customer_password_reset_code(email, request):
+    """Send the existing one-time password setup/reset code without revealing account state."""
+    import random
+    from django.core.cache import cache
+
+    email = validate_recipient_email(normalize_email_address(email))
+    allowed, _reason = check_email_action("customer_password_reset", email, request=request)
+    if not allowed or not acquire_email_cooldown("customer_password_reset", email):
+        return False
+    code = str(random.randint(100000, 999999))
+    cache.set(f"menu_customer_reset_{email}", code, 600)
+    try:
+        from .invoice_email import _resolve_from_email
+        safe_send_mail(
+            action="customer_password_reset",
+            subject="Your password setup code",
+            message=(
+                f"Hello,\n\nYour password setup code is: {code}\n\n"
+                "This code is valid for 10 minutes.\n\n"
+                "If you did not request this, please ignore this email."
+            ),
+            from_email=_resolve_from_email(),
+            recipient_list=[email],
+            connection=get_configured_email_connection(timeout=30),
+            fail_silently=False,
+        )
+    except Exception:
+        import logging
+        logging.getLogger(__name__).warning("Password setup email failed", exc_info=True)
+        return False
+    return True
+
+
 class CustomerForgotPasswordView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        import random
-        from django.core.cache import cache
         email = normalize_email_address(request.data.get("email") or "")
         try:
             email = validate_recipient_email(email)
         except Exception:
             return Response(EMAIL_GENERIC_RESPONSE)
-        allowed, reason = check_email_action("customer_password_reset", email, request=request)
-        if not allowed:
-            return Response({"detail": "too_many_requests", "reason": reason}, status=429)
-        if not acquire_email_cooldown("customer_password_reset", email):
-            return Response({"detail": "cooldown_active"}, status=429)
         customer = MenuCustomer.objects.filter(email__iexact=email, is_active=True).first()
         if not customer:
             # Do not leak account existence.
             return Response(EMAIL_GENERIC_RESPONSE)
-        code = str(random.randint(100000, 999999))
-        cache.set(f"menu_customer_reset_{email}", code, 600)
-
-        subject = "Your password reset code"
-        body = (
-            f"Hello,\n\nYour password reset code is: {code}\n\n"
-            "This code is valid for 10 minutes.\n\n"
-            "If you did not request this, please ignore this email."
-        )
         try:
-            from .invoice_email import _resolve_from_email
-            from_email = _resolve_from_email()
-            connection = get_configured_email_connection(timeout=30)
-            safe_send_mail(
-                action="customer_password_reset",
-                subject=subject,
-                message=body,
-                from_email=from_email,
-                recipient_list=[email],
-                connection=connection,
-                fail_silently=False,
-            )
+            sent = send_customer_password_reset_code(email, request)
         except Exception:
-            import logging
-            logging.getLogger(__name__).warning("Password reset email failed for %s", email, exc_info=True)
+            sent = False
+        if not sent:
+            return Response({"detail": "too_many_requests"}, status=429)
         return Response({"detail": "code_sent"})
 
 

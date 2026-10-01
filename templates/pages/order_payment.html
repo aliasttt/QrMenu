@@ -5,6 +5,9 @@
 {% block title %}{% blocktrans with name=restaurant.name %}Payment - {{ name }}{% endblocktrans %}{% endblock %}
 {% block styles %}
 <style>
+  @media (max-width: 640px) {
+    body a[href^="https://wa.me/"] { display: none !important; }
+  }
   @media print {
     body * { visibility: hidden !important; }
     #invoice-panel, #invoice-panel * { visibility: visible !important; }
@@ -68,34 +71,35 @@
           <input type="hidden" name="session_id" value="{{ checkout_session_id|default:'' }}">
           <p class="rounded-lg bg-white/70 px-3 py-2 text-xs font-semibold text-indigo-900 dark:bg-slate-900/60 dark:text-indigo-200">{% trans "We'll use these details to send you the invoice and create an account so you can track this order later. All fields are required." %}</p>
           <div class="grid gap-3 sm:grid-cols-2">
-            <div>
+            <div data-profile-field="first_name">
               <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "First name" %} <span class="text-rose-600">*</span></label>
               <input name="first_name" required autocomplete="given-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
             </div>
-            <div>
+            <div data-profile-field="last_name">
               <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Last name" %} <span class="text-rose-600">*</span></label>
               <input name="last_name" required autocomplete="family-name" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
             </div>
           </div>
-          <div>
+          <div data-profile-field="phone">
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Phone" %} <span class="text-rose-600">*</span></label>
             <input name="phone" required autocomplete="tel" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
           </div>
-          <div>
+          <div data-profile-field="email">
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Email (for invoice)" %} <span class="text-rose-600">*</span></label>
             <input name="email" type="email" required autocomplete="email" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40">
           </div>
-          <div>
+          <div data-profile-field="address" {% if order.service_type != "delivery" %}class="hidden"{% endif %}>
             <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Address" %} <span class="text-rose-600">*</span></label>
-            <textarea name="address" rows="3" required autocomplete="street-address" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40"></textarea>
+            <textarea name="address" rows="3" {% if order.service_type == "delivery" %}required{% endif %} autocomplete="street-address" class="w-full rounded-xl border border-indigo-200 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-indigo-900/40"></textarea>
           </div>
           <p id="customer-details-error" class="hidden rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"></p>
           <button type="submit" id="submit-customer-details" class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-700 hover:to-sky-600 disabled:opacity-50 dark:shadow-indigo-950/40">
-            {% trans "Submit order" %}
+            {% trans "Save changes" %} · {% trans "Continue" %}
           </button>
         </form>
         <div id="order-finalized" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
           <p class="font-semibold">{% trans "Order sent to the restaurant." %}</p>
+          <p id="account-setup-hint" class="mt-1 hidden text-sm"></p>
         </div>
         <div id="invoice-panel" class="mt-5 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
           <div class="bg-slate-950 px-5 py-5 text-white">
@@ -186,6 +190,7 @@
   var createSessionUrl = "{{ create_checkout_session_url|default:'/api/business-menu/api/create-order-checkout-session/'|escapejs }}";
   var restaurantId = {{ restaurant.id }};
   var orderId = {{ order.id }};
+  var serviceType = "{{ order.service_type|escapejs }}";
   var errorEl = document.getElementById("checkout-error");
   var detailsForm = document.getElementById("customer-details-form");
   var detailsError = document.getElementById("customer-details-error");
@@ -197,6 +202,13 @@
   var params = new URLSearchParams(window.location.search);
   var selectedProvider = params.get("provider") === "paypal" ? "paypal" : "stripe";
   var checkoutSessionId = params.get("session_id") || document.querySelector('[name="session_id"]')?.value || "";
+  var initialProfile = {
+    first_name: "{{ order.customer.first_name|default:''|escapejs }}",
+    last_name: "{{ order.customer.last_name|default:''|escapejs }}",
+    phone: "{{ order.customer.phone|default:delivery_phone|escapejs }}",
+    email: "{{ order.customer.email|default:''|escapejs }}",
+    address: "{{ order.customer.address|default:delivery_address|escapejs }}"
+  };
   var initialInvoiceItems = [
     {% for line in order_items %}
     { name: "{{ line.name|escapejs }}", quantity: "{{ line.quantity|escapejs }}", price: "{{ line.price|escapejs }}" }{% if not forloop.last %},{% endif %}
@@ -310,6 +322,17 @@
       var banner = document.getElementById("payment-received-banner");
       if (banner) banner.classList.add("hidden");
       if (finalizedEl) finalizedEl.classList.remove("hidden");
+      var accountHint = document.getElementById("account-setup-hint");
+      if (accountHint && result.data.account_status === "setup_required") {
+        accountHint.textContent = "{% trans 'Enter the 6-digit code sent to' %} " + (payload.email || "") + " {% trans 'and choose a new password.' %}";
+        accountHint.classList.remove("hidden");
+      } else if (accountHint && result.data.account_status === "setup_email_failed") {
+        accountHint.textContent = "{% trans 'Failed to send code. Check your email.' %}";
+        accountHint.classList.remove("hidden");
+      } else if (accountHint && result.data.account_status === "login_required") {
+        accountHint.textContent = "{% trans 'This email is already registered. Please log in instead.' %}";
+        accountHint.classList.remove("hidden");
+      }
       try {
         localStorage.setItem("qrmenu_order_phone_" + restaurantId, result.data.customer_phone || payload.phone || "");
         localStorage.setItem("qrmenu_last_order_" + restaurantId, String(result.data.order_id || orderId));
@@ -319,7 +342,24 @@
     });
   }
 
-  function showGuestForm() {
+  function completeOrShowForm(profile, forceForm) {
+    profile = profile || {};
+    var payload = {
+      restaurant_id: restaurantId, order_id: orderId, session_id: checkoutSessionId,
+      first_name: profile.first_name || "", last_name: profile.last_name || "",
+      phone: profile.phone || "", email: profile.email || "", address: profile.address || ""
+    };
+    var required = ["first_name", "last_name", "phone", "email"];
+    if (serviceType === "delivery") required.push("address");
+    required.forEach(function(name) {
+      var input = detailsForm && detailsForm.elements[name];
+      if (input) input.value = payload[name] || "";
+      var wrapper = document.querySelector('[data-profile-field="' + name + '"]');
+      if (wrapper) wrapper.classList.toggle("hidden", !forceForm && !!payload[name]);
+    });
+    if (!forceForm && required.every(function(name) { return !!String(payload[name] || "").trim(); })) {
+      return submitFinalize(payload, { onError: function() { completeOrShowForm(payload, true); } });
+    }
     var hint = document.getElementById("payment-received-hint");
     if (hint) hint.textContent = "{% trans 'Complete your details to send the order to the restaurant. We will create an account for you.' %}";
     if (detailsForm) detailsForm.classList.remove("hidden");
@@ -344,18 +384,23 @@
           email: me.email || "",
           address: addr,
         };
+        var required = ["first_name", "last_name", "phone", "email"];
+        if (serviceType === "delivery") required.push("address");
+        if (!required.every(function(name) { return !!String(payload[name] || "").trim(); })) {
+          return completeOrShowForm(payload);
+        }
         return submitFinalize(payload, {
           onError: function(msg) {
             // If backend can't auto-finalize for some reason, fall back to the form.
             var hint = document.getElementById("payment-received-hint");
             if (hint) hint.textContent = msg;
-            showGuestForm();
+            completeOrShowForm(payload, true);
           }
         });
       })
       .catch(function() {
         // Not logged in as MenuCustomer — show the guest form.
-        showGuestForm();
+        completeOrShowForm(initialProfile);
       });
   }
 
@@ -364,7 +409,8 @@
       e.preventDefault();
       var submitBtn = document.getElementById("submit-customer-details");
       var fd = new FormData(detailsForm);
-      var required = ["first_name", "last_name", "phone", "email", "address"];
+      var required = ["first_name", "last_name", "phone", "email"];
+      if (serviceType === "delivery") required.push("address");
       for (var i = 0; i < required.length; i++) {
         var v = (fd.get(required[i]) || "").toString().trim();
         if (!v) {

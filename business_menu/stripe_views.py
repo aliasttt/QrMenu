@@ -5,6 +5,7 @@ Stripe: subscription checkout, webhooks, Connect onboarding.
 """
 import logging
 from django.conf import settings
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils import timezone
@@ -16,7 +17,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import timedelta
 
-from .models import BusinessAdmin, Restaurant, Order
+from .models import BusinessAdmin, Restaurant, Order, Payment
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,59 @@ def _absolute_url(request, path):
     if base:
         return f"{base}{path}"
     return request.build_absolute_uri(path)
+
+
+def _order_belongs_to_session(request, order):
+    session_key = request.session.session_key or ""
+    return bool(session_key and order.session_key and session_key == order.session_key)
+
+
+def _record_order_payment_success(order, payment_intent_id, charge_id=""):
+    """Persist a verified Stripe success once; the order row serializes duplicate webhooks."""
+    if not payment_intent_id:
+        return False
+    with transaction.atomic():
+        locked = Order.objects.select_for_update().get(pk=order.pk)
+        locked.status = Order.Status.PAID
+        locked.stripe_payment_intent_id = payment_intent_id
+        locked.save(update_fields=["status", "stripe_payment_intent_id", "updated_at"])
+        payment = Payment.objects.filter(order=locked, stripe_payment_intent_id=payment_intent_id).first()
+        if payment is None:
+            payment = Payment(order=locked, restaurant=locked.restaurant, stripe_payment_intent_id=payment_intent_id)
+        payment.stripe_charge_id = charge_id or payment.stripe_charge_id
+        payment.amount = locked.total_amount
+        payment.currency = locked.currency or "EUR"
+        payment.status = Payment.Status.SUCCEEDED
+        payment.save()
+    order.refresh_from_db()
+    return True
+
+
+def _verify_checkout_session(order, checkout_session_id):
+    """Verify a Checkout Session with Stripe and persist its successful payment."""
+    if not checkout_session_id or order.stripe_order_id != checkout_session_id:
+        return False
+    import stripe
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
+    metadata = checkout_session.get("metadata") or {}
+    if (
+        str(metadata.get("purpose") or "") != "order_payment"
+        or str(metadata.get("order_id") or "") != str(order.id)
+        or str(metadata.get("restaurant_id") or "") != str(order.restaurant_id)
+        or checkout_session.get("payment_status") != "paid"
+    ):
+        return False
+    payment_intent_id = checkout_session.get("payment_intent") or ""
+    pi = stripe.PaymentIntent.retrieve(payment_intent_id)
+    if pi.get("status") != "succeeded":
+        return False
+    latest_charge = pi.get("latest_charge")
+    return _record_order_payment_success(
+        order,
+        payment_intent_id,
+        latest_charge if isinstance(latest_charge, str) else "",
+    )
 
 
 def _get_subscription_admin(admin_id=None, email=None):
@@ -82,10 +136,10 @@ class StripeWebhookView(APIView):
                 if order_id:
                     try:
                         order = Order.objects.get(pk=int(order_id), restaurant_id=int(metadata.get("restaurant_id")))
-                        if payment_intent_id and order.stripe_payment_intent_id != payment_intent_id:
-                            order.stripe_payment_intent_id = payment_intent_id or order.stripe_payment_intent_id
-                            order.save(update_fields=["stripe_payment_intent_id"])
-                        logger.info("Order %s payment completed; waiting for customer details", order_id)
+                        if session.get("payment_status") == "paid":
+                            latest_charge = session.get("latest_charge") or ""
+                            _record_order_payment_success(order, payment_intent_id, latest_charge)
+                        logger.info("Order %s payment confirmed; waiting for customer details", order_id)
                     except (Order.DoesNotExist, ValueError, TypeError):
                         logger.exception("Webhook order not found for checkout session: %s", session.get("id"))
             admin_id = session.get("client_reference_id")
@@ -119,11 +173,15 @@ class StripeWebhookView(APIView):
             order_id = (pi.get("metadata") or {}).get("order_id")
             if order_id:
                 try:
-                    order = Order.objects.get(pk=int(order_id))
-                    if pi.get("id") and order.stripe_payment_intent_id != pi.get("id"):
-                        order.stripe_payment_intent_id = pi.get("id")
-                        order.save(update_fields=["stripe_payment_intent_id"])
-                    logger.info("Order %s payment intent succeeded; waiting for customer details", order_id)
+                    metadata = pi.get("metadata") or {}
+                    order = Order.objects.get(pk=int(order_id), restaurant_id=int(metadata.get("restaurant_id")))
+                    latest_charge = pi.get("latest_charge")
+                    _record_order_payment_success(
+                        order,
+                        pi.get("id"),
+                        latest_charge if isinstance(latest_charge, str) else "",
+                    )
+                    logger.info("Order %s payment intent confirmed; waiting for customer details", order_id)
                 except (Order.DoesNotExist, ValueError, TypeError):
                     pass
 
@@ -402,6 +460,8 @@ class CreateOrderPaymentIntentView(APIView):
                 {"success": False, "error": "Order not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        if not _order_belongs_to_session(request, order):
+            return Response({"success": False, "error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
         admin = getattr(restaurant, "admin", None)
         stripe_account_id = getattr(admin, "stripe_account_id", None) if admin else None
         if str(order.payment_method) != "online":
@@ -488,6 +548,8 @@ class CreateOrderCheckoutSessionView(APIView):
                 {"success": False, "error": "Order not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        if not _order_belongs_to_session(request, order):
+            return Response({"success": False, "error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
         admin = getattr(restaurant, "admin", None)
         stripe_account_id = getattr(admin, "stripe_account_id", None) if admin else None
@@ -514,6 +576,13 @@ class CreateOrderCheckoutSessionView(APIView):
 
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        if order.stripe_order_id:
+            try:
+                existing = stripe.checkout.Session.retrieve(order.stripe_order_id)
+                if existing.get("status") == "open" and existing.get("url"):
+                    return Response({"success": True, "url": existing.get("url"), "session_id": existing.get("id")})
+            except Exception:
+                logger.info("Existing Checkout Session unavailable for order %s; creating a new one", order.id)
         success_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?payment=success&session_id={{CHECKOUT_SESSION_ID}}")
         cancel_url = _absolute_url(request, f"/restaurants/{restaurant.id}/order/{order.id}/pay/?payment=cancel")
         payment_intent_data = {
@@ -558,4 +627,6 @@ class CreateOrderCheckoutSessionView(APIView):
                 {"success": False, "error": str(e)},
                 status=status.HTTP_502_BAD_GATEWAY,
             )
+        order.stripe_order_id = session.id
+        order.save(update_fields=["stripe_order_id", "updated_at"])
         return Response({"success": True, "url": session.url, "session_id": session.id})

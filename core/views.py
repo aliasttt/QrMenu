@@ -1007,6 +1007,8 @@ def order_payment(request, restaurant_id, order_id):
         is_active=True,
     )
     order = get_object_or_404(Order, pk=order_id, restaurant=restaurant)
+    if not request.session.session_key or order.session_key != request.session.session_key:
+        raise Http404
     if order.payment_method != "online":
         return render(
             request,
@@ -1025,6 +1027,22 @@ def order_payment(request, restaurant_id, order_id):
     stripe_connected = bool(admin and getattr(admin, "stripe_account_id", None))
     stripe_configured = bool(getattr(django_settings, "STRIPE_SECRET_KEY", None))
     stripe_accepts_order_payments = stripe_configured
+    checkout_session_id = request.GET.get("session_id", "")
+    if checkout_session_id and stripe_configured:
+        try:
+            from business_menu.stripe_views import _verify_checkout_session
+            _verify_checkout_session(order, checkout_session_id)
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning("Order payment verification failed for order %s", order.id, exc_info=True)
+    payment_success = order.payments.filter(status="succeeded").exists()
+    delivery_phone = ""
+    delivery_address = ""
+    for line in (order.notes or "").splitlines():
+        if line.startswith("Delivery phone: "):
+            delivery_phone = line.partition(": ")[2]
+        elif line.startswith("Delivery address: "):
+            delivery_address = line.partition(": ")[2]
     return render(
         request,
         "pages/order_payment.html",
@@ -1034,9 +1052,11 @@ def order_payment(request, restaurant_id, order_id):
             "order_items": order.items_json if getattr(order, "items_json", None) else [],
             "total_amount": order.total_amount,
             "currency": order.currency or "EUR",
-            "payment_success": request.GET.get("payment") == "success",
+            "payment_success": payment_success,
             "payment_cancel": request.GET.get("payment") == "cancel",
-            "checkout_session_id": request.GET.get("session_id", ""),
+            "checkout_session_id": checkout_session_id,
+            "delivery_phone": delivery_phone,
+            "delivery_address": delivery_address,
             "stripe_connected": stripe_connected,
             "stripe_accepts_order_payments": stripe_accepts_order_payments,
             "stripe_configured": stripe_configured,

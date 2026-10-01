@@ -3392,9 +3392,6 @@ class OrderCreateView(APIView):
                 if default_addr:
                     customer_address = default_addr.address
 
-        if payment_method == "online":
-            service_type = "delivery"
-
         if service_type not in ("dine_in", "pickup", "delivery"):
             return Response(
                 {"detail": "Invalid service_type. Use dine_in, pickup, or delivery."},
@@ -3436,6 +3433,11 @@ class OrderCreateView(APIView):
                 {"detail": "table_number is required for dine-in."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if service_type == "delivery" and (not customer_phone or not customer_address):
+            return Response(
+                {"detail": "Phone and delivery address are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             total = sum(
@@ -3468,10 +3470,14 @@ class OrderCreateView(APIView):
             total_decimal = Decimal(str(round(total, 2)))
         except Exception:
             total_decimal = Decimal("0.00")
+        order_notes = notes
+        if payment_method == "online" and service_type == "delivery":
+            delivery_details = f"Delivery phone: {customer_phone}\nDelivery address: {customer_address}"
+            order_notes = f"{notes}\n\n{delivery_details}".strip() if notes else delivery_details
         try:
             with transaction.atomic():
                 customer = None
-                if customer_phone:
+                if payment_method != "online" and customer_phone:
                     _crm_updates = {"source": "online_order"}
                     if customer_email:
                         _crm_updates["email"] = customer_email
@@ -3491,7 +3497,7 @@ class OrderCreateView(APIView):
                     total_amount=total_decimal,
                     currency="EUR",
                     items_json=items_json,
-                    notes=notes,
+                    notes=order_notes,
                     service_type=service_type,
                     table_number=table_number,
                     payment_method=payment_method,
@@ -3532,9 +3538,10 @@ class OrderCreateView(APIView):
                 payload["payment_url"] = f"/restaurants/{restaurant.id}/order/{order.id}/pay/?provider={payment_provider}"
             else:
                 # Cash order: invoice is ready immediately — email it to the customer.
-                from .invoice_email import send_invoice_email_async
-                _oid = order.id
-                transaction.on_commit(lambda: send_invoice_email_async(_oid))
+                if order.customer and order.customer.email:
+                    from .invoice_email import send_invoice_email_async
+                    _oid = order.id
+                    transaction.on_commit(lambda: send_invoice_email_async(_oid))
             return Response(payload, status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.exception("Order create failed: %s", e)
@@ -3565,7 +3572,7 @@ class OrderListView(APIView):
             session_key=session_key,
         ).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
-            customer__isnull=True,
+            status=Order.Status.PENDING,
         ).order_by("-created_at")[:50]
         return Response({"orders": [_serialize_public_order(o) for o in orders]}, status=status.HTTP_200_OK)
 
@@ -3882,7 +3889,6 @@ class FinalizePaidOrderView(APIView):
 
         data = request.data or {}
         order_id = data.get("order_id")
-        payment_intent_id = (data.get("payment_intent_id") or "").strip()
         checkout_session_id = (data.get("session_id") or data.get("checkout_session_id") or "").strip()
         first_name = (data.get("first_name") or "").strip()
         last_name = (data.get("last_name") or "").strip()
@@ -3908,10 +3914,19 @@ class FinalizePaidOrderView(APIView):
                 default_addr = menu_customer.addresses.filter(is_default=True).first() or menu_customer.addresses.first()
                 if default_addr:
                     address = default_addr.address
+            from accounts.models import MenuCustomer
+            phone_norm = _canonical_customer_phone(phone)
+            if MenuCustomer.objects.exclude(pk=menu_customer.pk).filter(
+                Q(email__iexact=email) | Q(phone=phone_norm)
+            ).exists():
+                return Response(
+                    {"detail": "Email or phone belongs to another account."},
+                    status=status.HTTP_409_CONFLICT,
+                )
 
-        if not order_id or not phone or not (payment_intent_id or checkout_session_id):
+        if not order_id or not first_name or not last_name or not phone or not email:
             return Response(
-                {"detail": "order_id, payment reference, and phone are required."},
+                {"detail": "First name, last name, email, and phone are required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         if not _canonical_customer_phone(phone):
@@ -3919,6 +3934,9 @@ class FinalizePaidOrderView(APIView):
                 {"detail": "A valid phone number is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        from .customer_auth import _valid_email
+        if not _valid_email(email):
+            return Response({"detail": "A valid email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             order = Order.objects.get(
@@ -3929,40 +3947,31 @@ class FinalizePaidOrderView(APIView):
         except (Order.DoesNotExist, ValueError, TypeError):
             return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        payment_succeeded = str(order.status) == Order.Status.PAID
-        charge_id = ""
-        if getattr(settings, "STRIPE_SECRET_KEY", None):
-            try:
-                import stripe
-                stripe.api_key = settings.STRIPE_SECRET_KEY
-                if checkout_session_id:
-                    checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
-                    metadata = checkout_session.get("metadata") or {}
-                    if (
-                        str(metadata.get("order_id") or "") != str(order.id)
-                        or str(metadata.get("restaurant_id") or "") != str(restaurant.id)
-                    ):
-                        return Response(
-                            {"detail": "Payment session does not match this order."},
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-                    payment_succeeded = checkout_session.get("payment_status") == "paid"
-                    payment_intent_id = checkout_session.get("payment_intent") or payment_intent_id
-                pi = stripe.PaymentIntent.retrieve(payment_intent_id)
-                payment_succeeded = pi.get("status") == "succeeded"
-                latest_charge = pi.get("latest_charge")
-                charge_id = latest_charge if isinstance(latest_charge, str) else ""
-            except Exception as e:
-                logger.warning("Could not verify order payment %s/%s: %s", checkout_session_id, payment_intent_id, e)
+        session_key = request.session.session_key or ""
+        if not session_key or order.session_key != session_key:
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+        if order.service_type == Order.ServiceType.DELIVERY and not address:
+            return Response({"detail": "Delivery address is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not payment_succeeded:
+        if checkout_session_id and getattr(settings, "STRIPE_SECRET_KEY", None):
+            try:
+                from .stripe_views import _verify_checkout_session
+                _verify_checkout_session(order, checkout_session_id)
+            except Exception as e:
+                logger.warning("Could not verify order payment %s: %s", checkout_session_id, e)
+
+        payment = order.payments.filter(status=Payment.Status.SUCCEEDED).order_by("-created_at").first()
+        if not payment:
             return Response(
                 {"detail": "Payment has not been confirmed yet."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        payment_intent_id = payment.stripe_payment_intent_id or order.stripe_payment_intent_id or ""
 
         full_name = " ".join([first_name, last_name]).strip()
         with transaction.atomic():
+            order = Order.objects.select_for_update().get(pk=order.pk)
+            profile_was_missing = order.customer_id is None
             customer = _get_or_update_customer_by_phone(
                 restaurant,
                 phone,
@@ -3975,30 +3984,16 @@ class FinalizePaidOrderView(APIView):
                 source="online_order",
             )
             original_notes = (order.notes or "").strip()
-            detail_lines = [f"Phone: {customer.phone if customer else phone}"]
-            if full_name:
-                detail_lines.insert(0, f"Customer: {full_name}")
-            if address:
-                detail_lines.append(f"Address: {address}")
-            delivery_note = "\n".join(detail_lines)
             order.customer = customer
-            order.notes = f"{original_notes}\n\n{delivery_note}".strip() if original_notes else delivery_note
+            if profile_was_missing:
+                detail_lines = [f"Customer: {full_name}", f"Phone: {customer.phone if customer else phone}"]
+                if address:
+                    detail_lines.append(f"Address: {address}")
+                customer_note = "\n".join(detail_lines)
+                order.notes = f"{original_notes}\n\n{customer_note}".strip() if original_notes else customer_note
             order.status = Order.Status.PAID
-            if order.payment_method == Order.PaymentMethod.ONLINE:
-                order.service_type = Order.ServiceType.DELIVERY
             order.stripe_payment_intent_id = payment_intent_id or order.stripe_payment_intent_id
-            order.save(update_fields=["customer", "notes", "status", "service_type", "stripe_payment_intent_id", "updated_at"])
-            Payment.objects.update_or_create(
-                restaurant=restaurant,
-                order=order,
-                stripe_payment_intent_id=payment_intent_id,
-                defaults={
-                    "stripe_charge_id": charge_id or None,
-                    "amount": order.total_amount,
-                    "currency": order.currency or "EUR",
-                    "status": Payment.Status.SUCCEEDED,
-                },
-            )
+            order.save(update_fields=["customer", "notes", "status", "stripe_payment_intent_id", "updated_at"])
             customer_stats = Order.objects.filter(customer=customer).aggregate(
                 orders_count=Count("id"),
                 total_spent=Sum("total_amount", filter=Q(status=Order.Status.PAID)),
@@ -4023,24 +4018,36 @@ class FinalizePaidOrderView(APIView):
         # exists as a MenuCustomer, we skip auto-register but link the login
         # session only if there is exactly one unambiguous match (skip on
         # ambiguity to avoid accidental account takeover).
+        account_status = "authenticated" if menu_customer else "existing"
+        if menu_customer:
+            changed = []
+            for field, value in (("first_name", first_name), ("last_name", last_name), ("email", email), ("phone", _canonical_customer_phone(phone))):
+                if not getattr(menu_customer, field) and value:
+                    setattr(menu_customer, field, value)
+                    changed.append(field)
+            if changed:
+                changed.append("updated_at")
+                menu_customer.save(update_fields=changed)
+            if address and not menu_customer.addresses.exists():
+                from accounts.models import MenuCustomerAddress
+                MenuCustomerAddress.objects.create(customer=menu_customer, address=address, is_default=True)
+
         if not menu_customer and email and phone:
             try:
                 from accounts.models import MenuCustomer, MenuCustomerAddress
-                from .customer_auth import _normalize_phone, SESSION_KEY
+                from .customer_auth import _normalize_phone, send_customer_password_reset_code
                 phone_norm = _normalize_phone(phone) or phone
                 existing = MenuCustomer.objects.filter(
                     Q(email__iexact=email) | Q(phone=phone_norm)
                 ).first()
                 if existing is None:
-                    from django.utils.crypto import get_random_string
                     new_customer = MenuCustomer(
                         email=email,
                         phone=phone_norm,
                         first_name=first_name,
                         last_name=last_name,
-                        last_login_at=timezone.now(),
                     )
-                    new_customer.set_password(get_random_string(24))
+                    new_customer.set_password(None)
                     new_customer.save()
                     if address:
                         MenuCustomerAddress.objects.create(
@@ -4048,15 +4055,19 @@ class FinalizePaidOrderView(APIView):
                             address=address,
                             is_default=True,
                         )
-                    request.session[SESSION_KEY] = new_customer.id
-                    request.session.set_expiry(60 * 60 * 24 * 30)
+                    code_sent = send_customer_password_reset_code(email, request)
+                    account_status = "setup_required" if code_sent else "setup_email_failed"
+                else:
+                    account_status = "login_required"
             except Exception:
                 logger.exception("Auto-register MenuCustomer failed for order %s", order.id)
+                account_status = "setup_failed"
 
         # Online order: payment confirmed, invoice is ready — email it.
-        from .invoice_email import send_invoice_email_async
-        _oid = order.id
-        transaction.on_commit(lambda: send_invoice_email_async(_oid))
+        if profile_was_missing:
+            from .invoice_email import send_invoice_email_async
+            _oid = order.id
+            transaction.on_commit(lambda: send_invoice_email_async(_oid))
 
         return Response(
             {
@@ -4074,6 +4085,7 @@ class FinalizePaidOrderView(APIView):
                 "items": order.items_json or [],
                 "created_at": order.updated_at.isoformat() if order.updated_at else None,
                 "tracking_url": f"/restaurants/{restaurant.id}/menu/",
+                "account_status": account_status,
             },
             status=status.HTTP_200_OK,
         )
