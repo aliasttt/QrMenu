@@ -51,14 +51,35 @@
       width: 100% !important;
       object-fit: cover;
     }
+    .restaurant-menu-banner-grid {
+      display: flex;
+      width: 100%;
+      gap: .65rem;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scroll-snap-type: inline mandatory;
+      scrollbar-width: none;
+    }
+    .restaurant-menu-banner-grid::-webkit-scrollbar {
+      display: none;
+    }
+    .restaurant-menu-banner-frame {
+      flex: 0 0 min(88%, 28rem);
+      aspect-ratio: 16 / 10;
+      height: auto !important;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
     .restaurant-menu-logo-img {
       height: 100% !important;
       width: 100% !important;
       object-fit: contain;
-      padding: .25rem;
+      padding: .35rem;
     }
     .restaurant-menu-hero-logo {
       display: block;
+      flex: 0 0 auto;
+      background: #f8fafc;
     }
     .restaurant-menu-mobile-card {
       min-width: 0;
@@ -72,26 +93,19 @@
         border-radius: 1.25rem;
         padding: .65rem;
       }
-      .restaurant-menu-banner-grid {
-        gap: .45rem;
-      }
-      .restaurant-menu-banner-frame {
-        aspect-ratio: 4 / 3;
-        min-height: 0;
-      }
       .restaurant-menu-identity {
         margin-top: .8rem;
-        padding: 3rem 1rem 1rem;
+        padding: 1rem;
         border-radius: 1.25rem;
       }
       .restaurant-menu-hero-logo {
-        top: -2.35rem;
-        height: 4.25rem;
-        width: 4.25rem;
+        height: 4rem;
+        width: 4rem;
       }
       .restaurant-menu-title {
-        font-size: 1.9rem;
-        line-height: 1.08;
+        font-size: 1.55rem;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
       }
       .restaurant-menu-contact {
         gap: .65rem;
@@ -122,10 +136,66 @@
         width: 100%;
         padding: .55rem .45rem;
       }
+      .restaurant-menu-page {
+        padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+      }
     }
     @media (min-width: 520px) and (max-width: 767px) {
       .restaurant-menu-items-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 768px) {
+      .restaurant-menu-banner-grid {
+        display: grid;
+        overflow: visible;
+        scroll-snap-type: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: minmax(12rem, 18rem);
+      }
+      .restaurant-menu-banner-frame {
+        min-width: 0;
+        width: auto;
+        aspect-ratio: auto;
+      }
+      .restaurant-menu-banner-grid.gallery-count-1 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .restaurant-menu-banner-grid.gallery-count-1 .restaurant-menu-banner-frame {
+        aspect-ratio: 16 / 7;
+        max-height: 28rem;
+      }
+      .restaurant-menu-banner-grid.gallery-count-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .restaurant-menu-banner-grid.gallery-count-3 {
+        grid-template-columns: minmax(0, 1.65fr) minmax(12rem, 1fr);
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        height: clamp(20rem, 38vw, 30rem);
+      }
+      .restaurant-menu-banner-grid.gallery-count-3 .restaurant-menu-banner-frame:first-child {
+        grid-row: 1 / -1;
+      }
+      .restaurant-menu-banner-grid.gallery-count-many {
+        grid-template-columns: minmax(0, 1.7fr) repeat(2, minmax(9rem, 1fr));
+        grid-template-rows: repeat(2, minmax(9rem, 1fr));
+      }
+      .restaurant-menu-banner-grid.gallery-count-many .restaurant-menu-banner-frame:first-child {
+        grid-row: span 2;
+      }
+    }
+    .restaurant-menu-status-bar {
+      padding-bottom: max(.75rem, env(safe-area-inset-bottom));
+    }
+    .restaurant-menu-cart-button {
+      bottom: calc(14rem + env(safe-area-inset-bottom));
+    }
+    @media (min-width: 768px) {
+      .restaurant-menu-page {
+        padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+      }
+      .restaurant-menu-cart-button {
+        bottom: calc(6.75rem + env(safe-area-inset-bottom));
       }
     }
   </style>
@@ -216,117 +286,6 @@
       color: var(--menu-text, #0f172a) !important;
     }
     .menu-root input[type="search"]::placeholder { color: var(--menu-text-muted, #64748b); }
-    .restaurant-menu-page {
-      overflow-x: clip !important;
-      overflow-y: visible !important;
-    }
-    .restaurant-category-sidebar {
-      position: sticky;
-      top: 0;
-      align-self: start;
-      height: 100vh;
-      max-height: 100vh;
-      overflow: hidden;
-    }
-    .restaurant-category-rail {
-      height: 100%;
-      min-height: 0;
-      max-height: none;
-      overflow-y: auto;
-      padding: .75rem .25rem .75rem 0;
-      scrollbar-width: thin;
-    }
-    .restaurant-mobile-categories {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      margin-inline: -0.25rem;
-      padding: .5rem .25rem .65rem;
-      background: var(--menu-bg, #f8fafc);
-    }
-    .restaurant-menu-banner-img,
-    .restaurant-menu-item-img {
-      height: 100% !important;
-      width: 100% !important;
-      object-fit: cover;
-    }
-    .restaurant-menu-logo-img {
-      height: 100% !important;
-      width: 100% !important;
-      object-fit: contain;
-      padding: .25rem;
-    }
-    .restaurant-menu-hero-logo {
-      display: block;
-    }
-    .restaurant-menu-mobile-card {
-      min-width: 0;
-    }
-    @media (max-width: 767px) {
-      .restaurant-menu-page {
-        padding-top: .75rem;
-        padding-bottom: 11.5rem;
-      }
-      .restaurant-menu-hero {
-        border-radius: 1.25rem;
-        padding: .65rem;
-      }
-      .restaurant-menu-banner-grid {
-        gap: .45rem;
-      }
-      .restaurant-menu-banner-frame {
-        aspect-ratio: 4 / 3;
-        min-height: 0;
-      }
-      .restaurant-menu-identity {
-        margin-top: .8rem;
-        padding: 3rem 1rem 1rem;
-        border-radius: 1.25rem;
-      }
-      .restaurant-menu-hero-logo {
-        top: -2.35rem;
-        height: 4.25rem;
-        width: 4.25rem;
-      }
-      .restaurant-menu-title {
-        font-size: 1.9rem;
-        line-height: 1.08;
-      }
-      .restaurant-menu-contact {
-        gap: .65rem;
-        font-size: .95rem;
-        line-height: 1.45;
-      }
-      .restaurant-mobile-categories {
-        border-bottom: 1px solid var(--menu-border, #334155);
-        box-shadow: 0 16px 26px color-mix(in srgb, #000 24%, transparent);
-      }
-      .restaurant-menu-items-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .75rem;
-      }
-      .restaurant-menu-mobile-card h2 {
-        font-size: .95rem;
-        line-height: 1.2;
-      }
-      .restaurant-menu-mobile-card p {
-        font-size: .78rem;
-      }
-      .restaurant-menu-mobile-card .restaurant-menu-card-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: .45rem;
-      }
-      .restaurant-menu-mobile-card .restaurant-menu-card-actions button {
-        width: 100%;
-        padding: .55rem .45rem;
-      }
-    }
-    @media (min-width: 520px) and (max-width: 767px) {
-      .restaurant-menu-items-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
     html:not(.dark) .menu-root .menu-order-panel,
     html:not(.dark) .menu-root .menu-order-panel p,
     html:not(.dark) .menu-root .menu-order-panel label,
@@ -964,37 +923,44 @@
       <div class="min-w-0">
         <header class="restaurant-menu-hero rounded-2xl border border-slate-200 bg-white p-3.5 dark:border-slate-700 dark:bg-slate-900 restaurant-menu-card min-w-0 overflow-hidden">
           {% if gallery_urls %}
-          <div class="restaurant-menu-banner-grid grid min-w-0 w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="restaurant-menu-banner-grid min-w-0 w-full {% if gallery_urls|length == 1 %}gallery-count-1{% elif gallery_urls|length == 2 %}gallery-count-2{% elif gallery_urls|length == 3 %}gallery-count-3{% else %}gallery-count-many{% endif %}" aria-label="{% trans 'Restaurant gallery' %}">
             {% for gallery_image in gallery_urls %}
-            <div class="restaurant-menu-banner-frame relative h-40 min-w-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800 sm:h-48">
+            <div class="restaurant-menu-banner-frame relative min-w-0 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
               <div class="absolute inset-0 hidden items-center justify-center text-sm font-semibold text-slate-400" aria-hidden="true">{{ restaurant.name|first|upper }}</div>
-              <img src="{{ gallery_image }}" alt="{{ restaurant.name }}" class="restaurant-menu-banner-img" loading="lazy" onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden'); this.previousElementSibling.classList.add('flex')">
+              <img src="{{ gallery_image }}" alt="{% blocktrans with name=restaurant.name %}{{ name }} gallery image{% endblocktrans %}" class="restaurant-menu-banner-img" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden'); this.previousElementSibling.classList.add('flex')">
             </div>
             {% endfor %}
           </div>
           {% endif %}
 
           <div class="restaurant-menu-identity relative mt-3 rounded-2xl border p-4 menu-themed-soft">
-            <div class="restaurant-menu-hero-logo absolute -top-8 left-1/2 h-16 w-16 -translate-x-1/2 overflow-hidden rounded-full border-2 border-white bg-white shadow">
-              <div class="flex h-full w-full items-center justify-center text-xl font-black text-slate-500{% if logo_url %} hidden{% endif %}" aria-hidden="true">{{ restaurant.name|first|upper }}</div>
-              {% if logo_url %}<img src="{{ logo_url }}" alt="{{ restaurant.name }}" class="restaurant-menu-logo-img" onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden')">{% endif %}
+            <div class="flex min-w-0 items-center gap-3 sm:gap-4">
+              <div class="restaurant-menu-hero-logo h-16 w-16 overflow-hidden rounded-2xl border border-slate-200 shadow-sm dark:border-slate-600">
+                <div class="flex h-full w-full items-center justify-center text-xl font-black text-slate-500{% if logo_url %} hidden{% endif %}" aria-hidden="true">{{ restaurant.name|first|upper }}</div>
+                {% if logo_url %}<img src="{{ logo_url }}" alt="{% blocktrans with name=restaurant.name %}{{ name }} logo{% endblocktrans %}" class="restaurant-menu-logo-img" onerror="this.hidden=true; this.previousElementSibling.classList.remove('hidden')">{% endif %}
+              </div>
+              <h1 class="restaurant-menu-title min-w-0 text-2xl font-extrabold text-slate-900 dark:text-white">{{ restaurant.name }}</h1>
             </div>
 
-            <h1 class="restaurant-menu-title pt-8 text-2xl font-extrabold text-slate-900 dark:text-white">{{ restaurant.name }}</h1>
-
             {% if restaurant.description %}
-            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ restaurant.description }}</p>
+            <p class="mt-3 break-words text-sm leading-6 text-slate-600 dark:text-slate-300">{{ restaurant.description }}</p>
             {% endif %}
 
-            <div class="restaurant-menu-contact mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
-              {% if restaurant.address %}
-              <p><span class="font-semibold text-slate-900 dark:text-white">{% trans "Address:" %}</span> {{ restaurant.address }}</p>
+            <div class="restaurant-menu-contact mt-4 grid gap-2.5 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
+              {% if location_address %}
+              <p class="min-w-0 break-words"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Address:" %}</span> {{ location_address }}</p>
               {% endif %}
               {% if restaurant.phone or restaurant.admin.phone %}
-              <p><span class="font-semibold text-slate-900 dark:text-white">{% trans "Phone:" %}</span> {{ restaurant.phone|default:restaurant.admin.phone }}</p>
+              <p class="min-w-0 break-words"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Phone:" %}</span> <a class="inline-block max-w-full break-all py-3 underline decoration-slate-300 underline-offset-4" href="tel:{{ restaurant.phone|default:restaurant.admin.phone }}">{{ restaurant.phone|default:restaurant.admin.phone }}</a></p>
               {% endif %}
               {% if restaurant.admin.email %}
-              <p class="sm:col-span-2"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Email:" %}</span> {{ restaurant.admin.email }}</p>
+              <p class="min-w-0 break-all sm:col-span-2"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Email:" %}</span> <a class="inline-block max-w-full break-all py-3 underline decoration-slate-300 underline-offset-4" href="mailto:{{ restaurant.admin.email }}">{{ restaurant.admin.email }}</a></p>
+              {% endif %}
+              {% if restaurant.website %}
+              <p class="min-w-0 break-all"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Website:" %}</span> <a class="inline-block max-w-full break-all py-3 underline decoration-slate-300 underline-offset-4" href="{{ restaurant.website }}" target="_blank" rel="noopener noreferrer">{{ restaurant.website }}</a></p>
+              {% endif %}
+              {% if restaurant.whatsapp %}
+              <p class="min-w-0 break-words"><span class="font-semibold text-slate-900 dark:text-white">WhatsApp:</span> <a class="inline-block max-w-full break-all py-3 underline decoration-slate-300 underline-offset-4" href="https://wa.me/{{ restaurant.whatsapp }}" target="_blank" rel="noopener noreferrer">{{ restaurant.whatsapp }}</a></p>
               {% endif %}
             </div>
 
@@ -1133,7 +1099,7 @@
     <div x-cloak x-show="toastOpen" class="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg menu-themed-button" x-text="toastMsg"></div>
 
     {% csrf_token %}
-    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="fixed bottom-56 right-6 z-[60] flex h-14 w-14 items-center justify-center rounded-full shadow-lg menu-themed-button md:bottom-28" aria-label="{% trans 'Cart' %}">
+    <button x-show="cartCount() > 0" x-cloak @click="openOrderPanel()" class="restaurant-menu-cart-button fixed right-6 z-[60] flex h-14 w-14 items-center justify-center rounded-full shadow-lg menu-themed-button" aria-label="{% trans 'Cart' %}">
       <span class="menu-cart-count absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-xs font-bold" x-text="cartCount()"></span>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
     </button>
@@ -1142,7 +1108,7 @@
       x-cloak
       x-show="!orderPanelOpen"
       x-transition
-      class="fixed inset-x-0 bottom-0 z-50 px-3 pb-3 sm:px-5"
+      class="restaurant-menu-status-bar sticky bottom-0 z-50 mt-6 px-3 sm:px-5"
     >
       <div class="mx-auto max-w-3xl overflow-hidden rounded-3xl border p-3 menu-status-shell">
         <template x-if="activeTrackedOrder()">
