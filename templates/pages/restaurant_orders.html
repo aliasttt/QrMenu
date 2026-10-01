@@ -46,6 +46,7 @@
   x-data="{
     restaurantId: {{ restaurant.id }},
     apiBase: '/api/business-menu',
+    selectedOrderId: new URLSearchParams(window.location.search).get('order') || '',
     phone: localStorage.getItem('qrmenu_order_phone_{{ restaurant.id }}') || '',
     orders: [],
     loading: false,
@@ -69,12 +70,34 @@
     newAddressSaving: false,
     async init() {
       await this.fetchMe();
-      if (this.currentUser) {
+      if (this.selectedOrderId) {
+        await this.loadSelectedOrder();
+        this._pollTimer = window.setInterval(() => this.loadSelectedOrder(), 10000);
+      } else if (this.currentUser) {
         this.phone = this.currentUser.phone || this.phone;
         this.lookup(false);
       } else if (this.phone) {
         this.lookup(false);
       }
+    },
+    async loadSelectedOrder() {
+      this.loading = true;
+      this.error = '';
+      try {
+        const url = this.apiBase + '/orders/list/?restaurant_id=' + this.restaurantId + '&order_id=' + encodeURIComponent(this.selectedOrderId);
+        const r = await fetch(url, { credentials: 'same-origin' });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          this.orders = [];
+          this.error = '{% trans "Could not load orders." %}';
+        } else {
+          this.orders = data.orders || [];
+          if (!this.orders.length) this.error = '{% trans "No visible orders yet" %}';
+        }
+      } catch (e) {
+        this.error = '{% trans "Network error" %}';
+      }
+      this.loading = false;
     },
     async fetchMe() {
       try {
@@ -383,7 +406,7 @@
       <a href="{{ menu_url }}" class="rounded-xl border px-4 py-2 text-sm font-bold orders-soft">{% trans "Menu" %}</a>
     </div>
 
-    <div class="mt-6 rounded-3xl border p-4 shadow-2xl orders-card sm:p-6">
+    <div x-show="!selectedOrderId" class="mt-6 rounded-3xl border p-4 shadow-2xl orders-card sm:p-6">
       <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
         <input x-model="phone" @keydown.enter.prevent="lookup(true)" type="tel" placeholder="{% trans 'Enter phone number' %}" class="min-w-0 rounded-2xl border px-4 py-3 text-base orders-soft">
         <button @click="lookup(true)" :disabled="loading" class="rounded-2xl px-6 py-3 font-bold shadow-lg disabled:opacity-50 orders-button">

@@ -100,6 +100,7 @@
         <div id="order-finalized" class="mt-4 hidden rounded-xl border border-green-200 bg-green-50 p-4 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
           <p class="font-semibold">{% trans "Order sent to the restaurant." %}</p>
           <p id="account-setup-hint" class="mt-1 hidden text-sm"></p>
+          <a id="view-order-status" data-order-status-entry="payment-confirmation" href="/restaurants/{{ restaurant.id }}/orders/?order={{ order.id }}" class="mt-3 flex w-full touch-manipulation items-center justify-center rounded-xl bg-green-700 px-4 py-3 text-sm font-black text-white hover:bg-green-800">{% trans "View order" %}</a>
         </div>
         <div id="invoice-panel" class="mt-5 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
           <div class="bg-slate-950 px-5 py-5 text-white">
@@ -337,6 +338,8 @@
         localStorage.setItem("qrmenu_order_phone_" + restaurantId, result.data.customer_phone || payload.phone || "");
         localStorage.setItem("qrmenu_last_order_" + restaurantId, String(result.data.order_id || orderId));
       } catch (e) {}
+      var trackingLink = document.getElementById("view-order-status");
+      if (trackingLink && result.data.tracking_url) trackingLink.href = result.data.tracking_url;
       renderInvoice(result.data);
       return result.data;
     });

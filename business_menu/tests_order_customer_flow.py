@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 
 from accounts.models import MenuCustomer
 from business_menu.customer_auth import SESSION_KEY
-from business_menu.models import BusinessAdmin, Order, Payment, Restaurant, RestaurantSettings
+from business_menu.models import BusinessAdmin, Customer, Order, Payment, Restaurant, RestaurantSettings
 from business_menu.stripe_views import _record_order_payment_success
 
 
@@ -138,6 +138,7 @@ class OrderCustomerFlowTests(APITestCase):
             second = self._details(order)
         self.assertEqual(first.status_code, 200, first.data)
         self.assertEqual(second.status_code, 200, second.data)
+        self.assertEqual(first.data["tracking_url"], f"/restaurants/{self.restaurant.id}/orders/?order={order.id}")
         self.assertEqual(MenuCustomer.objects.filter(email="ada@example.com").count(), 1)
         self.assertEqual(order.payments.count(), 1)
         self.assertEqual(send_invoice.call_count, 1)
@@ -198,3 +199,67 @@ class OrderCustomerFlowTests(APITestCase):
         response = self.client.get(f"/restaurants/{self.restaurant.id}/order/{order.id}/pay/?payment=success")
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Payment received")
+
+    def test_selected_order_status_is_exact_and_session_scoped(self):
+        older = Order.objects.create(
+            restaurant=self.restaurant,
+            session_key=self.session_key,
+            payment_method=Order.PaymentMethod.CASH,
+            total_amount="8.00",
+        )
+        selected = Order.objects.create(
+            restaurant=self.restaurant,
+            session_key=self.session_key,
+            payment_method=Order.PaymentMethod.CASH,
+            total_amount="12.00",
+        )
+        response = self.client.get(
+            "/api/business-menu/orders/list/",
+            {"restaurant_id": self.restaurant.id, "order_id": selected.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([order["id"] for order in response.data["orders"]], [selected.id])
+        self.assertNotEqual(older.id, selected.id)
+
+        guest = self.client_class()
+        self.assertEqual(guest.get("/api/business-menu/customer/me/").status_code, 401)
+        denied = guest.get(
+            "/api/business-menu/orders/list/",
+            {"restaurant_id": self.restaurant.id, "order_id": selected.id},
+        )
+        self.assertEqual(denied.status_code, 200)
+        self.assertEqual(denied.data["orders"], [])
+
+        tracker = self.client.get(f"/restaurants/{self.restaurant.id}/orders/?order={selected.id}")
+        self.assertEqual(tracker.status_code, 200)
+        self.assertContains(tracker, "selectedOrderId")
+        self.assertContains(tracker, "window.setInterval")
+        self.assertNotContains(tracker, "window.location.href =")
+        self.assertNotContains(tracker, "window.location.replace(")
+
+    def test_logged_in_customer_can_reopen_their_exact_order(self):
+        crm_customer = Customer.objects.create(
+            restaurant=self.restaurant,
+            business_admin=self.restaurant.admin,
+            phone="+491700006666",
+        )
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            customer=crm_customer,
+            session_key="another-browser-session",
+            payment_method=Order.PaymentMethod.CASH,
+        )
+        menu_customer = MenuCustomer.objects.create(
+            email="member-status@example.com",
+            phone="+491700006666",
+        )
+        session = self.client.session
+        session[SESSION_KEY] = menu_customer.id
+        session.save()
+
+        response = self.client.get(
+            "/api/business-menu/orders/list/",
+            {"restaurant_id": self.restaurant.id, "order_id": order.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["id"] for item in response.data["orders"]], [order.id])

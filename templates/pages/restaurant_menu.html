@@ -641,6 +641,9 @@
         if (!orders.length) return null;
         return orders.find(o => !['completed', 'cancelled', 'refunded'].includes(String(o.status || '').toLowerCase())) || orders[0];
       },
+      trackingUrl(order) {
+        return order && order.id ? '{{ orders_url|escapejs }}?order=' + encodeURIComponent(order.id) : '{{ orders_url|escapejs }}';
+      },
       statusLabel(status) {
         const labels = {
           pending: '{% trans "Received" %}',
@@ -884,7 +887,7 @@
     <div x-show="!orderPanelOpen && pendingOrderWarning" x-cloak class="mx-4 mb-5 mt-3 rounded-2xl border px-4 py-3 shadow-lg menu-status-shell sm:mx-6 lg:mx-8">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p class="text-sm font-bold menu-themed-text">{% trans "You have order(s) pending or in progress. Check status and details in your orders page." %}</p>
-        <a href="{{ orders_url }}" class="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "View orders" %}</a>
+        <a data-order-status-entry="banner" :href="trackingUrl(activeTrackedOrder())" class="inline-flex shrink-0 touch-manipulation items-center justify-center rounded-xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "View order" %}</a>
       </div>
     </div>
     <div x-show="!orderPanelOpen && !canOrderNow()" x-cloak class="mx-4 mb-5 mt-3 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-rose-800 shadow-sm dark:border-rose-700 dark:bg-rose-950/40 dark:text-rose-100 sm:mx-6 lg:mx-8">
@@ -1125,7 +1128,7 @@
                 <div class="h-full rounded-full menu-themed-button" :style="'width:' + orderProgress(activeTrackedOrder()) + '%'"></div>
               </div>
             </div>
-            <a href="{{ orders_url }}" class="inline-flex shrink-0 items-center justify-center rounded-2xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "View order" %}</a>
+            <a data-order-status-entry="card" :href="trackingUrl(activeTrackedOrder())" class="inline-flex shrink-0 touch-manipulation items-center justify-center rounded-2xl px-4 py-2 text-sm font-black menu-themed-button">{% trans "View order" %}</a>
           </div>
         </template>
 
@@ -1269,6 +1272,7 @@
                 <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
                   <p class="font-semibold">{% trans "Order placed successfully" %}</p>
                   <p class="mt-0.5">{% trans "Your order is pending. Check status in Order history below." %}</p>
+                  <a data-order-status-entry="confirmation" :href="trackingUrl(lastOrder)" class="mt-2 flex w-full touch-manipulation items-center justify-center rounded-lg menu-themed-button py-2 text-sm font-black">{% trans "View order" %}</a>
                   <button @click="addMoreItems()" class="mt-2 w-full rounded-lg border border-emerald-300 bg-white py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">{% trans "Add more items" %}</button>
                 </div>
               </template>
@@ -1295,6 +1299,7 @@
                     <div class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
                       <p class="font-semibold">{% trans "Order placed successfully" %}</p>
                       <p class="mt-0.5">{% blocktrans %}Your order is pending. Total € <span x-text="lastOrder.total_amount"></span>. Check status in Order history below.{% endblocktrans %}</p>
+                      <a data-order-status-entry="confirmation" :href="trackingUrl(lastOrder)" class="mt-2 flex w-full touch-manipulation items-center justify-center rounded-lg menu-themed-button py-2 text-sm font-black">{% trans "View order" %}</a>
                       <button @click="addMoreItems()" class="mt-2 w-full rounded-lg border border-emerald-300 bg-white py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">{% trans "Add more items" %}</button>
                     </div>
                   </template>
@@ -1465,6 +1470,7 @@
                   <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
                     <p class="font-semibold">{% trans "Order placed successfully" %}</p>
                     <p class="mt-1">{% trans "Your order is pending. The restaurant will update the status (e.g. preparing, completed)." %}</p>
+                    <a data-order-status-entry="confirmation" :href="trackingUrl(lastOrder)" class="mt-3 flex w-full touch-manipulation items-center justify-center rounded-lg menu-themed-button py-2.5 text-sm font-black">{% trans "View order" %}</a>
                     <button @click="addMoreItems()" class="mt-3 w-full rounded-lg border border-emerald-300 bg-white py-2.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-800/50">{% trans "Add more items" %}</button>
                   </div>
                 </div>

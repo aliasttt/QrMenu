@@ -3567,13 +3567,29 @@ class OrderListView(APIView):
         except Exception:
             pass
         session_key = request.session.session_key or ""
+        owner_filter = Q(session_key=session_key) if session_key else Q(pk__in=[])
+        from .customer_auth import _get_logged_in_customer as _get_menu_customer
+        menu_customer = _get_menu_customer(request)
+        if menu_customer:
+            phone = _canonical_customer_phone(menu_customer.phone)
+            variants = phone_variants_for_lookup(phone) if phone else set()
+            if variants:
+                owner_filter |= Q(customer__phone__in=variants)
+
         orders = Order.objects.filter(
+            owner_filter,
             restaurant=restaurant,
-            session_key=session_key,
         ).exclude(
             payment_method=Order.PaymentMethod.ONLINE,
             status=Order.Status.PENDING,
-        ).order_by("-created_at")[:50]
+        )
+        order_id = request.query_params.get("order_id")
+        if order_id:
+            try:
+                orders = orders.filter(pk=int(order_id))
+            except (TypeError, ValueError):
+                return Response({"detail": "Invalid order_id."}, status=status.HTTP_400_BAD_REQUEST)
+        orders = orders.order_by("-created_at")[:50]
         return Response({"orders": [_serialize_public_order(o) for o in orders]}, status=status.HTTP_200_OK)
 
 
@@ -4084,7 +4100,7 @@ class FinalizePaidOrderView(APIView):
                 "payment_method": order.payment_method,
                 "items": order.items_json or [],
                 "created_at": order.updated_at.isoformat() if order.updated_at else None,
-                "tracking_url": f"/restaurants/{restaurant.id}/menu/",
+                "tracking_url": f"/restaurants/{restaurant.id}/orders/?order={order.id}",
                 "account_status": account_status,
             },
             status=status.HTTP_200_OK,
