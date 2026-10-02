@@ -344,7 +344,7 @@ class RedirectToStripeCheckoutView(APIView):
 
 class CreateConnectAccountLinkView(APIView):
     """Create Stripe Connect Express account (if needed) and Account Link for onboarding. For paid admins only."""
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         if not _stripe_enabled():
@@ -366,10 +366,21 @@ class CreateConnectAccountLinkView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        if admin.auth_user_id != request.user.id:
+            return Response(
+                {"code": "permission_denied", "message": "You do not have permission to manage this account."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         if not resolve_subscription_entitlement(admin)["is_entitled"]:
             return Response(
-                {"success": False, "message": "Subscription required before connecting Stripe."},
-                status=status.HTTP_403_FORBIDDEN,
+                {
+                    "success": False,
+                    "code": "subscription_required",
+                    "message": "An active subscription is required.",
+                    "payment_required": True,
+                },
+                status=status.HTTP_402_PAYMENT_REQUIRED,
             )
 
         import stripe

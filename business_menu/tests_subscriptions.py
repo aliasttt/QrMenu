@@ -1,4 +1,6 @@
-from datetime import timedelta
+import base64
+import json
+from datetime import datetime, timedelta, timezone as dt_timezone
 from io import StringIO
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -9,6 +11,10 @@ from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec, utils
+from cryptography.x509.oid import NameOID
 
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription
 from .serializers import BusinessMenuSubscriptionSerializer
@@ -21,6 +27,8 @@ from .subscription_services import (
     apply_apple_transaction_to_admin,
     apply_provider_event,
     resolve_subscription_entitlement,
+    validate_apple_transaction_payload,
+    verify_compact_jws_signature,
 )
 
 
@@ -292,6 +300,104 @@ class AppleBindingAndSecurityTests(TestCase):
         )
 
         self.assertEqual(ProviderSubscription.objects.get().account, self.admin)
+
+    def test_repeated_apple_transaction_is_idempotent(self):
+        result = self.result(self.admin)
+
+        apply_apple_transaction_to_admin(self.admin, result)
+        apply_apple_transaction_to_admin(self.admin, result)
+
+        self.assertEqual(ProviderSubscription.objects.count(), 1)
+        self.assertEqual(ProviderEvent.objects.count(), 1)
+
+    @override_settings(
+        APPLE_APP_STORE_ISSUER_ID="issuer",
+        APPLE_APP_STORE_KEY_ID="key",
+        APPLE_APP_STORE_PRIVATE_KEY="private-key",
+        APPLE_APP_BUNDLE_ID="com.qrmenu.new",
+        APPLE_SUBSCRIPTION_PRODUCT_IDS="de.preismenu.monthly,de.preismenu.yearly",
+    )
+    def test_payload_must_match_this_app_product_and_environment(self):
+        payload = {
+            "transactionId": "tx-apple-1",
+            "bundleId": "com.qrmenu.new",
+            "productId": "de.preismenu.monthly",
+            "environment": "Production",
+        }
+        validate_apple_transaction_payload(
+            payload,
+            expected_transaction_id="tx-apple-1",
+            expected_product_id="de.preismenu.monthly",
+            expected_environment="Production",
+        )
+
+        for field, invalid in (
+            ("bundleId", "de.mybonusberlin.app"),
+            ("productId", "de.mybonusberlin.monthly"),
+            ("environment", "Sandbox"),
+        ):
+            with self.subTest(field=field), self.assertRaises(SubscriptionRejectedError):
+                validate_apple_transaction_payload(
+                    {**payload, field: invalid},
+                    expected_transaction_id="tx-apple-1",
+                    expected_product_id="de.preismenu.monthly" if field != "productId" else "",
+                    expected_environment="Production",
+                )
+
+    def test_valid_chain_and_signature_are_accepted_and_tampering_is_rejected(self):
+        now = datetime.now(dt_timezone.utc)
+        root_key = ec.generate_private_key(ec.SECP256R1())
+        leaf_key = ec.generate_private_key(ec.SECP256R1())
+        root_name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Test Apple Root")])
+        leaf_name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Test Apple Signing")])
+        root = (
+            x509.CertificateBuilder()
+            .subject_name(root_name)
+            .issuer_name(root_name)
+            .public_key(root_key.public_key())
+            .serial_number(x509.random_serial_number())
+            .not_valid_before(now - timedelta(days=1))
+            .not_valid_after(now + timedelta(days=30))
+            .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+            .sign(root_key, hashes.SHA256())
+        )
+        leaf = (
+            x509.CertificateBuilder()
+            .subject_name(leaf_name)
+            .issuer_name(root_name)
+            .public_key(leaf_key.public_key())
+            .serial_number(x509.random_serial_number())
+            .not_valid_before(now - timedelta(days=1))
+            .not_valid_after(now + timedelta(days=1))
+            .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
+            .sign(root_key, hashes.SHA256())
+        )
+
+        encode = lambda value: base64.urlsafe_b64encode(value).rstrip(b"=")
+        header = encode(json.dumps({
+            "alg": "ES256",
+            "x5c": [base64.b64encode(leaf.public_bytes(serialization.Encoding.DER)).decode()],
+        }).encode())
+        payload = encode(json.dumps({"transactionId": "signed-transaction"}).encode())
+        signing_input = header + b"." + payload
+        der_signature = leaf_key.sign(signing_input, ec.ECDSA(hashes.SHA256()))
+        r, s = utils.decode_dss_signature(der_signature)
+        raw_signature = r.to_bytes(32, "big") + s.to_bytes(32, "big")
+        signature = encode(raw_signature)
+        jws = b".".join((header, payload, signature)).decode()
+
+        with override_settings(
+            APPLE_ROOT_CERTIFICATES_PEM=root.public_bytes(serialization.Encoding.PEM).decode()
+        ):
+            self.assertEqual(
+                verify_compact_jws_signature(jws, require_trusted_root=True)["transactionId"],
+                "signed-transaction",
+            )
+            tampered_signature = bytearray(raw_signature)
+            tampered_signature[0] ^= 1
+            tampered = b".".join((header, payload, encode(tampered_signature))).decode()
+            with self.assertRaises(SubscriptionRejectedError):
+                verify_compact_jws_signature(tampered, require_trusted_root=True)
 
     @override_settings(APPLE_ROOT_CERTIFICATES_PEM="")
     def test_missing_apple_root_is_not_permissive(self):

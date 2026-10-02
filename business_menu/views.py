@@ -813,15 +813,24 @@ class AdminSubscriptionVerifyView(APIView):
             try:
                 result = verify_apple_transaction(jws, environment=environment, expected_product_id=product_id)
                 apply_apple_transaction_to_admin(admin, result)
+            except SubscriptionConfigurationError as exc:
+                logger.error("Apple subscription verification configuration error: %s", exc)
+                return Response(
+                    {
+                        "code": exc.code,
+                        "message": "Subscription verification is temporarily unavailable. Please try again later.",
+                    },
+                    status=exc.status_code,
+                )
             except SubscriptionVerificationError as exc:
                 return Response(
                     {"code": getattr(exc, "code", "subscription_verification_failed"), "message": str(exc)},
                     status=getattr(exc, "status_code", status.HTTP_422_UNPROCESSABLE_ENTITY),
                 )
-            except Exception as exc:
+            except Exception:
                 logger.exception("Unexpected error verifying Apple subscription")
                 return Response(
-                    {"code": "apple_verification_unexpected_error", "message": str(exc)},
+                    {"code": "apple_verification_unexpected_error", "message": "Temporary verification error."},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 

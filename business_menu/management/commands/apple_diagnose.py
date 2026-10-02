@@ -79,8 +79,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f"  header  = {header}")
         self.stdout.write(f"  payload = {payload}")
-        self.stdout.write(f"  token   = {token}")
-        self.stdout.write("  (paste the token at https://jwt.io to inspect)")
+        self.stdout.write("  token   = generated successfully (not printed)")
 
         env = options["environment"]
         tx_id = options["transaction_id"].strip()

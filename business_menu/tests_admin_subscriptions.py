@@ -186,7 +186,18 @@ class RestaurantSubscriptionAdminTests(TestCase):
         self.assertEqual(restore.status_code, 200)
         self.assertEqual(restore.json()["subscription"]["state"], "blocked")
         self.assertFalse(restore.json()["subscription"]["is_entitled"])
-        self.assertEqual(gated.status_code, 403)
+        self.assertEqual(gated.status_code, 402)
+        self.assertEqual(gated.json()["code"], "subscription_required")
+        self.assertEqual(gated.json()["message"], "An active subscription is required.")
+
+        other_user = User.objects.create_user("other-owner", "other@example.com", "pass")
+        self.client.force_login(other_user)
+        forbidden = self.client.post(
+            "/api/business-menu/api/create-connect-link/",
+            {"admin_id": self.owner.pk},
+        )
+        self.assertEqual(forbidden.status_code, 403)
+        self.assertEqual(forbidden.json()["code"], "permission_denied")
 
     def test_custom_end_requires_a_future_date(self):
         self.client.force_login(self.superuser)

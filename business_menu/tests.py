@@ -12,7 +12,7 @@ from rest_framework.test import APITestCase
 from accounts.models import PasswordResetCode
 from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
 from .serializers import BusinessMenuSubscriptionSerializer
-from .subscription_services import AppleTransactionResult, verify_apple_transaction
+from .subscription_services import AppleTransactionResult, SubscriptionConfigurationError, verify_apple_transaction
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -445,6 +445,24 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
         self.assertEqual(response.data["subscription"]["plan"], "yearly")
         self.admin.refresh_from_db()
         self.assertEqual(self.admin.subscription_product_id, "de.preismenu.yearly")
+
+    def test_apple_configuration_error_is_stable_and_does_not_leak_details(self):
+        self.client.force_authenticate(user=self.user)
+        technical_detail = "APPLE_ROOT_CERTIFICATES_PEM is required to trust Apple notifications"
+
+        with patch(
+            "business_menu.views.verify_apple_transaction",
+            side_effect=SubscriptionConfigurationError(technical_detail),
+        ):
+            response = self.client.post(
+                "/api/business-menu/admin/subscription/apple/verify/",
+                {"jws": "device.signed.transaction"},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.data["code"], "subscription_verification_not_configured")
+        self.assertNotIn("APPLE_ROOT_CERTIFICATES_PEM", response.data["message"])
 
     @override_settings(
         APPLE_APP_STORE_ISSUER_ID="issuer",

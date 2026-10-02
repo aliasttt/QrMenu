@@ -18,8 +18,6 @@ from django.utils import timezone
 APPLE_PRODUCT_ID_TO_PLAN = {
     "de.preismenu.monthly": "monthly",
     "de.preismenu.yearly": "yearly",
-    "de.mybonusberlin.monthly": "monthly",
-    "de.mybonusberlin.yearly": "yearly",
 }
 VALID_APPLE_PRODUCT_IDS = set(APPLE_PRODUCT_ID_TO_PLAN)
 
@@ -113,7 +111,10 @@ def _load_root_certificates():
         part = part.strip()
         if part:
             blocks.append(part + b"\n" + marker + b"\n")
-    return [x509.load_pem_x509_certificate(block) for block in blocks]
+    try:
+        return [x509.load_pem_x509_certificate(block) for block in blocks]
+    except ValueError as exc:
+        raise SubscriptionConfigurationError("APPLE_ROOT_CERTIFICATES_PEM is not valid PEM") from exc
 
 
 def _verify_certificate_signature(child, issuer):
@@ -276,9 +277,15 @@ def _allowed_apple_products() -> set[str]:
     return VALID_APPLE_PRODUCT_IDS | {item.strip() for item in raw.split(",") if item.strip()}
 
 
-def validate_apple_transaction_payload(payload, *, expected_transaction_id="", expected_product_id=""):
+def validate_apple_transaction_payload(
+    payload,
+    *,
+    expected_transaction_id="",
+    expected_product_id="",
+    expected_environment="",
+):
     cfg = _apple_settings()
-    if payload.get("bundleId") and payload.get("bundleId") != cfg["bundle_id"]:
+    if payload.get("bundleId") != cfg["bundle_id"]:
         raise SubscriptionRejectedError("Apple transaction bundleId does not match this app")
     if expected_transaction_id and str(payload.get("transactionId") or "") != str(expected_transaction_id):
         raise SubscriptionRejectedError("Apple transactionId mismatch")
@@ -288,6 +295,10 @@ def validate_apple_transaction_payload(payload, *, expected_transaction_id="", e
     allowed_products = _allowed_apple_products()
     if allowed_products and product_id not in allowed_products:
         raise SubscriptionRejectedError("Apple product_id is not allowed")
+    if expected_environment and canonical_environment("apple", payload.get("environment")) != canonical_environment(
+        "apple", expected_environment
+    ):
+        raise SubscriptionRejectedError("Apple transaction environment mismatch")
 
 
 def plan_from_product_id(product_id: str) -> str:
@@ -1118,9 +1129,12 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
                 "APPLE_APP_BUNDLE_ID matches the bundle registered with that key, and "
                 "APPLE_APP_STORE_PRIVATE_KEY still contains real newlines inside the PEM block.)"
             )
-        raise SubscriptionRejectedError(
-            f"Apple verification failed ({response.status_code} {response.reason or ''}): {reason}{hint}"
-        )
+        detail = f"Apple verification failed ({response.status_code} {response.reason or ''}): {reason}{hint}"
+        if response.status_code in {401, 403}:
+            raise SubscriptionConfigurationError(detail)
+        if response.status_code == 429 or response.status_code >= 500:
+            raise SubscriptionTemporaryError(detail)
+        raise SubscriptionRejectedError(detail)
 
     try:
         data = response.json()
@@ -1135,6 +1149,7 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
         payload,
         expected_transaction_id=transaction_id,
         expected_product_id=expected_product_id,
+        expected_environment=resolved_environment,
     )
 
     return AppleTransactionResult(
