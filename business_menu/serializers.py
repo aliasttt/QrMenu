@@ -16,7 +16,7 @@ from .models import (
     RestaurantSettings,
 )
 from .cloudinary_utils import upload_image_to_cloudinary, get_image_url_by_uuid
-from .subscription_services import plan_from_product_id
+from .subscription_services import resolve_subscription_entitlement
 
 
 def normalize_price_value(value):
@@ -213,66 +213,12 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
                 "purchasable_in_app": True,
                 "manage_url": None,
                 "message": "",
+                "providers": [],
+                "entitlement_source": "none",
+                "trial_source": None,
+                "app_account_token": None,
             }
-
-        now = timezone.now()
-        payment_status = getattr(admin, "payment_status", None)
-        trial_end = getattr(admin, "trial_ends_at", None)
-        subscription_end = getattr(admin, "subscription_ends_at", None)
-        stored_provider = getattr(admin, "subscription_provider", "") or "stripe"
-        stored_plan = plan_from_product_id(getattr(admin, "subscription_product_id", ""))
-
-        if payment_status == "paid" and subscription_end and subscription_end > now:
-            state = "active"
-            current_period_end = subscription_end
-            provider = stored_provider
-            plan = stored_plan
-            will_renew = True
-        elif payment_status == "paid" and subscription_end:
-            state = "expired"
-            current_period_end = subscription_end
-            provider = None
-            plan = None
-            will_renew = False
-        elif payment_status == "trial" and trial_end and trial_end > now:
-            state = "trial"
-            current_period_end = trial_end
-            provider = "manual"
-            plan = "monthly"
-            will_renew = True
-        else:
-            state = "expired" if payment_status in {"trial", "unpaid"} and (trial_end or subscription_end) else "none"
-            current_period_end = subscription_end or trial_end
-            provider = None
-            plan = None
-            will_renew = False
-
-        is_entitled = state in {"trial", "active"}
-        if is_entitled and current_period_end:
-            try:
-                is_entitled = current_period_end > now
-            except Exception:
-                is_entitled = False
-
-        def _format_dt(dt_val):
-            if not dt_val:
-                return None
-            if hasattr(dt_val, "isoformat"):
-                return dt_val.isoformat().replace("+00:00", "Z")
-            return str(dt_val)
-
-        return {
-            "state": state,
-            "is_entitled": is_entitled,
-            "plan": plan,
-            "provider": provider,
-            "current_period_end": _format_dt(current_period_end),
-            "will_renew": will_renew,
-            "trial_end": _format_dt(trial_end),
-            "purchasable_in_app": not is_entitled,
-            "manage_url": None,
-            "message": "",
-        }
+        return resolve_subscription_entitlement(admin)
 
 
 class BusinessAdminUpdateSerializer(serializers.ModelSerializer):

@@ -10,6 +10,7 @@ Pillow==10.4.0
 django-filter==24.3
 drf-spectacular==0.27.2
 firebase-admin==6.5.0
+google-auth>=2.35,<3
 cryptography==43.0.0
 stripe==8.9.0
 

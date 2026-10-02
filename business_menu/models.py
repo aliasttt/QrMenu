@@ -79,6 +79,12 @@ class BusinessAdmin(models.Model):
         db_index=True,
         help_text="Latest verified store transaction ID",
     )
+    subscription_account_token = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        help_text="Stable account token supplied to app stores for purchase ownership binding",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
@@ -100,6 +106,98 @@ class BusinessAdmin(models.Model):
         if email:
             return f"{self.name} ({self.phone}) - {email}"
         return f"{self.name} ({self.phone})"
+
+
+class ProviderSubscription(models.Model):
+    class Provider(models.TextChoices):
+        APPLE = "apple", "Apple App Store"
+        STRIPE = "stripe", "Stripe"
+        GOOGLE = "google", "Google Play"
+        MANUAL = "manual", "Manual"
+        LEGACY = "legacy", "Legacy"
+
+    class Status(models.TextChoices):
+        ACTIVE = "active", "Active"
+        TRIALING = "trialing", "Store trial"
+        GRACE_PERIOD = "grace_period", "Grace period"
+        CANCELED = "canceled", "Canceled at period end"
+        EXPIRED = "expired", "Expired"
+        REVOKED = "revoked", "Revoked"
+        UNPAID = "unpaid", "Unpaid"
+        UNKNOWN = "unknown", "Unknown"
+
+    class VerificationSource(models.TextChoices):
+        PROVIDER = "provider", "Verified by provider"
+        MANUAL = "manual", "Manual grant"
+        LEGACY = "legacy", "Legacy import"
+
+    account = models.ForeignKey(
+        BusinessAdmin,
+        on_delete=models.CASCADE,
+        related_name="provider_subscriptions",
+    )
+    provider = models.CharField(max_length=16, choices=Provider.choices, db_index=True)
+    environment = models.CharField(max_length=32, db_index=True)
+    external_id = models.CharField(max_length=255)
+    latest_transaction_id = models.CharField(max_length=255, blank=True)
+    provider_customer_id = models.CharField(max_length=255, blank=True, db_index=True)
+    product_id = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=32, choices=Status.choices, default=Status.UNKNOWN, db_index=True)
+    current_period_end = models.DateTimeField(null=True, blank=True, db_index=True)
+    will_renew = models.BooleanField(null=True, blank=True)
+    verification_source = models.CharField(
+        max_length=16,
+        choices=VerificationSource.choices,
+        default=VerificationSource.LEGACY,
+    )
+    needs_reconciliation = models.BooleanField(default=False, db_index=True)
+    last_event_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["provider", "environment", "external_id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["provider", "environment", "external_id"],
+                name="uniq_provider_env_external_subscription",
+            ),
+            models.UniqueConstraint(
+                fields=["provider", "environment", "latest_transaction_id"],
+                condition=~models.Q(latest_transaction_id=""),
+                name="uniq_provider_env_latest_transaction",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.provider}/{self.environment} for admin {self.account_id}"
+
+
+class ProviderEvent(models.Model):
+    subscription = models.ForeignKey(
+        ProviderSubscription,
+        on_delete=models.CASCADE,
+        related_name="events",
+    )
+    provider = models.CharField(max_length=16, choices=ProviderSubscription.Provider.choices)
+    environment = models.CharField(max_length=32)
+    external_event_id = models.CharField(max_length=255)
+    event_type = models.CharField(max_length=64, blank=True)
+    occurred_at = models.DateTimeField(null=True, blank=True)
+    processed_at = models.DateTimeField(auto_now_add=True)
+    state_applied = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-processed_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["provider", "environment", "external_event_id"],
+                name="uniq_provider_env_external_event",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.provider}/{self.environment}:{self.event_type}"
 
 
 class SignupByIP(models.Model):

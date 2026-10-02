@@ -300,6 +300,8 @@ STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "") or os.getenv
 STRIPE_PRICE_ID_ANNUAL = os.environ.get("STRIPE_PRICE_ID_ANNUAL", "") or os.getenv("STRIPE_PRICE_ID_ANNUAL", "")
 SUBSCRIPTION_DISPLAY_PRICE = os.environ.get("SUBSCRIPTION_DISPLAY_PRICE", "") or os.getenv("SUBSCRIPTION_DISPLAY_PRICE", "$17.99")
 SUBSCRIPTION_DISPLAY_INTERVAL = os.environ.get("SUBSCRIPTION_DISPLAY_INTERVAL", "") or os.getenv("SUBSCRIPTION_DISPLAY_INTERVAL", "per month")
+ALLOW_TEST_SUBSCRIPTION_ENTITLEMENTS = _env_bool("ALLOW_TEST_SUBSCRIPTION_ENTITLEMENTS", default=DEBUG)
+LEGACY_SUBSCRIPTION_FALLBACK_ENABLED = _env_bool("LEGACY_SUBSCRIPTION_FALLBACK_ENABLED", default=True)
 
 # App Store Server API (StoreKit / Apple subscriptions)
 APPLE_APP_STORE_ISSUER_ID = os.environ.get("APPLE_APP_STORE_ISSUER_ID", "") or os.getenv("APPLE_APP_STORE_ISSUER_ID", "")
@@ -310,6 +312,16 @@ APPLE_SUBSCRIPTION_PRODUCT_IDS = os.environ.get("APPLE_SUBSCRIPTION_PRODUCT_IDS"
 APPLE_APP_STORE_PRODUCTION_URL = os.environ.get("APPLE_APP_STORE_PRODUCTION_URL", "") or os.getenv("APPLE_APP_STORE_PRODUCTION_URL", "https://api.storekit.itunes.apple.com")
 APPLE_APP_STORE_SANDBOX_URL = os.environ.get("APPLE_APP_STORE_SANDBOX_URL", "") or os.getenv("APPLE_APP_STORE_SANDBOX_URL", "https://api.storekit-sandbox.itunes.apple.com")
 APPLE_ROOT_CERTIFICATES_PEM = os.environ.get("APPLE_ROOT_CERTIFICATES_PEM", "") or os.getenv("APPLE_ROOT_CERTIFICATES_PEM", "")
+
+# Google Play subscriptions. Values must come from Play Console / Google Cloud; there are no defaults.
+GOOGLE_PLAY_PACKAGE_NAME = (os.environ.get("GOOGLE_PLAY_PACKAGE_NAME", "") or "").strip()
+GOOGLE_PLAY_SUBSCRIPTION_PRODUCTS_JSON = os.environ.get("GOOGLE_PLAY_SUBSCRIPTION_PRODUCTS_JSON", "") or ""
+GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_B64 = os.environ.get("GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_B64", "") or ""
+GOOGLE_PLAY_TOKEN_ENCRYPTION_KEY = os.environ.get("GOOGLE_PLAY_TOKEN_ENCRYPTION_KEY", "") or ""
+GOOGLE_PUBSUB_AUDIENCE = (os.environ.get("GOOGLE_PUBSUB_AUDIENCE", "") or "").strip()
+GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL = (
+    os.environ.get("GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL", "") or ""
+).strip()
 
 # Firebase (optional)
 FIREBASE_CONFIG = {}

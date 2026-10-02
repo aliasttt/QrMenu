@@ -9,6 +9,8 @@ from django.db import IntegrityError, transaction
 from accounts.models import Profile
 from .models import (
     BusinessAdmin,
+    ProviderEvent,
+    ProviderSubscription,
     Restaurant,
     Category,
     MenuSet,
@@ -183,6 +185,32 @@ class BusinessMenuAdminAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return bool(request.user and request.user.is_superuser)
+
+
+@admin.register(ProviderSubscription)
+class ProviderSubscriptionAdmin(admin.ModelAdmin):
+    list_display = (
+        "account",
+        "provider",
+        "environment",
+        "status",
+        "current_period_end",
+        "will_renew",
+        "verification_source",
+        "needs_reconciliation",
+    )
+    list_filter = ("provider", "environment", "status", "verification_source", "needs_reconciliation")
+    search_fields = ("account__email", "account__phone", "external_id", "latest_transaction_id")
+    readonly_fields = ("created_at", "updated_at")
+    exclude = ("provider_customer_id",)
+
+
+@admin.register(ProviderEvent)
+class ProviderEventAdmin(admin.ModelAdmin):
+    list_display = ("subscription", "event_type", "occurred_at", "processed_at", "state_applied")
+    list_filter = ("provider", "environment", "event_type", "state_applied")
+    search_fields = ("external_event_id", "subscription__external_id")
+    readonly_fields = ("processed_at",)
 
 
 class MenuItemImageInline(admin.TabularInline):

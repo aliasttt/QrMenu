@@ -15,9 +15,10 @@ from django.utils.decorators import method_decorator
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 
-from .models import BusinessAdmin, Restaurant, Order, Payment
+from .models import BusinessAdmin, ProviderEvent, ProviderSubscription, Restaurant, Order, Payment
+from .subscription_services import apply_provider_event
 
 logger = logging.getLogger(__name__)
 
@@ -146,16 +147,65 @@ class StripeWebhookView(APIView):
             if admin_id and metadata.get("purpose") != "order_payment":
                 try:
                     admin = BusinessAdmin.objects.get(id=int(admin_id))
-                    admin.payment_status = "paid"
-                    admin.subscription_ends_at = timezone.now() + timedelta(days=365)
+                    event_id = str(getattr(event, "id", "") or event.get("id") or "").strip()
+                    is_live = getattr(event, "livemode", None)
+                    if is_live is None:
+                        is_live = event.get("livemode")
+                    event_environment = "live" if is_live else "test"
+                    if ProviderEvent.objects.filter(
+                        provider=ProviderSubscription.Provider.STRIPE,
+                        environment=event_environment,
+                        external_event_id=event_id,
+                    ).exists():
+                        return HttpResponse("OK", status=200)
+                    subscription_ref = session.get("subscription")
+                    if isinstance(subscription_ref, dict):
+                        stripe_subscription = subscription_ref
+                    elif subscription_ref:
+                        stripe_subscription = stripe.Subscription.retrieve(subscription_ref)
+                    else:
+                        raise ValueError("Checkout session is missing its Stripe subscription")
+                    stripe_subscription_id = str(stripe_subscription.get("id") or subscription_ref or "").strip()
+                    period_end_value = stripe_subscription.get("current_period_end")
+                    if not stripe_subscription_id or not period_end_value:
+                        raise ValueError("Stripe subscription is missing its ID or current period end")
+                    period_end = datetime.fromtimestamp(int(period_end_value), tz=UTC)
+                    stripe_status = str(stripe_subscription.get("status") or "unknown")
+                    status_map = {
+                        "active": ProviderSubscription.Status.ACTIVE,
+                        "trialing": ProviderSubscription.Status.TRIALING,
+                        "canceled": ProviderSubscription.Status.CANCELED,
+                        "unpaid": ProviderSubscription.Status.UNPAID,
+                        "past_due": ProviderSubscription.Status.UNPAID,
+                    }
+                    provider_status = status_map.get(stripe_status, ProviderSubscription.Status.UNKNOWN)
+                    cancel_at_period_end = stripe_subscription.get("cancel_at_period_end")
+                    will_renew = None if cancel_at_period_end is None else not bool(cancel_at_period_end)
+                    event_created = getattr(event, "created", None) or event.get("created")
+                    occurred_at = datetime.fromtimestamp(int(event_created), tz=UTC) if event_created else None
+                    apply_provider_event(
+                        account=admin,
+                        provider=ProviderSubscription.Provider.STRIPE,
+                        environment=event_environment,
+                        external_id=stripe_subscription_id,
+                        event_id=event_id,
+                        event_type="checkout.session.completed",
+                        status=provider_status,
+                        current_period_end=period_end,
+                        occurred_at=occurred_at,
+                        product_id=(getattr(settings, "STRIPE_PRICE_ID_ANNUAL", "") or "").strip(),
+                        provider_customer_id=(session.get("customer") or "").strip(),
+                        will_renew=will_renew,
+                    )
                     admin.stripe_customer_id = (session.get("customer") or "").strip() or None
-                    admin.subscription_provider = "stripe"
-                    admin.subscription_product_id = (getattr(settings, "STRIPE_PRICE_ID_ANNUAL", "") or "").strip()
-                    admin.subscription_environment = "stripe"
-                    admin.save(update_fields=["payment_status", "subscription_ends_at", "stripe_customer_id", "subscription_provider", "subscription_product_id", "subscription_environment"])
+                    admin.save(update_fields=["stripe_customer_id"])
                     logger.info("Subscription activated for admin_id=%s", admin_id)
                 except (BusinessAdmin.DoesNotExist, ValueError, TypeError) as e:
                     logger.exception("Webhook admin not found or invalid client_reference_id: %s", e)
+                    return HttpResponse("Subscription event could not be processed", status=500)
+                except Exception:
+                    logger.exception("Stripe subscription event could not be processed")
+                    return HttpResponse("Subscription event could not be processed", status=500)
 
         elif event.type == "account.updated":
             account = event.data.object

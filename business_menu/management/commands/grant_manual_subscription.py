@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime, time
 
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
 from django.utils import timezone
 
-from business_menu.models import BusinessAdmin, Restaurant
+from business_menu.models import BusinessAdmin, ProviderSubscription, Restaurant
 from business_menu.serializers import BusinessMenuSubscriptionSerializer
+from business_menu.subscription_services import apply_provider_event
 
 
 class Command(BaseCommand):
@@ -34,22 +34,21 @@ class Command(BaseCommand):
         expires_at = self._parse_expiry(options["expires"])
         plan = (options["plan"] or "manual_pro").strip() or "manual_pro"
 
-        with transaction.atomic():
-            admin = BusinessAdmin.objects.select_for_update().get(pk=admin.pk)
-            admin.payment_status = "paid"
-            admin.subscription_ends_at = expires_at
-            admin.subscription_provider = "manual"
-            admin.subscription_product_id = plan
-            admin.subscription_environment = "manual"
-            admin.save(
-                update_fields=[
-                    "payment_status",
-                    "subscription_ends_at",
-                    "subscription_provider",
-                    "subscription_product_id",
-                    "subscription_environment",
-                ]
-            )
+        apply_provider_event(
+            account=admin,
+            provider=ProviderSubscription.Provider.MANUAL,
+            environment="manual",
+            external_id=f"manual:{admin.id}",
+            event_id=f"grant:{admin.id}:{plan}:{expires_at.isoformat()}",
+            event_type="manual_grant",
+            status=ProviderSubscription.Status.ACTIVE,
+            current_period_end=expires_at,
+            occurred_at=timezone.now(),
+            product_id=plan,
+            will_renew=False,
+            verification_source=ProviderSubscription.VerificationSource.MANUAL,
+        )
+        admin.refresh_from_db()
 
         entitlement = BusinessMenuSubscriptionSerializer(admin).data
         restaurant = self._restaurant_for(admin)

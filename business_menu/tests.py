@@ -211,7 +211,7 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertTrue(response.data["subscription"]["is_entitled"])
 
 
-@override_settings(SECURE_SSL_REDIRECT=False)
+@override_settings(SECURE_SSL_REDIRECT=False, ALLOW_TEST_SUBSCRIPTION_ENTITLEMENTS=True)
 class BusinessMenuSubscriptionEndpointTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -334,15 +334,18 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
             response = self.client.get(route)
             self.assertNotEqual(response.status_code, 404, route)
 
-    def test_store_notification_routes_acknowledge_without_auth(self):
-        for route in (
-            "/api/business-menu/admin/subscriptions/apple/notifications/",
-            "/api/business-menu/admin/subscriptions/google/notifications/",
-        ):
-            response = self.client.post(route, {}, format="json")
+    def test_store_notification_routes_fail_closed_without_valid_payload_or_configuration(self):
+        apple = self.client.post(
+            "/api/business-menu/admin/subscriptions/apple/notifications/", {}, format="json"
+        )
+        google = self.client.post(
+            "/api/business-menu/admin/subscriptions/google/notifications/", {}, format="json"
+        )
 
-            self.assertEqual(response.status_code, 200)
-            self.assertFalse(response.data["processed"])
+        self.assertEqual(apple.status_code, 200)
+        self.assertFalse(apple.data["processed"])
+        self.assertEqual(google.status_code, 503)
+        self.assertFalse(google.data["processed"])
 
     @override_settings(
         STRIPE_SECRET_KEY="sk_test_123",
@@ -374,6 +377,7 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
                 "productId": "de.preismenu.monthly",
                 "environment": "Sandbox",
                 "expiresDate": str(int(expires_at.timestamp() * 1000)),
+                "appAccountToken": str(self.admin.subscription_account_token),
             },
             signed_transaction_info="signed-from-apple",
             environment="Sandbox",
@@ -419,6 +423,7 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
                 "productId": "de.preismenu.yearly",
                 "environment": "Sandbox",
                 "expiresDate": str(int(expires_at.timestamp() * 1000)),
+                "appAccountToken": str(self.admin.subscription_account_token),
             },
             signed_transaction_info="signed-from-apple",
             environment="Sandbox",

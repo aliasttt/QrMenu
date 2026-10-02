@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone as dt_timezone
 from typing import Any
+from urllib.parse import quote
 
 import requests
 from django.conf import settings
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 APPLE_PRODUCT_ID_TO_PLAN = {
@@ -35,6 +38,15 @@ class SubscriptionRejectedError(SubscriptionVerificationError):
     code = "subscription_rejected"
 
 
+class SubscriptionTemporaryError(SubscriptionVerificationError):
+    status_code = 503
+    code = "subscription_provider_temporarily_unavailable"
+
+
+class SubscriptionOwnershipError(SubscriptionRejectedError):
+    code = "subscription_already_bound"
+
+
 @dataclass
 class AppleTransactionResult:
     payload: dict[str, Any]
@@ -53,6 +65,21 @@ class AppleTransactionResult:
         if self.payload.get("revocationDate"):
             return False
         return True
+
+
+@dataclass
+class GooglePlaySubscriptionResult:
+    payload: dict[str, Any]
+    purchase_token: str
+    environment: str
+    product_id: str
+    base_plan_id: str
+    status: str
+    expires_at: datetime | None
+    will_renew: bool | None
+    latest_order_id: str
+    linked_purchase_token: str
+    acknowledgement_pending: bool
 
 
 def _b64url_decode(value: str) -> bytes:
@@ -101,6 +128,13 @@ def _verify_certificate_signature(child, issuer):
 
 
 def _verify_apple_certificate_chain(certs, require_trusted_root: bool):
+    if not certs:
+        raise SubscriptionRejectedError("Apple JWS certificate chain is empty")
+    if require_trusted_root:
+        now = datetime.now(dt_timezone.utc)
+        for cert in certs:
+            if cert.not_valid_before_utc > now or cert.not_valid_after_utc < now:
+                raise SubscriptionRejectedError("Apple JWS certificate is not currently valid")
     if len(certs) > 1:
         for index in range(len(certs) - 1):
             _verify_certificate_signature(certs[index], certs[index + 1])
@@ -241,6 +275,20 @@ def _allowed_apple_products() -> set[str]:
     return VALID_APPLE_PRODUCT_IDS | {item.strip() for item in raw.split(",") if item.strip()}
 
 
+def validate_apple_transaction_payload(payload, *, expected_transaction_id="", expected_product_id=""):
+    cfg = _apple_settings()
+    if payload.get("bundleId") and payload.get("bundleId") != cfg["bundle_id"]:
+        raise SubscriptionRejectedError("Apple transaction bundleId does not match this app")
+    if expected_transaction_id and str(payload.get("transactionId") or "") != str(expected_transaction_id):
+        raise SubscriptionRejectedError("Apple transactionId mismatch")
+    product_id = payload.get("productId") or ""
+    if expected_product_id and product_id != expected_product_id:
+        raise SubscriptionRejectedError("Apple product_id mismatch")
+    allowed_products = _allowed_apple_products()
+    if allowed_products and product_id not in allowed_products:
+        raise SubscriptionRejectedError("Apple product_id is not allowed")
+
+
 def plan_from_product_id(product_id: str) -> str:
     if not product_id:
         return "monthly"
@@ -252,6 +300,670 @@ def plan_from_product_id(product_id: str) -> str:
     if "month" in p_lower:
         return "monthly"
     return product_id
+
+
+def canonical_environment(provider: str, environment: str) -> str:
+    provider = (provider or "").strip().lower()
+    value = (environment or "").strip().lower()
+    if provider == "apple":
+        return "sandbox" if value == "sandbox" else "production" if value == "production" else value or "unknown"
+    if provider == "stripe":
+        if value in {"live", "production"}:
+            return "live"
+        if value in {"test", "sandbox"}:
+            return "test"
+        return value or "unknown"
+    if provider == "google":
+        return "test" if value in {"test", "sandbox"} else "production" if value == "production" else value or "unknown"
+    if provider == "manual":
+        return "manual"
+    return value or "legacy"
+
+
+def _environment_can_entitle(provider: str, environment: str) -> bool:
+    environment = canonical_environment(provider, environment)
+    if provider == "manual":
+        return environment == "manual"
+    production = {"apple": "production", "stripe": "live", "google": "production"}
+    if environment == production.get(provider):
+        return True
+    return bool(getattr(settings, "ALLOW_TEST_SUBSCRIPTION_ENTITLEMENTS", False)) and environment in {"sandbox", "test"}
+
+
+def _format_datetime(value):
+    if not value:
+        return None
+    return value.isoformat().replace("+00:00", "Z") if hasattr(value, "isoformat") else str(value)
+
+
+def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
+    """Resolve one compatible entitlement without letting providers overwrite each other."""
+    from .models import ProviderSubscription
+
+    now = now or timezone.now()
+    subscriptions = list(admin.provider_subscriptions.all())
+    trusted = [
+        item
+        for item in subscriptions
+        if item.verification_source
+        in {ProviderSubscription.VerificationSource.PROVIDER, ProviderSubscription.VerificationSource.MANUAL}
+    ]
+    active_statuses = {
+        ProviderSubscription.Status.ACTIVE,
+        ProviderSubscription.Status.TRIALING,
+        ProviderSubscription.Status.GRACE_PERIOD,
+        ProviderSubscription.Status.CANCELED,
+    }
+
+    def is_active(item):
+        return (
+            item.status in active_statuses
+            and item.current_period_end is not None
+            and item.current_period_end > now
+            and _environment_can_entitle(item.provider, item.environment)
+        )
+
+    active = [item for item in trusted if is_active(item)]
+    chosen = max(active, key=lambda item: item.current_period_end) if active else None
+    trial_end = getattr(admin, "trial_ends_at", None)
+    internal_trial_active = bool(
+        trial_end
+        and trial_end > now
+        and (getattr(admin, "payment_status", None) == "trial" or trusted)
+    )
+
+    provider_rows = [
+        {
+            "provider": item.provider,
+            "environment": item.environment,
+            "product_id": item.product_id or None,
+            "status": item.status,
+            "current_period_end": _format_datetime(item.current_period_end),
+            "will_renew": item.will_renew,
+            "is_entitled": is_active(item),
+            "needs_reconciliation": item.needs_reconciliation,
+        }
+        for item in subscriptions
+    ]
+
+    if chosen:
+        return {
+            "state": "active",
+            "is_entitled": True,
+            "plan": plan_from_product_id(chosen.product_id),
+            "provider": chosen.provider,
+            "current_period_end": _format_datetime(chosen.current_period_end),
+            "will_renew": chosen.will_renew,
+            "trial_end": _format_datetime(trial_end),
+            "purchasable_in_app": False,
+            "manage_url": None,
+            "message": "",
+            "providers": provider_rows,
+            "entitlement_source": "provider",
+            "trial_source": "store" if chosen.status == ProviderSubscription.Status.TRIALING else None,
+            "app_account_token": str(admin.subscription_account_token),
+        }
+
+    if internal_trial_active:
+        return {
+            "state": "trial",
+            "is_entitled": True,
+            "plan": "monthly",
+            "provider": "manual",
+            "current_period_end": _format_datetime(trial_end),
+            "will_renew": False,
+            "trial_end": _format_datetime(trial_end),
+            "purchasable_in_app": False,
+            "manage_url": None,
+            "message": "",
+            "providers": provider_rows,
+            "entitlement_source": "internal_trial",
+            "trial_source": "internal",
+            "app_account_token": str(admin.subscription_account_token),
+        }
+
+    legacy_provider = (getattr(admin, "subscription_provider", "") or "").strip().lower()
+    legacy_environment = canonical_environment(
+        legacy_provider,
+        getattr(admin, "subscription_environment", "") or "",
+    )
+    legacy_original_id = (getattr(admin, "subscription_original_transaction_id", "") or "").strip()
+
+    def supersedes_legacy(item):
+        if not legacy_provider or item.provider != legacy_provider:
+            return False
+        if legacy_environment not in {"", "unknown", "legacy"} and canonical_environment(
+            item.provider, item.environment
+        ) != legacy_environment:
+            return False
+        if legacy_original_id and item.provider == ProviderSubscription.Provider.APPLE:
+            return item.external_id == legacy_original_id
+        return True
+
+    legacy_superseded = any(supersedes_legacy(item) for item in trusted)
+    if not legacy_superseded and getattr(settings, "LEGACY_SUBSCRIPTION_FALLBACK_ENABLED", True):
+        payment_status = getattr(admin, "payment_status", None)
+        subscription_end = getattr(admin, "subscription_ends_at", None)
+        if payment_status == "paid" and subscription_end and subscription_end > now:
+            return {
+                "state": "active",
+                "is_entitled": True,
+                "plan": plan_from_product_id(getattr(admin, "subscription_product_id", "")),
+                "provider": getattr(admin, "subscription_provider", "") or "stripe",
+                "current_period_end": _format_datetime(subscription_end),
+                "will_renew": None,
+                "trial_end": _format_datetime(trial_end),
+                "purchasable_in_app": False,
+                "manage_url": None,
+                "message": "",
+                "providers": provider_rows,
+                "entitlement_source": "legacy",
+                "trial_source": None,
+                "app_account_token": str(admin.subscription_account_token),
+            }
+
+    latest_end = max((item.current_period_end for item in trusted if item.current_period_end), default=None)
+    legacy_end = getattr(admin, "subscription_ends_at", None) or trial_end
+    has_expired_context = bool(latest_end or legacy_end)
+    return {
+        "state": "expired" if has_expired_context else "none",
+        "is_entitled": False,
+        "plan": None,
+        "provider": None,
+        "current_period_end": _format_datetime(latest_end or legacy_end),
+        "will_renew": False,
+        "trial_end": _format_datetime(trial_end),
+        "purchasable_in_app": True,
+        "manage_url": None,
+        "message": "",
+        "providers": provider_rows,
+        "entitlement_source": "provider" if trusted else "legacy",
+        "trial_source": None,
+        "app_account_token": str(admin.subscription_account_token),
+    }
+
+
+def _sync_legacy_subscription_fields(admin):
+    """Keep the old app fields as a projection, never as competing provider state."""
+    from .models import ProviderSubscription
+
+    trusted_query = admin.provider_subscriptions.exclude(
+        verification_source=ProviderSubscription.VerificationSource.LEGACY
+    )
+    trusted = list(trusted_query)
+    if not trusted:
+        return
+    now = timezone.now()
+    legacy_provider_name = (admin.subscription_provider or "").strip().lower()
+    legacy_environment_name = canonical_environment(
+        legacy_provider_name, admin.subscription_environment or ""
+    )
+    legacy_original_id = (admin.subscription_original_transaction_id or "").strip()
+    legacy_still_valid = bool(
+        admin.payment_status == "paid"
+        and admin.subscription_ends_at
+        and admin.subscription_ends_at > now
+    )
+
+    def supersedes_existing_legacy(item):
+        if not legacy_provider_name or item.provider != legacy_provider_name:
+            return False
+        if legacy_environment_name not in {"", "unknown", "legacy"} and canonical_environment(
+            item.provider, item.environment
+        ) != legacy_environment_name:
+            return False
+        if legacy_original_id and item.provider == ProviderSubscription.Provider.APPLE:
+            return item.external_id == legacy_original_id
+        return True
+
+    # Preserve independent legacy evidence until that provider purchase is reconciled.
+    if legacy_still_valid and not any(supersedes_existing_legacy(item) for item in trusted):
+        return
+    active_statuses = {
+        ProviderSubscription.Status.ACTIVE,
+        ProviderSubscription.Status.TRIALING,
+        ProviderSubscription.Status.GRACE_PERIOD,
+        ProviderSubscription.Status.CANCELED,
+    }
+    eligible = [
+        item
+        for item in trusted
+        if item.status in active_statuses
+        and item.current_period_end
+        and item.current_period_end > now
+        and _environment_can_entitle(item.provider, item.environment)
+    ]
+    selected = max(eligible, key=lambda item: item.current_period_end) if eligible else None
+    internal_trial_active = bool(
+        admin.trial_ends_at
+        and admin.trial_ends_at > now
+        and (admin.payment_status == "trial" or trusted)
+    )
+
+    def legacy_environment(item):
+        if item.provider == ProviderSubscription.Provider.APPLE:
+            return "Sandbox" if item.environment == "sandbox" else "Production" if item.environment == "production" else item.environment
+        if item.provider == ProviderSubscription.Provider.STRIPE:
+            return "stripe"
+        return item.environment
+
+    if selected:
+        admin.payment_status = "paid"
+        admin.subscription_ends_at = selected.current_period_end
+        admin.subscription_provider = selected.provider
+        admin.subscription_product_id = selected.product_id
+        admin.subscription_environment = legacy_environment(selected)
+    elif internal_trial_active:
+        admin.payment_status = "trial"
+    elif not internal_trial_active:
+        latest = trusted_query.order_by("-last_event_at", "-updated_at").first()
+        admin.payment_status = "unpaid"
+        if latest:
+            admin.subscription_ends_at = latest.current_period_end
+            admin.subscription_provider = latest.provider
+            admin.subscription_product_id = latest.product_id
+            admin.subscription_environment = legacy_environment(latest)
+    admin.save(
+        update_fields=[
+            "payment_status",
+            "subscription_ends_at",
+            "subscription_provider",
+            "subscription_product_id",
+            "subscription_environment",
+        ]
+    )
+
+
+def apply_provider_event(
+    *,
+    account,
+    provider: str,
+    environment: str,
+    external_id: str,
+    event_id: str,
+    event_type: str,
+    status: str,
+    current_period_end,
+    occurred_at=None,
+    product_id: str = "",
+    latest_transaction_id: str = "",
+    provider_customer_id: str = "",
+    will_renew=None,
+    verification_source: str = "provider",
+):
+    """Atomically claim a provider purchase and apply one idempotent ordered event."""
+    from .models import ProviderEvent, ProviderSubscription
+
+    provider = (provider or "").strip().lower()
+    environment = canonical_environment(provider, environment)
+    external_id = str(external_id or "").strip()
+    event_id = str(event_id or "").strip()
+    latest_transaction_id = str(latest_transaction_id or "").strip()
+    if not provider or not external_id or not event_id:
+        raise SubscriptionRejectedError("Provider, external purchase ID, and event ID are required")
+
+    with transaction.atomic():
+        duplicate = ProviderEvent.objects.select_related("subscription").filter(
+            provider=provider,
+            environment=environment,
+            external_event_id=event_id,
+        ).first()
+        if duplicate:
+            if duplicate.subscription.account_id != account.id:
+                raise SubscriptionOwnershipError("Provider event is already bound to another account")
+            return duplicate.subscription, False, "duplicate"
+
+        subscription = ProviderSubscription.objects.select_for_update().filter(
+            provider=provider,
+            environment=environment,
+            external_id=external_id,
+        ).first()
+        if subscription and subscription.account_id != account.id:
+            raise SubscriptionOwnershipError("Subscription purchase is already bound to another account")
+        if subscription is None:
+            try:
+                with transaction.atomic():
+                    subscription = ProviderSubscription.objects.create(
+                        account=account,
+                        provider=provider,
+                        environment=environment,
+                        external_id=external_id,
+                    )
+            except IntegrityError:
+                subscription = ProviderSubscription.objects.select_for_update().get(
+                    provider=provider,
+                    environment=environment,
+                    external_id=external_id,
+                )
+                if subscription.account_id != account.id:
+                    raise SubscriptionOwnershipError("Subscription purchase is already bound to another account")
+
+        if latest_transaction_id:
+            conflicting = ProviderSubscription.objects.select_for_update().filter(
+                provider=provider,
+                environment=environment,
+                latest_transaction_id=latest_transaction_id,
+            ).exclude(pk=subscription.pk).first()
+            if conflicting and conflicting.account_id != account.id:
+                raise SubscriptionOwnershipError("Provider transaction is already bound to another account")
+
+        state_applied = not (
+            occurred_at and subscription.last_event_at and occurred_at < subscription.last_event_at
+        )
+        if state_applied:
+            subscription.product_id = product_id or subscription.product_id
+            subscription.status = status
+            subscription.current_period_end = current_period_end
+            subscription.will_renew = will_renew
+            subscription.latest_transaction_id = latest_transaction_id or subscription.latest_transaction_id
+            subscription.provider_customer_id = provider_customer_id or subscription.provider_customer_id
+            subscription.verification_source = verification_source
+            subscription.needs_reconciliation = False
+            subscription.last_event_at = occurred_at or timezone.now()
+            subscription.save()
+
+        ProviderEvent.objects.create(
+            subscription=subscription,
+            provider=provider,
+            environment=environment,
+            external_event_id=event_id,
+            event_type=event_type,
+            occurred_at=occurred_at,
+            state_applied=state_applied,
+        )
+        _sync_legacy_subscription_fields(account)
+        return subscription, state_applied, "applied" if state_applied else "stale"
+
+
+def google_purchase_external_id(purchase_token: str) -> str:
+    """Stable non-secret identifier; the recoverable token is stored separately encrypted."""
+    return hashlib.sha256(purchase_token.encode("utf-8")).hexdigest()
+
+
+def _google_product_allowlist() -> dict[str, set[str]]:
+    raw = getattr(settings, "GOOGLE_PLAY_SUBSCRIPTION_PRODUCTS_JSON", "") or ""
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError) as exc:
+        raise SubscriptionConfigurationError("Google Play product mapping is not valid JSON") from exc
+    if not isinstance(data, dict) or not data:
+        raise SubscriptionConfigurationError("Google Play product mapping is required")
+    result = {}
+    for product_id, base_plans in data.items():
+        if not isinstance(product_id, str) or not product_id.strip():
+            raise SubscriptionConfigurationError("Google Play product mapping contains an invalid product")
+        if isinstance(base_plans, str):
+            base_plans = [base_plans]
+        if not isinstance(base_plans, list) or not base_plans:
+            raise SubscriptionConfigurationError("Every Google Play product needs allowed base plans")
+        cleaned = {str(value).strip() for value in base_plans if str(value).strip()}
+        if not cleaned:
+            raise SubscriptionConfigurationError("Every Google Play product needs allowed base plans")
+        result[product_id.strip()] = cleaned
+    return result
+
+
+def _google_token_cipher():
+    key = (getattr(settings, "GOOGLE_PLAY_TOKEN_ENCRYPTION_KEY", "") or "").strip().encode("ascii")
+    if not key:
+        raise SubscriptionConfigurationError("Google Play token encryption key is required")
+    try:
+        from cryptography.fernet import Fernet
+
+        return Fernet(key)
+    except Exception as exc:
+        raise SubscriptionConfigurationError("Google Play token encryption key is invalid") from exc
+
+
+def encrypt_google_purchase_token(purchase_token: str) -> str:
+    return _google_token_cipher().encrypt(purchase_token.encode("utf-8")).decode("ascii")
+
+
+def decrypt_google_purchase_token(encrypted_token: str) -> str:
+    try:
+        return _google_token_cipher().decrypt(encrypted_token.encode("ascii")).decode("utf-8")
+    except SubscriptionConfigurationError:
+        raise
+    except Exception as exc:
+        raise SubscriptionConfigurationError("Stored Google Play token cannot be decrypted") from exc
+
+
+def _google_authorized_session():
+    try:
+        import google.auth
+        from google.auth.transport.requests import AuthorizedSession
+        from google.oauth2 import service_account
+    except ImportError as exc:
+        raise SubscriptionConfigurationError("google-auth is required for Google Play verification") from exc
+
+    scopes = ["https://www.googleapis.com/auth/androidpublisher"]
+    encoded = (getattr(settings, "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_B64", "") or "").strip()
+    try:
+        if encoded:
+            info = json.loads(base64.b64decode(encoded, validate=True))
+            credentials = service_account.Credentials.from_service_account_info(info, scopes=scopes)
+        else:
+            credentials, _project = google.auth.default(scopes=scopes)
+    except Exception as exc:
+        raise SubscriptionConfigurationError("Google Play service credentials are unavailable") from exc
+    return AuthorizedSession(credentials)
+
+
+def _google_api_response(method: str, url: str, **kwargs):
+    try:
+        response = _google_authorized_session().request(method, url, timeout=15, **kwargs)
+    except SubscriptionConfigurationError:
+        raise
+    except Exception as exc:
+        raise SubscriptionTemporaryError("Google Play API request failed") from exc
+    if response.status_code == 429 or response.status_code >= 500:
+        raise SubscriptionTemporaryError("Google Play API is temporarily unavailable")
+    if response.status_code >= 400:
+        raise SubscriptionRejectedError("Google Play rejected the subscription request")
+    return response
+
+
+def _parse_google_timestamp(value) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError) as exc:
+        raise SubscriptionRejectedError("Google Play returned an invalid expiry time") from exc
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=dt_timezone.utc)
+    return parsed.astimezone(dt_timezone.utc)
+
+
+def verify_google_play_subscription(purchase_token: str) -> GooglePlaySubscriptionResult:
+    purchase_token = (purchase_token or "").strip()
+    package_name = (getattr(settings, "GOOGLE_PLAY_PACKAGE_NAME", "") or "").strip()
+    if not purchase_token:
+        raise SubscriptionRejectedError("Google Play purchaseToken is required")
+    if len(purchase_token) > 4096:
+        raise SubscriptionRejectedError("Google Play purchaseToken is too long")
+    if not package_name:
+        raise SubscriptionConfigurationError("Google Play package name is required")
+    allowlist = _google_product_allowlist()
+    url = (
+        "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/"
+        f"{quote(package_name, safe='')}/purchases/subscriptionsv2/tokens/{quote(purchase_token, safe='')}"
+    )
+    response = _google_api_response("GET", url)
+    try:
+        payload = response.json()
+    except Exception as exc:
+        raise SubscriptionTemporaryError("Google Play returned invalid JSON") from exc
+    if not isinstance(payload, dict):
+        raise SubscriptionTemporaryError("Google Play returned an invalid response")
+
+    line_items = payload.get("lineItems") or []
+    if not isinstance(line_items, list) or not line_items:
+        raise SubscriptionRejectedError("Google Play subscription has no line items")
+    validated_items = []
+    for item in line_items:
+        if not isinstance(item, dict):
+            raise SubscriptionRejectedError("Google Play returned an invalid line item")
+        product_id = str(item.get("productId") or "").strip()
+        base_plan_id = str((item.get("offerDetails") or {}).get("basePlanId") or "").strip()
+        if product_id not in allowlist or base_plan_id not in allowlist[product_id]:
+            raise SubscriptionRejectedError("Google Play product or base plan is not allowed")
+        validated_items.append((item, product_id, base_plan_id, _parse_google_timestamp(item.get("expiryTime"))))
+
+    state = str(payload.get("subscriptionState") or "SUBSCRIPTION_STATE_UNSPECIFIED")
+    status_map = {
+        "SUBSCRIPTION_STATE_ACTIVE": "active",
+        "SUBSCRIPTION_STATE_IN_GRACE_PERIOD": "grace_period",
+        "SUBSCRIPTION_STATE_CANCELED": "canceled",
+        "SUBSCRIPTION_STATE_EXPIRED": "expired",
+        "SUBSCRIPTION_STATE_PAUSED": "unpaid",
+        "SUBSCRIPTION_STATE_ON_HOLD": "unpaid",
+        "SUBSCRIPTION_STATE_PENDING": "unknown",
+        "SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED": "expired",
+    }
+    subscription_status = status_map.get(state, "unknown")
+    latest_item, product_id, base_plan_id, expires_at = max(
+        validated_items,
+        key=lambda row: row[3] or datetime.min.replace(tzinfo=dt_timezone.utc),
+    )
+    if subscription_status in {"active", "grace_period", "canceled"} and (
+        expires_at is None or expires_at <= timezone.now()
+    ):
+        subscription_status = "expired"
+    auto_renew_values = [
+        item.get("autoRenewingPlan", {}).get("autoRenewEnabled")
+        for item, _product, _plan, _expiry in validated_items
+        if "autoRenewingPlan" in item
+    ]
+    will_renew = any(auto_renew_values) if auto_renew_values else None
+    if state == "SUBSCRIPTION_STATE_CANCELED":
+        will_renew = False
+    environment = "test" if "testPurchase" in payload else "production"
+    return GooglePlaySubscriptionResult(
+        payload=payload,
+        purchase_token=purchase_token,
+        environment=environment,
+        product_id=product_id,
+        base_plan_id=base_plan_id,
+        status=subscription_status,
+        expires_at=expires_at,
+        will_renew=will_renew,
+        latest_order_id=str(latest_item.get("latestSuccessfulOrderId") or ""),
+        linked_purchase_token=str(payload.get("linkedPurchaseToken") or ""),
+        acknowledgement_pending=payload.get("acknowledgementState") == "ACKNOWLEDGEMENT_STATE_PENDING",
+    )
+
+
+def _google_owner_is_valid(account, result: GooglePlaySubscriptionResult) -> bool:
+    from .models import ProviderSubscription
+
+    external_id = google_purchase_external_id(result.purchase_token)
+    existing_rows = list(ProviderSubscription.objects.filter(
+        provider=ProviderSubscription.Provider.GOOGLE,
+        external_id=external_id,
+    )[:2])
+    identifiers = result.payload.get("externalAccountIdentifiers") or {}
+    claimed_ids = {
+        str(identifiers.get("obfuscatedExternalAccountId") or "").strip().lower(),
+        str(identifiers.get("externalAccountId") or "").strip().lower(),
+    } - {""}
+    expected = str(account.subscription_account_token).lower()
+    if claimed_ids:
+        if expected not in claimed_ids:
+            raise SubscriptionOwnershipError("Google Play account identifier does not match this account")
+        return True
+    if existing_rows:
+        if any(item.account_id != account.id for item in existing_rows):
+            raise SubscriptionOwnershipError("Google Play purchase is already bound to another account")
+        return True
+    if result.linked_purchase_token:
+        linked = ProviderSubscription.objects.filter(
+            provider=ProviderSubscription.Provider.GOOGLE,
+            external_id=google_purchase_external_id(result.linked_purchase_token),
+        ).first()
+        if linked:
+            if linked.account_id != account.id:
+                raise SubscriptionOwnershipError("Linked Google Play purchase belongs to another account")
+            return True
+    raise SubscriptionOwnershipError(
+        "Google Play purchase has no matching account identifier or existing binding"
+    )
+
+
+def acknowledge_google_play_subscription(result: GooglePlaySubscriptionResult):
+    if not result.acknowledgement_pending or result.status not in {"active", "grace_period", "canceled"}:
+        return False
+    package_name = (getattr(settings, "GOOGLE_PLAY_PACKAGE_NAME", "") or "").strip()
+    url = (
+        "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/"
+        f"{quote(package_name, safe='')}/purchases/subscriptions/{quote(result.product_id, safe='')}/"
+        f"tokens/{quote(result.purchase_token, safe='')}:acknowledge"
+    )
+    _google_api_response("POST", url, json={})
+    return True
+
+
+def apply_google_play_subscription(
+    account,
+    result: GooglePlaySubscriptionResult,
+    *,
+    event_id: str = "",
+    event_type: str = "purchase_verified",
+    occurred_at=None,
+):
+    from .models import ProviderSubscription
+
+    _google_owner_is_valid(account, result)
+    external_id = google_purchase_external_id(result.purchase_token)
+    event_id = event_id or f"verify:{external_id}:{result.payload.get('etag') or result.latest_order_id or result.status}"
+    subscription, applied, outcome = apply_provider_event(
+        account=account,
+        provider=ProviderSubscription.Provider.GOOGLE,
+        environment=result.environment,
+        external_id=external_id,
+        event_id=event_id,
+        event_type=event_type,
+        status=result.status,
+        current_period_end=result.expires_at,
+        occurred_at=occurred_at or timezone.now(),
+        product_id=f"{result.product_id}:{result.base_plan_id}",
+        latest_transaction_id=result.latest_order_id,
+        provider_customer_id=encrypt_google_purchase_token(result.purchase_token),
+        will_renew=result.will_renew,
+    )
+    if result.acknowledgement_pending and result.status in {"active", "grace_period", "canceled"}:
+        try:
+            acknowledge_google_play_subscription(result)
+        except SubscriptionVerificationError:
+            subscription.needs_reconciliation = True
+            subscription.save(update_fields=["needs_reconciliation", "updated_at"])
+            raise
+        if subscription.needs_reconciliation:
+            subscription.needs_reconciliation = False
+            subscription.save(update_fields=["needs_reconciliation", "updated_at"])
+    return subscription, applied, outcome
+
+
+def verify_google_pubsub_token(authorization_header: str) -> dict[str, Any]:
+    audience = (getattr(settings, "GOOGLE_PUBSUB_AUDIENCE", "") or "").strip()
+    expected_email = (getattr(settings, "GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL", "") or "").strip().lower()
+    if not audience or not expected_email:
+        raise SubscriptionConfigurationError("Google Pub/Sub authentication is not configured")
+    if not authorization_header.startswith("Bearer "):
+        raise SubscriptionRejectedError("Google Pub/Sub bearer token is required")
+    token = authorization_header[7:].strip()
+    try:
+        from google.auth.transport.requests import Request
+        from google.oauth2 import id_token
+
+        claims = id_token.verify_oauth2_token(token, Request(), audience=audience)
+    except Exception as exc:
+        raise SubscriptionRejectedError("Google Pub/Sub token is invalid") from exc
+    if claims.get("iss") not in {"accounts.google.com", "https://accounts.google.com"}:
+        raise SubscriptionRejectedError("Google Pub/Sub issuer is invalid")
+    if str(claims.get("email") or "").lower() != expected_email or claims.get("email_verified") is not True:
+        raise SubscriptionRejectedError("Google Pub/Sub service account is invalid")
+    return claims
 
 
 def verify_apple_transaction(jws: str, environment: str = "", expected_product_id: str = "") -> AppleTransactionResult:
@@ -308,21 +1020,12 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
     if not signed_transaction_info:
         raise SubscriptionRejectedError("Apple response missing signedTransactionInfo")
 
-    payload = verify_compact_jws_signature(signed_transaction_info)
-    cfg = _apple_settings()
-    if payload.get("bundleId") and payload.get("bundleId") != cfg["bundle_id"]:
-        raise SubscriptionRejectedError(
-            f"Apple transaction bundleId ({payload.get('bundleId')}) does not match this app ({cfg['bundle_id']})"
-        )
-    if str(payload.get("transactionId") or "") != str(transaction_id):
-        raise SubscriptionRejectedError("Apple transactionId mismatch")
-
-    product_id = payload.get("productId") or ""
-    allowed_products = _allowed_apple_products()
-    if expected_product_id and product_id != expected_product_id:
-        raise SubscriptionRejectedError("Apple product_id mismatch")
-    if allowed_products and product_id not in allowed_products:
-        raise SubscriptionRejectedError("Apple product_id is not allowed")
+    payload = verify_compact_jws_signature(signed_transaction_info, require_trusted_root=True)
+    validate_apple_transaction_payload(
+        payload,
+        expected_transaction_id=transaction_id,
+        expected_product_id=expected_product_id,
+    )
 
     return AppleTransactionResult(
         payload=payload,
@@ -332,24 +1035,66 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
 
 
 def apply_apple_transaction_to_admin(admin, result: AppleTransactionResult):
+    from .models import BusinessAdmin, ProviderSubscription
+
     payload = result.payload
     product_id = payload.get("productId") or ""
-    admin.payment_status = "paid" if result.is_entitled else "unpaid"
-    admin.subscription_ends_at = result.expires_at
-    admin.subscription_provider = "apple"
-    admin.subscription_product_id = product_id
-    admin.subscription_environment = result.environment or ""
-    admin.subscription_original_transaction_id = payload.get("originalTransactionId") or ""
-    admin.subscription_transaction_id = payload.get("transactionId") or ""
+    original_transaction_id = str(payload.get("originalTransactionId") or "").strip()
+    transaction_id = str(payload.get("transactionId") or "").strip()
+    environment = canonical_environment("apple", result.environment or payload.get("environment") or "")
+    if not original_transaction_id or not transaction_id:
+        raise SubscriptionRejectedError("Apple transaction identifiers are required")
+
+    app_account_token = str(payload.get("appAccountToken") or "").strip().lower()
+    expected_account_token = str(admin.subscription_account_token).lower()
+    if app_account_token:
+        if app_account_token != expected_account_token:
+            raise SubscriptionOwnershipError("Apple appAccountToken does not match this account")
+    else:
+        existing_owner = ProviderSubscription.objects.filter(
+            provider=ProviderSubscription.Provider.APPLE,
+            environment=environment,
+            external_id=original_transaction_id,
+        ).values_list("account_id", flat=True).first()
+        legacy_owner_ids = list(
+            BusinessAdmin.objects.filter(
+                subscription_original_transaction_id=original_transaction_id,
+            ).values_list("id", flat=True)[:2]
+        )
+        safely_bound = existing_owner == admin.id or legacy_owner_ids == [admin.id]
+        if not safely_bound:
+            raise SubscriptionOwnershipError(
+                "Apple purchase has no appAccountToken or existing verified account binding"
+            )
+
+    if payload.get("revocationDate"):
+        subscription_status = ProviderSubscription.Status.REVOKED
+    elif result.is_entitled:
+        subscription_status = ProviderSubscription.Status.ACTIVE
+    else:
+        subscription_status = ProviderSubscription.Status.EXPIRED
+    signed_at = _datetime_from_apple_ms(payload.get("signedDate"))
+    subscription, _applied, _reason = apply_provider_event(
+        account=admin,
+        provider=ProviderSubscription.Provider.APPLE,
+        environment=environment,
+        external_id=original_transaction_id,
+        event_id=f"transaction:{transaction_id}",
+        event_type="transaction_verified",
+        status=subscription_status,
+        current_period_end=result.expires_at,
+        occurred_at=signed_at,
+        product_id=product_id,
+        latest_transaction_id=transaction_id,
+        will_renew=None,
+    )
+
+    admin.subscription_original_transaction_id = original_transaction_id
+    admin.subscription_transaction_id = transaction_id
     admin.save(
         update_fields=[
-            "payment_status",
-            "subscription_ends_at",
-            "subscription_provider",
-            "subscription_product_id",
-            "subscription_environment",
             "subscription_original_transaction_id",
             "subscription_transaction_id",
         ]
     )
-    return admin
+    return subscription

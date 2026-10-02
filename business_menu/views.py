@@ -19,6 +19,7 @@ from django.contrib.auth import authenticate
 from datetime import UTC, datetime, timedelta
 from django.templatetags.static import static as static_url
 import io
+import base64
 import json
 import logging
 import os
@@ -77,6 +78,8 @@ from .auth_utils import (
 )
 from .models import (
     BusinessAdmin,
+    ProviderEvent,
+    ProviderSubscription,
     PendingEmailVerification,
     Restaurant,
     MenuItem,
@@ -109,11 +112,17 @@ from .serializers import (
 from .subscription_services import (
     SubscriptionConfigurationError,
     SubscriptionRejectedError,
+    SubscriptionTemporaryError,
     SubscriptionVerificationError,
+    apply_google_play_subscription,
+    apply_provider_event,
     apply_apple_transaction_to_admin,
     decode_compact_jws_unverified,
+    google_purchase_external_id,
     verify_apple_transaction,
     verify_compact_jws_signature,
+    verify_google_play_subscription,
+    verify_google_pubsub_token,
 )
 from .cloudinary_utils import (
     upload_image_to_cloudinary, 
@@ -311,6 +320,10 @@ def _empty_subscription_payload():
         "purchasable_in_app": True,
         "manage_url": None,
         "message": "",
+        "providers": [],
+        "entitlement_source": "none",
+        "trial_source": None,
+        "app_account_token": None,
     }
 
 
@@ -827,6 +840,43 @@ class AdminSubscriptionVerifyView(APIView):
                 status=status.HTTP_200_OK,
             )
 
+        if self.provider == "google":
+            purchase_token = str(
+                request.data.get("purchase_token") or request.data.get("purchaseToken") or ""
+            ).strip()
+            if not purchase_token:
+                return Response(
+                    {"code": "missing_purchase_token", "message": "Provide purchase_token."},
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+            try:
+                result = verify_google_play_subscription(purchase_token)
+                _subscription, applied, outcome = apply_google_play_subscription(admin, result)
+            except SubscriptionVerificationError as exc:
+                return Response(
+                    {"code": getattr(exc, "code", "subscription_verification_failed"), "message": str(exc)},
+                    status=getattr(exc, "status_code", status.HTTP_422_UNPROCESSABLE_ENTITY),
+                )
+            except Exception:
+                logger.exception("Unexpected error verifying Google Play subscription")
+                return Response(
+                    {"code": "google_verification_unexpected_error", "message": "Temporary verification error."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            return Response(
+                {
+                    "success": True,
+                    "provider": "google",
+                    "product_id": result.product_id,
+                    "base_plan_id": result.base_plan_id,
+                    "environment": result.environment,
+                    "state_applied": applied,
+                    "outcome": outcome,
+                    "subscription": BusinessMenuSubscriptionSerializer(admin).data,
+                },
+                status=status.HTTP_200_OK,
+            )
+
         return Response(
             {
                 "code": "subscription_verification_not_configured",
@@ -850,6 +900,41 @@ class AdminSubscriptionRestoreView(APIView):
 
     def post(self, request):
         admin = _get_business_admin_for_user(request.user, request=request)
+        provider = str(request.data.get("provider") or "").strip().lower()
+        purchase_token = str(
+            request.data.get("purchase_token") or request.data.get("purchaseToken") or ""
+        ).strip()
+        if provider == "google" or purchase_token:
+            if not admin:
+                return Response(
+                    {"code": "business_admin_not_found", "message": "Business account not found."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            if not purchase_token:
+                return Response(
+                    {"code": "missing_purchase_token", "message": "Provide purchase_token."},
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+            try:
+                result = verify_google_play_subscription(purchase_token)
+                _subscription, applied, outcome = apply_google_play_subscription(
+                    admin, result, event_type="purchase_restored"
+                )
+            except SubscriptionVerificationError as exc:
+                return Response(
+                    {"code": getattr(exc, "code", "subscription_verification_failed"), "message": str(exc)},
+                    status=getattr(exc, "status_code", status.HTTP_422_UNPROCESSABLE_ENTITY),
+                )
+            return Response(
+                {
+                    "success": True,
+                    "provider": "google",
+                    "state_applied": applied,
+                    "outcome": outcome,
+                    "subscription": BusinessMenuSubscriptionSerializer(admin).data,
+                },
+                status=status.HTTP_200_OK,
+            )
         return Response(
             {
                 "success": True,
@@ -885,8 +970,7 @@ class AdminSubscriptionNotificationView(APIView):
                     status=status.HTTP_200_OK,
                 )
             try:
-                has_root_certs = bool(getattr(settings, "APPLE_ROOT_CERTIFICATES_PEM", "") or "")
-                notification = verify_compact_jws_signature(signed_payload, require_trusted_root=has_root_certs)
+                notification = verify_compact_jws_signature(signed_payload, require_trusted_root=True)
                 notification_type = notification.get("notificationType") or ""
                 subtype = notification.get("subtype") or ""
 
@@ -904,49 +988,131 @@ class AdminSubscriptionNotificationView(APIView):
                         status=status.HTTP_200_OK,
                     )
 
-                result_payload = verify_compact_jws_signature(signed_transaction_info, require_trusted_root=has_root_certs)
+                result_payload = verify_compact_jws_signature(signed_transaction_info, require_trusted_root=True)
+                validate_apple_transaction_payload(result_payload)
                 original_transaction_id = str(result_payload.get("originalTransactionId") or "").strip()
                 transaction_id = str(result_payload.get("transactionId") or "").strip()
+                notification_id = str(notification.get("notificationUUID") or "").strip()
+                if not original_transaction_id or not transaction_id or not notification_id:
+                    return Response(
+                        {"success": True, "provider": "apple", "processed": False, "detail": "notification_identifiers_missing"},
+                        status=status.HTTP_200_OK,
+                    )
 
-                admin = None
-                if original_transaction_id:
-                    admin = BusinessAdmin.objects.filter(subscription_original_transaction_id=original_transaction_id).order_by("-id").first()
-                if not admin and transaction_id:
-                    admin = BusinessAdmin.objects.filter(subscription_transaction_id=transaction_id).order_by("-id").first()
+                environment = canonical_environment(
+                    "apple",
+                    result_payload.get("environment") or data.get("environment") or "Production",
+                )
+                provider_subscription = ProviderSubscription.objects.filter(
+                    provider=ProviderSubscription.Provider.APPLE,
+                    environment=environment,
+                    external_id=original_transaction_id,
+                ).select_related("account").first()
+                admin = provider_subscription.account if provider_subscription else None
+                if not admin:
+                    legacy_matches = list(
+                        BusinessAdmin.objects.filter(
+                            subscription_original_transaction_id=original_transaction_id,
+                        ).order_by("id")[:2]
+                    )
+                    if len(legacy_matches) == 1:
+                        admin = legacy_matches[0]
+                    elif len(legacy_matches) > 1:
+                        logger.warning("Apple notification matched ambiguous legacy ownership")
+                        return Response(
+                            {"success": True, "provider": "apple", "processed": False, "detail": "ambiguous_legacy_owner"},
+                            status=status.HTTP_200_OK,
+                        )
 
                 if not admin:
-                    logger.info("Apple notification received for unknown transaction: orig=%s, tx=%s", original_transaction_id, transaction_id)
+                    logger.info("Apple notification received for an unknown transaction")
                     return Response(
                         {"success": True, "provider": "apple", "processed": False, "detail": "admin_not_found"},
                         status=status.HTTP_200_OK,
                     )
 
-                environment = result_payload.get("environment") or data.get("environment") or "Production"
                 product_id = result_payload.get("productId") or ""
                 revocation_date = result_payload.get("revocationDate")
+                expires_at = None
+                try:
+                    expires_at = datetime.fromtimestamp(int(result_payload.get("expiresDate")) / 1000, tz=UTC)
+                except (TypeError, ValueError, OverflowError):
+                    pass
+                occurred_at = None
+                try:
+                    occurred_at = datetime.fromtimestamp(int(notification.get("signedDate")) / 1000, tz=UTC)
+                except (TypeError, ValueError, OverflowError):
+                    pass
+                renewal_payload = {}
+                signed_renewal_info = data.get("signedRenewalInfo") or ""
+                if signed_renewal_info:
+                    renewal_payload = verify_compact_jws_signature(signed_renewal_info, require_trusted_root=True)
+                    renewal_original_id = str(renewal_payload.get("originalTransactionId") or "").strip()
+                    if renewal_original_id and renewal_original_id != original_transaction_id:
+                        raise SubscriptionRejectedError("Apple renewal information does not match the transaction")
+                    renewal_environment = renewal_payload.get("environment")
+                    if renewal_environment and canonical_environment("apple", renewal_environment) != environment:
+                        raise SubscriptionRejectedError("Apple renewal environment does not match the transaction")
+                auto_renew_status = renewal_payload.get("autoRenewStatus")
+                will_renew = None if auto_renew_status in (None, "") else str(auto_renew_status) == "1"
 
                 if revocation_date or notification_type in {"REVOKE", "REFUND"}:
-                    admin.payment_status = "unpaid"
-                    admin.subscription_ends_at = timezone.now()
-                    admin.subscription_provider = "apple"
-                    admin.save(update_fields=["payment_status", "subscription_ends_at", "subscription_provider"])
+                    provider_status = ProviderSubscription.Status.REVOKED
+                    will_renew = False
                 elif notification_type in {"EXPIRED", "GRACE_PERIOD_EXPIRED"}:
-                    admin.payment_status = "unpaid"
-                    admin.save(update_fields=["payment_status"])
+                    provider_status = ProviderSubscription.Status.EXPIRED
+                    will_renew = False
+                elif notification_type == "DID_FAIL_TO_RENEW" and subtype == "GRACE_PERIOD":
+                    provider_status = ProviderSubscription.Status.GRACE_PERIOD
+                elif notification_type == "DID_FAIL_TO_RENEW":
+                    provider_status = ProviderSubscription.Status.UNPAID
+                    will_renew = False
+                elif notification_type == "DID_CHANGE_RENEWAL_STATUS" and subtype == "AUTO_RENEW_DISABLED":
+                    provider_status = ProviderSubscription.Status.CANCELED
+                    will_renew = False
                 else:
-                    from .subscription_services import AppleTransactionResult
-                    apply_apple_transaction_to_admin(
-                        admin,
-                        AppleTransactionResult(
-                            payload=result_payload,
-                            signed_transaction_info=signed_transaction_info,
-                            environment=environment,
-                        ),
+                    provider_status = (
+                        ProviderSubscription.Status.ACTIVE
+                        if expires_at and expires_at > timezone.now()
+                        else ProviderSubscription.Status.EXPIRED
                     )
 
+                _subscription, state_applied, outcome = apply_provider_event(
+                    account=admin,
+                    provider=ProviderSubscription.Provider.APPLE,
+                    environment=environment,
+                    external_id=original_transaction_id,
+                    event_id=notification_id,
+                    event_type=f"{notification_type}:{subtype}" if subtype else notification_type,
+                    status=provider_status,
+                    current_period_end=expires_at,
+                    occurred_at=occurred_at,
+                    product_id=product_id,
+                    latest_transaction_id=transaction_id,
+                    will_renew=will_renew,
+                )
+                if state_applied:
+                    admin.subscription_original_transaction_id = original_transaction_id
+                    admin.subscription_transaction_id = transaction_id
+                    admin.save(update_fields=["subscription_original_transaction_id", "subscription_transaction_id"])
+
                 return Response(
-                    {"success": True, "provider": "apple", "processed": True, "notification_type": notification_type, "subtype": subtype},
+                    {
+                        "success": True,
+                        "provider": "apple",
+                        "processed": True,
+                        "notification_type": notification_type,
+                        "subtype": subtype,
+                        "state_applied": state_applied,
+                        "outcome": outcome,
+                    },
                     status=status.HTTP_200_OK,
+                )
+            except SubscriptionConfigurationError as exc:
+                logger.error("Apple subscription notification configuration error: %s", exc)
+                return Response(
+                    {"success": False, "provider": "apple", "processed": False, "detail": exc.code},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
             except SubscriptionVerificationError as exc:
                 logger.warning("Rejected Apple subscription notification: %s", exc)
@@ -957,20 +1123,120 @@ class AdminSubscriptionNotificationView(APIView):
             except Exception as exc:
                 logger.exception("Unexpected error processing Apple subscription notification: %s", exc)
                 return Response(
-                    {"success": True, "provider": "apple", "processed": False, "detail": str(exc)},
-                    status=status.HTTP_200_OK,
+                    {"success": False, "provider": "apple", "processed": False, "detail": "temporary_processing_error"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 
         if self.provider == "google":
-            if not request.META.get("HTTP_X_GOOG_TOPIC") and not request.data:
+            try:
+                content_length = int(request.META.get("CONTENT_LENGTH") or 0)
+            except (TypeError, ValueError):
+                content_length = 0
+            if content_length > 262144:
                 return Response(
-                    {"success": True, "provider": "google", "processed": False, "detail": "pubsub_envelope_required"},
+                    {"success": False, "provider": "google", "processed": False, "detail": "payload_too_large"},
+                    status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                )
+            try:
+                verify_google_pubsub_token(request.META.get("HTTP_AUTHORIZATION", ""))
+            except SubscriptionConfigurationError as exc:
+                logger.error("Google Pub/Sub configuration error: %s", exc)
+                return Response(
+                    {"success": False, "provider": "google", "processed": False, "detail": exc.code},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+            except SubscriptionVerificationError:
+                return Response(
+                    {"success": False, "provider": "google", "processed": False, "detail": "invalid_pubsub_identity"},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+
+            try:
+                envelope = request.data if isinstance(request.data, dict) else {}
+                message = envelope.get("message") or {}
+                message_id = str(message.get("messageId") or message.get("message_id") or "").strip()
+                encoded_data = str(message.get("data") or "").strip()
+                if not message_id or not encoded_data or len(encoded_data) > 131072:
+                    raise SubscriptionRejectedError("Invalid Pub/Sub envelope")
+                raw = base64.b64decode(encoded_data, validate=True)
+                if len(raw) > 65536:
+                    raise SubscriptionRejectedError("RTDN payload is too large")
+                notification = json.loads(raw.decode("utf-8"))
+                if not isinstance(notification, dict):
+                    raise SubscriptionRejectedError("RTDN payload must be an object")
+                expected_package = (getattr(settings, "GOOGLE_PLAY_PACKAGE_NAME", "") or "").strip()
+                if not expected_package:
+                    raise SubscriptionConfigurationError("Google Play package name is required")
+                if notification.get("packageName") != expected_package:
+                    raise SubscriptionRejectedError("RTDN package name does not match")
+                if notification.get("testNotification") is not None:
+                    return Response(
+                        {"success": True, "provider": "google", "processed": True, "test": True},
+                        status=status.HTTP_200_OK,
+                    )
+                subscription_notification = notification.get("subscriptionNotification")
+                if not isinstance(subscription_notification, dict):
+                    return Response(
+                        {"success": True, "provider": "google", "processed": False, "detail": "unsupported_notification"},
+                        status=status.HTTP_200_OK,
+                    )
+                event_id = f"pubsub:{message_id}"
+                if ProviderEvent.objects.filter(provider="google", external_event_id=event_id).exists():
+                    return Response(
+                        {"success": True, "provider": "google", "processed": True, "outcome": "duplicate"},
+                        status=status.HTTP_200_OK,
+                    )
+                purchase_token = str(subscription_notification.get("purchaseToken") or "").strip()
+                external_id = google_purchase_external_id(purchase_token) if purchase_token else ""
+                candidates = list(
+                    ProviderSubscription.objects.filter(provider="google", external_id=external_id)
+                    .select_related("account")[:2]
+                )
+                if not purchase_token or len({item.account_id for item in candidates}) != 1:
+                    return Response(
+                        {"success": True, "provider": "google", "processed": False, "detail": "unknown_purchase"},
+                        status=status.HTTP_200_OK,
+                    )
+                event_ms = notification.get("eventTimeMillis")
+                occurred_at = None
+                if event_ms:
+                    occurred_at = datetime.fromtimestamp(int(event_ms) / 1000, tz=UTC)
+                result = verify_google_play_subscription(purchase_token)
+                _subscription, applied, outcome = apply_google_play_subscription(
+                    candidates[0].account,
+                    result,
+                    event_id=event_id,
+                    event_type=f"rtdn:{subscription_notification.get('notificationType') or 'unknown'}",
+                    occurred_at=occurred_at,
+                )
+                return Response(
+                    {
+                        "success": True,
+                        "provider": "google",
+                        "processed": True,
+                        "state_applied": applied,
+                        "outcome": outcome,
+                    },
                     status=status.HTTP_200_OK,
                 )
-            return Response(
-                {"success": True, "provider": "google", "processed": False, "detail": "google_rtdn_not_configured"},
-                status=status.HTTP_200_OK,
-            )
+            except (SubscriptionConfigurationError, SubscriptionTemporaryError) as exc:
+                logger.error("Google RTDN temporary processing error: %s", exc)
+                return Response(
+                    {"success": False, "provider": "google", "processed": False, "detail": exc.code},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+            except SubscriptionVerificationError as exc:
+                logger.warning("Rejected Google RTDN: %s", exc)
+                return Response(
+                    {"success": True, "provider": "google", "processed": False, "detail": exc.code},
+                    status=status.HTTP_200_OK,
+                )
+            except Exception:
+                logger.exception("Unexpected error processing Google RTDN")
+                return Response(
+                    {"success": False, "provider": "google", "processed": False, "detail": "temporary_processing_error"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
         logger.info("Received %s subscription notification placeholder", self.provider)
         return Response(
