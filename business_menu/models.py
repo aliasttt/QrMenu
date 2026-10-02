@@ -85,6 +85,21 @@ class BusinessAdmin(models.Model):
         editable=False,
         help_text="Stable account token supplied to app stores for purchase ownership binding",
     )
+    subscription_access_blocked = models.BooleanField(
+        default=False,
+        help_text="Explicit service-access block set by a superuser; provider records remain unchanged.",
+    )
+    subscription_access_blocked_at = models.DateTimeField(null=True, blank=True, editable=False)
+    subscription_access_blocked_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        editable=False,
+        related_name="+",
+    )
+    subscription_access_block_reason = models.TextField(blank=True, editable=False)
+    subscription_last_admin_action_id = models.UUIDField(null=True, blank=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

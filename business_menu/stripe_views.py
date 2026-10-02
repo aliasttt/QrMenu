@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from datetime import UTC, datetime, timedelta
 
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription, Restaurant, Order, Payment
-from .subscription_services import apply_provider_event
+from .subscription_services import apply_provider_event, resolve_subscription_entitlement
 
 logger = logging.getLogger(__name__)
 
@@ -366,7 +366,7 @@ class CreateConnectAccountLinkView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        if admin.payment_status != "paid":
+        if not resolve_subscription_entitlement(admin)["is_entitled"]:
             return Response(
                 {"success": False, "message": "Subscription required before connecting Stripe."},
                 status=status.HTTP_403_FORBIDDEN,
@@ -409,7 +409,7 @@ class ConnectPageView(APIView):
             admin = BusinessAdmin.objects.get(id=int(admin_id))
         except (ValueError, BusinessAdmin.DoesNotExist):
             return render(request, "business_menu/connect.html", {"error": "Invalid admin."})
-        if admin.payment_status != "paid":
+        if not resolve_subscription_entitlement(admin)["is_entitled"]:
             return render(request, "business_menu/connect.html", {"error": "Subscribe first to connect Stripe."})
         import stripe
         stripe.api_key = settings.STRIPE_SECRET_KEY

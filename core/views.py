@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib import messages
 
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext_lazy as _
 from accounts.email_safety import (
     acquire_email_cooldown,
@@ -34,6 +35,7 @@ from business_menu.hours_utils import (
     get_slots_for_day,
 )
 from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
+from business_menu.subscription_services import resolve_subscription_entitlement
 from business_menu.reservation_services import (
     DAY_NAMES,
     get_reservation_policy,
@@ -766,18 +768,12 @@ def panel_dashboard(request):
         except (ValueError, BusinessAdmin.DoesNotExist):
             admin = None
         if admin:
-            now = timezone.now()
+            entitlement = resolve_subscription_entitlement(admin)
             payment_status = admin.payment_status
-            is_trial = payment_status == "trial"
-            trial_active = is_trial and admin.trial_ends_at and now < admin.trial_ends_at
-            is_paid = payment_status == "paid"
-            subscription_active = is_paid and (not admin.subscription_ends_at or admin.subscription_ends_at > now)
-            plan_active = trial_active or subscription_active
-            expires_at = None
-            if is_trial and admin.trial_ends_at:
-                expires_at = admin.trial_ends_at
-            elif is_paid and admin.subscription_ends_at:
-                expires_at = admin.subscription_ends_at
+            trial_active = entitlement["state"] == "trial" and entitlement["is_entitled"]
+            subscription_active = entitlement["state"] == "active" and entitlement["is_entitled"]
+            plan_active = entitlement["is_entitled"]
+            expires_at = parse_datetime(entitlement["current_period_end"]) if entitlement["current_period_end"] else None
             from django.conf import settings
             return render(
                 request,

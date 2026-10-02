@@ -1,0 +1,89 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:business_menu_restaurant_changelist' %}">Restaurants</a>
+  &rsaquo; <a href="{{ change_url }}">{{ restaurant.name }}</a>
+  &rsaquo; Subscription
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .subscription-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-bottom:20px; }
+  .subscription-card { border:1px solid var(--hairline-color); border-radius:4px; padding:16px; background:var(--body-bg); }
+  .subscription-card h2 { margin-top:0; }
+  .subscription-card dl { display:grid; grid-template-columns:max-content 1fr; gap:6px 12px; }
+  .subscription-card dt { font-weight:600; }
+  .subscription-actions button { margin:4px 6px 4px 0; }
+  .subscription-warning { padding:12px; background:var(--darkened-bg); margin:12px 0; }
+  .subscription-table { width:100%; }
+</style>
+
+<div class="subscription-grid">
+  <section class="subscription-card">
+    <h2>Owner and scope</h2>
+    <dl>
+      <dt>Owner</dt><dd>{{ owner }}</dd>
+      <dt>Owner ID</dt><dd>{{ owner.pk }}</dd>
+      <dt>Affected restaurants</dt>
+      <dd>{% for item in affected_restaurants %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}</dd>
+    </dl>
+  </section>
+  <section class="subscription-card">
+    <h2>Effective access</h2>
+    <dl>
+      <dt>Access</dt><dd><strong>{% if entitlement.is_entitled %}Enabled{% else %}Disabled{% endif %}</strong></dd>
+      <dt>Status</dt><dd>{{ entitlement.state }}</dd>
+      <dt>Reason</dt><dd>{{ entitlement.decision_reason|default:"-" }}</dd>
+      <dt>Source</dt><dd>{{ entitlement.entitlement_source|default:"-" }} / {{ entitlement.provider|default:"-" }}</dd>
+      <dt>Plan</dt><dd>{{ entitlement.plan|default:"-" }}</dd>
+      <dt>End</dt><dd>{{ entitlement.current_period_end|default:"-" }}</dd>
+      <dt>Auto-renew</dt><dd>{{ entitlement.will_renew|default_if_none:"Unknown" }}</dd>
+      <dt>Block reason</dt><dd>{{ entitlement.access_block_reason|default:"-" }}</dd>
+    </dl>
+  </section>
+</div>
+
+<section class="module">
+  <h2>Provider records &mdash; read only</h2>
+  <table class="subscription-table">
+    <thead><tr><th>Provider</th><th>Environment</th><th>Status</th><th>Plan</th><th>Start</th><th>End</th><th>Auto-renew</th><th>Reconciliation</th></tr></thead>
+    <tbody>
+      {% for item in provider_subscriptions %}
+      <tr>
+        <td>{{ item.get_provider_display }}</td><td>{{ item.environment }}</td><td>{{ item.get_status_display }}</td>
+        <td>{{ item.product_id|default:"-" }}</td><td>{{ item.created_at }}</td><td>{{ item.current_period_end|default:"-" }}</td>
+        <td>{{ item.will_renew|default_if_none:"Unknown" }}</td><td>{{ item.needs_reconciliation|yesno:"Pending,Clear" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="8">No provider records.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="module subscription-actions">
+  <h2>Manual service-access controls</h2>
+  <p class="subscription-warning">
+    These controls change access to QR Menu only. They do not cancel or modify automatic renewal at Apple, Google Play, or Stripe.
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.action_id }}
+    {{ form.non_field_errors }}
+    <div class="form-row">{{ form.reason.errors }}{{ form.reason.label_tag }} {{ form.reason }}<div class="help">{{ form.reason.help_text }}</div></div>
+    <div class="form-row">{{ form.custom_end.errors }}{{ form.custom_end.label_tag }} {{ form.custom_end }}</div>
+    <div class="submit-row">
+      <button type="submit" name="action" value="grant_month">Grant 1 calendar month</button>
+      <button type="submit" name="action" value="grant_year">Grant 1 calendar year</button>
+      <button type="submit" name="action" value="extend_month">Extend 1 calendar month</button>
+      <button type="submit" name="action" value="extend_year">Extend 1 calendar year</button>
+      <button type="submit" name="action" value="grant_custom">Set custom end date</button>
+      <button type="submit" name="action" value="cancel_manual">Cancel manual access</button>
+      <button type="submit" name="action" value="block">Block all service access</button>
+      <button type="submit" name="action" value="unblock">Remove service block</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -217,6 +217,9 @@ class BusinessMenuSubscriptionSerializer(serializers.Serializer):
                 "entitlement_source": "none",
                 "trial_source": None,
                 "app_account_token": None,
+                "decision_reason": "no_business_account",
+                "access_blocked": False,
+                "access_block_reason": "",
             }
         return resolve_subscription_entitlement(admin)
 

@@ -1,11 +1,20 @@
+import json
+import uuid
+from datetime import datetime, time
+
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-from django.utils.html import format_html
+from django.utils import timezone
+from django.utils.html import format_html, format_html_join
 from django import forms
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
+from django.http import Http404
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from accounts.models import Profile
 from .models import (
     BusinessAdmin,
@@ -26,6 +35,11 @@ from .models import (
     Courier,
     Order,
     Payment,
+)
+from .subscription_services import (
+    apply_manual_subscription,
+    cancel_manual_subscription,
+    resolve_subscription_entitlement,
 )
 
 
@@ -279,14 +293,37 @@ class RestaurantForm(forms.ModelForm):
         return admin
 
 
+class SubscriptionManagementForm(forms.Form):
+    action_id = forms.UUIDField(widget=forms.HiddenInput)
+    reason = forms.CharField(
+        label="Reason",
+        max_length=500,
+        widget=forms.Textarea(attrs={"rows": 2}),
+        help_text="Required. Stored in the Django admin audit log.",
+    )
+    custom_end = forms.DateField(
+        label="Custom end date",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
     """مدیریت رستوران‌ها"""
     form = RestaurantForm
-    list_display = ('name', 'admin', 'timezone', 'admin_phone', 'admin_email', 'is_active', 'created_at')
+    list_display = (
+        'name', 'admin', 'effective_subscription_status', 'subscription_source',
+        'subscription_plan', 'subscription_expires', 'manage_subscription_link',
+        'timezone', 'is_active', 'created_at',
+    )
     list_filter = ('is_active', 'admin', 'created_at')
     search_fields = ('name', 'description', 'address', 'admin__name', 'admin__phone', 'admin__email')
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = (
+        'subscription_owner', 'subscription_effective_details',
+        'subscription_provider_details', 'manage_subscription_link',
+        'created_at', 'updated_at',
+    )
     autocomplete_fields = ("admin",)
 
     class RestaurantSettingsInline(admin.StackedInline):
@@ -322,6 +359,16 @@ class RestaurantAdmin(admin.ModelAdmin):
         ('وضعیت', {
             'fields': ('is_active',)
         }),
+        ('Subscription', {
+            'fields': (
+                'subscription_owner', 'subscription_effective_details',
+                'subscription_provider_details', 'manage_subscription_link',
+            ),
+            'description': (
+                'Service access is owned by the BusinessAdmin. Blocking access here does not cancel '
+                'automatic renewal at Apple, Google Play, or Stripe.'
+            ),
+        }),
         ('اطلاعات سیستم', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
@@ -329,7 +376,7 @@ class RestaurantAdmin(admin.ModelAdmin):
     )
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
+        qs = super().get_queryset(request).select_related("admin").prefetch_related("admin__provider_subscriptions")
         # Ensure settings exist for all restaurants (legacy data)
         try:
             for r in qs.only("id"):
@@ -337,6 +384,218 @@ class RestaurantAdmin(admin.ModelAdmin):
         except Exception:
             pass
         return qs
+
+    def get_urls(self):
+        return [
+            path(
+                '<path:object_id>/subscription/',
+                self.admin_site.admin_view(self.subscription_management_view),
+                name='business_menu_restaurant_subscription',
+            ),
+        ] + super().get_urls()
+
+    def _entitlement(self, obj):
+        if not hasattr(obj, '_admin_entitlement'):
+            obj._admin_entitlement = resolve_subscription_entitlement(obj.admin)
+        return obj._admin_entitlement
+
+    @admin.display(description="Effective subscription")
+    def effective_subscription_status(self, obj):
+        entitlement = self._entitlement(obj)
+        return entitlement['state'] if entitlement['is_entitled'] else f"{entitlement['state']} (no access)"
+
+    @admin.display(description="Source")
+    def subscription_source(self, obj):
+        entitlement = self._entitlement(obj)
+        return entitlement.get('entitlement_source') or entitlement.get('provider') or '-'
+
+    @admin.display(description="Plan")
+    def subscription_plan(self, obj):
+        return self._entitlement(obj).get('plan') or '-'
+
+    @admin.display(description="Expires")
+    def subscription_expires(self, obj):
+        return self._entitlement(obj).get('current_period_end') or '-'
+
+    @admin.display(description="Subscription owner")
+    def subscription_owner(self, obj):
+        affected = Restaurant.objects.filter(admin=obj.admin).values_list('name', flat=True)
+        return format_html(
+            '<strong>{}</strong><br>Owner ID: {}<br>Affected restaurants: {}',
+            obj.admin,
+            obj.admin_id,
+            ', '.join(affected) or '-',
+        )
+
+    @admin.display(description="Effective access")
+    def subscription_effective_details(self, obj):
+        entitlement = self._entitlement(obj)
+        return format_html(
+            'Access: <strong>{}</strong><br>Status: {}<br>Reason: {}<br>'
+            'Source: {} / {}<br>Plan: {}<br>End: {}<br>Auto-renew: {}',
+            'enabled' if entitlement['is_entitled'] else 'disabled',
+            entitlement['state'],
+            entitlement.get('decision_reason') or '-',
+            entitlement.get('entitlement_source') or '-',
+            entitlement.get('provider') or '-',
+            entitlement.get('plan') or '-',
+            entitlement.get('current_period_end') or '-',
+            entitlement.get('will_renew') if entitlement.get('will_renew') is not None else 'unknown',
+        )
+
+    @admin.display(description="Provider records (read only)")
+    def subscription_provider_details(self, obj):
+        rows = obj.admin.provider_subscriptions.all().order_by('provider', '-current_period_end')
+        if not rows:
+            return 'No provider records.'
+        return format_html_join(
+            format_html('<br>'),
+            '{} / {} — {} — plan {} — start {} — end {} — auto-renew {}',
+            (
+                (
+                    row.get_provider_display(), row.environment, row.get_status_display(),
+                    row.product_id or '-', row.created_at, row.current_period_end or '-',
+                    row.will_renew if row.will_renew is not None else 'unknown',
+                )
+                for row in rows
+            ),
+        )
+
+    @admin.display(description="Manage subscription")
+    def manage_subscription_link(self, obj):
+        if not obj or not obj.pk:
+            return '-'
+        url = reverse('admin:business_menu_restaurant_subscription', args=[obj.pk])
+        return format_html('<a class="button" href="{}">Manage subscription</a>', url)
+
+    def _audit_snapshot(self, account):
+        entitlement = resolve_subscription_entitlement(account)
+        return {
+            'is_entitled': entitlement['is_entitled'],
+            'state': entitlement['state'],
+            'provider': entitlement.get('provider'),
+            'plan': entitlement.get('plan'),
+            'current_period_end': entitlement.get('current_period_end'),
+            'access_blocked': account.subscription_access_blocked,
+            'block_reason': account.subscription_access_block_reason,
+        }
+
+    def _apply_subscription_action(self, request, restaurant, form, action):
+        allowed = {
+            'grant_month', 'grant_year', 'extend_month', 'extend_year',
+            'grant_custom', 'cancel_manual', 'block', 'unblock',
+        }
+        if action not in allowed:
+            raise ValidationError('Unknown subscription action.')
+        action_id = form.cleaned_data['action_id']
+        reason = form.cleaned_data['reason'].strip()
+        now = timezone.now()
+
+        with transaction.atomic():
+            account = BusinessAdmin.objects.select_for_update().get(pk=restaurant.admin_id)
+            if account.subscription_last_admin_action_id == action_id:
+                return False
+            before = self._audit_snapshot(account)
+
+            if action in {'grant_month', 'grant_year', 'extend_month', 'extend_year'}:
+                months = 12 if action.endswith('year') else 1
+                plan = 'manual_yearly' if months == 12 else 'manual_monthly'
+                apply_manual_subscription(
+                    account,
+                    event_id=f'admin:{action_id}',
+                    plan=plan,
+                    months=months,
+                    extend=action.startswith('extend_'),
+                    now=now,
+                )
+            elif action == 'grant_custom':
+                custom_end = form.cleaned_data['custom_end']
+                if not custom_end:
+                    raise ValidationError('Custom end date is required.')
+                expires_at = timezone.make_aware(
+                    datetime.combine(custom_end, time.max), timezone.get_current_timezone()
+                )
+                if expires_at <= now:
+                    raise ValidationError('Custom end date must be in the future.')
+                apply_manual_subscription(
+                    account,
+                    event_id=f'admin:{action_id}',
+                    plan='manual_custom',
+                    expires_at=expires_at,
+                    now=now,
+                )
+            elif action == 'cancel_manual':
+                cancel_manual_subscription(account, event_id=f'admin:{action_id}', now=now)
+            elif action == 'block':
+                account.subscription_access_blocked = True
+                account.subscription_access_blocked_at = now
+                account.subscription_access_blocked_by = request.user
+                account.subscription_access_block_reason = reason
+            elif action == 'unblock':
+                account.subscription_access_blocked = False
+                account.subscription_access_blocked_at = None
+                account.subscription_access_blocked_by = None
+                account.subscription_access_block_reason = ''
+
+            account.subscription_last_admin_action_id = action_id
+            account.save(update_fields=[
+                'subscription_access_blocked', 'subscription_access_blocked_at',
+                'subscription_access_blocked_by', 'subscription_access_block_reason',
+                'subscription_last_admin_action_id', 'updated_at',
+            ])
+            account.refresh_from_db()
+            after = self._audit_snapshot(account)
+
+        self.log_change(
+            request,
+            restaurant,
+            f"Subscription action={action}; reason={reason}; "
+            f"before={json.dumps(before, sort_keys=True)}; after={json.dumps(after, sort_keys=True)}",
+        )
+        return True
+
+    def subscription_management_view(self, request, object_id):
+        if not request.user.is_superuser:
+            raise PermissionDenied
+        try:
+            restaurant = self.get_queryset(request).get(pk=object_id)
+        except Restaurant.DoesNotExist as exc:
+            raise Http404 from exc
+
+        form = SubscriptionManagementForm(request.POST or None, initial={'action_id': uuid.uuid4()})
+        if request.method == 'POST' and form.is_valid():
+            try:
+                changed = self._apply_subscription_action(
+                    request, restaurant, form, request.POST.get('action', '')
+                )
+            except ValidationError as exc:
+                form.add_error(None, exc)
+            else:
+                self.message_user(
+                    request,
+                    'Subscription updated.' if changed else 'This action was already applied.',
+                    level=messages.SUCCESS if changed else messages.INFO,
+                )
+                return redirect(reverse('admin:business_menu_restaurant_subscription', args=[restaurant.pk]))
+
+        account = BusinessAdmin.objects.prefetch_related('provider_subscriptions').get(pk=restaurant.admin_id)
+        context = {
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta,
+            'title': f'Subscription — {restaurant.name}',
+            'restaurant': restaurant,
+            'owner': account,
+            'affected_restaurants': Restaurant.objects.filter(admin=account),
+            'entitlement': resolve_subscription_entitlement(account),
+            'provider_subscriptions': account.provider_subscriptions.all().order_by('provider', '-current_period_end'),
+            'form': form,
+            'change_url': reverse('admin:business_menu_restaurant_change', args=[restaurant.pk]),
+        }
+        return TemplateResponse(
+            request,
+            'admin/business_menu/restaurant/subscription_management.html',
+            context,
+        )
 
     def admin_phone(self, obj):
         return getattr(obj.admin, "phone", "") or "-"

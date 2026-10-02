@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import calendar
 import hashlib
 import json
 import time
@@ -336,6 +337,15 @@ def _format_datetime(value):
     return value.isoformat().replace("+00:00", "Z") if hasattr(value, "isoformat") else str(value)
 
 
+def add_calendar_months(value: datetime, months: int) -> datetime:
+    """Add calendar months while keeping timezone/time and clamping month-end dates."""
+    month_index = value.month - 1 + months
+    year = value.year + month_index // 12
+    month = month_index % 12 + 1
+    day = min(value.day, calendar.monthrange(year, month)[1])
+    return value.replace(year=year, month=month, day=day)
+
+
 def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
     """Resolve one compatible entitlement without letting providers overwrite each other."""
     from .models import ProviderSubscription
@@ -386,6 +396,27 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
         for item in subscriptions
     ]
 
+    if getattr(admin, "subscription_access_blocked", False):
+        return {
+            "state": "blocked",
+            "is_entitled": False,
+            "plan": plan_from_product_id(chosen.product_id) if chosen else None,
+            "provider": chosen.provider if chosen else None,
+            "current_period_end": _format_datetime(chosen.current_period_end) if chosen else None,
+            "will_renew": chosen.will_renew if chosen else False,
+            "trial_end": _format_datetime(trial_end),
+            "purchasable_in_app": False,
+            "manage_url": None,
+            "message": "Access is blocked by an administrator.",
+            "providers": provider_rows,
+            "entitlement_source": "admin_block",
+            "trial_source": None,
+            "app_account_token": str(admin.subscription_account_token),
+            "decision_reason": "administratively_blocked",
+            "access_blocked": True,
+            "access_block_reason": admin.subscription_access_block_reason,
+        }
+
     if chosen:
         return {
             "state": "active",
@@ -399,9 +430,12 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
             "manage_url": None,
             "message": "",
             "providers": provider_rows,
-            "entitlement_source": "provider",
+            "entitlement_source": "manual" if chosen.provider == ProviderSubscription.Provider.MANUAL else "provider",
             "trial_source": "store" if chosen.status == ProviderSubscription.Status.TRIALING else None,
             "app_account_token": str(admin.subscription_account_token),
+            "decision_reason": f"valid_{chosen.provider}_subscription",
+            "access_blocked": False,
+            "access_block_reason": "",
         }
 
     if internal_trial_active:
@@ -420,6 +454,9 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
             "entitlement_source": "internal_trial",
             "trial_source": "internal",
             "app_account_token": str(admin.subscription_account_token),
+            "decision_reason": "valid_internal_trial",
+            "access_blocked": False,
+            "access_block_reason": "",
         }
 
     legacy_provider = (getattr(admin, "subscription_provider", "") or "").strip().lower()
@@ -460,6 +497,9 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
                 "entitlement_source": "legacy",
                 "trial_source": None,
                 "app_account_token": str(admin.subscription_account_token),
+                "decision_reason": "valid_legacy_subscription",
+                "access_blocked": False,
+                "access_block_reason": "",
             }
 
     latest_end = max((item.current_period_end for item in trusted if item.current_period_end), default=None)
@@ -480,7 +520,76 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
         "entitlement_source": "provider" if trusted else "legacy",
         "trial_source": None,
         "app_account_token": str(admin.subscription_account_token),
+        "decision_reason": "no_valid_subscription",
+        "access_blocked": False,
+        "access_block_reason": "",
     }
+
+
+def apply_manual_subscription(
+    account,
+    *,
+    event_id: str,
+    plan: str,
+    months: int | None = None,
+    expires_at=None,
+    extend: bool = False,
+    now=None,
+):
+    """Create or update the one manual entitlement without fabricating provider payment data."""
+    from .models import ProviderSubscription
+
+    now = now or timezone.now()
+    current = account.provider_subscriptions.filter(
+        provider=ProviderSubscription.Provider.MANUAL,
+        environment="manual",
+        external_id=f"manual:{account.id}",
+    ).first()
+    if expires_at is None:
+        base = max(now, current.current_period_end) if extend and current and current.current_period_end else now
+        expires_at = add_calendar_months(base, months or 1)
+    return apply_provider_event(
+        account=account,
+        provider=ProviderSubscription.Provider.MANUAL,
+        environment="manual",
+        external_id=f"manual:{account.id}",
+        event_id=event_id,
+        event_type="manual_extend" if extend else "manual_grant",
+        status=ProviderSubscription.Status.ACTIVE,
+        current_period_end=expires_at,
+        occurred_at=now,
+        product_id=plan,
+        will_renew=False,
+        verification_source=ProviderSubscription.VerificationSource.MANUAL,
+    )
+
+
+def cancel_manual_subscription(account, *, event_id: str, now=None):
+    """Revoke only the manual entitlement; verified provider state is untouched."""
+    from .models import ProviderSubscription
+
+    now = now or timezone.now()
+    current = account.provider_subscriptions.filter(
+        provider=ProviderSubscription.Provider.MANUAL,
+        environment="manual",
+        external_id=f"manual:{account.id}",
+    ).first()
+    if not current:
+        return None
+    return apply_provider_event(
+        account=account,
+        provider=ProviderSubscription.Provider.MANUAL,
+        environment="manual",
+        external_id=current.external_id,
+        event_id=event_id,
+        event_type="manual_cancel",
+        status=ProviderSubscription.Status.REVOKED,
+        current_period_end=current.current_period_end,
+        occurred_at=now,
+        product_id=current.product_id,
+        will_renew=False,
+        verification_source=ProviderSubscription.VerificationSource.MANUAL,
+    )
 
 
 def _sync_legacy_subscription_fields(admin):

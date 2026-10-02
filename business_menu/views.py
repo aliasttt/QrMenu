@@ -119,6 +119,7 @@ from .subscription_services import (
     apply_apple_transaction_to_admin,
     decode_compact_jws_unverified,
     google_purchase_external_id,
+    resolve_subscription_entitlement,
     verify_apple_transaction,
     verify_compact_jws_signature,
     verify_google_play_subscription,
@@ -592,10 +593,7 @@ class LoginView(APIView):
         return user
 
     def _payment_required_response(self, admin):
-        now = timezone.now()
-        if admin.payment_status == "paid":
-            return None
-        if admin.payment_status == "trial" and admin.trial_ends_at and now < admin.trial_ends_at:
+        if resolve_subscription_entitlement(admin)["is_entitled"]:
             return None
         return Response({
             "success": False,
