@@ -733,6 +733,11 @@ class Reservation(models.Model):
         help_text="Timezone-aware end of reservation duration plus buffer.",
     )
     guests_count = models.PositiveIntegerField(default=1, help_text="Number of people")
+    table = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Validated snapshot of the selected table from ReservationSettings.tables.",
+    )
     customer_name = models.CharField(max_length=200)
     customer_phone = models.CharField(max_length=32, blank=True)
     customer_email = models.EmailField(blank=True)

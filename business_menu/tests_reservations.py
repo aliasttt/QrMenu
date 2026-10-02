@@ -4,6 +4,7 @@ from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from django.test import TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -182,6 +183,7 @@ class ReservationWebIntegrationTests(TransactionTestCase):
                 "requested_time": slots[0],
                 "guests_count": 2,
                 "customer_name": "Local Test",
+                "customer_phone": "+49123456789",
                 "payment_method": "cash",
             },
             content_type="application/json",
@@ -194,6 +196,7 @@ class ReservationWebIntegrationTests(TransactionTestCase):
                 "requested_time": "03:17",
                 "guests_count": 2,
                 "customer_name": "Invalid Slot",
+                "customer_phone": "+49123456789",
             },
             content_type="application/json",
         )
@@ -312,6 +315,7 @@ class ReservationWebIntegrationTests(TransactionTestCase):
             "requested_time": slot,
             "guests_count": 2,
             "customer_name": "Online retry",
+            "customer_phone": "+49123456789",
             "payment_method": "online",
             "order_details": [{"name": "Soup", "price": "9.50", "quantity": 1}],
         }
@@ -347,6 +351,7 @@ class ReservationWebIntegrationTests(TransactionTestCase):
         self.assertEqual(reservation.status, Reservation.Status.PENDING)
         self.assertEqual(reservation.stripe_payment_intent_id, "pi_retry_safe")
         self.assertEqual(reservation.order.stripe_payment_intent_id, "pi_retry_safe")
+        self.assertEqual(reservation.order.session_key, self.client.session.session_key)
         self.assertEqual(retried.data["reservation_id"], replay.data["reservation_id"])
         self.assertEqual(create_intent.call_count, 2)
         self.assertEqual(
@@ -372,6 +377,104 @@ class ReservationWebIntegrationTests(TransactionTestCase):
         retrieve_intent.assert_called_once_with("pi_retry_safe")
         create_intent.assert_not_called()
         send_email.assert_called_once_with(reservation)
+
+    @patch("business_menu.reservation_emails.send_reservation_new_request_email")
+    def test_real_app_table_shape_selects_exact_table_and_is_visible_to_admin(self, send_email):
+        settings_obj = self.restaurant.reservation_settings
+        settings_obj.tables = [
+            {
+                "name": "Table 1",
+                "active": True,
+                "capacity": 4,
+                "location": "Indoor",
+                "private_note": "never public",
+            },
+            {
+                "name": "Table 2",
+                "active": True,
+                "capacity": 8,
+                "location": "VIP",
+                "image_url": "/media/tables/table-2.jpg",
+            },
+        ]
+        settings_obj.reservation_duration = 120
+        settings_obj.buffer_minutes = 30
+        settings_obj.save(update_fields=["tables", "reservation_duration", "buffer_minutes"])
+
+        availability = self.client.get(
+            "/api/business-menu/reservation/slots/",
+            {
+                "restaurant_id": self.restaurant.id,
+                "date": self.target_date.isoformat(),
+                "guests_count": 5,
+            },
+        )
+        self.assertEqual(availability.status_code, 200)
+        self.assertEqual([table["suitable"] for table in availability.data["tables"]], [False, True])
+        selected = availability.data["tables"][1]
+        self.assertNotIn("private_note", selected)
+        slot = selected["time_slots"][0]
+        payload = {
+            "restaurant_id": self.restaurant.id,
+            "request_id": "f5dd94b3-0f72-41d2-825c-d4fcc7bcbe8e",
+            "requested_date": self.target_date.isoformat(),
+            "requested_time": slot,
+            "guests_count": 5,
+            "table_key": selected["key"],
+            "customer_name": "Table guest",
+            "customer_email": "guest@example.com",
+        }
+        created = self.client.post(
+            "/api/business-menu/reservation/create/", payload, content_type="application/json"
+        )
+        replay = self.client.post(
+            "/api/business-menu/reservation/create/", payload, content_type="application/json"
+        )
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(replay.status_code, 200)
+        self.assertEqual(Reservation.objects.count(), 1)
+        self.assertEqual(created.data["status"], Reservation.Status.PENDING)
+        self.assertEqual(created.data["table"]["name"], "Table 2")
+
+        full = self.client.post(
+            "/api/business-menu/reservation/create/",
+            {**payload, "request_id": "af7358cc-58bf-48c7-a98c-a0a134f55e25"},
+            content_type="application/json",
+        )
+        self.assertEqual(full.status_code, 409)
+
+        user = User.objects.create_user(username="reservation-owner", password="unused")
+        self.restaurant.admin.auth_user = user
+        self.restaurant.admin.save(update_fields=["auth_user"])
+        self.client.force_login(user)
+        admin_list = self.client.get("/api/business-menu/admin/reservations/")
+        self.assertEqual(admin_list.status_code, 200)
+        self.assertEqual(admin_list.data["reservations"][0]["table"]["name"], "Table 2")
+        send_email.assert_called_once()
+
+    def test_app_blocked_date_object_is_enforced(self):
+        settings_obj = self.restaurant.reservation_settings
+        settings_obj.blocked_dates = [
+            {"date": self.target_date.strftime("%Y.%m.%d"), "reason": "Private reason"}
+        ]
+        settings_obj.save(update_fields=["blocked_dates"])
+        response = self.client.get(
+            "/api/business-menu/reservation/slots/",
+            {"restaurant_id": self.restaurant.id, "date": self.target_date.isoformat()},
+        )
+        config = self.client.get(
+            "/api/business-menu/reservation/config/", {"restaurant_id": self.restaurant.id}
+        )
+        self.assertEqual(response.data["time_slots"], [])
+        self.assertEqual(config.data["blocked_dates"], [self.target_date.isoformat()])
+        self.assertNotContains(config, "Private reason")
+
+    def test_page_uses_race_safe_availability_and_pending_copy(self):
+        response = self.client.get(reverse("restaurant_reservation", args=[self.restaurant.id]))
+        self.assertContains(response, "AbortController")
+        self.assertContains(response, "requestVersion")
+        self.assertContains(response, "Reservation ID")
+        self.assertContains(response, "pending")
 
     def test_page_reports_no_dates_when_schedule_is_incomplete(self):
         self.restaurant.reservation_settings.schedule = {}

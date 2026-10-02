@@ -2,12 +2,10 @@
 {% load static i18n %}
 {% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
+{% block whatsapp_button %}{% endblock %}
 {% block title %}{% blocktrans with name=restaurant.name %}Payment - {{ name }}{% endblocktrans %}{% endblock %}
 {% block styles %}
 <style>
-  @media (max-width: 640px) {
-    body a[href^="https://wa.me/"] { display: none !important; }
-  }
   @media print {
     body * { visibility: hidden !important; }
     #invoice-panel, #invoice-panel * { visibility: visible !important; }

@@ -33,6 +33,7 @@ from business_menu.hours_utils import (
 )
 from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
 from business_menu.reservation_services import (
+    available_reservation_tables,
     create_reservation_with_capacity,
     get_reservation_policy,
     reservation_count,
@@ -4630,6 +4631,22 @@ class AdminOrderSettingsView(APIView):
 # ---------- Reservation (public + admin) ----------
 
 
+def _public_table_payload(request, table):
+    payload = {key: table[key] for key in ("key", "name", "type", "capacity")}
+    image = str(table.get("image") or "").strip()
+    if image:
+        try:
+            if image.startswith(("https://", "http://")):
+                payload["image"] = image
+            elif image.startswith("/"):
+                payload["image"] = request.build_absolute_uri(image)
+            else:
+                payload["image"] = request.build_absolute_uri(default_storage.url(image))
+        except Exception:
+            pass
+    return payload
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class ReservationConfigView(APIView):
     """
@@ -4650,6 +4667,16 @@ class ReservationConfigView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         local_today = reservation_local_today(policy)
+        try:
+            reservation_settings = restaurant.reservation_settings
+        except ReservationSettings.DoesNotExist:
+            reservation_settings = None
+        floor_plan_image = ""
+        if reservation_settings and reservation_settings.floor_plan_image:
+            try:
+                floor_plan_image = request.build_absolute_uri(reservation_settings.floor_plan_image.url)
+            except Exception:
+                floor_plan_image = ""
         return Response({
             "restaurant_id": restaurant.id,
             "restaurant_name": restaurant.name,
@@ -4665,6 +4692,9 @@ class ReservationConfigView(APIView):
             "buffer_minutes": policy.buffer_minutes,
             "timezone": policy.timezone_name or None,
             "configuration_complete": local_today is not None,
+            "blocked_dates": sorted(policy.blocked_dates),
+            "tables": [_public_table_payload(request, table) for table in policy.tables],
+            "floor_plan_image": floor_plan_image,
         }, status=status.HTTP_200_OK)
 
 
@@ -4694,7 +4724,7 @@ class ReservationSlotsView(APIView):
                 "time_slots": [],
                 "is_full": False,
                 "configuration_complete": False,
-                "detail": "Restaurant timezone is not configured.",
+                "detail": "Online reservation is temporarily unavailable. Please contact the restaurant.",
             }, status=status.HTTP_200_OK)
         date_str = (request.query_params.get("date") or "").strip()
         if not date_str:
@@ -4715,16 +4745,46 @@ class ReservationSlotsView(APIView):
                 {"detail": "Date must be today or in the future."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        try:
+            guests_count = max(1, int(request.query_params.get("guests_count") or 1))
+        except (TypeError, ValueError):
+            guests_count = 1
+        if guests_count > policy.max_guests:
+            return Response(
+                {"detail": f"Maximum {policy.max_guests} guests per reservation."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        table_key = str(request.query_params.get("table_key") or "").strip()
         configured_slots = reservation_slots(policy, req_date)
-        if policy.capacity_scope == "day":
+        table_slots = {}
+        if policy.tables:
+            for slot in configured_slots:
+                for table in available_reservation_tables(
+                    restaurant, policy, req_date, slot, guests_count
+                ):
+                    table_slots.setdefault(table["key"], []).append(slot)
+            tables = []
+            for table in policy.tables:
+                payload = _public_table_payload(request, table)
+                payload["time_slots"] = table_slots.get(table["key"], [])
+                payload["suitable"] = table["capacity"] >= guests_count
+                tables.append(payload)
+            if table_key:
+                slots = table_slots.get(table_key, [])
+            else:
+                slots = sorted({slot for values in table_slots.values() for slot in values})
+            is_full = bool(configured_slots) and not slots
+        elif policy.capacity_scope == "day":
             is_full = policy.capacity <= 0 or reservation_count(restaurant, policy, req_date) >= policy.capacity
             slots = [] if is_full else configured_slots
+            tables = []
         else:
             slots = [
                 slot for slot in configured_slots
                 if reservation_count(restaurant, policy, req_date, slot) < policy.capacity
             ]
             is_full = bool(configured_slots) and not slots
+            tables = []
         return Response({
             "restaurant_id": restaurant.id,
             "date": date_str,
@@ -4732,6 +4792,7 @@ class ReservationSlotsView(APIView):
             "is_full": is_full,
             "configuration_complete": True,
             "detail": "No reservation times are available for this date." if not slots and not is_full else "",
+            "tables": tables,
         }, status=status.HTTP_200_OK)
 
 
@@ -4759,7 +4820,7 @@ class ReservationCreateView(APIView):
         local_today = reservation_local_today(policy)
         if local_today is None:
             return Response(
-                {"detail": "Restaurant timezone is not configured."},
+                {"detail": "Online reservation is temporarily unavailable. Please contact the restaurant."},
                 status=status.HTTP_409_CONFLICT,
             )
         data = request.data or {}
@@ -4788,6 +4849,12 @@ class ReservationCreateView(APIView):
             )
         customer_phone = (data.get("customer_phone") or "").strip()
         customer_email = (data.get("customer_email") or "").strip()
+        if not customer_phone and not customer_email:
+            return Response(
+                {"detail": "A phone number or email address is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        table_key = str(data.get("table_key") or "").strip()
         notes = (data.get("notes") or "").strip()
         order_details = data.get("order_details")
         if order_details is not None and not isinstance(order_details, list):
@@ -4840,6 +4907,9 @@ class ReservationCreateView(APIView):
             return Response({"detail": "Invalid order details."}, status=status.HTTP_400_BAD_REQUEST)
 
         needs_online_payment = bool(order_details_json and payment_method == "online" and total_amount > 0)
+        if needs_online_payment and not request.session.session_key:
+            request.session["reservation_checkout"] = str(request_id)
+            request.session.save()
         admin = getattr(restaurant, "admin", None)
         if needs_online_payment and (
             not admin
@@ -4858,8 +4928,10 @@ class ReservationCreateView(APIView):
         if existing and (
             existing.requested_date != req_date
             or existing.requested_time != requested_time
+            or existing.guests_count != guests_count
             or existing.payment_method != payment_method
             or existing.order_details_json != order_details_json
+            or (table_key and str((existing.table or {}).get("key") or "") != table_key)
         ):
             return Response({"detail": "request_id does not match the original request."}, status=status.HTTP_409_CONFLICT)
 
@@ -4870,6 +4942,7 @@ class ReservationCreateView(APIView):
                 "requested_date": requested_date_str,
                 "requested_time": requested_time,
                 "guests_count": reservation.guests_count,
+                "table": reservation.table or {},
             }
             if reservation.order_id and reservation.stripe_payment_intent_id:
                 payload.update({
@@ -4891,6 +4964,7 @@ class ReservationCreateView(APIView):
                     policy=policy,
                     requested_date=req_date,
                     requested_time=requested_time,
+                    table_key=table_key,
                     request_id=request_id,
                     guests_count=guests_count,
                     customer_name=customer_name,
@@ -4934,7 +5008,8 @@ class ReservationCreateView(APIView):
                         reservation.save(update_fields=["order", "updated_at"])
                     elif order_created.status == Order.Status.CANCELLED:
                         order_created.status = Order.Status.PENDING
-                        order_created.save(update_fields=["status", "updated_at"])
+                        order_created.session_key = request.session.session_key or ""
+                        order_created.save(update_fields=["status", "session_key", "updated_at"])
 
                 import stripe
                 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -5007,6 +5082,7 @@ class AdminReservationListView(APIView):
                 "requested_date": str(r.requested_date),
                 "requested_time": r.requested_time or "",
                 "guests_count": r.guests_count,
+                "table": r.table or {},
                 "customer_name": r.customer_name,
                 "customer_phone": r.customer_phone or "",
                 "customer_email": r.customer_email or "",

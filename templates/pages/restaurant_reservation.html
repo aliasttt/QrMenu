@@ -2,200 +2,157 @@
 {% load static i18n %}
 {% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
+{% block whatsapp_button %}{% endblock %}
 {% block title %}{% blocktrans with name=restaurant.name %}Reservation — {{ name }}{% endblocktrans %}{% endblock %}
 {% block content %}
 {% csrf_token %}
-<div class="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4" x-data="{
-  selectedDate: '',
-  timeSlots: [],
-  isFull: false,
-  slotsDetail: '',
-  loadingSlots: false,
-  guestsCount: 1,
-  customerName: '',
-  customerPhone: '',
-  customerEmail: '',
-  notes: '',
-  paymentMethod: 'cash',
-  submitLoading: false,
-  submitError: '',
-  successReservation: null,
-  requestId: '{{ reservation_request_id|escapejs }}',
-  apiBase: '/api/business-menu',
-  restaurantId: {{ restaurant.id }},
-  maxGuests: {{ max_guests_per_reservation }},
-  cartItems: {{ cart_items_json|safe }},
-  allowOnline: {{ allow_payment_online|yesno:'true,false' }},
+<div class="min-h-screen bg-slate-50 px-4 py-6 dark:bg-slate-950 sm:py-10" x-data="{
+  selectedDate: '{{ first_reservation_date|escapejs }}', selectedTime: '', selectedTableKey: '',
+  timeSlots: [], tables: [], isFull: false, slotsDetail: '', loadingSlots: false,
+  requestVersion: 0, requestController: null, guestsCount: 1,
+  customerName: '', customerPhone: '', customerEmail: '', notes: '', paymentMethod: 'cash',
+  submitLoading: false, submitError: '', successReservation: null,
+  requestId: '{{ reservation_request_id|escapejs }}', apiBase: '/api/business-menu',
+  restaurantId: {{ restaurant.id }}, maxGuests: {{ max_guests_per_reservation }},
+  cartItems: {{ cart_items_json|safe }}, allowOnline: {{ allow_payment_online|yesno:'true,false' }},
   T: {
     nameRequired: '{% trans "Name is required." %}',
-    selectDate: '{% trans "Please select a date." %}',
-    selectTime: '{% trans "Please select a time." %}',
-    requestFailed: '{% trans "Request failed." %}',
+    contactRequired: '{% trans "Please enter a phone number or email address." %}',
+    selectDate: '{% trans "Please select a date." %}', selectTime: '{% trans "Please select a time." %}',
+    selectTable: '{% trans "Please select a table." %}', requestFailed: '{% trans "Request failed." %}',
     networkError: '{% trans "Network error. Please try again." %}',
   },
-  async fetchSlots() {
+  chooseDate(value) {
+    if (this.selectedDate === value) return;
+    this.selectedDate = value; this.resetAvailability(); this.fetchAvailability();
+  },
+  guestsChanged() {
+    this.guestsCount = Math.min(this.maxGuests, Math.max(1, Number(this.guestsCount) || 1));
+    this.resetAvailability(); this.fetchAvailability();
+  },
+  resetAvailability() {
+    this.selectedTime = ''; this.selectedTableKey = ''; this.timeSlots = []; this.tables = [];
+    this.isFull = false; this.slotsDetail = '';
+  },
+  async fetchAvailability() {
     if (!this.selectedDate) return;
-    this.loadingSlots = true;
-    this.timeSlots = [];
-    this.isFull = false;
-    this.slotsDetail = '';
+    if (this.requestController) this.requestController.abort();
+    const version = ++this.requestVersion;
+    this.requestController = new AbortController(); this.loadingSlots = true;
     try {
-      const r = await fetch(this.apiBase + '/reservation/slots/?restaurant_id=' + this.restaurantId + '&date=' + this.selectedDate);
-      const data = await r.json();
-      if (r.ok) {
-        this.timeSlots = data.time_slots || [];
-        this.isFull = data.is_full || false;
-        this.slotsDetail = data.detail || '';
-      } else {
-        this.slotsDetail = data.detail || this.T.requestFailed;
-      }
-    } catch (e) { this.timeSlots = []; this.slotsDetail = this.T.networkError; }
-    this.loadingSlots = false;
+      const query = new URLSearchParams({ restaurant_id: this.restaurantId, date: this.selectedDate, guests_count: this.guestsCount });
+      const response = await fetch(this.apiBase + '/reservation/slots/?' + query, { signal: this.requestController.signal, credentials: 'same-origin' });
+      const data = await response.json();
+      if (version !== this.requestVersion) return;
+      if (response.ok) {
+        this.tables = data.tables || []; this.timeSlots = this.tables.length ? [] : (data.time_slots || []);
+        this.isFull = data.is_full || false; this.slotsDetail = data.detail || '';
+      } else { this.slotsDetail = data.detail || this.T.requestFailed; }
+    } catch (error) {
+      if (error.name !== 'AbortError' && version === this.requestVersion) this.slotsDetail = this.T.networkError;
+    } finally { if (version === this.requestVersion) this.loadingSlots = false; }
   },
-  selectedTime: '',
-  cartSubtotal() {
-    return this.cartItems.reduce((s, i) => s + (i.quantity || 0) * parseFloat(i.price || 0), 0).toFixed(2);
+  chooseTable(table) {
+    if (!table.suitable || !table.time_slots.length) return;
+    this.selectedTableKey = table.key; this.timeSlots = [...table.time_slots];
+    if (!this.timeSlots.includes(this.selectedTime)) this.selectedTime = '';
   },
+  cartSubtotal() { return this.cartItems.reduce((sum, item) => sum + (item.quantity || 0) * parseFloat(item.price || 0), 0).toFixed(2); },
   hasCart() { return this.cartItems && this.cartItems.length > 0; },
-  orderDetailsPayload() {
-    return (this.cartItems || []).map(i => ({ name: i.name, price: String(i.price), quantity: i.quantity || 1 }));
-  },
+  orderDetailsPayload() { return (this.cartItems || []).map(item => ({ name: item.name, price: String(item.price), quantity: item.quantity || 1 })); },
   async submit() {
     this.submitError = '';
     if (!this.customerName.trim()) { this.submitError = this.T.nameRequired; return; }
+    if (!this.customerPhone.trim() && !this.customerEmail.trim()) { this.submitError = this.T.contactRequired; return; }
     if (!this.selectedDate) { this.submitError = this.T.selectDate; return; }
-    if (!this.selectedTime && this.timeSlots.length) { this.submitError = this.T.selectTime; return; }
+    if (this.tables.length && !this.selectedTableKey) { this.submitError = this.T.selectTable; return; }
+    if (!this.selectedTime) { this.submitError = this.T.selectTime; return; }
     this.submitLoading = true;
     const body = {
-      restaurant_id: this.restaurantId,
-      requested_date: this.selectedDate,
-      requested_time: this.selectedTime,
-      guests_count: this.guestsCount,
-      customer_name: this.customerName.trim(),
-      customer_phone: this.customerPhone.trim(),
-      customer_email: this.customerEmail.trim(),
-      notes: this.notes.trim(),
-      payment_method: this.paymentMethod,
-      request_id: this.requestId,
+      restaurant_id: this.restaurantId, requested_date: this.selectedDate, requested_time: this.selectedTime,
+      guests_count: this.guestsCount, table_key: this.selectedTableKey, customer_name: this.customerName.trim(),
+      customer_phone: this.customerPhone.trim(), customer_email: this.customerEmail.trim(), notes: this.notes.trim(),
+      payment_method: this.paymentMethod, request_id: this.requestId,
     };
     if (this.hasCart()) body.order_details = this.orderDetailsPayload();
     try {
-      const r = await fetch(this.apiBase + '/reservation/create/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '' },
-        body: JSON.stringify(body),
-        credentials: 'same-origin',
+      const response = await fetch(this.apiBase + '/reservation/create/', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '' },
+        body: JSON.stringify(body), credentials: 'same-origin',
       });
-      const data = await r.json().catch(() => ({}));
-      if (r.ok && data.reservation_id) {
-        if (data.requires_payment && data.payment_url) {
-          window.location.href = data.payment_url;
-          return;
-        }
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && data.reservation_id) {
+        if (data.requires_payment && data.payment_url) { window.location.href = data.payment_url; return; }
         this.successReservation = data;
-      } else {
-        this.submitError = data.detail || (Array.isArray(data.detail) ? data.detail[0] : this.T.requestFailed);
-      }
-    } catch (e) {
-      this.submitError = this.T.networkError;
-    }
-    this.submitLoading = false;
+      } else { this.submitError = data.detail || this.T.requestFailed; if (response.status === 409) this.fetchAvailability(); }
+    } catch (error) { this.submitError = this.T.networkError; }
+    finally { this.submitLoading = false; }
   }
-}" x-init="selectedDate = '{{ first_reservation_date|escapejs }}'; if (selectedDate) fetchSlots()">
-  <div class="mx-auto max-w-2xl">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <h1 class="text-xl font-bold text-slate-900 dark:text-white">{% trans "Table reservation" %}</h1>
-      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">{{ restaurant.name }}</p>
-      {% if restaurant_hours %}
-      <p class="mt-3 text-sm text-slate-700 dark:text-slate-300"><span class="font-medium">{% trans "Opening hours:" %}</span> {{ restaurant_hours }}</p>
-      {% endif %}
+}" x-init="if (selectedDate) fetchAvailability()">
+  <div class="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <main class="min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:p-8">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div><p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">{% trans "Table reservation" %}</p><h1 class="mt-2 text-2xl font-black text-slate-950 dark:text-white sm:text-3xl">{{ restaurant.name }}</h1></div>
+        <a href="{{ menu_url }}" class="inline-flex min-h-11 items-center rounded-xl border border-slate-200 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">{% trans "Back to menu" %}</a>
+      </div>
 
+      {% if reservation_configuration_error %}
+      <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+        <p class="font-bold">{{ reservation_configuration_error }}</p>
+        {% if restaurant.phone or restaurant.email %}<div class="mt-3 flex flex-wrap gap-2">{% if restaurant.phone %}<a href="tel:{{ restaurant.phone }}" class="rounded-xl bg-white px-4 py-2 text-sm font-bold shadow-sm dark:bg-slate-900">{{ restaurant.phone }}</a>{% endif %}{% if restaurant.email %}<a href="mailto:{{ restaurant.email }}" class="rounded-xl bg-white px-4 py-2 text-sm font-bold shadow-sm dark:bg-slate-900">{{ restaurant.email }}</a>{% endif %}</div>{% endif %}
+      </div>
+      {% else %}
       <template x-if="successReservation">
-        <div class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-          <p class="font-semibold">{% trans "Reservation request sent" %}</p>
-          <p class="mt-1 text-sm">{% blocktrans %}Your reservation for <span x-text="successReservation.requested_date"></span> at <span x-text="successReservation.requested_time"></span> (<span x-text="successReservation.guests_count"></span> guests) is pending. The restaurant will confirm by email.{% endblocktrans %}</p>
-          <a href="{{ menu_url }}" class="mt-4 inline-block rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">{% trans "Back to menu" %}</a>
-        </div>
+        <section class="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-950 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100" aria-live="polite">
+          <p class="text-lg font-black">{% trans "Reservation request sent" %}</p><p class="mt-2 text-sm">{% trans "Your request is pending. The restaurant still needs to confirm it." %}</p>
+          <dl class="mt-5 grid gap-3 rounded-2xl bg-white/80 p-4 text-sm dark:bg-slate-900/70 sm:grid-cols-2">
+            <div><dt class="text-slate-500">{% trans "Reservation ID" %}</dt><dd class="font-bold" x-text="successReservation.reservation_id"></dd></div><div><dt class="text-slate-500">{% trans "Status" %}</dt><dd class="font-bold capitalize" x-text="successReservation.status"></dd></div>
+            <div><dt class="text-slate-500">{% trans "Date" %}</dt><dd class="font-bold" x-text="successReservation.requested_date"></dd></div><div><dt class="text-slate-500">{% trans "Time" %}</dt><dd class="font-bold" x-text="successReservation.requested_time"></dd></div>
+          </dl>
+        </section>
       </template>
 
       <template x-if="!successReservation">
-        <form @submit.prevent="submit()" class="mt-6 space-y-5">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Date" %}</label>
-            <select x-model="selectedDate" @change="fetchSlots(); selectedTime = ''" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-              {% for d in days_available %}
-              <option value="{{ d.date }}" {% if forloop.first %}selected{% endif %}>{{ d.label }}</option>
-              {% endfor %}
-            </select>
-            {% if not days_available %}
-            <p class="mt-2 text-sm text-amber-700 dark:text-amber-300">
-              {% if reservation_configuration_error %}{% trans "Restaurant timezone is not configured." %}{% else %}{% trans "None available" %}{% endif %}
-            </p>
-            {% endif %}
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Time" %}</label>
-            <p x-show="isFull" class="mt-1 text-sm text-amber-600 dark:text-amber-400">{% trans "This day is fully booked. Please choose another date." %}</p>
-            <select x-model="selectedTime" :disabled="isFull" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-              <option value="">{% trans "Select time" %}</option>
-              <template x-for="slot in timeSlots" :key="slot">
-                <option :value="slot" x-text="slot"></option>
-              </template>
-            </select>
-            <p x-show="loadingSlots" class="mt-1 text-sm text-slate-500">{% trans "Loading…" %}</p>
-            <p x-show="!loadingSlots && slotsDetail" class="mt-1 text-sm text-amber-600 dark:text-amber-400" x-text="slotsDetail"></p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Number of guests" %}</label>
-            <input type="number" x-model.number="guestsCount" min="1" :max="maxGuests" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Your name *" %}</label>
-            <input type="text" x-model="customerName" required class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="{% trans 'Name' %}">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Phone" %}</label>
-            <input type="tel" x-model="customerPhone" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="{% trans 'Phone' %}">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Email" %}</label>
-            <input type="email" x-model="customerEmail" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="{% trans 'Email' %}">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{% trans "Notes" %}</label>
-            <textarea x-model="notes" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white" placeholder="{% trans 'Special requests…' %}"></textarea>
-          </div>
-          <template x-if="hasCart()">
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
-              <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">{% trans "Pre-order (from cart)" %}</p>
-              <ul class="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                <template x-for="item in cartItems" :key="item.menu_item_id">
-                  <li x-text="item.quantity + '× ' + item.name + ' — €' + (item.quantity * parseFloat(item.price)).toFixed(2)"></li>
-                </template>
-              </ul>
-              <p class="mt-2 font-semibold text-slate-900 dark:text-white">{% trans "Subtotal:" %} € <span x-text="cartSubtotal()"></span></p>
-              <div class="mt-3">
-                <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">{% trans "Payment" %}</label>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{% trans "Cash = pay on the day. Online = pay now; refunded if reservation is cancelled." %}</p>
-                <div class="mt-1 flex gap-2">
-                  <button type="button" @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">{% trans "Cash (on the day)" %}</button>
-                  <template x-if="allowOnline">
-                    <button type="button" @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'" class="rounded-lg px-3 py-1.5 text-sm font-medium">{% trans "Online (refund if cancelled)" %}</button>
-                  </template>
-                </div>
-              </div>
+        <form @submit.prevent="submit()" class="mt-8 space-y-8">
+          <section><p class="text-sm font-black text-slate-900 dark:text-white">1. {% trans "Date" %}</p><p class="mt-1 text-xs text-slate-500">{% trans "Closed and unavailable days cannot be selected." %}</p>
+            <div class="mt-3 flex snap-x gap-3 overflow-x-auto pb-2" role="list">
+              {% for day in calendar_days %}<button type="button" @click="chooseDate('{{ day.date }}')" {% if not day.enabled %}disabled{% endif %} :class="selectedDate === '{{ day.date }}' ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100'" class="min-h-20 min-w-[6.25rem] snap-start rounded-2xl border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-40"><span class="block text-xs font-bold uppercase">{{ day.day }}</span><span class="mt-1 block font-black">{{ day.label }}</span>{% if day.reason %}<span class="mt-1 block text-[11px]">{{ day.reason }}</span>{% endif %}</button>{% endfor %}
             </div>
-          </template>
-          <p x-show="submitError" class="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300" x-text="submitError"></p>
-          <button type="submit" :disabled="submitLoading || !selectedDate || !timeSlots.length" class="w-full rounded-xl bg-indigo-600 py-3 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">
-            <span x-show="!submitLoading">{% trans "Request reservation" %}</span>
-            <span x-show="submitLoading">{% trans "Sending…" %}</span>
-          </button>
+            {% if not days_available %}<p class="mt-2 text-sm text-amber-700 dark:text-amber-300">{% trans "None available" %}</p>{% endif %}
+          </section>
+
+          <section class="max-w-sm">
+            <label for="reservation-guests" class="block text-sm font-black text-slate-900 dark:text-white">2. {% trans "Number of guests" %}</label><input id="reservation-guests" type="number" x-model.number="guestsCount" @input.debounce.300ms="guestsChanged()" min="1" :max="maxGuests" class="mt-2 min-h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+          </section>
+
+          <section x-show="tables.length" x-cloak><p class="text-sm font-black text-slate-900 dark:text-white">3. {% trans "Choose a table" %}</p>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2"><template x-for="table in tables" :key="table.key"><button type="button" @click="chooseTable(table)" :disabled="!table.suitable || !table.time_slots.length" :class="selectedTableKey === table.key ? 'border-indigo-600 ring-2 ring-indigo-200 dark:ring-indigo-900' : 'border-slate-200 dark:border-slate-700'" class="flex min-h-28 overflow-hidden rounded-2xl border bg-white text-left disabled:cursor-not-allowed disabled:opacity-45 dark:bg-slate-800"><template x-if="table.image"><img :src="table.image" :alt="table.name" class="h-28 w-28 shrink-0 bg-slate-100 object-cover dark:bg-slate-700"></template><template x-if="!table.image"><span class="flex h-28 w-20 shrink-0 items-center justify-center bg-slate-100 text-2xl dark:bg-slate-700" aria-hidden="true">▦</span></template><span class="min-w-0 p-4"><span class="block font-black" x-text="table.name || table.type"></span><span class="mt-1 block text-xs text-slate-500" x-text="table.type"></span><span class="mt-2 block text-sm" x-text="'{% trans "Capacity" %}: ' + table.capacity"></span></span></button></template></div>
+          </section>
+
+          <section><p class="text-sm font-black text-slate-900 dark:text-white">4. {% trans "Time" %}</p><div id="reservation-times" class="mt-2 flex min-h-12 flex-wrap gap-2"><template x-for="slot in timeSlots" :key="slot"><button type="button" @click="selectedTime = slot" :class="selectedTime === slot ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-slate-50 text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-white'" class="min-h-11 rounded-xl border px-4 text-sm font-bold" x-text="slot"></button></template><p x-show="!loadingSlots && !timeSlots.length" class="flex min-h-11 items-center text-sm text-slate-500">{% trans "Select an available table to see times." %}</p></div></section>
+
+          <div aria-live="polite"><template x-if="loadingSlots"><p class="text-sm text-slate-500">{% trans "Loading…" %}</p></template><p x-show="isFull" class="rounded-xl bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">{% trans "This day is fully booked. Please choose another date." %}</p><p x-show="!loadingSlots && slotsDetail" class="rounded-xl bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200" x-text="slotsDetail"></p></div>
+
+          <section><p class="text-sm font-black text-slate-900 dark:text-white">5. {% trans "Contact" %}</p><div class="mt-3 grid gap-4 sm:grid-cols-2">
+            <label class="text-sm text-slate-700 dark:text-slate-300">{% trans "Your name *" %}<input type="text" x-model="customerName" required autocomplete="name" class="mt-1 min-h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 dark:border-slate-600 dark:bg-slate-800 dark:text-white"></label>
+            <label class="text-sm text-slate-700 dark:text-slate-300">{% trans "Phone" %}<input type="tel" x-model="customerPhone" autocomplete="tel" class="mt-1 min-h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 dark:border-slate-600 dark:bg-slate-800 dark:text-white"></label>
+            <label class="text-sm text-slate-700 dark:text-slate-300 sm:col-span-2">{% trans "Email" %}<input type="email" x-model="customerEmail" autocomplete="email" class="mt-1 min-h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 dark:border-slate-600 dark:bg-slate-800 dark:text-white"></label>
+            <p class="text-xs text-slate-500 sm:col-span-2">{% trans "Enter at least a phone number or email so the restaurant can confirm your request." %}</p><label class="text-sm text-slate-700 dark:text-slate-300 sm:col-span-2">{% trans "Notes" %}<textarea x-model="notes" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800 dark:text-white"></textarea></label>
+          </div></section>
+
+          <template x-if="hasCart()"><section class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50"><p class="font-bold">{% trans "Pre-order (from cart)" %}</p><ul class="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300"><template x-for="item in cartItems" :key="item.menu_item_id"><li x-text="item.quantity + '× ' + item.name + ' — €' + (item.quantity * parseFloat(item.price)).toFixed(2)"></li></template></ul><p class="mt-3 font-black">{% trans "Subtotal:" %} € <span x-text="cartSubtotal()"></span></p><div class="mt-3 flex flex-wrap gap-2"><button type="button" @click="paymentMethod = 'cash'" :class="paymentMethod === 'cash' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 dark:bg-slate-700 dark:text-slate-200'" class="min-h-11 rounded-xl px-4 text-sm font-bold">{% trans "Cash (on the day)" %}</button><template x-if="allowOnline"><button type="button" @click="paymentMethod = 'online'" :class="paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 dark:bg-slate-700 dark:text-slate-200'" class="min-h-11 rounded-xl px-4 text-sm font-bold">{% trans "Online (refund if cancelled)" %}</button></template></div></section></template>
+
+          <section class="rounded-2xl bg-slate-950 p-5 text-white dark:bg-black"><div class="grid gap-2 text-sm sm:grid-cols-3"><p><span class="text-slate-400">{% trans "Date" %}</span><br><strong x-text="selectedDate || '—'"></strong></p><p><span class="text-slate-400">{% trans "Time" %}</span><br><strong x-text="selectedTime || '—'"></strong></p><p><span class="text-slate-400">{% trans "Guests" %}</span><br><strong x-text="guestsCount"></strong></p></div><p x-show="submitError" class="mt-4 rounded-xl bg-rose-950/70 p-3 text-sm text-rose-100" x-text="submitError"></p><button type="submit" :disabled="submitLoading || loadingSlots || !selectedDate || !selectedTime || (tables.length && !selectedTableKey)" class="mt-5 min-h-12 w-full rounded-xl bg-indigo-500 px-5 font-black text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-50"><span x-show="!submitLoading">{% trans "Request reservation" %}</span><span x-show="submitLoading">{% trans "Sending…" %}</span></button><p class="mt-2 text-center text-xs text-slate-400">{% trans "This sends a pending request; it is not confirmed yet." %}</p></section>
         </form>
       </template>
+      {% endif %}
+    </main>
 
-      <a href="{{ menu_url }}" class="mt-6 inline-block text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">← {% trans "Back to menu" %}</a>
-    </div>
+    <aside class="space-y-5 lg:sticky lg:top-6 lg:self-start">
+      {% if floor_plan_image %}<section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900"><img src="{{ floor_plan_image }}" alt="{% trans 'Restaurant floor plan' %}" class="aspect-[4/3] w-full bg-slate-100 object-contain dark:bg-slate-800"><p class="p-4 text-sm font-bold text-slate-800 dark:text-slate-100">{% trans "Restaurant floor plan" %}</p></section>{% endif %}
+      {% if schedule_rows %}<section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"><h2 class="font-black text-slate-950 dark:text-white">{% trans "Reservation hours" %}</h2><dl class="mt-4 space-y-2 text-sm">{% for row in schedule_rows %}<div class="flex justify-between gap-4"><dt class="text-slate-500">{{ row.day }}</dt><dd class="font-bold text-slate-800 dark:text-slate-100">{{ row.hours }}</dd></div>{% endfor %}</dl></section>{% endif %}
+      {% if restaurant.phone or restaurant.email %}<section class="rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-900"><h2 class="font-black text-slate-950 dark:text-white">{% trans "Contact" %}</h2>{% if restaurant.phone %}<a href="tel:{{ restaurant.phone }}" class="mt-3 block break-all text-indigo-700 underline dark:text-indigo-300">{{ restaurant.phone }}</a>{% endif %}{% if restaurant.email %}<a href="mailto:{{ restaurant.email }}" class="mt-2 block break-all text-indigo-700 underline dark:text-indigo-300">{{ restaurant.email }}</a>{% endif %}</section>{% endif %}
+    </aside>
   </div>
 </div>
 {% endblock %}

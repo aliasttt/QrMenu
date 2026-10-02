@@ -35,6 +35,7 @@ from business_menu.hours_utils import (
 )
 from business_menu.public_menu import build_public_menu_collections, get_restaurant_public_media
 from business_menu.reservation_services import (
+    DAY_NAMES,
     get_reservation_policy,
     reservation_local_today,
     reservation_slots,
@@ -963,13 +964,44 @@ def restaurant_reservation(request, restaurant_id=None, restaurant_slug=None):
     restaurant_hours = getattr(settings_obj, "opening_hours", None) or ""
     from datetime import timedelta
     today = reservation_local_today(policy)
-    days_available = []
+    calendar_days = []
     if today is not None:
         for i in range(policy.advance_days + 1):
             d = today + timedelta(days=i)
-            if reservation_slots(policy, d):
-                days_available.append({"date": d.strftime("%Y-%m-%d"), "label": d.strftime("%A, %b %d")})
+            date_value = d.isoformat()
+            slots = reservation_slots(policy, d)
+            reason = ""
+            if date_value in policy.blocked_dates:
+                reason = _("Holiday")
+            elif d == today and policy.closed_today:
+                reason = _("Closed today")
+            elif not slots:
+                reason = _("Closed")
+            calendar_days.append({
+                "date": date_value,
+                "day": d.strftime("%a"),
+                "label": d.strftime("%b %d"),
+                "enabled": bool(slots),
+                "reason": reason,
+            })
+    days_available = [day for day in calendar_days if day["enabled"]]
     first_reservation_date = days_available[0]["date"] if days_available else ""
+    schedule_rows = []
+    if isinstance(policy.schedule, dict):
+        for day_name in DAY_NAMES:
+            value = policy.schedule.get(day_name) or {}
+            enabled = isinstance(value, dict) and value.get("enabled") is True
+            schedule_rows.append({
+                "day": _(day_name.capitalize()),
+                "hours": f'{value.get("start", "")}–{value.get("end", "")}' if enabled else _("Closed"),
+                "enabled": enabled,
+            })
+    floor_plan_image = ""
+    try:
+        if restaurant.reservation_settings.floor_plan_image:
+            floor_plan_image = restaurant.reservation_settings.floor_plan_image.url
+    except Exception:
+        pass
     cart_key = f"cart_restaurant_{restaurant.id}"
     cart_items = list(request.session.get(cart_key, []))
     cart_items_json = json.dumps(cart_items)
@@ -987,13 +1019,16 @@ def restaurant_reservation(request, restaurant_id=None, restaurant_slug=None):
             "restaurant": restaurant,
             "restaurant_hours": restaurant_hours,
             "days_available": days_available,
+            "calendar_days": calendar_days,
+            "schedule_rows": schedule_rows,
+            "floor_plan_image": floor_plan_image,
             "total_tables": policy.capacity,
             "max_guests_per_reservation": policy.max_guests,
             "cart_items_json": cart_items_json,
             "allow_payment_online": allow_online,
             "menu_url": menu_url,
             "first_reservation_date": first_reservation_date,
-            "reservation_configuration_error": "" if today is not None else "Restaurant timezone is not configured.",
+            "reservation_configuration_error": "" if today is not None else _("Online reservation is temporarily unavailable. Please contact the restaurant."),
             "reservation_request_id": str(uuid.uuid4()),
         },
     )

@@ -26,6 +26,53 @@ class ReservationPolicy:
     capacity: int
     capacity_scope: str
     timezone_name: str
+    tables: tuple[dict, ...]
+
+
+def _blocked_date_values(values) -> set[str]:
+    blocked = set()
+    for value in values or []:
+        raw = value.get("date") if isinstance(value, dict) else value
+        raw = str(raw or "").strip()
+        for fmt in ("%Y-%m-%d", "%Y.%m.%d"):
+            try:
+                blocked.add(datetime.strptime(raw, fmt).date().isoformat())
+                break
+            except ValueError:
+                continue
+    return blocked
+
+
+def public_reservation_tables(values, default_capacity=1) -> tuple[dict, ...]:
+    tables = []
+    seen = set()
+    for index, value in enumerate(values if isinstance(values, list) else []):
+        if not isinstance(value, dict) or value.get("enabled", value.get("active", True)) is False:
+            continue
+        try:
+            capacity = int(value.get("capacity") or value.get("seats") or default_capacity)
+        except (TypeError, ValueError):
+            capacity = 0
+        if capacity < 1:
+            continue
+        key = str(value.get("id") or value.get("uuid") or value.get("key") or f"table-{index + 1}")
+        if key in seen:
+            key = f"table-{index + 1}"
+        seen.add(key)
+        tables.append({
+            "key": key,
+            "name": str(value.get("name") or value.get("title") or "").strip(),
+            "type": str(value.get("type") or value.get("location") or "").strip(),
+            "capacity": capacity,
+            "image": str(
+                value.get("image_url")
+                or value.get("image")
+                or value.get("photo_url")
+                or value.get("photo")
+                or ""
+            ).strip(),
+        })
+    return tuple(tables)
 
 
 def get_reservation_policy(restaurant) -> ReservationPolicy:
@@ -39,18 +86,15 @@ def get_reservation_policy(restaurant) -> ReservationPolicy:
         app_settings = None
 
     if app_settings is not None:
-        tables = app_settings.tables if isinstance(app_settings.tables, list) else []
-        available_tables = [
-            table for table in tables
-            if isinstance(table, dict) and table.get("enabled", table.get("active", True)) is not False
-        ]
-        capacity = len(available_tables) if tables else int(getattr(legacy, "total_tables", 0) or 0)
+        raw_tables = app_settings.tables if isinstance(app_settings.tables, list) else []
+        tables = public_reservation_tables(raw_tables, app_settings.max_guests_per_reservation)
+        capacity = len(tables) if raw_tables else int(getattr(legacy, "total_tables", 0) or 0)
         return ReservationPolicy(
             enabled=bool(app_settings.enabled),
             source="reservation_settings",
             schedule=app_settings.schedule if isinstance(app_settings.schedule, dict) else {},
             closed_today=bool(app_settings.closed_today),
-            blocked_dates={str(value) for value in (app_settings.blocked_dates or [])},
+            blocked_dates=_blocked_date_values(app_settings.blocked_dates),
             max_guests=max(1, int(app_settings.max_guests_per_reservation or 1)),
             advance_days=max(0, int(app_settings.advance_booking_days or 0)),
             duration_minutes=max(1, int(app_settings.reservation_duration or 1)),
@@ -58,6 +102,7 @@ def get_reservation_policy(restaurant) -> ReservationPolicy:
             capacity=max(0, capacity),
             capacity_scope="slot" if tables else "day",
             timezone_name=str(restaurant.timezone or ""),
+            tables=tables,
         )
 
     return ReservationPolicy(
@@ -73,6 +118,7 @@ def get_reservation_policy(restaurant) -> ReservationPolicy:
         capacity=max(0, int(getattr(legacy, "total_tables", 0) or 0)),
         capacity_scope="day",
         timezone_name=str(restaurant.timezone or ""),
+        tables=(),
     )
 
 
@@ -199,14 +245,67 @@ def reservation_count(restaurant, policy: ReservationPolicy, requested_date: dat
     return reservations.count()
 
 
-def create_reservation_with_capacity(*, restaurant, policy, requested_date, requested_time, **values):
+def available_reservation_tables(
+    restaurant,
+    policy: ReservationPolicy,
+    requested_date: date,
+    requested_time: str,
+    guests_count: int,
+) -> list[dict]:
+    if not policy.tables:
+        return []
+    try:
+        start, end = reservation_interval(policy, requested_date, requested_time)
+    except ValueError:
+        return []
+    suitable = [table for table in policy.tables if table["capacity"] >= guests_count]
+    reservations = Reservation.objects.filter(
+        restaurant=restaurant,
+        requested_date=requested_date,
+    ).exclude(status=Reservation.Status.CANCELLED).filter(
+        Q(requested_at__lt=end, occupies_until__gt=start)
+        | Q(requested_at__isnull=True, requested_date=requested_date)
+    )
+    table_values = list(reservations.values_list("table", flat=True))
+    occupied = {
+        str(value.get("key"))
+        for value in table_values
+        if isinstance(value, dict) and value.get("key")
+    }
+    legacy_count = sum(
+        1
+        for value in table_values
+        if not isinstance(value, dict) or not value.get("key")
+    )
+    free = [table for table in suitable if table["key"] not in occupied]
+    return free[legacy_count:]
+
+
+def create_reservation_with_capacity(
+    *, restaurant, policy, requested_date, requested_time, table_key="", **values
+):
     """Serialize capacity checks on PostgreSQL by locking the restaurant row."""
     with transaction.atomic():
         locked_restaurant = Restaurant.objects.select_for_update().get(pk=restaurant.pk)
         current_policy = get_reservation_policy(locked_restaurant)
         if not current_policy.enabled or requested_time not in reservation_slots(current_policy, requested_date):
             raise ValueError("slot_unavailable")
-        if current_policy.capacity <= 0 or reservation_count(
+        if current_policy.tables:
+            available_tables = available_reservation_tables(
+                locked_restaurant,
+                current_policy,
+                requested_date,
+                requested_time,
+                int(values.get("guests_count") or 1),
+            )
+            selected_table = next(
+                (table for table in available_tables if table["key"] == table_key),
+                available_tables[0] if available_tables and not table_key else None,
+            )
+            if selected_table is None:
+                raise ValueError("capacity_full")
+            values["table"] = selected_table
+        elif current_policy.capacity <= 0 or reservation_count(
             locked_restaurant, current_policy, requested_date, requested_time
         ) >= current_policy.capacity:
             raise ValueError("capacity_full")
@@ -233,7 +332,20 @@ def retry_failed_payment_reservation(reservation):
         policy = get_reservation_policy(locked_restaurant)
         if not policy.enabled or locked.requested_time not in reservation_slots(policy, locked.requested_date):
             raise ValueError("slot_unavailable")
-        if policy.capacity <= 0 or reservation_count(
+        if policy.tables:
+            table_key = str((locked.table or {}).get("key") or "")
+            available = available_reservation_tables(
+                locked_restaurant,
+                policy,
+                locked.requested_date,
+                locked.requested_time,
+                locked.guests_count,
+            )
+            selected = next((table for table in available if table["key"] == table_key), None)
+            if selected is None:
+                raise ValueError("capacity_full")
+            locked.table = selected
+        elif policy.capacity <= 0 or reservation_count(
             locked_restaurant, policy, locked.requested_date, locked.requested_time
         ) >= policy.capacity:
             raise ValueError("capacity_full")
@@ -242,5 +354,5 @@ def retry_failed_payment_reservation(reservation):
         )
         locked.status = Reservation.Status.PENDING
         locked.payment_setup_failed = False
-        locked.save(update_fields=["requested_at", "occupies_until", "status", "payment_setup_failed", "updated_at"])
+        locked.save(update_fields=["requested_at", "occupies_until", "table", "status", "payment_setup_failed", "updated_at"])
         return locked

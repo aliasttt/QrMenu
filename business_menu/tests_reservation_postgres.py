@@ -20,7 +20,7 @@ class ReservationPostgresConcurrencyTests(TransactionTestCase):
     def setUp(self):
         self.target_date = timezone.now().astimezone(ZoneInfo("Europe/Berlin")).date() + timedelta(days=1)
 
-    def _attempt(self, restaurant_id, slot, barrier):
+    def _attempt(self, restaurant_id, slot, barrier, table_key=""):
         close_old_connections()
         from .models import Restaurant
 
@@ -32,6 +32,7 @@ class ReservationPostgresConcurrencyTests(TransactionTestCase):
                 policy=get_reservation_policy(restaurant),
                 requested_date=self.target_date,
                 requested_time=slot,
+                table_key=table_key,
                 guests_count=2,
                 customer_name="Concurrent",
                 status=Reservation.Status.PENDING,
@@ -68,3 +69,25 @@ class ReservationPostgresConcurrencyTests(TransactionTestCase):
             ]
             results = [future.result() for future in futures]
         self.assertTrue(all(isinstance(value, int) for value in results))
+
+    def test_same_table_cannot_be_double_booked(self):
+        restaurant = make_restaurant(
+            20,
+            schedule=schedule_for(self.target_date),
+            tables=[
+                {"id": "window", "name": "Window", "capacity": 4},
+                {"id": "vip", "name": "VIP", "capacity": 8},
+            ],
+        )
+        slot = reservation_slots(get_reservation_policy(restaurant), self.target_date)[0]
+        barrier = Barrier(2)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            results = list(
+                pool.map(
+                    lambda _i: self._attempt(restaurant.id, slot, barrier, "window"),
+                    range(2),
+                )
+            )
+        self.assertEqual(Reservation.objects.filter(restaurant=restaurant).count(), 1)
+        self.assertEqual(sum(isinstance(value, int) for value in results), 1)
+        self.assertIn("capacity_full", results)

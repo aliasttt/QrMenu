@@ -3,6 +3,7 @@
 {% block title %}{{ restaurant.name }} | {% trans "Menu" %}{% endblock %}
 {% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
+{% block whatsapp_button %}{% endblock %}
 {% block meta_description %}{{ restaurant.name }} — {{ restaurant.description|truncatewords:20|default:"" }}{% endblock %}
 
 {% block styles %}
@@ -959,9 +960,6 @@
               {% endif %}
               {% if restaurant.website %}
               <p class="min-w-0 break-all"><span class="font-semibold text-slate-900 dark:text-white">{% trans "Website:" %}</span> <a class="inline-block max-w-full break-all py-3 underline decoration-slate-300 underline-offset-4" href="{{ restaurant.website }}" target="_blank" rel="noopener noreferrer">{{ restaurant.website }}</a></p>
-              {% endif %}
-              {% if restaurant.whatsapp %}
-              <p class="min-w-0 break-words"><span class="font-semibold text-slate-900 dark:text-white">WhatsApp:</span> <a class="inline-block max-w-full break-all py-3 underline decoration-slate-300 underline-offset-4" href="https://wa.me/{{ restaurant.whatsapp }}" target="_blank" rel="noopener noreferrer">{{ restaurant.whatsapp }}</a></p>
               {% endif %}
             </div>
 

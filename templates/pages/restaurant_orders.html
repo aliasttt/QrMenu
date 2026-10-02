@@ -3,6 +3,7 @@
 {% block title %}{% blocktrans with name=restaurant.name %}Orders - {{ name }}{% endblocktrans %}{% endblock %}
 {% block navbar %}{% include "partials/customer_navbar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
+{% block whatsapp_button %}{% endblock %}
 {% block styles %}
 <script>window.__customerRestaurantId = {{ restaurant.id }};</script>
 <link rel="stylesheet" href="{% static 'business_menu/themes/menu_themes.css' %}">
