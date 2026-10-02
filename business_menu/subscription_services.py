@@ -381,6 +381,7 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
         and trial_end > now
         and (getattr(admin, "payment_status", None) == "trial" or trusted)
     )
+    access_blocked = bool(getattr(admin, "subscription_access_blocked", False))
 
     provider_rows = [
         {
@@ -390,13 +391,13 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
             "status": item.status,
             "current_period_end": _format_datetime(item.current_period_end),
             "will_renew": item.will_renew,
-            "is_entitled": is_active(item),
+            "is_entitled": is_active(item) and not access_blocked,
             "needs_reconciliation": item.needs_reconciliation,
         }
         for item in subscriptions
     ]
 
-    if getattr(admin, "subscription_access_blocked", False):
+    if access_blocked:
         return {
             "state": "blocked",
             "is_entitled": False,

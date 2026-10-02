@@ -10,6 +10,7 @@ from django.utils import timezone
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription, Restaurant
 from .subscription_services import (
     add_calendar_months,
+    apply_manual_subscription,
     apply_provider_event,
     resolve_subscription_entitlement,
 )
@@ -117,7 +118,9 @@ class RestaurantSubscriptionAdminTests(TestCase):
         provider = self.create_provider()
         self.post_action("block", reason="Abuse review")
         self.owner.refresh_from_db()
-        self.assertFalse(resolve_subscription_entitlement(self.owner)["is_entitled"])
+        blocked = resolve_subscription_entitlement(self.owner)
+        self.assertFalse(blocked["is_entitled"])
+        self.assertFalse(blocked["providers"][0]["is_entitled"])
 
         apply_provider_event(
             account=self.owner,
@@ -143,19 +146,47 @@ class RestaurantSubscriptionAdminTests(TestCase):
         self.assertFalse(self.owner.subscription_access_blocked)
         self.assertTrue(entitlement["is_entitled"])
         self.assertEqual(entitlement["provider"], "google")
+        self.assertTrue(entitlement["providers"][0]["is_entitled"])
 
+    @override_settings(STRIPE_SECRET_KEY="sk_test", STRIPE_PUBLISHABLE_KEY="pk_test")
     def test_block_is_returned_by_subscription_api(self):
+        apply_manual_subscription(
+            self.owner,
+            event_id="manual-before-block",
+            plan="manual_pro",
+            expires_at=timezone.now() + timedelta(days=3650),
+        )
+        self.owner.refresh_from_db()
+        self.assertTrue(resolve_subscription_entitlement(self.owner)["is_entitled"])
+
         self.client.force_login(self.superuser)
-        self.create_provider()
         self.post_action("block", reason="Account review")
 
         self.client.logout()
+        login = self.client.post(
+            "/api/business-menu/login/",
+            {"email": self.owner.email, "password": "pass"},
+        )
+        self.assertEqual(login.status_code, 200)
+        self.assertEqual(login.json()["subscription"]["state"], "blocked")
+        self.assertFalse(login.json()["subscription"]["is_entitled"])
+
         self.client.force_login(self.owner_user)
         response = self.client.get("/api/business-menu/admin/subscription/")
+        restore = self.client.post("/api/business-menu/admin/subscription/restore/", {})
+        gated = self.client.post(
+            "/api/business-menu/api/create-connect-link/",
+            {"admin_id": self.owner.pk},
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["state"], "blocked")
         self.assertFalse(response.json()["is_entitled"])
+        self.assertFalse(response.json()["providers"][0]["is_entitled"])
+        self.assertEqual(restore.status_code, 200)
+        self.assertEqual(restore.json()["subscription"]["state"], "blocked")
+        self.assertFalse(restore.json()["subscription"]["is_entitled"])
+        self.assertEqual(gated.status_code, 403)
 
     def test_custom_end_requires_a_future_date(self):
         self.client.force_login(self.superuser)
