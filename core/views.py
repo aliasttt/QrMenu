@@ -775,6 +775,7 @@ def panel_dashboard(request):
             plan_active = entitlement["is_entitled"]
             expires_at = parse_datetime(entitlement["current_period_end"]) if entitlement["current_period_end"] else None
             from django.conf import settings
+            from business_menu.stripe_views import connect_account_ready
             return render(
                 request,
                 "pages/panel/dashboard_simple.html",
@@ -787,9 +788,9 @@ def panel_dashboard(request):
                     "trial_active": trial_active,
                     "subscription_active": subscription_active,
                     "expires_at": expires_at,
-                    "stripe_connected": bool(admin.stripe_account_id),
+                    "stripe_connected": connect_account_ready(admin),
                     "subscribe_url": f"/business-menu/subscribe/checkout/?admin_id={admin.id}",
-                    "connect_stripe_url": f"/business-menu/connect/?admin_id={admin.id}",
+                    "connect_stripe_url": "/business-menu/connect/",
                     "app_android_url": getattr(settings, "APP_ANDROID_URL", "") or getattr(settings, "QR_MENU_APK_DEFAULT_URL", "https://example.com/app.apk"),
                     "app_ios_url": getattr(settings, "APP_IOS_URL", "https://apps.apple.com/app/id000000000"),
                 },

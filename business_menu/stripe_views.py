@@ -5,6 +5,7 @@ Stripe: subscription checkout, webhooks, Connect onboarding.
 """
 import logging
 from django.conf import settings
+from django.core import signing
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
@@ -16,6 +17,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import UTC, datetime, timedelta
+from urllib.parse import urlencode
 
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription, Restaurant, Order, Payment
 from .subscription_services import apply_provider_event, resolve_subscription_entitlement
@@ -35,6 +37,81 @@ def _absolute_url(request, path):
     if base:
         return f"{base}{path}"
     return request.build_absolute_uri(path)
+
+
+def _create_connect_link(admin, request):
+    """Reuse one connected account per owner and create a short-lived onboarding link."""
+    import stripe
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    with transaction.atomic():
+        locked = BusinessAdmin.objects.select_for_update().get(pk=admin.pk)
+        if not locked.stripe_account_id:
+            account = stripe.Account.create(
+                type="express",
+                email=(locked.email or "").strip() or None,
+                capabilities={"transfers": {"requested": True}},
+                idempotency_key=f"qrmenu-connect-{locked.pk}",
+            )
+            locked.stripe_account_id = account.id
+            locked.save(update_fields=["stripe_account_id"])
+        else:
+            stripe.Account.modify(
+                locked.stripe_account_id,
+                capabilities={"transfers": {"requested": True}},
+            )
+        continuation = signing.dumps(
+            {"admin_id": locked.pk, "account_id": locked.stripe_account_id},
+            salt="stripe-connect-continuation",
+        )
+        query = urlencode({"continuation": continuation})
+        base = (getattr(settings, "SITE_URL", "") or "").rstrip("/")
+        if not base:
+            base = request.build_absolute_uri("/").rstrip("/")
+        link = stripe.AccountLink.create(
+            account=locked.stripe_account_id,
+            refresh_url=f"{base}/business-menu/connect/refresh/?{query}",
+            return_url=f"{base}/business-menu/connect/done/?{query}",
+            type="account_onboarding",
+        )
+    return link.url
+
+
+def _connect_continuation(request):
+    try:
+        data = signing.loads(
+            request.GET.get("continuation", ""),
+            salt="stripe-connect-continuation",
+            max_age=3600,
+        )
+        admin = BusinessAdmin.objects.get(
+            pk=data["admin_id"], stripe_account_id=data["account_id"], is_active=True,
+        )
+        return admin
+    except (signing.BadSignature, BusinessAdmin.DoesNotExist, KeyError, TypeError, ValueError):
+        return None
+
+
+def _connect_ready(account):
+    requirements = account.get("requirements") or {}
+    capabilities = account.get("capabilities") or {}
+    return bool(
+        account.get("charges_enabled")
+        and capabilities.get("transfers") == "active"
+        and not account.get("disabled_reason")
+        and not requirements.get("disabled_reason")
+    )
+
+
+def connect_account_ready(admin):
+    if not admin.stripe_account_id or not _stripe_enabled():
+        return False
+    try:
+        import stripe
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        return _connect_ready(stripe.Account.retrieve(admin.stripe_account_id))
+    except Exception as e:
+        logger.exception("Stripe Connect dashboard status check failed: %s", e)
+        return False
 
 
 def _order_belongs_to_session(request, order):
@@ -371,6 +448,8 @@ class CreateConnectAccountLinkView(APIView):
                 {"code": "permission_denied", "message": "You do not have permission to manage this account."},
                 status=status.HTTP_403_FORBIDDEN,
             )
+        if not admin.is_active:
+            return Response({"code": "account_inactive", "message": "This restaurant account is inactive."}, status=status.HTTP_403_FORBIDDEN)
 
         if not resolve_subscription_entitlement(admin)["is_entitled"]:
             return Response(
@@ -383,72 +462,107 @@ class CreateConnectAccountLinkView(APIView):
                 status=status.HTTP_402_PAYMENT_REQUIRED,
             )
 
-        import stripe
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        base_url = request.build_absolute_uri("/").rstrip("/")
-
         try:
-            if not admin.stripe_account_id:
-                account = stripe.Account.create(type="express", email=(admin.email or "").strip() or None)
-                admin.stripe_account_id = account.id
-                admin.save(update_fields=["stripe_account_id"])
-
-            link = stripe.AccountLink.create(
-                account=admin.stripe_account_id,
-                refresh_url=f"{base_url}/business-menu/connect/?admin_id={admin_id}",
-                return_url=f"{base_url}/business-menu/connect/done/?admin_id={admin_id}",
-                type="account_onboarding",
-            )
-            return Response({"success": True, "url": link.url})
+            return Response({"success": True, "url": _create_connect_link(admin, request)})
         except Exception as e:
             logger.exception("Stripe Connect account/link failed: %s", e)
             return Response(
-                {"success": False, "message": str(e)},
+                {"success": False, "code": "stripe_connect_unavailable", "message": "Unable to start Stripe onboarding."},
                 status=status.HTTP_502_BAD_GATEWAY,
             )
 
 
+class StripeConnectRestaurantLinkView(APIView):
+    """Compatibility endpoint for app builds calling GET /stripe-connect/<restaurant_id>/."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, restaurant_id):
+        try:
+            restaurant = Restaurant.objects.select_related("admin").get(pk=restaurant_id)
+        except Restaurant.DoesNotExist:
+            return Response({"code": "not_found", "message": "Restaurant not found."}, status=404)
+        admin = restaurant.admin
+        if admin.auth_user_id != request.user.id:
+            return Response(
+                {"code": "permission_denied", "message": "You do not have permission to manage this restaurant."},
+                status=403,
+            )
+        if not admin.is_active:
+            return Response({"code": "account_inactive", "message": "This restaurant account is inactive."}, status=403)
+        if not resolve_subscription_entitlement(admin)["is_entitled"]:
+            return Response(
+                {"success": False, "code": "subscription_required", "message": "An active subscription is required.", "payment_required": True},
+                status=402,
+            )
+        if not _stripe_enabled():
+            return Response({"success": False, "code": "stripe_connect_unavailable", "message": "Stripe is not configured."}, status=503)
+        try:
+            return Response({"success": True, "url": _create_connect_link(admin, request)})
+        except Exception as e:
+            logger.exception("Stripe Connect compatibility link failed: %s", e)
+            return Response(
+                {"success": False, "code": "stripe_connect_unavailable", "message": "Unable to start Stripe onboarding."},
+                status=502,
+            )
+
+
 class ConnectPageView(APIView):
-    """GET: create Stripe Connect onboarding link and redirect to Stripe. For paid admins only."""
+    """Browser onboarding entry; relies on the owner's Django session, never a public ID."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        admin = BusinessAdmin.objects.filter(auth_user=request.user, is_active=True).first()
+        if not admin:
+            return render(request, "business_menu/connect.html", {"error": "No active restaurant account is linked to this login."}, status=403)
+        if not resolve_subscription_entitlement(admin)["is_entitled"]:
+            return render(request, "business_menu/connect.html", {"error": "An active subscription is required to connect Stripe."}, status=402)
+        if not _stripe_enabled():
+            return render(request, "business_menu/connect.html", {"error": "Stripe onboarding is temporarily unavailable."}, status=503)
+        try:
+            return redirect(_create_connect_link(admin, request))
+        except Exception as e:
+            logger.exception("Connect redirect failed: %s", e)
+            return render(request, "business_menu/connect.html", {"error": "Stripe onboarding is temporarily unavailable."}, status=502)
+
+
+class ConnectRefreshView(APIView):
+    """Stripe's expired-link return; the signed continuation is scoped to an existing account."""
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        admin_id = request.GET.get("admin_id")
-        if not admin_id or not _stripe_enabled():
-            return render(request, "business_menu/connect.html", {"error": "Missing admin or Stripe not configured."})
-        try:
-            admin = BusinessAdmin.objects.get(id=int(admin_id))
-        except (ValueError, BusinessAdmin.DoesNotExist):
-            return render(request, "business_menu/connect.html", {"error": "Invalid admin."})
+        admin = _connect_continuation(request)
+        if not admin:
+            return render(request, "business_menu/connect.html", {"error": "This onboarding link has expired. Sign in to your restaurant panel and start again."}, status=400)
         if not resolve_subscription_entitlement(admin)["is_entitled"]:
-            return render(request, "business_menu/connect.html", {"error": "Subscribe first to connect Stripe."})
-        import stripe
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        base_url = request.build_absolute_uri("/").rstrip("/")
+            return render(request, "business_menu/connect.html", {"error": "An active subscription is required to continue Stripe setup."}, status=402)
+        if not _stripe_enabled():
+            return render(request, "business_menu/connect.html", {"error": "Stripe onboarding is temporarily unavailable."}, status=503)
         try:
-            if not admin.stripe_account_id:
-                account = stripe.Account.create(type="express", email=(admin.email or "").strip() or None)
-                admin.stripe_account_id = account.id
-                admin.save(update_fields=["stripe_account_id"])
-            link = stripe.AccountLink.create(
-                account=admin.stripe_account_id,
-                refresh_url=f"{base_url}/business-menu/connect/?admin_id={admin_id}",
-                return_url=f"{base_url}/business-menu/connect/done/?admin_id={admin_id}",
-                type="account_onboarding",
-            )
-            return redirect(link.url)
+            return redirect(_create_connect_link(admin, request))
         except Exception as e:
-            logger.exception("Connect redirect failed: %s", e)
-            return render(request, "business_menu/connect.html", {"error": str(e)})
+            logger.exception("Stripe Connect refresh failed: %s", e)
+            return render(request, "business_menu/connect.html", {"error": "Unable to refresh Stripe onboarding. Please try again from your restaurant panel."}, status=502)
 
 
 class ConnectDoneView(APIView):
-    """Shown after Stripe Connect onboarding return."""
+    """Retrieve Stripe's account state; returning from onboarding alone is not success."""
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        admin_id = request.GET.get("admin_id")
-        return render(request, "business_menu/connect_done.html", {"admin_id": admin_id})
+        admin = _connect_continuation(request)
+        if not admin:
+            return render(request, "business_menu/connect_done.html", {"ready": False, "error": "The Stripe return link is invalid or expired."}, status=400)
+        if not _stripe_enabled():
+            return render(request, "business_menu/connect_done.html", {"ready": False, "error": "Stripe status is temporarily unavailable."}, status=503)
+        try:
+            import stripe
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            account = stripe.Account.retrieve(admin.stripe_account_id)
+            ready = _connect_ready(account)
+            return render(request, "business_menu/connect_done.html", {"ready": ready, "admin_id": admin.pk})
+        except Exception as e:
+            logger.exception("Stripe Connect return status check failed: %s", e)
+            return render(request, "business_menu/connect_done.html", {"ready": False, "error": "Stripe status is temporarily unavailable."}, status=502)
 
 
 class SubscribePageView(APIView):

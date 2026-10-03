@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% block title %}{% trans "Stripe connected" %}{% endblock %}
+{% block title %}{% if ready %}{% trans "Stripe connected" %}{% else %}{% trans "Stripe setup incomplete" %}{% endif %}{% endblock %}
 {% block content %}
 <div class="max-w-2xl mx-auto px-4 py-16 text-center">
-  <h1 class="text-2xl font-bold text-green-600 dark:text-green-400">{% trans "Stripe connected" %}</h1>
-  <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "You can now receive customer payments." %}</p>
-  {% if admin_id %}
-  <a href="/panel/?admin_id={{ admin_id }}" class="mt-6 inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Back to panel" %}</a>
+  {% if ready %}
+    <h1 class="text-2xl font-bold text-green-600 dark:text-green-400">{% trans "Stripe connected" %}</h1>
+    <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Stripe confirms your account can receive customer payments." %}</p>
   {% else %}
-  <a href="/panel/" class="mt-6 inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Back to panel" %}</a>
+    <h1 class="text-2xl font-bold text-amber-600 dark:text-amber-400">{% trans "Stripe setup incomplete" %}</h1>
+    {% if error %}<p class="mt-2 text-slate-600 dark:text-slate-400">{{ error }}</p>{% else %}<p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Stripe still requires information. Reopen the QR Menu app to continue setup." %}</p>{% endif %}
   {% endif %}
+  <a href="/panel/" class="mt-6 inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90">{% trans "Back to panel" %}</a>
 </div>
 {% endblock %}
