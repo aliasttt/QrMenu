@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timedelta, timezone as dt_timezone
+from unittest.mock import patch
 
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.utils import timezone
 
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription, Restaurant
 from .subscription_services import (
+    AppleTransactionResult,
     add_calendar_months,
     apply_manual_subscription,
     apply_provider_event,
@@ -41,7 +43,7 @@ class RestaurantSubscriptionAdminTests(TestCase):
             "admin:business_menu_restaurant_subscription", args=[self.restaurant.pk]
         )
 
-    def post_action(self, action, *, action_id=None, reason="Support decision", custom_end=""):
+    def post_action(self, action, *, action_id=None, reason="Support decision", custom_end="", **extra):
         return self.client.post(
             self.url,
             {
@@ -49,6 +51,7 @@ class RestaurantSubscriptionAdminTests(TestCase):
                 "action_id": action_id or uuid.uuid4(),
                 "reason": reason,
                 "custom_end": custom_end,
+                **extra,
             },
         )
 
@@ -235,3 +238,43 @@ class RestaurantSubscriptionAdminTests(TestCase):
         self.assertContains(change_page, "Manage subscription")
         self.assertContains(list_page, "Effective subscription")
         self.assertContains(list_page, "Manage subscription")
+
+    def test_superadmin_apple_recovery_is_verified_audited_and_idempotent(self):
+        self.client.force_login(self.superuser)
+        action_id = uuid.uuid4()
+        transaction_id = "sensitive-apple-transaction"
+        result = AppleTransactionResult(
+            {
+                "transactionId": transaction_id,
+                "originalTransactionId": "sensitive-apple-original",
+                "productId": "de.preismenu.monthly",
+                "environment": "Production",
+                "expiresDate": str(int((timezone.now() + timedelta(days=30)).timestamp() * 1000)),
+                "appAccountToken": "",
+            },
+            "signed-value-not-logged",
+            "Production",
+        )
+        values = {
+            "action_id": action_id,
+            "reason": "Approved legacy recovery",
+            "apple_transaction_id": transaction_id,
+            "apple_environment": "Production",
+            "apple_evidence_reference": "support-case-123 with pre-existing account evidence",
+            "confirm_apple_recovery": "on",
+        }
+
+        with patch("business_menu.admin.verify_apple_transaction_id", return_value=result) as verify:
+            first = self.post_action("recover_apple", **values)
+            duplicate = self.post_action("recover_apple", **values)
+
+        self.assertEqual(first.status_code, 302)
+        self.assertEqual(duplicate.status_code, 302)
+        verify.assert_called_once_with(transaction_id, environment="Production")
+        self.assertEqual(ProviderSubscription.objects.filter(provider="apple").count(), 1)
+        self.assertEqual(ProviderEvent.objects.filter(event_type="legacy_purchase_recovery").count(), 1)
+        audit = LogEntry.objects.get(object_id=str(self.restaurant.pk)).change_message
+        self.assertIn("support-case-123", audit)
+        self.assertIn("transaction_sha256=", audit)
+        self.assertNotIn(transaction_id, audit)
+        self.assertNotIn("sensitive-apple-original", audit)

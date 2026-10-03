@@ -1,4 +1,6 @@
+import hashlib
 import json
+import logging
 import uuid
 from datetime import datetime, time
 
@@ -37,10 +39,17 @@ from .models import (
     Payment,
 )
 from .subscription_services import (
+    SubscriptionConfigurationError,
+    SubscriptionVerificationError,
+    apply_apple_transaction_to_admin,
     apply_manual_subscription,
     cancel_manual_subscription,
     resolve_subscription_entitlement,
+    verify_apple_transaction_id,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class BusinessAdminForm(forms.ModelForm):
@@ -215,8 +224,16 @@ class ProviderSubscriptionAdmin(admin.ModelAdmin):
     )
     list_filter = ("provider", "environment", "status", "verification_source", "needs_reconciliation")
     search_fields = ("account__email", "account__phone", "external_id", "latest_transaction_id")
-    readonly_fields = ("created_at", "updated_at")
     exclude = ("provider_customer_id",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        return tuple(field.name for field in self.model._meta.fields)
 
 
 @admin.register(ProviderEvent)
@@ -224,7 +241,15 @@ class ProviderEventAdmin(admin.ModelAdmin):
     list_display = ("subscription", "event_type", "occurred_at", "processed_at", "state_applied")
     list_filter = ("provider", "environment", "event_type", "state_applied")
     search_fields = ("external_event_id", "subscription__external_id")
-    readonly_fields = ("processed_at",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        return tuple(field.name for field in self.model._meta.fields)
 
 
 class MenuItemImageInline(admin.TabularInline):
@@ -305,6 +330,32 @@ class SubscriptionManagementForm(forms.Form):
         label="Custom end date",
         required=False,
         widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    apple_transaction_id = forms.CharField(
+        label="Apple transaction ID",
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
+    apple_environment = forms.ChoiceField(
+        label="Apple environment",
+        choices=(("Production", "Production"), ("Sandbox", "Sandbox")),
+        required=False,
+        initial="Production",
+    )
+    apple_evidence_reference = forms.CharField(
+        label="Independent ownership evidence reference",
+        max_length=500,
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 2}),
+        help_text=(
+            "Required for legacy recovery. Reference evidence that predates this approval and links "
+            "the purchase to this account; login, the JWS, or an invoice alone is insufficient."
+        ),
+    )
+    confirm_apple_recovery = forms.BooleanField(
+        label="I verified the independent ownership evidence and approve this binding",
+        required=False,
     )
 
 
@@ -554,6 +605,55 @@ class RestaurantAdmin(admin.ModelAdmin):
         )
         return True
 
+    def _recover_apple_purchase(self, request, restaurant, form):
+        transaction_id = form.cleaned_data["apple_transaction_id"].strip()
+        environment = form.cleaned_data["apple_environment"]
+        evidence_reference = form.cleaned_data["apple_evidence_reference"].strip()
+        if not transaction_id:
+            raise ValidationError("Apple transaction ID is required.")
+        if not evidence_reference:
+            raise ValidationError("Independent ownership evidence reference is required.")
+        if not form.cleaned_data["confirm_apple_recovery"]:
+            raise ValidationError("Confirm that the independent ownership evidence was verified.")
+
+        action_id = form.cleaned_data["action_id"]
+        if BusinessAdmin.objects.filter(
+            pk=restaurant.admin_id,
+            subscription_last_admin_action_id=action_id,
+        ).exists():
+            return False
+
+        result = verify_apple_transaction_id(transaction_id, environment=environment)
+        verified_transaction_id = str(result.payload.get("transactionId") or "")
+        original_transaction_id = str(result.payload.get("originalTransactionId") or "")
+
+        with transaction.atomic():
+            account = BusinessAdmin.objects.select_for_update().get(pk=restaurant.admin_id)
+            if account.subscription_last_admin_action_id == action_id:
+                return False
+            before = self._audit_snapshot(account)
+            apply_apple_transaction_to_admin(
+                account,
+                result,
+                recovery_approved_by=request.user,
+            )
+            account.subscription_last_admin_action_id = action_id
+            account.save(update_fields=["subscription_last_admin_action_id", "updated_at"])
+            account.refresh_from_db()
+            after = self._audit_snapshot(account)
+
+        transaction_hash = hashlib.sha256(verified_transaction_id.encode()).hexdigest()[:16]
+        original_hash = hashlib.sha256(original_transaction_id.encode()).hexdigest()[:16]
+        self.log_change(
+            request,
+            restaurant,
+            f"Subscription action=recover_apple; reason={form.cleaned_data['reason'].strip()}; "
+            f"evidence={evidence_reference}; transaction_sha256={transaction_hash}; "
+            f"original_sha256={original_hash}; before={json.dumps(before, sort_keys=True)}; "
+            f"after={json.dumps(after, sort_keys=True)}",
+        )
+        return True
+
     def subscription_management_view(self, request, object_id):
         if not request.user.is_superuser:
             raise PermissionDenied
@@ -565,11 +665,18 @@ class RestaurantAdmin(admin.ModelAdmin):
         form = SubscriptionManagementForm(request.POST or None, initial={'action_id': uuid.uuid4()})
         if request.method == 'POST' and form.is_valid():
             try:
-                changed = self._apply_subscription_action(
-                    request, restaurant, form, request.POST.get('action', '')
-                )
+                action = request.POST.get('action', '')
+                if action == 'recover_apple':
+                    changed = self._recover_apple_purchase(request, restaurant, form)
+                else:
+                    changed = self._apply_subscription_action(request, restaurant, form, action)
             except ValidationError as exc:
                 form.add_error(None, exc)
+            except SubscriptionConfigurationError:
+                logger.exception("Apple recovery configuration error")
+                form.add_error(None, "Apple verification is temporarily unavailable.")
+            except SubscriptionVerificationError as exc:
+                form.add_error(None, str(exc))
             else:
                 self.message_user(
                     request,

@@ -1094,6 +1094,22 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
         raise SubscriptionRejectedError("Apple transaction JWS is missing transactionId")
 
     resolved_environment = environment or device_payload.get("environment") or "Production"
+    return verify_apple_transaction_id(
+        transaction_id,
+        environment=resolved_environment,
+        expected_product_id=expected_product_id,
+    )
+
+
+def verify_apple_transaction_id(
+    transaction_id: str,
+    environment: str = "",
+    expected_product_id: str = "",
+) -> AppleTransactionResult:
+    transaction_id = str(transaction_id or "").strip()
+    if not transaction_id:
+        raise SubscriptionRejectedError("Apple transactionId is required")
+    resolved_environment = environment or "Production"
     token = _apple_server_jwt()
     url = f"{_apple_base_url(resolved_environment)}/inApps/v1/transactions/{transaction_id}"
     try:
@@ -1159,67 +1175,73 @@ def verify_apple_transaction(jws: str, environment: str = "", expected_product_i
     )
 
 
-def apply_apple_transaction_to_admin(admin, result: AppleTransactionResult):
+def apply_apple_transaction_to_admin(admin, result: AppleTransactionResult, *, recovery_approved_by=None):
     from .models import BusinessAdmin, ProviderSubscription
 
-    payload = result.payload
-    product_id = payload.get("productId") or ""
-    original_transaction_id = str(payload.get("originalTransactionId") or "").strip()
-    transaction_id = str(payload.get("transactionId") or "").strip()
-    environment = canonical_environment("apple", result.environment or payload.get("environment") or "")
-    if not original_transaction_id or not transaction_id:
-        raise SubscriptionRejectedError("Apple transaction identifiers are required")
+    with transaction.atomic():
+        admin = BusinessAdmin.objects.select_for_update().get(pk=admin.pk)
+        payload = result.payload
+        product_id = payload.get("productId") or ""
+        original_transaction_id = str(payload.get("originalTransactionId") or "").strip()
+        transaction_id = str(payload.get("transactionId") or "").strip()
+        environment = canonical_environment("apple", result.environment or payload.get("environment") or "")
+        if not original_transaction_id or not transaction_id:
+            raise SubscriptionRejectedError("Apple transaction identifiers are required")
 
-    app_account_token = str(payload.get("appAccountToken") or "").strip().lower()
-    expected_account_token = str(admin.subscription_account_token).lower()
-    if app_account_token:
-        if app_account_token != expected_account_token:
-            raise SubscriptionOwnershipError("Apple appAccountToken does not match this account")
-    else:
-        existing_owner = ProviderSubscription.objects.filter(
+        app_account_token = str(payload.get("appAccountToken") or "").strip().lower()
+        expected_account_token = str(admin.subscription_account_token).lower()
+        recovery_override = False
+        if app_account_token:
+            if app_account_token != expected_account_token:
+                raise SubscriptionOwnershipError("Apple appAccountToken does not match this account")
+        else:
+            existing_owner = ProviderSubscription.objects.filter(
+                provider=ProviderSubscription.Provider.APPLE,
+                environment=environment,
+                external_id=original_transaction_id,
+            ).values_list("account_id", flat=True).first()
+            legacy_owners = BusinessAdmin.objects.filter(
+                subscription_original_transaction_id=original_transaction_id,
+            ) | BusinessAdmin.objects.filter(subscription_transaction_id=transaction_id)
+            legacy_owner_ids = list(legacy_owners.values_list("id", flat=True).distinct()[:2])
+            if existing_owner not in {None, admin.id} or any(owner_id != admin.id for owner_id in legacy_owner_ids):
+                raise SubscriptionOwnershipError("Apple purchase is already bound to another account")
+            safely_bound = existing_owner == admin.id or legacy_owner_ids == [admin.id]
+            if not safely_bound:
+                if not getattr(recovery_approved_by, "is_superuser", False):
+                    raise SubscriptionOwnershipError(
+                        "Apple purchase has no appAccountToken or existing verified account binding"
+                    )
+                recovery_override = True
+
+        if payload.get("revocationDate"):
+            subscription_status = ProviderSubscription.Status.REVOKED
+        elif result.is_entitled:
+            subscription_status = ProviderSubscription.Status.ACTIVE
+        else:
+            subscription_status = ProviderSubscription.Status.EXPIRED
+        signed_at = _datetime_from_apple_ms(payload.get("signedDate"))
+        subscription, _applied, _reason = apply_provider_event(
+            account=admin,
             provider=ProviderSubscription.Provider.APPLE,
             environment=environment,
             external_id=original_transaction_id,
-        ).values_list("account_id", flat=True).first()
-        legacy_owner_ids = list(
-            BusinessAdmin.objects.filter(
-                subscription_original_transaction_id=original_transaction_id,
-            ).values_list("id", flat=True)[:2]
+            event_id=f"transaction:{transaction_id}",
+            event_type="legacy_purchase_recovery" if recovery_override else "transaction_verified",
+            status=subscription_status,
+            current_period_end=result.expires_at,
+            occurred_at=signed_at,
+            product_id=product_id,
+            latest_transaction_id=transaction_id,
+            will_renew=None,
         )
-        safely_bound = existing_owner == admin.id or legacy_owner_ids == [admin.id]
-        if not safely_bound:
-            raise SubscriptionOwnershipError(
-                "Apple purchase has no appAccountToken or existing verified account binding"
-            )
 
-    if payload.get("revocationDate"):
-        subscription_status = ProviderSubscription.Status.REVOKED
-    elif result.is_entitled:
-        subscription_status = ProviderSubscription.Status.ACTIVE
-    else:
-        subscription_status = ProviderSubscription.Status.EXPIRED
-    signed_at = _datetime_from_apple_ms(payload.get("signedDate"))
-    subscription, _applied, _reason = apply_provider_event(
-        account=admin,
-        provider=ProviderSubscription.Provider.APPLE,
-        environment=environment,
-        external_id=original_transaction_id,
-        event_id=f"transaction:{transaction_id}",
-        event_type="transaction_verified",
-        status=subscription_status,
-        current_period_end=result.expires_at,
-        occurred_at=signed_at,
-        product_id=product_id,
-        latest_transaction_id=transaction_id,
-        will_renew=None,
-    )
-
-    admin.subscription_original_transaction_id = original_transaction_id
-    admin.subscription_transaction_id = transaction_id
-    admin.save(
-        update_fields=[
-            "subscription_original_transaction_id",
-            "subscription_transaction_id",
-        ]
-    )
-    return subscription
+        admin.subscription_original_transaction_id = original_transaction_id
+        admin.subscription_transaction_id = transaction_id
+        admin.save(
+            update_fields=[
+                "subscription_original_transaction_id",
+                "subscription_transaction_id",
+            ]
+        )
+        return subscription

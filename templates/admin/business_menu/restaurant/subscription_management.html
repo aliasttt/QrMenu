@@ -84,6 +84,21 @@
       <button type="submit" name="action" value="block">Block all service access</button>
       <button type="submit" name="action" value="unblock">Remove service block</button>
     </div>
+    <h2>Legacy Apple purchase recovery</h2>
+    <p class="subscription-warning">
+      Superadmin only. Apple will validate the transaction before binding. A login, JWS, or invoice alone is not ownership evidence.
+      A purchase already bound to another account cannot be moved here.
+    </p>
+    <div class="form-row">{{ form.apple_transaction_id.errors }}{{ form.apple_transaction_id.label_tag }} {{ form.apple_transaction_id }}</div>
+    <div class="form-row">{{ form.apple_environment.errors }}{{ form.apple_environment.label_tag }} {{ form.apple_environment }}</div>
+    <div class="form-row">
+      {{ form.apple_evidence_reference.errors }}{{ form.apple_evidence_reference.label_tag }} {{ form.apple_evidence_reference }}
+      <div class="help">{{ form.apple_evidence_reference.help_text }}</div>
+    </div>
+    <div class="form-row">{{ form.confirm_apple_recovery.errors }}{{ form.confirm_apple_recovery }} {{ form.confirm_apple_recovery.label_tag }}</div>
+    <div class="submit-row">
+      <button type="submit" name="action" value="recover_apple">Validate with Apple and approve binding</button>
+    </div>
   </form>
 </section>
 {% endblock %}

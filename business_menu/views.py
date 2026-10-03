@@ -121,6 +121,7 @@ from .subscription_services import (
     google_purchase_external_id,
     resolve_subscription_entitlement,
     verify_apple_transaction,
+    verify_apple_transaction_id,
     verify_compact_jws_signature,
     verify_google_play_subscription,
     verify_google_pubsub_token,
@@ -793,7 +794,10 @@ class AdminSubscriptionVerifyView(APIView):
                 or request.data.get("signedTransaction")
                 or request.data.get("signedTransactionInfo")
                 or request.data.get("jws")
-                or request.data.get("transaction_id")
+                or ""
+            ).strip()
+            transaction_id = (
+                request.data.get("transaction_id")
                 or request.data.get("transactionId")
                 or ""
             ).strip()
@@ -804,14 +808,21 @@ class AdminSubscriptionVerifyView(APIView):
             ).strip()
             environment = (request.data.get("environment") or "").strip()
 
-            if not jws:
+            if not jws and not transaction_id:
                 return Response(
                     {"code": "missing_transaction", "message": "Provide purchase_token or signed_transaction."},
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
 
             try:
-                result = verify_apple_transaction(jws, environment=environment, expected_product_id=product_id)
+                if jws:
+                    result = verify_apple_transaction(jws, environment=environment, expected_product_id=product_id)
+                else:
+                    result = verify_apple_transaction_id(
+                        transaction_id,
+                        environment=environment,
+                        expected_product_id=product_id,
+                    )
                 apply_apple_transaction_to_admin(admin, result)
             except SubscriptionConfigurationError as exc:
                 logger.error("Apple subscription verification configuration error: %s", exc)

@@ -28,6 +28,7 @@ from .subscription_services import (
     apply_provider_event,
     resolve_subscription_entitlement,
     validate_apple_transaction_payload,
+    verify_apple_transaction_id,
     verify_compact_jws_signature,
 )
 
@@ -290,6 +291,49 @@ class AppleBindingAndSecurityTests(TestCase):
                 self.result(self.admin, appAccountToken=""),
             )
 
+    def test_superuser_recovery_binds_once_and_normal_retry_is_idempotent(self):
+        approver = User.objects.create_superuser("recovery", "recovery@example.com", "pass")
+        result = self.result(self.admin, appAccountToken="")
+
+        apply_apple_transaction_to_admin(
+            self.admin,
+            result,
+            recovery_approved_by=approver,
+        )
+        apply_apple_transaction_to_admin(self.admin, result)
+
+        self.assertEqual(ProviderSubscription.objects.count(), 1)
+        self.assertEqual(ProviderEvent.objects.count(), 1)
+        self.assertEqual(ProviderEvent.objects.get().event_type, "legacy_purchase_recovery")
+        with self.assertRaises(SubscriptionOwnershipError):
+            apply_apple_transaction_to_admin(
+                self.other_admin,
+                result,
+                recovery_approved_by=approver,
+            )
+
+    def test_non_superuser_cannot_approve_unbound_recovery(self):
+        approver = User.objects.create_user("support", "support@example.com", "pass", is_staff=True)
+
+        with self.assertRaises(SubscriptionOwnershipError):
+            apply_apple_transaction_to_admin(
+                self.admin,
+                self.result(self.admin, appAccountToken=""),
+                recovery_approved_by=approver,
+            )
+
+    def test_superuser_recovery_cannot_override_another_legacy_transaction_owner(self):
+        approver = User.objects.create_superuser("recovery", "recovery@example.com", "pass")
+        self.other_admin.subscription_transaction_id = "tx-apple-1"
+        self.other_admin.save(update_fields=["subscription_transaction_id"])
+
+        with self.assertRaises(SubscriptionOwnershipError):
+            apply_apple_transaction_to_admin(
+                self.admin,
+                self.result(self.admin, appAccountToken=""),
+                recovery_approved_by=approver,
+            )
+
     def test_legacy_purchase_without_token_requires_existing_same_account_binding(self):
         self.admin.subscription_original_transaction_id = "original-apple-1"
         self.admin.save(update_fields=["subscription_original_transaction_id"])
@@ -309,6 +353,39 @@ class AppleBindingAndSecurityTests(TestCase):
 
         self.assertEqual(ProviderSubscription.objects.count(), 1)
         self.assertEqual(ProviderEvent.objects.count(), 1)
+
+    @override_settings(
+        APPLE_APP_STORE_ISSUER_ID="issuer",
+        APPLE_APP_STORE_KEY_ID="key",
+        APPLE_APP_STORE_PRIVATE_KEY="private-key",
+        APPLE_APP_BUNDLE_ID="com.qrmenu.new",
+        APPLE_SUBSCRIPTION_PRODUCT_IDS="de.preismenu.monthly",
+    )
+    def test_transaction_id_recovery_uses_apple_server_and_validates_payload(self):
+        response = SimpleNamespace(
+            status_code=200,
+            json=lambda: {"signedTransactionInfo": "apple-signed-transaction"},
+            text="",
+            reason="OK",
+        )
+        payload = {
+            "transactionId": "tx-apple-1",
+            "originalTransactionId": "original-apple-1",
+            "bundleId": "com.qrmenu.new",
+            "productId": "de.preismenu.monthly",
+            "environment": "Production",
+        }
+
+        with patch("business_menu.subscription_services._apple_server_jwt", return_value="jwt"), patch(
+            "business_menu.subscription_services.requests.get", return_value=response
+        ) as apple_get, patch(
+            "business_menu.subscription_services.verify_compact_jws_signature", return_value=payload
+        ) as verify_signature:
+            result = verify_apple_transaction_id("tx-apple-1", environment="Production")
+
+        self.assertEqual(result.payload, payload)
+        self.assertIn("/inApps/v1/transactions/tx-apple-1", apple_get.call_args.args[0])
+        verify_signature.assert_called_once_with("apple-signed-transaction", require_trusted_root=True)
 
     @override_settings(
         APPLE_APP_STORE_ISSUER_ID="issuer",
