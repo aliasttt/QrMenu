@@ -21,16 +21,17 @@ class BusinessMenuLoginTests(APITestCase):
         for url in ("/api/business-menu/send-otp/", "/api/business-menu/send-otp"):
             response = self.client.post(
                 url,
-                {"number": "5350382335"},
+                {"number": "+493012345678"},
                 format="json",
             )
 
             self.assertEqual(response.status_code, 200)
             self.assertFalse(response.data["success"])
-            self.assertIn("not registered", response.data["message"])
+            self.assertIn("If this account can be verified", response.data["message"])
 
     def test_send_otp_finds_admin_by_phone_variant(self):
         admin = BusinessAdmin.objects.create(
+            auth_user=User.objects.create_user(username="otp_owner", email="owner@example.com", password="Pass12345"),
             phone="+4915901234567",
             name="QR Menu Admin",
             email="owner@example.com",
@@ -41,7 +42,7 @@ class BusinessMenuLoginTests(APITestCase):
         with patch("business_menu.views.send_otp", return_value={"success": True, "message": "sent", "status": "pending"}):
             response = self.client.post(
                 "/api/business-menu/send-otp/",
-                {"number": "015901234567"},
+                {"number": "+4915901234567"},
                 format="json",
             )
 
@@ -51,17 +52,19 @@ class BusinessMenuLoginTests(APITestCase):
 
     def test_login_accepts_legacy_number_and_opcode_payload(self):
         admin = BusinessAdmin.objects.create(
+            auth_user=User.objects.create_user(username="otp_owner", email="owner@example.com", password="Pass12345"),
             phone="+4915901234567",
             name="QR Menu Admin",
             email="owner@example.com",
             payment_status="trial",
             trial_ends_at=timezone.now() + timedelta(days=1),
         )
+        Restaurant.objects.create(admin=admin, name="Fixture Restaurant")
 
         with patch("business_menu.views.check_otp", return_value={"success": True, "approved": True}):
             response = self.client.post(
                 "/api/business-menu/login/",
-                {"number": "015901234567", "opCode": "123456"},
+                {"number": "+4915901234567", "opCode": "123456"},
                 format="json",
             )
 
@@ -75,17 +78,19 @@ class BusinessMenuLoginTests(APITestCase):
 
     def test_login_accepts_no_slash_url(self):
         admin = BusinessAdmin.objects.create(
+            auth_user=User.objects.create_user(username="otp_owner", email="owner@example.com", password="Pass12345"),
             phone="+4915901234567",
             name="QR Menu Admin",
             email="owner@example.com",
             payment_status="trial",
             trial_ends_at=timezone.now() + timedelta(days=1),
         )
+        Restaurant.objects.create(admin=admin, name="Fixture Restaurant")
 
         with patch("business_menu.views.check_otp", return_value={"success": True, "approved": True}):
             response = self.client.post(
                 "/api/business-menu/login",
-                {"number": "015901234567", "opCode": "123456"},
+                {"number": "+4915901234567", "opCode": "123456"},
                 format="json",
             )
 
@@ -96,43 +101,22 @@ class BusinessMenuLoginTests(APITestCase):
     def test_login_unknown_phone_returns_json_error_without_404(self):
         response = self.client.post(
             "/api/business-menu/login",
-            {"number": "5350382335", "opCode": "123456"},
+            {"number": "+493012345678", "opCode": "123456"},
             format="json",
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         self.assertFalse(response.data["success"])
-        self.assertIn("not registered", response.data["message"])
+        self.assertIn("Invalid", response.data["message"])
 
-    def test_email_login_uses_admin_whose_linked_user_password_matches(self):
-        email = "duplicate@example.com"
-        wrong_user = User.objects.create_user(
-            username="business_admin_491111111111",
-            email=email,
-            password="WrongPass123",
-        )
-        wrong_admin = BusinessAdmin.objects.create(
-            auth_user=wrong_user,
-            phone="+491111111111",
-            name="Wrong Admin",
-            email=email,
-            payment_status="paid",
-            subscription_ends_at=timezone.now() + timedelta(days=30),
-        )
-        right_user = User.objects.create_user(
-            username="business_admin_492222222222",
-            email=email,
-            password="RightPass123",
-        )
+    def test_email_login_uses_exactly_linked_user_and_restaurant(self):
+        email = "unique@example.com"
+        right_user = User.objects.create_user(username="business_admin_492222222222", email=email, password="RightPass123")
         right_admin = BusinessAdmin.objects.create(
-            auth_user=right_user,
-            phone="+492222222222",
-            name="Right Admin",
-            email=email,
-            payment_status="paid",
-            subscription_ends_at=timezone.now() + timedelta(days=30),
+            auth_user=right_user, phone="+492222222222", name="Right Admin", email=email,
+            payment_status="paid", subscription_ends_at=timezone.now() + timedelta(days=30),
         )
-
+        Restaurant.objects.create(admin=right_admin, name="Fixture Restaurant")
         response = self.client.post(
             "/api/business-menu/login/",
             {"email": email, "password": "RightPass123"},
@@ -142,7 +126,6 @@ class BusinessMenuLoginTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["admin"]["id"], right_admin.id)
-        self.assertNotEqual(response.data["admin"]["id"], wrong_admin.id)
         self.assertEqual(response.data["subscription"]["state"], "active")
         self.assertEqual(response.data["subscription"]["provider"], "stripe")
         self.assertTrue(response.data["subscription"]["is_entitled"])
@@ -161,6 +144,7 @@ class BusinessMenuLoginTests(APITestCase):
             email=email,
             payment_status="unpaid",
         )
+        Restaurant.objects.create(admin=admin, name="Fixture Restaurant")
 
         response = self.client.post(
             "/api/business-menu/login/",
@@ -191,6 +175,7 @@ class BusinessMenuLoginTests(APITestCase):
             payment_status="trial",
             trial_ends_at=timezone.now() + timedelta(days=1),
         )
+        Restaurant.objects.create(admin=admin, name="Fixture Restaurant")
         PasswordResetCode.objects.create(
             user=user,
             email=email,
@@ -648,6 +633,7 @@ class AdminCourierOrderTests(APITestCase):
             auth_user=other_user,
             phone="+491700000099",
             name="Other Restaurant Admin",
+            email="other-owner@example.com",
             payment_status="paid",
         )
         other_restaurant = Restaurant.objects.create(admin=other_admin, name="Other Bistro")

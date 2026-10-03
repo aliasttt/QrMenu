@@ -26,12 +26,12 @@ from .subscription_services import apply_manual_subscription
 )
 class StripeConnectFlowTests(TestCase):
     def setUp(self):
-        BusinessAdmin.objects.create(phone="+490000000001", name="Unlinked")
+        BusinessAdmin.objects.create(phone="+493012345601", name="Unlinked", email="unlinked@example.test")
         self.user = User.objects.create_user("restaurant-owner", password="pass")
         self.other_user = User.objects.create_user("other-owner", password="pass")
         self.admin = BusinessAdmin.objects.create(
             auth_user=self.user,
-            phone="+490000000002",
+            phone="+493012345602",
             name="Owner",
             email="owner@example.com",
             payment_status="unpaid",

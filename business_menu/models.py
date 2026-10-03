@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models.functions import Lower, Trim
 
 
 class BusinessAdmin(models.Model):
@@ -23,7 +24,7 @@ class BusinessAdmin(models.Model):
     )
     phone = models.CharField(max_length=32, unique=True, db_index=True, help_text="Admin phone number")
     name = models.CharField(max_length=200, help_text="Admin name")
-    email = models.EmailField(blank=True, help_text="Admin email (optional)")
+    email = models.EmailField(help_text="Unique account email")
     is_active = models.BooleanField(default=True, help_text="Active/Inactive status")
     payment_status = models.CharField(
         max_length=20,
@@ -110,17 +111,35 @@ class BusinessAdmin(models.Model):
         related_name="created_business_admins",
         help_text="Super admin user who created this admin"
     )
-    
+
     class Meta:
         verbose_name = "Business Menu Admin"
         verbose_name_plural = "Business Menu Admins"
         ordering = ['-created_at']
-    
+        constraints = [
+            models.UniqueConstraint(Lower("email"), name="uniq_businessadmin_email_ci"),
+            models.CheckConstraint(
+                condition=models.Q(email=Lower(Trim("email"))) & ~models.Q(email=""),
+                name="businessadmin_email_canonical_nonempty",
+            ),
+        ]
+
     def __str__(self) -> str:
-        email = (self.email or "").strip()
-        if email:
-            return f"{self.name} ({self.phone}) - {email}"
-        return f"{self.name} ({self.phone})"
+        return f"{self.name} | {self.email} | {self.phone} | #{self.pk or 'new'}"
+
+    def clean(self):
+        super().clean()
+        from .identity import normalize_business_email, normalize_business_phone
+
+        self.email = normalize_business_email(self.email)
+        self.phone = normalize_business_phone(self.phone)
+
+    def save(self, *args, **kwargs):
+        from .identity import normalize_business_email, normalize_business_phone
+
+        self.email = normalize_business_email(self.email)
+        self.phone = normalize_business_phone(self.phone)
+        return super().save(*args, **kwargs)
 
 
 class ProviderSubscription(models.Model):

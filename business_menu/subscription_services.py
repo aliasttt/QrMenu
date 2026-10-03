@@ -529,7 +529,7 @@ def resolve_subscription_entitlement(admin, *, now=None) -> dict[str, Any]:
         "manage_url": None,
         "message": "",
         "providers": provider_rows,
-        "entitlement_source": "provider" if trusted else "legacy",
+        "entitlement_source": "provider" if trusted else "none",
         "trial_source": None,
         "app_account_token": str(admin.subscription_account_token),
         "decision_reason": "no_valid_subscription",

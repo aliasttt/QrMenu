@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from django.contrib.auth.models import User
 
 
@@ -19,34 +17,15 @@ def normalize_email(email: str | None) -> str:
 
 
 def get_or_create_user_for_business_admin(*, admin_phone: str, admin_name: str = "", admin_email: str = "") -> User:
-    """
-    Resolve the Django auth user for a given BusinessAdmin in a way that is stable even when:
-    - An older user exists with a suffixed username (business_admin_..._1)
-    - Email casing/whitespace differs
-
-    This prevents OTP email verification codes being created for one user and checked against another.
-    """
+    """Create a new auth user; only an explicit BusinessAdmin relation can reuse one."""
     base_username = business_admin_base_username(admin_phone)
     normalized_email = normalize_email(admin_email)
 
-    # 1) Prefer exact deterministic username (most stable)
-    user = User.objects.filter(username=base_username).first()
-    if user:
-        return user
+    from .models import BusinessAdmin
+    linked_admin = BusinessAdmin.objects.filter(phone=admin_phone, auth_user__isnull=False).select_related("auth_user").first()
+    if linked_admin:
+        return linked_admin.auth_user
 
-    # 2) Fall back: try to find an existing suffixed user created earlier
-    candidates = User.objects.filter(username__startswith=base_username).order_by("id")
-
-    if normalized_email:
-        by_email = candidates.filter(email__iexact=normalized_email)
-        if by_email.count() == 1:
-            return by_email.first()
-
-    # If only one candidate exists, use it.
-    if candidates.count() == 1:
-        return candidates.first()
-
-    # 3) Create a new unique username (base or base_1...)
     username = base_username
     if User.objects.filter(username=username).exists():
         counter = 1
@@ -60,6 +39,8 @@ def get_or_create_user_for_business_admin(*, admin_phone: str, admin_name: str =
         first_name=admin_name or "",
         is_active=True,
     )
+    user.set_unusable_password()
+    user.save(update_fields=["password"])
     return user
 
 

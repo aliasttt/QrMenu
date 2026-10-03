@@ -72,7 +72,6 @@ from accounts.email_safety import (
 )
 from django.contrib.auth.models import User
 from .auth_utils import (
-    get_or_create_user_for_business_admin,
     sync_user_from_business_admin,
     normalize_email as normalize_email_lower,
 )
@@ -98,7 +97,7 @@ from .models import (
     Payment,
     Reservation,
 )
-from accounts.models import PasswordResetCode
+from accounts.models import PasswordResetCode, Profile
 from .serializers import (
     BusinessAdminSerializer, BusinessAdminUpdateSerializer, BusinessMenuResetPasswordSerializer,
     BusinessMenuChangePasswordSerializer, BusinessMenuSubscriptionSerializer,
@@ -221,83 +220,10 @@ def _business_admin_phone_from_username(username: str) -> str | None:
 
 
 def _get_business_admin_for_user(user, request=None) -> BusinessAdmin | None:
-    """
-    Robust mapping from authenticated Django User -> BusinessAdmin.
-    Primary: direct DB relation (BusinessAdmin.auth_user).
-    Secondary: X-Business-Id header if request context is provided.
-    Fallback: profile phone, legacy username prefix business_admin_{digits}(_suffix), or email.
-    """
+    """Resolve only through the persisted User → BusinessAdmin relationship."""
     if not user or not getattr(user, "is_authenticated", False):
         return None
-
-    # 1. Direct DB lookup via auth_user
-    try:
-        admin = BusinessAdmin.objects.filter(auth_user=user, is_active=True).first()
-        if admin:
-            return admin
-    except Exception:
-        pass
-
-    # 2. Check X-Business-Id / business_id header or query param if request provided
-    if request is not None:
-        try:
-            business_id_raw = (
-                request.headers.get("X-Business-Id")
-                or request.META.get("HTTP_X_BUSINESS_ID")
-                or (getattr(request, "query_params", {}).get("business_id") if hasattr(request, "query_params") else None)
-            )
-            if business_id_raw:
-                try:
-                    bid = int(str(business_id_raw).strip())
-                    # Check Restaurant with this id
-                    rest = Restaurant.objects.filter(id=bid, is_active=True).select_related("admin").first()
-                    if rest and rest.admin and rest.admin.is_active:
-                        if rest.admin.auth_user == user or user.is_staff or user.is_superuser:
-                            return rest.admin
-                        if not rest.admin.auth_user:
-                            return rest.admin
-                    # Check BusinessAdmin directly with this id
-                    ba = BusinessAdmin.objects.filter(id=bid, is_active=True).first()
-                    if ba:
-                        if ba.auth_user == user or user.is_staff or user.is_superuser:
-                            return ba
-                        if not ba.auth_user:
-                            return ba
-                except (ValueError, TypeError):
-                    pass
-        except Exception:
-            pass
-
-    # 3. Lookup via user.profile.phone
-    try:
-        profile = getattr(user, "profile", None)
-        if profile and getattr(profile, "phone", None):
-            admin = BusinessAdmin.objects.filter(phone=profile.phone, is_active=True).first()
-            if admin:
-                return admin
-    except Exception:
-        pass
-
-    # 4. Lookup via legacy username prefix
-    try:
-        phone = _business_admin_phone_from_username(getattr(user, "username", "") or "")
-        if phone:
-            admin = BusinessAdmin.objects.filter(phone=phone, is_active=True).first()
-            if admin:
-                return admin
-    except Exception:
-        pass
-
-    # 5. Lookup via email
-    if getattr(user, "email", None):
-        try:
-            admin = BusinessAdmin.objects.filter(email=user.email, is_active=True).first()
-            if admin:
-                return admin
-        except Exception:
-            pass
-
-    return None
+    return BusinessAdmin.objects.filter(auth_user=user, is_active=True).first()
 
 
 def _get_owned_restaurant(user, restaurant_id: int) -> Restaurant | None:
@@ -448,19 +374,20 @@ class SendOTPView(APIView):
         
         # فرمت کردن شماره تلفن
         try:
-            formatted_phone = format_phone_number(phone)
-        except Exception as e:
+            from .identity import normalize_business_phone
+            formatted_phone = normalize_business_phone(phone)
+        except Exception:
             return Response({
                 "success": False,
-                "message": f"Invalid phone number format: {str(e)}"
+                "code": "invalid_phone",
+                "message": "Enter a valid international phone number with its country code."
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Only admins registered manually by superuser can receive OTP.
         # Accept legacy/common phone formats too, so app input and DB rows do not need
         # to be byte-for-byte identical.
-        variants = phone_variants_for_lookup(phone) | phone_variants_for_lookup(formatted_phone)
         try:
-            admin = BusinessAdmin.objects.filter(phone__in=variants, is_active=True).order_by("-id").first()
+            admin = BusinessAdmin.objects.filter(phone=formatted_phone, is_active=True).select_related("auth_user").first()
         except Exception as e:
             logger.error(f"Error checking admin for phone {formatted_phone}: {str(e)}", exc_info=True)
             return Response({
@@ -468,10 +395,10 @@ class SendOTPView(APIView):
                 "message": f"Error checking admin: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if not admin:
+        if not admin or not admin.auth_user_id or not admin.auth_user.is_active:
             return Response({
                 "success": False,
-                "message": "This phone number is not registered as an admin. Please contact the system administrator."
+                "message": "If this account can be verified, a code will be sent."
             }, status=status.HTTP_200_OK)
         
         # ارسال OTP به شماره تلفن از طریق Twilio SMS
@@ -487,23 +414,7 @@ class SendOTPView(APIView):
         email_result = None
         target_email = None
         
-        # Resolve stable auth user for this admin.
-        # Prefer the linked auth user to avoid creating duplicates.
-        user = admin.auth_user or get_or_create_user_for_business_admin(
-            admin_phone=admin.phone,
-            admin_name=admin.name,
-            admin_email=admin.email,
-        )
-        sync_user_from_business_admin(
-            user=user,
-            admin_phone=admin.phone,
-            admin_name=admin.name,
-            admin_email=admin.email,
-        )
-        # Keep the relation stable for future requests (do not rely on username mapping)
-        if admin.auth_user_id != user.id:
-            admin.auth_user = user
-            admin.save(update_fields=["auth_user"])
+        user = admin.auth_user
 
         admin_email = normalize_email_lower(admin.email)
         if admin_email:
@@ -577,21 +488,7 @@ class LoginView(APIView):
         )
 
     def _resolve_user_for_admin(self, admin):
-        user = admin.auth_user or get_or_create_user_for_business_admin(
-            admin_phone=admin.phone,
-            admin_name=admin.name,
-            admin_email=admin.email,
-        )
-        sync_user_from_business_admin(
-            user=user,
-            admin_phone=admin.phone,
-            admin_name=admin.name,
-            admin_email=admin.email,
-        )
-        if admin.auth_user_id != user.id:
-            admin.auth_user = user
-            admin.save(update_fields=["auth_user"])
-        return user
+        return admin.auth_user if admin.auth_user_id and admin.auth_user.is_active else None
 
     def _payment_required_response(self, admin):
         if resolve_subscription_entitlement(admin)["is_entitled"]:
@@ -605,11 +502,14 @@ class LoginView(APIView):
         }, status=status.HTTP_403_FORBIDDEN)
 
     def _login_response(self, request, admin, user, message="Login successful"):
-        refresh = RefreshToken.for_user(user)
         try:
-            restaurant = admin.restaurant if hasattr(admin, 'restaurant') and admin.restaurant.is_active else None
+            restaurant = admin.restaurant
         except Restaurant.DoesNotExist:
-            restaurant = None
+            return Response({"success": False, "code": "restaurant_not_assigned", "message": "No restaurant is assigned to this account."}, status=status.HTTP_403_FORBIDDEN)
+        if not restaurant.is_active:
+            return Response({"success": False, "code": "restaurant_inactive", "message": "This restaurant is inactive. Contact support."}, status=status.HTTP_403_FORBIDDEN)
+
+        refresh = RefreshToken.for_user(user)
 
         response_data = {
             "success": True,
@@ -633,25 +533,24 @@ class LoginView(APIView):
             "subscription": BusinessMenuSubscriptionSerializer(admin).data,
         }
 
-        if restaurant:
-            logo_url = ""
-            if getattr(restaurant, "logo", None):
-                try:
-                    logo_url = request.build_absolute_uri(restaurant.logo.url)
-                except Exception:
-                    logo_url = ""
-            response_data["restaurant"] = {
-                "id": restaurant.id,
-                "name": restaurant.name,
-                "phone": restaurant.phone or admin.phone,
-                "logo": logo_url,
-            }
+        logo_url = ""
+        if getattr(restaurant, "logo", None):
+            try:
+                logo_url = request.build_absolute_uri(restaurant.logo.url)
+            except Exception:
+                logo_url = ""
+        response_data["restaurant"] = {
+            "id": restaurant.id,
+            "name": restaurant.name,
+            "phone": restaurant.phone or admin.phone,
+            "logo": logo_url,
+        }
 
         return Response(response_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data if hasattr(request, "data") else {}
-        email = (data.get("email") or "").strip()
+        email = (data.get("email") or "").strip().lower()
         password = data.get("password") or ""
 
         if email or password:
@@ -661,41 +560,18 @@ class LoginView(APIView):
                     "message": "Email and password are required."
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            admin = None
-            auth_user = None
-            admin_candidates = list(BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id"))
-
-            for candidate in admin_candidates:
-                candidate_user = self._resolve_user_for_admin(candidate)
-                authenticated = authenticate(request, username=candidate_user.username, password=password)
-                if authenticated is not None:
-                    admin = candidate
-                    auth_user = authenticated
-                    break
-
-            if not admin_candidates:
-                user_by_email = User.objects.filter(email__iexact=email).first()
-                if user_by_email:
-                    try:
-                        admin = user_by_email.business_menu_admin
-                    except BusinessAdmin.DoesNotExist:
-                        admin = None
-            if not admin:
+            candidates = BusinessAdmin.objects.filter(email__iexact=email).select_related("auth_user")
+            if candidates.count() != 1:
                 return Response({
                     "success": False,
                     "message": "Invalid email or password."
                 }, status=status.HTTP_400_BAD_REQUEST)
-
-            if auth_user is None:
-                user = self._resolve_user_for_admin(admin)
-                auth_user = authenticate(request, username=user.username, password=password)
-                if auth_user is None:
-                    return Response({
-                        "success": False,
-                        "message": "Invalid email or password."
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
-            return self._login_response(request, admin, auth_user)
+            admin = candidates.get()
+            user = self._resolve_user_for_admin(admin)
+            authenticated = authenticate(request, username=user.username, password=password) if user else None
+            if not authenticated:
+                return Response({"success": False, "message": "Invalid email or password."}, status=status.HTTP_400_BAD_REQUEST)
+            return self._login_response(request, admin, authenticated)
 
         serializer = LoginSerializer(data=data)
         if not serializer.is_valid():
@@ -708,20 +584,22 @@ class LoginView(APIView):
         code = serializer.validated_data["code"]
 
         try:
-            formatted_phone = format_phone_number(phone)
-        except Exception as e:
+            from .identity import normalize_business_phone
+            formatted_phone = normalize_business_phone(phone)
+        except Exception:
             return Response({
                 "success": False,
-                "message": f"Invalid phone number format: {str(e)}"
+                "code": "invalid_phone",
+                "message": "Enter a valid international phone number with its country code."
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        variants = phone_variants_for_lookup(phone) | phone_variants_for_lookup(formatted_phone)
-        admin = BusinessAdmin.objects.filter(phone__in=variants, is_active=True).order_by("-id").first()
-        if not admin:
+        admin = BusinessAdmin.objects.filter(phone=formatted_phone, is_active=True).select_related("auth_user").first()
+        user = self._resolve_user_for_admin(admin) if admin else None
+        if not admin or not user:
             return Response({
                 "success": False,
-                "message": "This phone number is not registered as an admin. Please contact the system administrator."
-            }, status=status.HTTP_200_OK)
+                "message": "Invalid phone number or verification code."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         otp_result = check_otp(formatted_phone, code)
         if not (otp_result.get("success") and otp_result.get("approved")):
@@ -732,7 +610,6 @@ class LoginView(APIView):
                 "error_code": otp_result.get("error_code"),
             }, status=status.HTTP_200_OK)
 
-        user = self._resolve_user_for_admin(admin)
         return self._login_response(request, admin, user, message="OTP verified successfully")
 
 
@@ -1285,20 +1162,14 @@ class ForgotPasswordView(APIView):
         if not acquire_email_cooldown("business_password_reset", email):
             return Response({"detail": "Please wait before requesting another reset code."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
-        admins = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id")
-        if not admins.exists():
-            return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
-        if admins.count() > 1:
+        admins = BusinessAdmin.objects.filter(email__iexact=email).select_related("auth_user").order_by("id")
+        if admins.count() != 1:
             return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
 
         admin = admins.first()
-        user = admin.auth_user or User.objects.filter(email__iexact=email).first()
-        if not user:
+        user = admin.auth_user if admin.auth_user_id else None
+        if not admin.is_active or not user or not user.is_active:
             return Response(EMAIL_GENERIC_RESPONSE, status=status.HTTP_200_OK)
-
-        if admin.auth_user_id != user.id:
-            admin.auth_user = user
-            admin.save(update_fields=["auth_user"])
 
         code = "".join([str(random.randint(0, 9)) for _ in range(6)])
         expires_at = timezone.now() + timedelta(minutes=10)
@@ -1332,18 +1203,30 @@ class VerifyResetCodeView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = (request.data.get("email") or "").strip().lower()
+        from .identity import normalize_business_email
+        try:
+            email = normalize_business_email(request.data.get("email"))
+        except DjangoValidationError:
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
         code = (request.data.get("code") or "").strip()
         if not email or not code:
-            return Response({"detail": "email and code are required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
+
+        admins = BusinessAdmin.objects.filter(email__iexact=email).select_related("auth_user")
+        if admins.count() != 1:
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
+        admin = admins.first()
+        if not admin.is_active or not admin.auth_user_id or not admin.auth_user.is_active:
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
 
         reset = PasswordResetCode.objects.filter(
+            user=admin.auth_user,
             email__iexact=email,
             code=code,
             is_used=False,
         ).order_by("-created_at").first()
         if not reset:
-            return Response({"detail": "invalid code"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
         if reset.is_expired():
             return Response({"detail": "code expired"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1364,24 +1247,19 @@ class ResetPasswordView(APIView):
         if not ser.is_valid():
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        email = ser.validated_data["email"].strip().lower()
+        email = ser.validated_data["email"]
         code = ser.validated_data["code"].strip()
         new_password = ser.validated_data["password"]
 
-        admins = BusinessAdmin.objects.filter(email__iexact=email, is_active=True).order_by("id")
-        if not admins.exists():
-            return Response(
-                {"detail": "No active business admin found with this email."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        if admins.count() > 1:
-            return Response(
-                {"detail": "Duplicate admin email found. Email must be unique for password reset."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        admins = BusinessAdmin.objects.filter(email__iexact=email).select_related("auth_user").order_by("id")
+        if admins.count() != 1:
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
         admin = admins.first()
+        if not admin.is_active or not admin.auth_user_id or not admin.auth_user.is_active:
+            return Response({"detail": "invalid code or email"}, status=status.HTTP_400_BAD_REQUEST)
 
         reset = PasswordResetCode.objects.filter(
+            user=admin.auth_user,
             email__iexact=email,
             code=code,
             is_used=False,
@@ -1391,9 +1269,7 @@ class ResetPasswordView(APIView):
         if reset.is_expired():
             return Response({"detail": "code expired"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = admin.auth_user or reset.user
-        if not user:
-            return Response({"detail": "Account is not linked to an auth user."}, status=status.HTTP_400_BAD_REQUEST)
+        user = admin.auth_user
 
         try:
             validate_password(new_password, user=user)
@@ -1401,13 +1277,10 @@ class ResetPasswordView(APIView):
             return Response({"detail": e.messages}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user.set_password(new_password)
-            user.save(update_fields=["password"])
-            if admin.auth_user_id != user.id:
-                admin.auth_user = user
-                admin.save(update_fields=["auth_user"])
-
-            PasswordResetCode.objects.filter(email__iexact=email, is_used=False).update(is_used=True)
+            with transaction.atomic():
+                user.set_password(new_password)
+                user.save(update_fields=["password"])
+                PasswordResetCode.objects.filter(user=user, is_used=False).update(is_used=True)
         except Exception as exc:
             logger.exception("reset-password: failed to save user password: %s", exc)
             return Response(
@@ -1415,48 +1288,7 @@ class ResetPasswordView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        try:
-            refresh = RefreshToken.for_user(user)
-        except Exception as exc:
-            logger.exception("reset-password: JWT issue for user_id=%s: %s", getattr(user, "id", None), exc)
-            return Response(
-                {"detail": "Password was updated but could not issue a session token. Please log in manually."},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
-
-        restaurant = None
-        try:
-            r = admin.restaurant
-            if r.is_active:
-                restaurant = r
-        except Restaurant.DoesNotExist:
-            restaurant = None
-
-        response_data = {
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-            "user": {
-                "id": admin.id,
-                "email": admin.email or "",
-                "phone": admin.phone or "",
-            },
-            "subscription": BusinessMenuSubscriptionSerializer(admin).data,
-        }
-        if restaurant:
-            logo_url = ""
-            if getattr(restaurant, "logo", None):
-                try:
-                    logo_url = request.build_absolute_uri(restaurant.logo.url)
-                except Exception:
-                    logo_url = ""
-            response_data["restaurant"] = {
-                "id": restaurant.id,
-                "name": restaurant.name,
-                "phone": restaurant.phone or admin.phone,
-                "logo": logo_url,
-            }
-
-        return Response(response_data, status=status.HTTP_200_OK)
+        return LoginView()._login_response(request, admin, user, message="Password reset successful")
 
 
 class RestaurantListCreateView(APIView):
@@ -1632,24 +1464,6 @@ class UpdateProfileView(APIView):
                 "message": "Business admin account not found. Please contact support or verify your account."
             }, status=status.HTTP_404_NOT_FOUND)
         
-        # Prefer the linked user; if missing, link the current authenticated user.
-        # This prevents 404s after phone changes where username-based mapping breaks.
-        stable_user = admin.auth_user or request.user
-        sync_user_from_business_admin(
-            user=stable_user,
-            admin_phone=admin.phone,
-            admin_name=admin.name,
-            admin_email=admin.email,
-        )
-        if admin.auth_user_id != stable_user.id:
-            admin.auth_user = stable_user
-            admin.save(update_fields=["auth_user"])
-
-        # If BusinessAdmin email empty but auth user has one, sync it for UI consistency.
-        if (not (admin.email or "").strip()) and (stable_user.email or "").strip():
-            admin.email = (stable_user.email or "").strip()
-            admin.save(update_fields=["email"])
-
         # برگرداندن اطلاعات کامل با BusinessAdminSerializer
         serializer = BusinessAdminSerializer(admin)
         return Response({
@@ -1676,8 +1490,12 @@ class UpdateProfileView(APIView):
                 return value[0] if value else None
             return value
 
-        email_raw = _first(merged.get("email") or merged.get("Email") or merged.get("contact_email") or merged.get("contactEmail"))
-        phone_raw = _first(merged.get("phone") or merged.get("phoneNumber") or merged.get("phone_number") or merged.get("mobile"))
+        email_keys = ("email", "Email", "contact_email", "contactEmail")
+        phone_keys = ("phone", "phoneNumber", "phone_number", "mobile")
+        email_present = any(key in merged for key in email_keys)
+        phone_present = any(key in merged for key in phone_keys)
+        email_raw = _first(next((merged[key] for key in email_keys if key in merged), None))
+        phone_raw = _first(next((merged[key] for key in phone_keys if key in merged), None))
 
         # First, try to find the current admin
         admin = self._get_admin_from_user(request.user)
@@ -1715,34 +1533,11 @@ class UpdateProfileView(APIView):
                 "message": "Business admin account not found. Please contact support or verify your account."
             }, status=status.HTTP_404_NOT_FOUND)
 
-        # Check if phone number is provided and already registered to another admin
-        if phone_raw is not None:
-            phone_value = str(phone_raw).strip()
-            if phone_value:
-                try:
-                    # Format phone number
-                    formatted_phone = format_phone_number(phone_value)
-                    # Check if this phone number is already registered to another admin
-                    existing_admin = BusinessAdmin.objects.filter(phone=formatted_phone, is_active=True).first()
-                    if existing_admin and existing_admin.id != admin.id:
-                        return Response({
-                            "success": False,
-                            "message": "Phone number already registered. Please use a different phone number."
-                        }, status=status.HTTP_400_BAD_REQUEST)
-                except Exception as e:
-                    # If phone formatting fails, continue - validation will catch it later
-                    pass
-
         data = {}
-        if email_raw is not None:
-            email_value = str(email_raw).strip()
-            # Protect existing email from being cleared accidentally
-            if email_value:
-                data["email"] = email_value
-        if phone_raw is not None:
-            phone_value = str(phone_raw).strip()
-            if phone_value:
-                data["phone"] = phone_value
+        if email_present:
+            data["email"] = str(email_raw).strip() if email_raw is not None else None
+        if phone_present:
+            data["phone"] = str(phone_raw).strip() if phone_raw is not None else None
 
         # If client sent nothing useful, return current profile (avoid false "success" with no effect)
         if not data:
@@ -1754,7 +1549,6 @@ class UpdateProfileView(APIView):
         if serializer.is_valid():
             try:
                 with transaction.atomic():
-                    old_phone = admin.phone
                     updated_admin = serializer.save()
                     updated_admin.refresh_from_db()
 
@@ -1767,9 +1561,10 @@ class UpdateProfileView(APIView):
                         admin_name=updated_admin.name,
                         admin_email=updated_admin.email,
                     )
-                    if updated_admin.auth_user_id != auth_user.id:
-                        updated_admin.auth_user = auth_user
-                        updated_admin.save(update_fields=["auth_user"])
+                    Profile.objects.update_or_create(
+                        user=auth_user,
+                        defaults={"role": Profile.Role.ADMIN, "phone": updated_admin.phone, "is_active": updated_admin.is_active},
+                    )
 
             except IntegrityError as e:
                 # Handle duplicate phone/username gracefully (avoid opaque 500 in app)
@@ -1801,11 +1596,7 @@ class UpdateProfileView(APIView):
                 "admin": response_serializer.data
             }, status=status.HTTP_200_OK)
         
-        # Log validation issues to help diagnose mobile payload differences
-        try:
-            logger.warning("UpdateProfileView validation failed: %s payload=%s", serializer.errors, dict(request.data))
-        except Exception:
-            logger.warning("UpdateProfileView validation failed: %s", serializer.errors)
+        logger.warning("UpdateProfileView validation failed for user_id=%s: %s", request.user.id, serializer.errors)
         
         # Convert serializer errors to user-friendly messages
         error_messages = []
@@ -1866,7 +1657,7 @@ class ChangePasswordView(APIView):
         current = ser.validated_data["current_password"]
         new_password = ser.validated_data["new_password"]
 
-        user = admin.auth_user or request.user
+        user = admin.auth_user
         if not user.check_password(current):
             return Response(
                 {"success": False, "message": "Current password is incorrect."},
@@ -1891,9 +1682,6 @@ class ChangePasswordView(APIView):
         try:
             user.set_password(new_password)
             user.save(update_fields=["password"])
-            if admin.auth_user_id != user.id:
-                admin.auth_user = user
-                admin.save(update_fields=["auth_user"])
         except Exception as exc:
             logger.exception("change-password: failed for user_id=%s: %s", getattr(user, "id", None), exc)
             return Response(
@@ -4481,6 +4269,17 @@ def _get_admin_restaurant_or_response(request):
         )
 
 
+def _get_owned_restaurant_or_response(request, restaurant_id=None):
+    restaurant, error = _get_admin_restaurant_or_response(request)
+    if error:
+        return None, error
+    if not restaurant.is_active:
+        return None, Response({"detail": "Restaurant is inactive."}, status=status.HTTP_403_FORBIDDEN)
+    if restaurant_id is not None and str(restaurant_id) != str(restaurant.pk):
+        return None, Response({"detail": "Restaurant not found."}, status=status.HTTP_404_NOT_FOUND)
+    return restaurant, None
+
+
 def _serialize_admin_courier(courier):
     return {
         "id": courier.id,
@@ -5619,6 +5418,9 @@ class CategoryListCreateView(APIView):
     POST /api/business-menu/categories/ - ایجاد دسته‌بندی جدید
     """
     permission_classes = [permissions.AllowAny]
+
+    def get_permissions(self):
+        return [permissions.AllowAny()] if self.request.method == "GET" else [permissions.IsAuthenticated()]
     
     def get(self, request):
         """لیست دسته‌بندی‌های منو"""
@@ -5649,45 +5451,9 @@ class CategoryListCreateView(APIView):
         
         # اگر restaurant در data نیست، از query parameter بگیر
         restaurant_id = data.get('restaurant') or data.get('restaurant_id') or request.query_params.get('restaurant_id')
-        phone = data.get('phone') or request.query_params.get('phone')  # شماره تلفن ادمین
-        
-        restaurant = None
-        
-        # اگر restaurant_id داده شده، از آن استفاده کن
-        if restaurant_id:
-            try:
-                restaurant = Restaurant.objects.get(id=restaurant_id, is_active=True)
-            except Restaurant.DoesNotExist:
-                pass
-        
-        # اگر رستوران پیدا نشد و phone داده شده، از phone ادمین را پیدا کن و رستوران ایجاد کن
-        if not restaurant and phone:
-            try:
-                formatted_phone = format_phone_number(phone)
-                admin, _ = BusinessAdmin.objects.get_or_create(
-                    phone=formatted_phone,
-                    defaults={
-                        'name': f'Admin {formatted_phone}',
-                        'is_active': True
-                    }
-                )
-                # اولین رستوران فعال ادمین را بگیر یا ایجاد کن
-                restaurant, _ = Restaurant.objects.get_or_create(
-                    admin=admin,
-                    is_active=True,
-                    defaults={
-                        'name': f'Restaurant {admin.name}',
-                        'description': 'Default restaurant'
-                    }
-                )
-            except Exception as e:
-                pass
-        
-        # اگر هنوز رستوران پیدا نشد، خطا بده
-        if not restaurant:
-            return Response({
-                "error": "Restaurant not found. Please provide restaurant or phone."
-            }, status=status.HTTP_400_BAD_REQUEST)
+        restaurant, error = _get_owned_restaurant_or_response(request, restaurant_id)
+        if error:
+            return error
         
         data['restaurant'] = restaurant.id
         
@@ -5709,23 +5475,25 @@ class CategoryDetailView(APIView):
     PATCH /api/business-menu/categories/{id}/ - به‌روزرسانی دسته‌بندی
     DELETE /api/business-menu/categories/{id}/ - حذف دسته‌بندی
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
-    def get_object(self, pk, include_inactive=False):
+    def get_object(self, pk, request, include_inactive=False):
         """دریافت category"""
         try:
             if include_inactive:
                 # برای DELETE، همه category ها را شامل می‌شود
-                return Category.objects.get(pk=pk)
+                category = Category.objects.get(pk=pk)
             else:
                 # برای PATCH، فقط active category ها
-                return Category.objects.get(pk=pk, is_active=True)
+                category = Category.objects.get(pk=pk, is_active=True)
         except Category.DoesNotExist:
             return None
+        _, error = _get_owned_restaurant_or_response(request, category.restaurant_id)
+        return None if error else category
     
     def patch(self, request, pk):
         """به‌روزرسانی دسته‌بندی"""
-        category = self.get_object(pk, include_inactive=False)
+        category = self.get_object(pk, request, include_inactive=False)
         
         if not category:
             return Response({
@@ -5745,13 +5513,9 @@ class CategoryDetailView(APIView):
     
     def delete(self, request, pk):
         """حذف دسته‌بندی"""
-        # برای DELETE، باید category را حتی اگر is_active=False باشد پیدا کنیم
-        try:
-            category = Category.objects.get(pk=pk)
-        except Category.DoesNotExist:
-            return Response({
-                "error": "Category not found"
-            }, status=status.HTTP_404_NOT_FOUND)
+        category = self.get_object(pk, request, include_inactive=True)
+        if not category:
+            return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
         
         # Hard delete: حذف کامل از دیتابیس
         category.delete()
@@ -5769,6 +5533,9 @@ class MenuSetListCreateView(APIView):
     POST /api/business-menu/menu-sets/ - ایجاد مجموعه جدید
     """
     permission_classes = [permissions.AllowAny]
+
+    def get_permissions(self):
+        return [permissions.AllowAny()] if self.request.method == "GET" else [permissions.IsAuthenticated()]
     
     def get(self, request):
         """لیست مجموعه‌های منو"""
@@ -5806,14 +5573,9 @@ class MenuSetListCreateView(APIView):
                 "message": "restaurant or restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # بررسی وجود رستوران
-        try:
-            restaurant = Restaurant.objects.get(id=restaurant_id, is_active=True)
-        except Restaurant.DoesNotExist:
-            return Response({
-                "success": False,
-                "message": "Restaurant not found"
-            }, status=status.HTTP_404_NOT_FOUND)
+        restaurant, error = _get_owned_restaurant_or_response(request, restaurant_id)
+        if error:
+            return error
         
         data['restaurant'] = restaurant.id
         
@@ -5835,18 +5597,20 @@ class MenuSetDetailView(APIView):
     PATCH /api/business-menu/menu-sets/{id}/ - به‌روزرسانی مجموعه منو
     DELETE /api/business-menu/menu-sets/{id}/ - حذف مجموعه منو
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
-    def get_object(self, pk):
+    def get_object(self, pk, request):
         """دریافت menu set"""
         try:
-            return MenuSet.objects.get(pk=pk, is_active=True)
+            menu_set = MenuSet.objects.get(pk=pk, is_active=True)
         except MenuSet.DoesNotExist:
             return None
+        _, error = _get_owned_restaurant_or_response(request, menu_set.restaurant_id)
+        return None if error else menu_set
     
     def patch(self, request, pk):
         """به‌روزرسانی مجموعه منو"""
-        menu_set = self.get_object(pk)
+        menu_set = self.get_object(pk, request)
         
         if not menu_set:
             return Response({
@@ -5866,7 +5630,7 @@ class MenuSetDetailView(APIView):
     
     def delete(self, request, pk):
         """حذف مجموعه منو"""
-        menu_set = self.get_object(pk)
+        menu_set = self.get_object(pk, request)
         
         if not menu_set:
             return Response({
@@ -5890,6 +5654,9 @@ class PackageListCreateView(APIView):
     POST /api/business-menu/packages/ - ایجاد پکیج جدید
     """
     permission_classes = [permissions.AllowAny]
+
+    def get_permissions(self):
+        return [permissions.AllowAny()] if self.request.method == "GET" else [permissions.IsAuthenticated()]
     
     def get(self, request):
         """لیست پکیج‌ها"""
@@ -5932,7 +5699,10 @@ class PackageListCreateView(APIView):
                 "message": "restaurant or restaurant_id is required"
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        data['restaurant'] = restaurant_id
+        restaurant, error = _get_owned_restaurant_or_response(request, restaurant_id)
+        if error:
+            return error
+        data['restaurant'] = restaurant.id
 
         # Normalize items for multipart/form-data (often arrives as a JSON string)
         if 'items' in data or (hasattr(raw, "keys") and 'items' in raw):
@@ -5970,19 +5740,21 @@ class PackageDetailView(APIView):
     PATCH /api/business-menu/packages/{id}/ - به‌روزرسانی پکیج
     DELETE /api/business-menu/packages/{id}/ - حذف پکیج
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
-    def get_object(self, pk):
+    def get_object(self, pk, request):
         """دریافت پکیج"""
         try:
-            return Package.objects.get(pk=pk, is_active=True)
+            package = Package.objects.get(pk=pk, is_active=True)
         except Package.DoesNotExist:
             return None
+        _, error = _get_owned_restaurant_or_response(request, package.restaurant_id)
+        return None if error else package
     
     @transaction.atomic
     def patch(self, request, pk):
         """به‌روزرسانی پکیج"""
-        package = self.get_object(pk)
+        package = self.get_object(pk, request)
         
         if not package:
             return Response({
@@ -6060,7 +5832,7 @@ class PackageDetailView(APIView):
     
     def delete(self, request, pk):
         """حذف پکیج (Soft Delete)"""
-        package = self.get_object(pk)
+        package = self.get_object(pk, request)
         
         if not package:
             return Response({
@@ -6126,6 +5898,11 @@ def _create_account_from_signup_data(validated_data, client_ip: str):
     )
     user.set_password(validated_data["password"])
     user.save()
+    from accounts.models import Profile
+    Profile.objects.update_or_create(
+        user=user,
+        defaults={"role": Profile.Role.ADMIN, "phone": validated_data["phone"], "is_active": True},
+    )
     admin.auth_user = user
     admin.save(update_fields=["auth_user"])
     restaurant = Restaurant.objects.create(

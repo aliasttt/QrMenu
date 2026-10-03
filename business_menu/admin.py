@@ -77,6 +77,34 @@ class BusinessAdminForm(forms.ModelForm):
             # For new admins, password is required
             self.fields['password'].required = True
             self.fields['password_confirm'].required = True
+
+    def clean_email(self):
+        from .identity import normalize_business_email
+        from django.core.exceptions import ValidationError
+        try:
+            email = normalize_business_email(self.cleaned_data.get("email"))
+        except ValidationError as exc:
+            raise forms.ValidationError(exc.messages) from exc
+        existing = BusinessAdmin.objects.filter(email__iexact=email)
+        if self.instance.pk:
+            existing = existing.exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise forms.ValidationError("A restaurant owner with this email already exists.")
+        return email
+
+    def clean_phone(self):
+        from .identity import normalize_business_phone
+        from django.core.exceptions import ValidationError
+        try:
+            phone = normalize_business_phone(self.cleaned_data.get("phone"))
+        except ValidationError as exc:
+            raise forms.ValidationError(exc.messages) from exc
+        existing = BusinessAdmin.objects.filter(phone=phone)
+        if self.instance.pk:
+            existing = existing.exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise forms.ValidationError("A restaurant owner with this phone number already exists.")
+        return phone
     
     def clean(self):
         cleaned_data = super().clean()
@@ -90,17 +118,20 @@ class BusinessAdminForm(forms.ModelForm):
             if password != password_confirm:
                 raise ValidationError({'password_confirm': 'Passwords do not match.'})
         else:
+            if not self.instance.auth_user_id:
+                raise ValidationError("This existing account has no verified auth-user link. Resolve its ownership before editing it.")
             # For existing admins, if password is provided, it must match confirmation
             if password and password != password_confirm:
                 raise ValidationError({'password_confirm': 'Passwords do not match.'})
         
         return cleaned_data
     
+    @transaction.atomic
     def save(self, commit=True):
         admin_obj = super().save(commit=False)
         
         # Create or update User
-        if not admin_obj.auth_user_id:
+        if not admin_obj.pk:
             # Create new user
             username = admin_obj.phone.replace('+', '').replace('-', '').replace(' ', '')
             username = f"business_menu_admin_{username}"
@@ -113,7 +144,7 @@ class BusinessAdminForm(forms.ModelForm):
             
             user = User.objects.create_user(
                 username=username,
-                email=admin_obj.email or f"{username}@business.local",
+                email=admin_obj.email,
                 first_name=admin_obj.name.split()[0] if admin_obj.name else '',
                 last_name=' '.join(admin_obj.name.split()[1:]) if len(admin_obj.name.split()) > 1 else '',
                 is_active=admin_obj.is_active
@@ -135,7 +166,7 @@ class BusinessAdminForm(forms.ModelForm):
         else:
             # Update existing user
             user = admin_obj.auth_user
-            user.email = admin_obj.email or user.email
+            user.email = admin_obj.email
             name_parts = admin_obj.name.split()
             if name_parts:
                 user.first_name = name_parts[0]
@@ -151,6 +182,7 @@ class BusinessAdminForm(forms.ModelForm):
             
             # Update Profile
             profile, created = Profile.objects.get_or_create(user=user)
+            profile.role = Profile.Role.ADMIN
             profile.phone = admin_obj.phone
             profile.is_active = admin_obj.is_active
             profile.save()
@@ -173,6 +205,13 @@ class BusinessMenuAdminAdmin(admin.ModelAdmin):
     list_filter = ('payment_status', 'is_active', 'created_at')
     search_fields = ('name', 'phone', 'email')
     readonly_fields = ('created_at', 'updated_at', 'auth_user')
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        try:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+        except IntegrityError:
+            messages.error(request, "A restaurant manager with this email or phone already exists. No changes were saved.")
+            return redirect(reverse("admin:business_menu_businessadmin_changelist"))
     
     fieldsets = (
         ('Basic Information', {
@@ -195,9 +234,10 @@ class BusinessMenuAdminAdmin(admin.ModelAdmin):
         """
         Set current user as created_by when creating new admin
         """
-        if not change:
-            obj.created_by = request.user
-        super().save_model(request, obj, form, change)
+        with transaction.atomic():
+            if not change:
+                obj.created_by = request.user
+            super().save_model(request, obj, form, change)
 
     # Note: Restaurant is now OneToOneField, so we don't use inline here
     # Restaurant is managed separately in RestaurantAdmin

@@ -29,6 +29,7 @@ django-cloudinary-storage==0.3.0
 # External APIs
 requests==2.31.0
 twilio==9.3.0
+phonenumbers>=8.13,<10
 
 # Backups (S3 upload support)
 boto3==1.34.162

@@ -2,12 +2,12 @@
 Django management command to create 20 test BusinessAdmin accounts with sequential phone numbers
 Usage: python manage.py create_test_business_admins
 """
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
 from django.db import transaction
 from business_menu.models import BusinessAdmin, Restaurant
 from business_menu.auth_utils import get_or_create_user_for_business_admin, sync_user_from_business_admin
-from accounts.twilio_utils import format_phone_number
+from business_menu.identity import normalize_business_phone
 from django.contrib.auth.models import User
 
 
@@ -42,7 +42,7 @@ class Command(BaseCommand):
         
         # Format base phone number
         try:
-            formatted_base = format_phone_number(base_phone)
+            formatted_base = normalize_business_phone(base_phone)
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error formatting base phone number: {str(e)}'))
             return
@@ -79,7 +79,7 @@ class Command(BaseCommand):
             
             try:
                 # Format phone number to ensure consistency
-                formatted_phone = format_phone_number(new_phone)
+                formatted_phone = normalize_business_phone(new_phone)
             except Exception as e:
                 self.stdout.write(self.style.WARNING(f'Error formatting phone {new_phone}: {str(e)}'))
                 continue
@@ -101,6 +101,10 @@ class Command(BaseCommand):
                 created_count += 1
                 self.stdout.write(self.style.SUCCESS(f'✓ Created: {admin.name} ({admin.phone})'))
             else:
+                if not admin.auth_user_id:
+                    raise CommandError(
+                        f"BusinessAdmin id={admin.pk} has no verified auth-user link; refusing to attach by phone or email."
+                    )
                 updated_count += 1
                 # Update existing admin
                 admin.name = f'Test Admin {i+1}'
@@ -111,7 +115,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'↻ Updated: {admin.name} ({admin.phone})'))
             
             # Create or get User account
-            user = get_or_create_user_for_business_admin(
+            user = admin.auth_user if admin.auth_user_id else get_or_create_user_for_business_admin(
                 admin_phone=admin.phone,
                 admin_name=admin.name,
                 admin_email=admin.email,

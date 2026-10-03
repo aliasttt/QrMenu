@@ -2,11 +2,14 @@
 Django management command to create a BusinessAdmin and set up OTP code
 Usage: python manage.py create_admin_with_otp --phone +905540225177 --code 123456 --name "Admin Name"
 """
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
-from django.db import connection
+from django.db import connection, transaction
 from business_menu.models import BusinessAdmin, Restaurant
-from accounts.twilio_utils import format_phone_number, UNLIMITED_OTP_PHONES
+from accounts.twilio_utils import UNLIMITED_OTP_PHONES
+from business_menu.auth_utils import get_or_create_user_for_business_admin, sync_user_from_business_admin
+from business_menu.identity import normalize_business_email, normalize_business_phone
+from accounts.models import Profile
 
 
 # All business_menu tables that have id sequence (reset after data migration to avoid duplicate key)
@@ -79,10 +82,11 @@ class Command(BaseCommand):
         parser.add_argument(
             '--email',
             type=str,
-            default='',
-            help='Admin email (optional)',
+            required=True,
+            help='Required unique email for this restaurant manager',
         )
     
+    @transaction.atomic
     def handle(self, *args, **options):
         phone = options['phone']
         code = options['code']
@@ -92,12 +96,11 @@ class Command(BaseCommand):
         # Fix sequences once (after data migration they can be out of sync; prevents duplicate key on create)
         reset_all_business_menu_sequences()
         
-        # Format phone number
         try:
-            formatted_phone = format_phone_number(phone)
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f'Error formatting phone number: {str(e)}'))
-            return
+            formatted_phone = normalize_business_phone(phone)
+            email = normalize_business_email(email)
+        except Exception as exc:
+            raise CommandError("A valid international phone and email are required.") from exc
         
         # Determine payment status - set to 'paid' for test numbers in UNLIMITED_OTP_PHONES
         is_test_number = formatted_phone in UNLIMITED_OTP_PHONES
@@ -113,6 +116,9 @@ class Command(BaseCommand):
                 'payment_status': payment_status,
             }
         )
+
+        if not created and not admin.auth_user_id:
+            raise CommandError("This existing manager has no verified auth-user link; resolve ownership before using this command.")
 
         if created:
             self.stdout.write(self.style.SUCCESS(f'BusinessAdmin created: {admin.name} ({admin.phone})'))
@@ -131,6 +137,18 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f'BusinessAdmin updated: {admin.name} ({admin.phone})'))
             if is_test_number:
                 self.stdout.write(self.style.SUCCESS(f'Payment status set to PAID (test number)'))
+
+        user = admin.auth_user if admin.auth_user_id else get_or_create_user_for_business_admin(
+            admin_phone=admin.phone, admin_name=admin.name, admin_email=admin.email
+        )
+        sync_user_from_business_admin(user=user, admin_phone=admin.phone, admin_name=admin.name, admin_email=admin.email)
+        if not admin.auth_user_id:
+            admin.auth_user = user
+            admin.save(update_fields=["auth_user"])
+        Profile.objects.update_or_create(
+            user=user,
+            defaults={"role": Profile.Role.ADMIN, "phone": admin.phone, "is_active": admin.is_active},
+        )
         
         # ایجاد رستوران پیش‌فرض اگر وجود نداشته باشد
         try:

@@ -161,7 +161,7 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = BusinessAdmin
         fields = ('id', 'phone', 'name', 'email', 'is_active', 'created_at')
-        read_only_fields = ('id', 'created_at')
+        read_only_fields = ('id', 'phone', 'name', 'email', 'is_active', 'created_at')
     
     def to_representation(self, instance):
         """تبدیل empty string به None برای نمایش"""
@@ -181,6 +181,15 @@ class BusinessMenuResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.CharField(max_length=32, trim_whitespace=True)
     password = serializers.CharField(write_only=True, min_length=1, max_length=128)
+
+    def validate_email(self, value):
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from .identity import normalize_business_email
+
+        try:
+            return normalize_business_email(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages) from exc
 
 
 class BusinessMenuChangePasswordSerializer(serializers.Serializer):
@@ -231,49 +240,37 @@ class BusinessAdminUpdateSerializer(serializers.ModelSerializer):
         fields = ('phone', 'email')
         extra_kwargs = {
             'phone': {'required': False},
-            'email': {'required': False, 'allow_blank': True},
+            'email': {'required': False, 'allow_blank': False},
         }
     
     def validate_phone(self, value):
         """بررسی فرمت شماره تلفن"""
-        if value is not None and value != '':
-            # بعضی کلاینت‌ها phone را به صورت عدد/لیست می‌فرستند
-            if isinstance(value, (list, tuple)):
-                value = value[0] if value else ''
-            value = str(value).strip()
-            if not value:
-                raise serializers.ValidationError("Phone number cannot be empty")
-            # استفاده از format_phone_number از accounts.twilio_utils
-            try:
-                from accounts.twilio_utils import format_phone_number
-                return format_phone_number(value)
-            except Exception as e:
-                raise serializers.ValidationError(f"Invalid phone number format: {str(e)}")
-        return value
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from .identity import normalize_business_phone
+        try:
+            normalized = normalize_business_phone(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages) from exc
+        if BusinessAdmin.objects.filter(phone=normalized).exclude(pk=self.instance.pk if self.instance else None).exists():
+            raise serializers.ValidationError("A restaurant owner with this phone number already exists.")
+        return normalized
     
     def validate_email(self, value):
         """بررسی و normalize کردن email"""
-        if value:
-            # حذف فاصله‌های اضافی
-            value = value.strip()
-            # اگر email خالی شد، None برگردان (نه empty string)
-            if not value:
-                return ''
-            # بررسی فرمت email
-            from django.core.validators import validate_email as django_validate_email
-            try:
-                django_validate_email(value)
-            except Exception:
-                raise serializers.ValidationError("Invalid email format")
-        return value
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from .identity import normalize_business_email
+        try:
+            normalized = normalize_business_email(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages) from exc
+        if BusinessAdmin.objects.filter(email__iexact=normalized).exclude(pk=self.instance.pk if self.instance else None).exists():
+            raise serializers.ValidationError("A restaurant owner with this email already exists.")
+        return normalized
     
     def update(self, instance, validated_data):
         """ذخیره داده‌ها و اطمینان از به‌روزرسانی"""
         # به‌روزرسانی فیلدها
         for attr, value in validated_data.items():
-            # اگر email خالی است، empty string ذخیره کن (نه None)
-            if attr == 'email' and value is None:
-                value = ''
             setattr(instance, attr, value)
         
         # ذخیره در دیتابیس با update_fields برای بهینه‌سازی
@@ -894,6 +891,13 @@ class LoginSerializer(serializers.Serializer):
         if not phone:
             raise serializers.ValidationError({"phone": "Phone number is required"})
 
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from .identity import normalize_business_phone
+        try:
+            phone = normalize_business_phone(phone)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({"phone": exc.messages}) from exc
+
         if not code and op_code:
             code = op_code
             attrs["code"] = code
@@ -1124,11 +1128,20 @@ class RestaurantOwnerRegistrationSerializer(serializers.Serializer):
     
     def validate_phone(self, value):
         """بررسی فرمت شماره تلفن"""
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from .identity import normalize_business_phone
         try:
-            from accounts.twilio_utils import format_phone_number
-            return format_phone_number(value)
-        except Exception as e:
-            raise serializers.ValidationError(f"Invalid phone number format: {str(e)}")
+            return normalize_business_phone(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages) from exc
+
+    def validate_email(self, value):
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from .identity import normalize_business_email
+        try:
+            return normalize_business_email(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages) from exc
     
     def validate(self, attrs):
         """بررسی قوانین"""
@@ -1148,7 +1161,7 @@ class RestaurantOwnerRegistrationSerializer(serializers.Serializer):
         
         # بررسی تکراری نبودن ایمیل
         email = attrs.get('email')
-        if BusinessAdmin.objects.filter(email=email).exists():
+        if BusinessAdmin.objects.filter(email__iexact=email).exists():
             raise serializers.ValidationError({"email": "A restaurant owner with this email already exists"})
         
         return attrs

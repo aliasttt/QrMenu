@@ -20,7 +20,7 @@ from business_menu.stripe_views import _record_order_payment_success
 )
 class OrderCustomerFlowTests(APITestCase):
     def setUp(self):
-        admin = BusinessAdmin.objects.create(phone="+491700001111", name="Owner")
+        admin = BusinessAdmin.objects.create(phone="+491700001111", name="Owner", email="order-owner@example.test")
         self.restaurant = Restaurant.objects.create(admin=admin, name="Flow Bistro")
         RestaurantSettings.objects.update_or_create(
             restaurant=self.restaurant,

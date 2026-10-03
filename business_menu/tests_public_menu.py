@@ -114,7 +114,7 @@ class RestaurantPublicMediaTests(TestCase):
 class PublicMenuRouteTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.admin = BusinessAdmin.objects.create(phone="+490000000001", name="Owner one")
+        cls.admin = BusinessAdmin.objects.create(phone="+493012345601", name="Owner one", email="owner-one@example.test")
         cls.restaurant = Restaurant.objects.create(
             admin=cls.admin,
             name="Same restaurant",
@@ -145,7 +145,7 @@ class PublicMenuRouteTests(TestCase):
             restaurant=cls.restaurant, name="Inactive category", order=2, is_active=False
         )
 
-        cls.second_admin = BusinessAdmin.objects.create(phone="+490000000002", name="Owner two")
+        cls.second_admin = BusinessAdmin.objects.create(phone="+493012345602", name="Owner two", email="owner-two@example.test")
         cls.second_restaurant = Restaurant.objects.create(
             admin=cls.second_admin,
             name="Same restaurant",
@@ -232,7 +232,7 @@ class PublicMenuRouteTests(TestCase):
                 )
 
     def test_restaurant_list_uses_cover_then_logo_then_local_placeholder(self):
-        no_media_admin = BusinessAdmin.objects.create(phone="+490000000003", name="Owner three")
+        no_media_admin = BusinessAdmin.objects.create(phone="+493012345603", name="Owner three", email="owner-three@example.test")
         no_media = Restaurant.objects.create(admin=no_media_admin, name="No media")
 
         response = self.client.get("/restaurants/")
@@ -277,7 +277,7 @@ class PublicMenuRouteTests(TestCase):
                 "name", "logo", "description", "restaurant_type", "email", "phone",
                 "whatsapp", "website", "address", "city", "country", "postal_code",
                 "latitude", "longitude", "google_place_id", "google_maps_url", "gallery",
-                "cover_image_index", "working_hours", "closed_today",
+                "cover_image_index", "working_hours", "closed_today", "timezone",
             },
         )
         self.assertEqual(set(category), {"id", "restaurant", "name", "order"})
