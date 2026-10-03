@@ -550,13 +550,79 @@ class AdminCourierOrderTests(APITestCase):
         delete_response = self.client.delete(f"/api/business-menu/admin/couriers/{courier_id}/")
         self.assertEqual(delete_response.status_code, 204)
 
-    def test_delete_courier_with_order_history_returns_409(self):
+        list_after_delete = self.client.get("/api/business-menu/admin/couriers/")
+        self.assertEqual(list_after_delete.status_code, 200)
+        self.assertEqual(list_after_delete.data, {"count": 0, "couriers": []})
+
+        repeated_delete = self.client.delete(f"/api/business-menu/admin/couriers/{courier_id}/")
+        self.assertEqual(repeated_delete.status_code, 404)
+        self.assertEqual(repeated_delete.data["code"], "courier_not_found")
+
+    def test_delete_courier_with_completed_order_archives_and_preserves_history(self):
         courier = Courier.objects.create(
             restaurant=self.restaurant,
             name="Ali Yildiz",
             phone="+491701112233",
         )
-        Order.objects.create(
+        order = Order.objects.create(
+            restaurant=self.restaurant,
+            courier=courier,
+            status=Order.Status.COMPLETED,
+            service_type=Order.ServiceType.DELIVERY,
+            total_amount="25.00",
+            items_json=[{"name": "Pizza", "quantity": 1}],
+        )
+        payment = Payment.objects.create(
+            restaurant=self.restaurant,
+            order=order,
+            amount="25.00",
+            currency="EUR",
+            status=Payment.Status.SUCCEEDED,
+        )
+
+        response = self.client.delete(f"/api/business-menu/admin/couriers/{courier.id}/")
+
+        self.assertEqual(response.status_code, 204)
+        courier.refresh_from_db()
+        order.refresh_from_db()
+        payment.refresh_from_db()
+        self.assertFalse(courier.is_active)
+        self.assertEqual(order.courier_id, courier.id)
+        self.assertEqual(str(order.total_amount), "25.00")
+        self.assertEqual(str(payment.amount), "25.00")
+
+        list_response = self.client.get("/api/business-menu/admin/couriers/")
+        self.assertEqual(list_response.data, {"count": 0, "couriers": []})
+
+        orders_response = self.client.get("/api/business-menu/admin/orders/")
+        historical_order = next(item for item in orders_response.data["orders"] if item["id"] == order.id)
+        self.assertEqual(historical_order["courier"], courier.id)
+        self.assertEqual(historical_order["courier_name"], "Ali Yildiz")
+        self.assertEqual(historical_order["courier_phone"], "+491701112233")
+
+        new_order = Order.objects.create(
+            restaurant=self.restaurant,
+            status=Order.Status.PREPARING,
+            service_type=Order.ServiceType.DELIVERY,
+        )
+        assign_response = self.client.post(
+            f"/api/business-menu/admin/orders/{new_order.id}/assign-courier/",
+            {"courier_id": courier.id},
+            format="json",
+        )
+        self.assertEqual(assign_response.status_code, 404)
+
+        repeated_delete = self.client.delete(f"/api/business-menu/admin/couriers/{courier.id}/")
+        self.assertEqual(repeated_delete.status_code, 204)
+        self.assertTrue(Courier.objects.filter(pk=courier.id, is_active=False).exists())
+
+    def test_delete_courier_with_current_order_returns_clear_409(self):
+        courier = Courier.objects.create(
+            restaurant=self.restaurant,
+            name="Ali Yildiz",
+            phone="+491701112233",
+        )
+        order = Order.objects.create(
             restaurant=self.restaurant,
             courier=courier,
             status=Order.Status.OUT_FOR_DELIVERY,
@@ -566,7 +632,37 @@ class AdminCourierOrderTests(APITestCase):
         response = self.client.delete(f"/api/business-menu/admin/couriers/{courier.id}/")
 
         self.assertEqual(response.status_code, 409)
-        self.assertEqual(response.data["detail"], "courier_has_order_history")
+        self.assertEqual(response.data["code"], "courier_has_current_order")
+        self.assertEqual(
+            response.data["detail"],
+            "Courier is assigned to a current order and cannot be removed.",
+        )
+        courier.refresh_from_db()
+        order.refresh_from_db()
+        self.assertTrue(courier.is_active)
+        self.assertEqual(order.courier_id, courier.id)
+
+    def test_other_restaurant_cannot_delete_courier(self):
+        other_user = User.objects.create_user("other-restaurant", password="Pass12345")
+        other_admin = BusinessAdmin.objects.create(
+            auth_user=other_user,
+            phone="+491700000099",
+            name="Other Restaurant Admin",
+            payment_status="paid",
+        )
+        other_restaurant = Restaurant.objects.create(admin=other_admin, name="Other Bistro")
+        other_courier = Courier.objects.create(
+            restaurant=other_restaurant,
+            name="Other Courier",
+            phone="+491701119999",
+        )
+
+        response = self.client.delete(f"/api/business-menu/admin/couriers/{other_courier.id}/")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data["code"], "courier_not_found")
+        other_courier.refresh_from_db()
+        self.assertTrue(other_courier.is_active)
 
     def test_assign_courier_sets_out_for_delivery_atomically(self):
         courier = Courier.objects.create(

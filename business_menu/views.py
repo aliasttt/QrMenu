@@ -4497,7 +4497,9 @@ class AdminCourierListCreateView(APIView):
         restaurant, err = _get_admin_restaurant_or_response(request)
         if err:
             return err
-        couriers = list(Courier.objects.filter(restaurant=restaurant).order_by("name", "id"))
+        couriers = list(
+            Courier.objects.filter(restaurant=restaurant, is_active=True).order_by("name", "id")
+        )
         return Response(
             {
                 "count": len(couriers),
@@ -4565,16 +4567,38 @@ class AdminCourierDetailView(APIView):
         courier.save(update_fields=update_fields)
         return Response(_serialize_admin_courier(courier), status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def delete(self, request, courier_id):
-        courier, err = self._get_courier(request, courier_id)
+        restaurant, err = _get_admin_restaurant_or_response(request)
         if err:
             return err
-        if Order.objects.filter(courier=courier).exists():
+        try:
+            courier = Courier.objects.select_for_update().get(
+                id=courier_id,
+                restaurant=restaurant,
+            )
+        except Courier.DoesNotExist:
             return Response(
-                {"detail": "courier_has_order_history"},
+                {"code": "courier_not_found", "detail": "Courier not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        current_orders = Order.objects.filter(courier=courier).exclude(
+            status__in=(Order.Status.COMPLETED, Order.Status.CANCELLED, Order.Status.REFUNDED)
+        )
+        if current_orders.exists():
+            return Response(
+                {
+                    "code": "courier_has_current_order",
+                    "detail": "Courier is assigned to a current order and cannot be removed.",
+                },
                 status=status.HTTP_409_CONFLICT,
             )
-        courier.delete()
+        if courier.orders.exists():
+            courier.is_active = False
+            courier.save(update_fields=["is_active"])
+        else:
+            courier.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -4627,6 +4651,17 @@ class AdminOrderAssignCourierView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
+            courier = Courier.objects.select_for_update().get(
+                id=courier_id,
+                restaurant=restaurant,
+                is_active=True,
+            )
+        except Courier.DoesNotExist:
+            return Response(
+                {"detail": "Courier not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        try:
             order = Order.objects.select_for_update().get(id=order_id, restaurant=restaurant)
         except Order.DoesNotExist:
             return Response(
@@ -4647,17 +4682,6 @@ class AdminOrderAssignCourierView(APIView):
             return Response(
                 {"detail": "pickup_orders_do_not_use_a_courier"},
                 status=status.HTTP_409_CONFLICT,
-            )
-        try:
-            courier = Courier.objects.get(
-                id=courier_id,
-                restaurant=restaurant,
-                is_active=True,
-            )
-        except Courier.DoesNotExist:
-            return Response(
-                {"detail": "Courier not found."},
-                status=status.HTTP_404_NOT_FOUND,
             )
         order.courier = courier
         order.status = Order.Status.OUT_FOR_DELIVERY
