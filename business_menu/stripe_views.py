@@ -176,7 +176,7 @@ def _create_connect_link(admin, request, request_id="unavailable"):
                         "email": (admin.email or "").strip() or None,
                         "capabilities": {"transfers": {"requested": True}},
                     },
-                    options={"idempotency_key": f"qrmenu-connect-v1-{mode}-{admin.pk}"},
+                    options={"idempotency_key": f"qrmenu-connect-{admin.pk}"},
                 )
             except Exception:
                 _connect_stage(request_id, "stripe_account_create_failed", started)

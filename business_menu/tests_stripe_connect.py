@@ -110,7 +110,7 @@ class StripeConnectFlowTests(TestCase):
                 "email": "owner@example.com",
                 "capabilities": {"transfers": {"requested": True}},
             },
-            options={"idempotency_key": f"qrmenu-connect-v1-test-{self.admin.pk}"},
+            options={"idempotency_key": f"qrmenu-connect-{self.admin.pk}"},
         )
         stripe_client.account_links.create.assert_called()
         client_options = stripe_client.account_links.create.call_args
@@ -178,7 +178,7 @@ class StripeConnectFlowTests(TestCase):
         self.assertEqual(stripe_client.accounts.create.call_count, 2)
         self.assertEqual(
             [call.kwargs["options"]["idempotency_key"] for call in stripe_client.accounts.create.call_args_list],
-            [f"qrmenu-connect-v1-test-{self.admin.pk}"] * 2,
+            [f"qrmenu-connect-{self.admin.pk}"] * 2,
         )
         self.admin.refresh_from_db()
         self.assertEqual(self.admin.stripe_account_id, "acct_new")
