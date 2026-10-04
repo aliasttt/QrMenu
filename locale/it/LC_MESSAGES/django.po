@@ -4387,3 +4387,15 @@ msgstr "Collega Stripe per ricevere pagamenti"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "Verrai reindirizzato a Stripe per completare il pagamento."
+
+msgid "Account created"
+msgstr "Account creato"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Il tuo account è pronto. Torna all'app e accedi."
+
+msgid "Return to app and sign in"
+msgstr "Torna all'app e accedi"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "Se l'app non si apre, tocca il pulsante per tornare oppure apri l'app e accedi."

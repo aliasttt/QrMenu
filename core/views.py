@@ -750,8 +750,11 @@ def forgot_password_view(request):
 
 def register_view(request):
     from django.conf import settings
+    signup_from_app = request.GET.get("source") == "app"
     return render(request, "pages/auth/register.html", {
         "recaptcha_site_key": getattr(settings, "RECAPTCHA_SITE_KEY", "") or "",
+        "signup_from_app": signup_from_app,
+        "signup_return_query": "?source=app" if signup_from_app else "",
     })
 
 

@@ -4136,3 +4136,15 @@ msgstr "连接 Stripe 以接收付款"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "您将被重定向至 Stripe 完成付款。"
+
+msgid "Account created"
+msgstr "账户已创建"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "您的账户已准备就绪。请返回应用并登录。"
+
+msgid "Return to app and sign in"
+msgstr "返回应用并登录"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "如果应用没有打开，请点击返回按钮，或打开应用并登录。"

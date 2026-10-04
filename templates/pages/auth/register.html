@@ -17,6 +17,7 @@
         <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Start your 12-day free trial. No payment required." %}</p>
         <form id="register-form" class="mt-6 space-y-4">
           {% csrf_token %}
+          {% if signup_from_app %}<input type="hidden" name="source" value="app">{% endif %}
           {% include "partials/form_fields.html" with label=_("Restaurant name") name="restaurant_name" placeholder=_("Orange Bistro") %}
           {% include "partials/form_fields.html" with label=_("Email") name="email" field_type="email" placeholder="owner@restaurant.com" %}
           {% include "partials/form_fields.html" with label=_("Phone") name="phone" placeholder="+49 123 456789" %}
@@ -42,6 +43,7 @@
         <p class="mt-2 text-slate-600 dark:text-slate-400">{% blocktrans %}We sent a 6-digit code to <strong id="verify-email-display"></strong>. Enter it below to complete registration.{% endblocktrans %}</p>
         <form id="verify-form" class="mt-6 space-y-4">
           {% csrf_token %}
+          {% if signup_from_app %}<input type="hidden" name="source" value="app">{% endif %}
           <div>
             <label for="email_verification_code" class="label-field block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{% trans "Verification code" %}</label>
             <input type="text" id="email_verification_code" name="email_verification_code" inputmode="numeric" pattern="[0-9]*" maxlength="6" minlength="6" placeholder="000000" required
@@ -54,6 +56,12 @@
           <button type="button" id="back-to-form" class="text-primary-600 hover:underline">{% trans "Use a different email" %}</button>
         </p>
       </div>
+      {% if signup_from_app %}<div id="step-success" class="hidden" role="status" aria-live="polite">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Account created" %}</h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Your account is ready. Return to the app and sign in." %}</p>
+        <a id="app-return-link" href="#" rel="noreferrer" class="btn-primary mt-6 block w-full text-center">{% trans "Return to app and sign in" %}</a>
+        <p class="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">{% trans "If the app does not open, tap the return button or open the app and sign in." %}</p>
+      </div>{% endif %}
       <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">{% trans "Already have an account?" %} <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">{% trans "Login" %}</a></p>
     </div>
   </div>
@@ -69,6 +77,10 @@
   const errEl = document.getElementById("form-errors");
   const verifyErrEl = document.getElementById("verify-errors");
   const verifyEmailDisplay = document.getElementById("verify-email-display");
+  const stepSuccess = document.getElementById("step-success");
+  const appReturnLink = document.getElementById("app-return-link");
+  const signupFromApp = {{ signup_from_app|yesno:"true,false" }};
+  let appReturnAttempted = false;
   let pendingEmail = "";
 
   function getCsrf() {
@@ -88,6 +100,7 @@
       email: fd.get("email") || "",
       phone: fd.get("phone") || "",
       password: fd.get("password") || "",
+      source: signupFromApp ? "app" : "",
       accept_terms: fd.get("accept_terms") === "on",
       b2b_confirmation: fd.get("b2b_confirmation") === "on",
     };
@@ -106,8 +119,7 @@
     })
       .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data }; }); })
       .then(function({ ok, data }) {
-        if (ok && data.success) {
-          if (data.email_verification_required && data.email) {
+        if (ok && data.success && data.email_verification_required && data.email) {
             pendingEmail = data.email;
             if (verifyEmailDisplay) verifyEmailDisplay.textContent = data.email;
             if (stepForm) stepForm.classList.add("hidden");
@@ -115,8 +127,9 @@
             btn.disabled = false;
             btn.textContent = "Continue";
             return;
-          }
-          window.location.href = data.panel_url || "/panel/?admin_id=" + (data.admin_id || "");
+        }
+        if (ok && data.success && data.panel_url && !signupFromApp) {
+          window.location.href = data.panel_url;
           return;
         }
         var msg = data.message || "Registration failed.";
@@ -169,12 +182,23 @@
       fetch("/api/business-menu/signup/", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrf(), "Accept": "application/json" },
-        body: JSON.stringify({ email: pendingEmail, email_verification_code: code }),
+        body: JSON.stringify({ email: pendingEmail, email_verification_code: code, source: signupFromApp ? "app" : "" }),
         credentials: "same-origin",
       })
         .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data }; }); })
         .then(function({ ok, data }) {
-          if (ok && data.success && data.panel_url) {
+          if (ok && data.success && signupFromApp && data.app_return_url) {
+            if (stepForm) stepForm.classList.add("hidden");
+            if (stepVerify) stepVerify.classList.add("hidden");
+            if (stepSuccess) stepSuccess.classList.remove("hidden");
+            if (appReturnLink) appReturnLink.href = data.app_return_url;
+            if (!appReturnAttempted) {
+              appReturnAttempted = true;
+              try { window.location.assign(data.app_return_url); } catch (e) {}
+            }
+            return;
+          }
+          if (ok && data.success && !signupFromApp && data.panel_url) {
             window.location.href = data.panel_url;
             return;
           }

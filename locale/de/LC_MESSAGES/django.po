@@ -4429,3 +4429,15 @@ msgstr "Stripe verbinden, um Zahlungen zu erhalten"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "Sie werden zu Stripe weitergeleitet, um die Zahlung abzuschließen."
+
+msgid "Account created"
+msgstr "Konto erstellt"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Ihr Konto ist bereit. Kehren Sie zur App zurück und melden Sie sich an."
+
+msgid "Return to app and sign in"
+msgstr "Zurück zur App und anmelden"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "Wenn sich die App nicht öffnet, tippen Sie auf die Schaltfläche unten oder öffnen Sie die App und melden Sie sich an."

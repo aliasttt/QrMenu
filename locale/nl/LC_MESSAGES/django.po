@@ -4388,3 +4388,15 @@ msgstr "Stripe verbinden om betalingen te ontvangen"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "U wordt doorgestuurd naar Stripe om de betaling te voltooien."
+
+msgid "Account created"
+msgstr "Account aangemaakt"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Je account is klaar. Ga terug naar de app en log in."
+
+msgid "Return to app and sign in"
+msgstr "Terug naar de app en inloggen"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "Als de app niet opent, tik je op de terugknop of open je de app en log je in."

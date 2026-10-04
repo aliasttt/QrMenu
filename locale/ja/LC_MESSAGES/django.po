@@ -4166,3 +4166,15 @@ msgstr "Stripe を接続して支払いを受け取る"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "支払いを完了するために Stripe にリダイレクトされます。"
+
+msgid "Account created"
+msgstr "アカウントを作成しました"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "アカウントの準備ができました。アプリに戻ってログインしてください。"
+
+msgid "Return to app and sign in"
+msgstr "アプリに戻ってログイン"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "アプリが開かない場合は、戻るボタンをタップするか、アプリを開いてログインしてください。"

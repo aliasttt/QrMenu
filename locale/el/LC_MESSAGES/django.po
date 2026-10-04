@@ -4411,3 +4411,15 @@ msgstr "Σύνδεση Stripe για είσπραξη πληρωμών"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "Θα ανακατευθυνθείτε στο Stripe για να ολοκληρώσετε την πληρωμή."
+
+msgid "Account created"
+msgstr "Ο λογαριασμός δημιουργήθηκε"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Ο λογαριασμός σας είναι έτοιμος. Επιστρέψτε στην εφαρμογή και συνδεθείτε."
+
+msgid "Return to app and sign in"
+msgstr "Επιστροφή στην εφαρμογή και σύνδεση"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "Αν η εφαρμογή δεν ανοίξει, πατήστε το κουμπί επιστροφής ή ανοίξτε την εφαρμογή και συνδεθείτε."

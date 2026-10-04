@@ -4175,3 +4175,15 @@ msgstr "결제를 받으려면 Stripe 연결"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "결제를 완료하려면 Stripe로 이동합니다."
+
+msgid "Account created"
+msgstr "계정이 생성되었습니다"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "계정이 준비되었습니다. 앱으로 돌아가 로그인하세요."
+
+msgid "Return to app and sign in"
+msgstr "앱으로 돌아가 로그인"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "앱이 열리지 않으면 돌아가기 버튼을 누르거나 앱을 열어 로그인하세요."

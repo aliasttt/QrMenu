@@ -4282,3 +4282,15 @@ msgstr "اربط Stripe لاستقبال المدفوعات"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "ستُوجَّه إلى Stripe لإكمال الدفع."
+
+msgid "Account created"
+msgstr "تم إنشاء الحساب"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "حسابك جاهز. عُد إلى التطبيق وسجّل الدخول."
+
+msgid "Return to app and sign in"
+msgstr "العودة إلى التطبيق وتسجيل الدخول"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "إذا لم يفتح التطبيق، فاضغط على زر الرجوع أو افتح التطبيق وسجّل الدخول."

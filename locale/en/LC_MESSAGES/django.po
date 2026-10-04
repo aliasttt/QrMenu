@@ -3821,3 +3821,15 @@ msgstr ""
 #: .\templates_bonusweb\business_menu\subscribe_success.html:9
 msgid "Connect Stripe to receive payments"
 msgstr ""
+
+msgid "Account created"
+msgstr "Account created"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Your account is ready. Return to the app and sign in."
+
+msgid "Return to app and sign in"
+msgstr "Return to app and sign in"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "If the app does not open, tap the return button or open the app and sign in."

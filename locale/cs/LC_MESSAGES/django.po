@@ -4349,3 +4349,15 @@ msgstr "Připojit Stripe pro přijímání plateb"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "Budete přesměrováni do Stripe pro dokončení platby."
+
+msgid "Account created"
+msgstr "Účet byl vytvořen"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Váš účet je připraven. Vraťte se do aplikace a přihlaste se."
+
+msgid "Return to app and sign in"
+msgstr "Zpět do aplikace a přihlásit se"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "Pokud se aplikace neotevře, klepněte na tlačítko návratu nebo aplikaci otevřete a přihlaste se."

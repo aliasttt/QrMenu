@@ -5943,6 +5943,7 @@ class RestaurantOwnerSignupView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             signup_data = pending.signup_data
+            signup_from_app = signup_data.get("return_to_app") is True
             try:
                 with transaction.atomic():
                     user, admin = _create_account_from_signup_data(signup_data, client_ip)
@@ -5956,19 +5957,25 @@ class RestaurantOwnerSignupView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
                 raise
-            from django.contrib.auth import login as auth_login
-            auth_login(request, user)
-            base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
-            return Response(
-                {
-                    "success": True,
-                    "message": "Registration successful. Your 12-day free trial has started.",
+            if not signup_from_app:
+                from django.contrib.auth import login as auth_login
+                auth_login(request, user)
+            response_data = {
+                "success": True,
+                "message": "Registration successful. Your 12-day free trial has started.",
+            }
+            if signup_from_app:
+                from urllib.parse import urlencode
+                response_data["email"] = user.email
+                response_data["app_return_url"] = "myqrmenu://register-complete?" + urlencode({"email": user.email})
+            else:
+                base = (getattr(settings, "SITE_URL", "") or "").rstrip("/") or request.build_absolute_uri("/").rstrip("/")
+                response_data.update({
                     "admin_id": admin.id,
                     "trial_ends_at": admin.trial_ends_at.isoformat() if admin.trial_ends_at else None,
                     "panel_url": f"{base}/panel/?admin_id={admin.id}",
-                },
-                status=status.HTTP_201_CREATED,
-            )
+                })
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
         # Step 1: validate form, send verification email
         if is_honeypot_filled(request.data):
@@ -6023,6 +6030,8 @@ class RestaurantOwnerSignupView(APIView):
             "password": validated_data["password"],
             "country": validated_data.get("country", ""),
             "city": validated_data.get("city", ""),
+            # This only selects post-registration navigation; it grants no access.
+            "return_to_app": request.data.get("source") == "app",
         }
         PendingEmailVerification.objects.filter(email__iexact=signup_email).delete()
         PendingEmailVerification.objects.create(

@@ -4385,3 +4385,15 @@ msgstr "Ödemeleri almak için Stripe'ı bağla"
 
 #~ msgid "You will be redirected to Stripe to complete payment."
 #~ msgstr "Ödemeyi tamamlamak için Stripe'a yönlendirileceksiniz."
+
+msgid "Account created"
+msgstr "Hesap oluşturuldu"
+
+msgid "Your account is ready. Return to the app and sign in."
+msgstr "Hesabınız hazır. Uygulamaya dönüp giriş yapın."
+
+msgid "Return to app and sign in"
+msgstr "Uygulamaya dön ve giriş yap"
+
+msgid "If the app does not open, tap the return button or open the app and sign in."
+msgstr "Uygulama açılmazsa geri dön düğmesine dokunun veya uygulamayı açıp giriş yapın."
