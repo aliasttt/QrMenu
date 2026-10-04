@@ -1,16 +1,32 @@
 from datetime import timedelta
+import threading
 from types import SimpleNamespace
-from unittest.mock import patch
+from contextlib import contextmanager
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.db import DatabaseError, close_old_connections, connection
 from django.core import signing
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import AccessToken
+from unittest import skipUnless
 
 from .models import BusinessAdmin, Restaurant
 from .subscription_services import apply_manual_subscription
+from .stripe_views import ConnectRequestInProgress, _create_connect_link
+
+
+@contextmanager
+def mocked_connect_stripe(account_id="acct_new", url="https://connect.stripe.test/onboarding"):
+    client = SimpleNamespace(
+        accounts=SimpleNamespace(create=MagicMock(return_value=SimpleNamespace(id=account_id))),
+        account_links=SimpleNamespace(create=MagicMock(return_value=SimpleNamespace(url=url))),
+    )
+    with patch("stripe.StripeClient", return_value=client), patch("stripe.RequestsClient"):
+        yield client
 
 
 @override_settings(
@@ -52,20 +68,16 @@ class StripeConnectFlowTests(TestCase):
             salt="stripe-connect-continuation",
         )
 
-    @patch("stripe.AccountLink.create", return_value=SimpleNamespace(url="https://connect.stripe.test/onboarding"))
-    @patch("stripe.Account.create")
-    @patch("stripe.Account.modify")
-    def test_legacy_route_maps_restaurant_id_and_reuses_existing_account(self, modify_account, create_account, create_link):
+    def test_legacy_route_maps_restaurant_id_and_reuses_existing_account(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
-        response = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
+        with mocked_connect_stripe() as stripe_client:
+            response = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"success": True, "url": "https://connect.stripe.test/onboarding"})
-        create_account.assert_not_called()
-        modify_account.assert_called_once_with(
-            "acct_existing", capabilities={"transfers": {"requested": True}},
-        )
-        kwargs = create_link.call_args.kwargs
+        self.assertEqual(response["Cache-Control"], "no-store")
+        stripe_client.accounts.create.assert_not_called()
+        kwargs = stripe_client.account_links.create.call_args.kwargs["params"]
         self.assertEqual(kwargs["account"], "acct_existing")
         self.assertIn("https://preismenu.de/business-menu/connect/refresh/?continuation=", kwargs["refresh_url"])
         self.assertIn("https://preismenu.de/business-menu/connect/done/?continuation=", kwargs["return_url"])
@@ -79,27 +91,95 @@ class StripeConnectFlowTests(TestCase):
         self.assertEqual(forbidden.status_code, 403)
         self.assertEqual(forbidden.json()["code"], "permission_denied")
 
-    @patch("stripe.AccountLink.create", return_value=SimpleNamespace(url="https://connect.stripe.test/onboarding"))
-    @patch("stripe.Account.modify")
-    @patch("stripe.Account.create", return_value=SimpleNamespace(id="acct_new"))
-    def test_canonical_post_creates_one_account_and_reuses_it_on_retry(self, create_account, modify_account, create_link):
+    def test_canonical_post_creates_one_account_and_reuses_it_on_retry(self):
         self.admin.stripe_account_id = ""
         self.admin.save(update_fields=["stripe_account_id"])
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
         url = "/api/business-menu/api/create-connect-link/"
 
-        first = self.client.post(url, {"admin_id": self.admin.pk}, format="json")
-        second = self.client.post(url, {"admin_id": self.admin.pk}, format="json")
+        with mocked_connect_stripe() as stripe_client:
+            first = self.client.post(url, {"admin_id": self.admin.pk}, format="json")
+            second = self.client.post(url, {"admin_id": self.admin.pk}, format="json")
 
         self.assertEqual(first.status_code, 200)
         self.assertEqual(second.status_code, 200)
-        create_account.assert_called_once_with(
-            type="express",
-            email="owner@example.com",
-            capabilities={"transfers": {"requested": True}},
-            idempotency_key=f"qrmenu-connect-{self.admin.pk}",
+        self.assertEqual(first["Cache-Control"], "no-store")
+        stripe_client.accounts.create.assert_called_once_with(
+            params={
+                "type": "express",
+                "email": "owner@example.com",
+                "capabilities": {"transfers": {"requested": True}},
+            },
+            options={"idempotency_key": f"qrmenu-connect-v1-test-{self.admin.pk}"},
         )
-        modify_account.assert_called_once_with("acct_new", capabilities={"transfers": {"requested": True}})
+        stripe_client.account_links.create.assert_called()
+        client_options = stripe_client.account_links.create.call_args
+        self.assertEqual(client_options.kwargs["params"]["account"], "acct_new")
+        self.admin.refresh_from_db()
+        self.assertEqual(self.admin.stripe_account_id, "acct_new")
+
+    def test_connect_uses_short_stripe_timeout_without_retries(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        client = SimpleNamespace(
+            accounts=SimpleNamespace(create=MagicMock(return_value=SimpleNamespace(id="acct_new"))),
+            account_links=SimpleNamespace(create=MagicMock(return_value=SimpleNamespace(url="https://connect.stripe.test/onboarding"))),
+        )
+        with patch("stripe.StripeClient", return_value=client) as stripe_client, patch("stripe.RequestsClient") as http_client:
+            response = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
+        self.assertEqual(response.status_code, 200)
+        http_client.assert_called_once_with(timeout=4)
+        stripe_client.assert_called_once_with(
+            "sk_test_fake", max_network_retries=0, http_client=http_client.return_value,
+        )
+
+    def test_simultaneous_request_gets_controlled_in_progress_response(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        lock_key = f"stripe-connect-onboarding:test:{self.admin.pk}"
+        cache.set(lock_key, "another-request", timeout=30)
+        with mocked_connect_stripe() as stripe_client:
+            response = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
+        cache.delete(lock_key)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["code"], "stripe_connect_in_progress")
+        self.assertEqual(response["Cache-Control"], "no-store")
+        stripe_client.account_links.create.assert_not_called()
+
+    def test_timeout_returns_retryable_json(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        with mocked_connect_stripe() as stripe_client:
+            import stripe
+            stripe_client.account_links.create.side_effect = stripe.APIConnectionError("timeout")
+            response = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["code"], "stripe_connect_temporary")
+        self.assertIn("retry", response.json()["message"].lower())
+
+    def test_retry_after_database_save_failure_reuses_stripe_idempotency_key(self):
+        self.admin.stripe_account_id = ""
+        self.admin.save(update_fields=["stripe_account_id"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        original_save = BusinessAdmin.save
+        fail_once = {"pending": True}
+
+        def save_with_one_failure(instance, *args, **kwargs):
+            if (instance.pk == self.admin.pk and kwargs.get("update_fields") == ["stripe_account_id"]
+                    and fail_once["pending"]):
+                fail_once["pending"] = False
+                raise DatabaseError("simulated persistence failure")
+            return original_save(instance, *args, **kwargs)
+
+        with mocked_connect_stripe() as stripe_client, patch.object(BusinessAdmin, "save", new=save_with_one_failure):
+            first = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
+            second = self.client.get(f"/api/business-menu/stripe-connect/{self.restaurant.pk}/")
+
+        self.assertEqual(first.status_code, 503)
+        self.assertEqual(first.json()["code"], "stripe_connect_persistence_failed")
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(stripe_client.accounts.create.call_count, 2)
+        self.assertEqual(
+            [call.kwargs["options"]["idempotency_key"] for call in stripe_client.accounts.create.call_args_list],
+            [f"qrmenu-connect-v1-test-{self.admin.pk}"] * 2,
+        )
         self.admin.refresh_from_db()
         self.assertEqual(self.admin.stripe_account_id, "acct_new")
 
@@ -117,23 +197,18 @@ class StripeConnectFlowTests(TestCase):
         guest = self.client.get("/business-menu/connect/")
         self.assertIn(guest.status_code, (401, 403))
         self.client.force_login(self.user)
-        with (
-            patch("stripe.AccountLink.create", return_value=SimpleNamespace(url="https://connect.stripe.test/onboarding")),
-            patch("stripe.Account.modify"),
-        ):
+        with mocked_connect_stripe():
             response = self.client.get("/business-menu/connect/")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "https://connect.stripe.test/onboarding")
 
-    @patch("stripe.AccountLink.create", return_value=SimpleNamespace(url="https://connect.stripe.test/refreshed"))
-    @patch("stripe.Account.create")
-    @patch("stripe.Account.modify")
-    def test_expired_link_refresh_reuses_account_without_public_id_lookup(self, modify_account, create_account, create_link):
-        response = self.client.get(f"/business-menu/connect/refresh/?continuation={self.signed_continuation()}")
+    def test_expired_link_refresh_reuses_account_without_public_id_lookup(self):
+        with mocked_connect_stripe(url="https://connect.stripe.test/refreshed") as stripe_client:
+            response = self.client.get(f"/business-menu/connect/refresh/?continuation={self.signed_continuation()}")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "https://connect.stripe.test/refreshed")
-        create_account.assert_not_called()
-        self.assertEqual(create_link.call_args.kwargs["account"], "acct_existing")
+        stripe_client.accounts.create.assert_not_called()
+        self.assertEqual(stripe_client.account_links.create.call_args.kwargs["params"]["account"], "acct_existing")
 
     def test_expired_continuation_is_rejected(self):
         with patch("django.core.signing.time.time", return_value=timezone.now().timestamp() - 7200):
@@ -175,3 +250,57 @@ class StripeConnectFlowTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertNotIn("URLconf", body)
         self.assertNotIn("urlpatterns", body)
+
+
+@override_settings(
+    STRIPE_SECRET_KEY="sk_test_fake",
+    STRIPE_PUBLISHABLE_KEY="pk_test_fake",
+    SITE_URL="https://preismenu.de",
+    CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache", "LOCATION": "stripe-connect-concurrency"}},
+)
+class StripeConnectConcurrencyTests(TransactionTestCase):
+    @skipUnless(connection.vendor == "postgresql", "concurrency behavior requires PostgreSQL")
+    def test_concurrent_requests_share_one_create_and_persisted_account(self):
+        user = User.objects.create_user("parallel-owner", password="pass")
+        admin = BusinessAdmin.objects.create(
+            auth_user=user, phone="+493012345699", name="Parallel", email="parallel@example.test",
+        )
+        cache.clear()
+        entered = threading.Event()
+        release = threading.Event()
+        create_account = MagicMock(side_effect=lambda **kwargs: (
+            entered.set(), release.wait(5), SimpleNamespace(id="acct_parallel"),
+        )[2])
+        client = SimpleNamespace(
+            accounts=SimpleNamespace(create=create_account),
+            account_links=SimpleNamespace(create=MagicMock(return_value=SimpleNamespace(url="https://connect.stripe.test/onboarding"))),
+        )
+        request = SimpleNamespace(build_absolute_uri=lambda path: f"https://preismenu.de{path}")
+        outcomes = []
+
+        def run(request_id):
+            close_old_connections()
+            try:
+                outcomes.append(_create_connect_link(BusinessAdmin.objects.get(pk=admin.pk), request, request_id))
+            except Exception as exc:
+                outcomes.append(exc)
+            finally:
+                close_old_connections()
+
+        with patch("stripe.StripeClient", return_value=client), patch("stripe.RequestsClient"):
+            first = threading.Thread(target=run, args=("request-one",))
+            first.start()
+            self.assertTrue(entered.wait(5), "first request did not reach the mocked Stripe call")
+            second = threading.Thread(target=run, args=("request-two",))
+            second.start()
+            second.join(5)
+            release.set()
+            first.join(5)
+
+        self.assertFalse(first.is_alive())
+        self.assertFalse(second.is_alive())
+        self.assertEqual(create_account.call_count, 1)
+        self.assertEqual(sum(isinstance(item, ConnectRequestInProgress) for item in outcomes), 1)
+        self.assertEqual(sum(item == "https://connect.stripe.test/onboarding" for item in outcomes), 1)
+        admin.refresh_from_db()
+        self.assertEqual(admin.stripe_account_id, "acct_parallel")
