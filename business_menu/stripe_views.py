@@ -621,39 +621,51 @@ class CreateConnectAccountLinkView(StripeConnectTimingMixin, APIView):
             return _connect_error_response(e, self.connect_request_id)
 
 
+def _create_restaurant_connect_link_response(request, restaurant_id, request_id):
+    started = time.monotonic()
+    try:
+        restaurant = Restaurant.objects.select_related("admin").get(pk=restaurant_id)
+    except Restaurant.DoesNotExist:
+        return _connect_response({"code": "not_found", "message": "Restaurant not found."}, status.HTTP_404_NOT_FOUND)
+    admin = restaurant.admin
+    _connect_stage(request_id, "ownership_lookup", started)
+    if admin.auth_user_id != request.user.id:
+        return _connect_response(
+            {"code": "permission_denied", "message": "You do not have permission to manage this restaurant."},
+            status.HTTP_403_FORBIDDEN,
+        )
+    if not admin.is_active:
+        return _connect_response({"code": "account_inactive", "message": "This restaurant account is inactive."}, status.HTTP_403_FORBIDDEN)
+    started = time.monotonic()
+    is_entitled = resolve_subscription_entitlement(admin)["is_entitled"]
+    _connect_stage(request_id, "subscription_check", started)
+    if not is_entitled:
+        return _connect_response(
+            {"success": False, "code": "subscription_required", "message": "An active subscription is required.", "payment_required": True},
+            status.HTTP_402_PAYMENT_REQUIRED,
+        )
+    if not _stripe_enabled():
+        return _connect_response({"success": False, "code": "stripe_connect_unavailable", "message": "Stripe is not configured."}, status.HTTP_503_SERVICE_UNAVAILABLE)
+    try:
+        return _connect_response({"success": True, "url": _create_connect_link(admin, request, request_id)})
+    except Exception as e:
+        return _connect_error_response(e, request_id)
+
+
 class StripeConnectRestaurantLinkView(StripeConnectTimingMixin, APIView):
     """Compatibility endpoint for app builds calling GET /stripe-connect/<restaurant_id>/."""
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, restaurant_id):
-        started = time.monotonic()
-        try:
-            restaurant = Restaurant.objects.select_related("admin").get(pk=restaurant_id)
-        except Restaurant.DoesNotExist:
-            return Response({"code": "not_found", "message": "Restaurant not found."}, status=404)
-        admin = restaurant.admin
-        _connect_stage(self.connect_request_id, "ownership_lookup", started)
-        if admin.auth_user_id != request.user.id:
-            return Response(
-                {"code": "permission_denied", "message": "You do not have permission to manage this restaurant."},
-                status=403,
-            )
-        if not admin.is_active:
-            return Response({"code": "account_inactive", "message": "This restaurant account is inactive."}, status=403)
-        started = time.monotonic()
-        is_entitled = resolve_subscription_entitlement(admin)["is_entitled"]
-        _connect_stage(self.connect_request_id, "subscription_check", started)
-        if not is_entitled:
-            return Response(
-                {"success": False, "code": "subscription_required", "message": "An active subscription is required.", "payment_required": True},
-                status=402,
-            )
-        if not _stripe_enabled():
-            return Response({"success": False, "code": "stripe_connect_unavailable", "message": "Stripe is not configured."}, status=503)
-        try:
-            return _connect_response({"success": True, "url": _create_connect_link(admin, request, self.connect_request_id)})
-        except Exception as e:
-            return _connect_error_response(e, self.connect_request_id)
+        return _create_restaurant_connect_link_response(request, restaurant_id, self.connect_request_id)
+
+
+class StripeConnectRestaurantOnboardingLinkView(StripeConnectTimingMixin, APIView):
+    """Create an onboarding link for the restaurant identified in the URL."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, restaurant_id):
+        return _create_restaurant_connect_link_response(request, restaurant_id, self.connect_request_id)
 
 
 class ConnectPageView(StripeConnectTimingMixin, APIView):

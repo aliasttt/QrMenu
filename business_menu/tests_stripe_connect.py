@@ -91,6 +91,64 @@ class StripeConnectFlowTests(TestCase):
         self.assertEqual(forbidden.status_code, 403)
         self.assertEqual(forbidden.json()["code"], "permission_denied")
 
+    def test_app_onboarding_link_route_uses_restaurant_id_and_reuses_account(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        path = f"/api/business-menu/stripe-connect/{self.restaurant.pk}/onboarding-link/"
+        self.assertNotEqual(self.restaurant.pk, self.admin.pk)
+
+        with mocked_connect_stripe() as stripe_client:
+            response = self.client.post(path, {}, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"success": True, "url": "https://connect.stripe.test/onboarding"})
+        self.assertEqual(response["Cache-Control"], "no-store")
+        stripe_client.accounts.create.assert_not_called()
+        self.assertEqual(stripe_client.account_links.create.call_args.kwargs["params"]["account"], "acct_existing")
+
+    def test_app_onboarding_link_retry_does_not_create_another_account(self):
+        self.admin.stripe_account_id = ""
+        self.admin.save(update_fields=["stripe_account_id"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        path = f"/api/business-menu/stripe-connect/{self.restaurant.pk}/onboarding-link/"
+
+        with mocked_connect_stripe() as stripe_client:
+            first = self.client.post(path, {}, format="json")
+            retry = self.client.post(path, {}, format="json")
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(retry.status_code, 200)
+        stripe_client.accounts.create.assert_called_once()
+        self.admin.refresh_from_db()
+        self.assertEqual(self.admin.stripe_account_id, "acct_new")
+
+    def test_app_onboarding_link_timeout_returns_retryable_json(self):
+        import stripe
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        path = f"/api/business-menu/stripe-connect/{self.restaurant.pk}/onboarding-link/"
+        with mocked_connect_stripe() as stripe_client:
+            stripe_client.account_links.create.side_effect = stripe.APIConnectionError("timeout")
+            response = self.client.post(path, {}, format="json")
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["code"], "stripe_connect_temporary")
+        self.assertEqual(response["Cache-Control"], "no-store")
+
+    def test_app_onboarding_link_route_rejects_guest_other_owner_and_unknown_restaurant(self):
+        path = f"/api/business-menu/stripe-connect/{self.restaurant.pk}/onboarding-link/"
+        guest = self.client.post(path, {}, format="json")
+        self.assertIn(guest.status_code, (401, 403))
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.other_user)}")
+        forbidden = self.client.post(path, {}, format="json")
+        self.assertEqual(forbidden.status_code, 403)
+        self.assertEqual(forbidden.json()["code"], "permission_denied")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(self.user)}")
+        missing = self.client.post("/api/business-menu/stripe-connect/999999/onboarding-link/", {}, format="json")
+        self.assertEqual(missing.status_code, 404)
+        self.assertEqual(missing.json()["code"], "not_found")
+
     def test_canonical_post_creates_one_account_and_reuses_it_on_retry(self):
         self.admin.stripe_account_id = ""
         self.admin.save(update_fields=["stripe_account_id"])
