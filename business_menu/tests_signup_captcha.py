@@ -2,11 +2,13 @@ from unittest.mock import patch
 
 import requests
 from django.test import SimpleTestCase, TestCase, override_settings
+from django.utils.translation import gettext, override
 from rest_framework.test import APIClient
 
 
 @override_settings(
     SECURE_SSL_REDIRECT=False,
+    # Keep Google configured in tests to prove signup no longer depends on it.
     RECAPTCHA_SITE_KEY="recaptcha-public-test",
     RECAPTCHA_SECRET_KEY="recaptcha-secret-test",
     TURNSTILE_SITE_KEY="turnstile-public-test",
@@ -16,7 +18,7 @@ from rest_framework.test import APIClient
         "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     },
 )
-class SignupCaptchaTests(TestCase):
+class SignupTurnstileTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.signup = {
@@ -26,93 +28,90 @@ class SignupCaptchaTests(TestCase):
             "password": "a-strong-test-password-42",
             "accept_terms": True,
             "b2b_confirmation": True,
-            "captcha_token": "recaptcha-response-test",
-            "turnstile_token": "turnstile-response-test",
+            "cf-turnstile-response": "turnstile-response-test",
         }
 
-    def test_register_page_renders_both_configured_providers_and_success_callbacks(self):
-        response = self.client.get("/auth/register/?source=app")
-        html = response.content.decode()
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('class="g-recaptcha"', html)
-        self.assertIn('data-callback="signupRecaptchaVerified"', html)
+    def test_register_page_has_only_turnstile_and_keeps_app_source(self):
+        html = self.client.get("/auth/register/?source=app").content.decode()
         self.assertIn('class="cf-turnstile"', html)
         self.assertIn('data-callback="signupTurnstileVerified"', html)
+        self.assertIn('data-expired-callback="signupTurnstileExpired"', html)
         self.assertIn('name="source" value="app"', html)
-        self.assertIn('body.captcha_token = captchaTokens.recaptcha', html)
-        self.assertIn('body.turnstile_token = captchaTokens.turnstile', html)
+        self.assertIn('body["cf-turnstile-response"] = captchaToken', html)
+        self.assertNotIn("grecaptcha", html)
+        self.assertNotIn("g-recaptcha", html)
+        self.assertNotIn("g-recaptcha-response", html)
+        self.assertNotIn("signupRecaptchaVerified", html)
+        self.assertIn('id="signup-error-phone"', html)
+        self.assertIn('id="signup-error-email"', html)
+        self.assertIn("let signupInFlight = false", html)
+        self.assertIn("resetSignupCaptcha();", html)
+        self.assertIn('name="accept_terms" required', html)
+        self.assertIn('name="b2b_confirmation" required', html)
 
-    def test_both_valid_responses_are_verified_and_signup_continues(self):
+    def test_turnstile_messages_are_compiled_for_all_active_languages(self):
+        languages = ("ar", "cs", "de", "el", "en", "es", "fr", "it", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "zh_Hans")
+        source = "Please complete the security check."
+        for language in languages:
+            with override(language):
+                translated = gettext(source)
+            self.assertTrue(translated, language)
+            if language != "en":
+                self.assertNotEqual(translated, source, language)
+
+    def test_valid_turnstile_without_any_google_token_passes_captcha(self):
         with (
-            patch("business_menu.views.verify_captcha_response", side_effect=[(True, "verified"), (True, "verified")]) as verify,
+            patch("business_menu.views.verify_captcha_response", return_value=(True, "verified")) as verify,
             patch("business_menu.views._send_signup_verification_email", return_value=True),
         ):
             response = self.client.post("/api/business-menu/signup/", self.signup, format="json")
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["email_verification_required"])
-        self.assertEqual(verify.call_args_list[0].args, ("turnstile", "turnstile-response-test"))
-        self.assertEqual(verify.call_args_list[1].args, ("recaptcha", "recaptcha-response-test"))
+        verify.assert_called_once_with("turnstile", "turnstile-response-test", remoteip="127.0.0.1")
 
-    def test_missing_turnstile_token_is_reported_before_signup(self):
-        self.signup.pop("turnstile_token")
-        with patch("business_menu.views.verify_captcha_response", return_value=(False, "missing_token")) as verify:
+    def test_invalid_turnstile_response_is_rejected(self):
+        with patch(
+            "business_menu.views.verify_captcha_response",
+            return_value=(False, "invalid_token"),
+        ) as verify:
             response = self.client.post("/api/business-menu/signup/", self.signup, format="json")
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["code"], "captcha_turnstile_missing_token")
-        verify.assert_called_once_with("turnstile", "", remoteip="127.0.0.1")
+        self.assertEqual(response.json()["code"], "captcha_turnstile_invalid_token")
+        verify.assert_called_once()
 
-    def test_recaptcha_rejection_is_distinguished_after_turnstile_passes(self):
-        with patch(
-            "business_menu.views.verify_captcha_response",
-            side_effect=[(True, "verified"), (False, "expired_or_duplicate")],
+    def test_field_error_is_distinct_and_retry_uses_a_fresh_turnstile_token(self):
+        invalid_field_attempt = {**self.signup, "phone": "not-a-phone"}
+        retry = {**self.signup, "email": "captcha-retry@example.test", "cf-turnstile-response": "fresh-turnstile-response-test"}
+        with (
+            patch("business_menu.views.verify_captcha_response", side_effect=[(True, "verified"), (True, "verified")]) as verify,
+            patch("business_menu.views._send_signup_verification_email", return_value=True),
         ):
-            response = self.client.post("/api/business-menu/signup/", self.signup, format="json")
+            first = self.client.post("/api/business-menu/signup/", invalid_field_attempt, format="json")
+            second = self.client.post("/api/business-menu/signup/", retry, format="json")
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["code"], "captcha_recaptcha_expired_or_duplicate")
+        self.assertEqual(first.status_code, 400)
+        self.assertIn("phone", first.json()["errors"])
+        self.assertNotIn("code", first.json())
+        self.assertEqual(second.status_code, 200)
+        self.assertTrue(second.json()["email_verification_required"])
+        self.assertEqual(
+            [call.args[1] for call in verify.call_args_list],
+            ["turnstile-response-test", "fresh-turnstile-response-test"],
+        )
 
-    def test_provider_outage_returns_service_unavailable_code(self):
-        with patch(
-            "business_menu.views.verify_captcha_response",
-            return_value=(False, "network_error"),
-        ):
-            response = self.client.post("/api/business-menu/signup/", self.signup, format="json")
-
-        self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json()["code"], "captcha_turnstile_network_error")
-
-
-@override_settings(
-    RECAPTCHA_SECRET_KEY="recaptcha-secret-test",
-    TURNSTILE_SECRET_KEY="turnstile-secret-test",
-)
-class CaptchaProviderResultTests(SimpleTestCase):
-    def verify(self, token="captcha-response-test", provider="turnstile"):
+    def test_provider_expiration_duplicate_configuration_and_network_errors_are_safe(self):
         from accounts.email_safety import verify_captcha_response
 
-        return verify_captcha_response(provider, token)
-
-    def test_empty_token_does_not_call_provider(self):
         with patch("accounts.email_safety.requests.post") as post:
-            self.assertEqual(self.verify(""), (False, "missing_token"))
+            self.assertEqual(verify_captcha_response("turnstile", ""), (False, "missing_token"))
         post.assert_not_called()
-
-    def test_timeout_or_duplicate_is_reported_without_exposing_token(self):
-        response = type("Response", (), {"ok": True, "json": lambda self: {"success": False, "error-codes": ["timeout-or-duplicate"]}})()
-        with patch("accounts.email_safety.requests.post", return_value=response):
-            result = self.verify()
-        self.assertEqual(result, (False, "expired_or_duplicate"))
-
-    def test_provider_configuration_and_network_failures_are_distinct(self):
+        duplicate = type("Response", (), {"ok": True, "json": lambda self: {"success": False, "error-codes": ["timeout-or-duplicate"]}})()
         invalid_secret = type("Response", (), {"ok": True, "json": lambda self: {"success": False, "error-codes": ["invalid-input-secret"]}})()
+        with patch("accounts.email_safety.requests.post", return_value=duplicate):
+            self.assertEqual(verify_captcha_response("turnstile", "nonempty-test-value"), (False, "expired_or_duplicate"))
         with patch("accounts.email_safety.requests.post", return_value=invalid_secret):
-            self.assertEqual(self.verify(), (False, "configuration_error"))
+            self.assertEqual(verify_captcha_response("turnstile", "nonempty-test-value"), (False, "configuration_error"))
         with patch("accounts.email_safety.requests.post", side_effect=requests.Timeout):
-            self.assertEqual(self.verify(), (False, "network_error"))
-
-    def test_verified_provider_response_succeeds(self):
-        response = type("Response", (), {"ok": True, "json": lambda self: {"success": True}})()
-        with patch("accounts.email_safety.requests.post", return_value=response):
-            self.assertEqual(self.verify(), (True, "verified"))
+            self.assertEqual(verify_captcha_response("turnstile", "nonempty-test-value"), (False, "network_error"))

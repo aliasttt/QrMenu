@@ -143,12 +143,6 @@ def _get_client_ip(request) -> str:
     return (request.META.get("REMOTE_ADDR") or "")[:45]
 
 
-def _recaptcha_required() -> bool:
-    """Whether reCAPTCHA verification is required (keys configured)."""
-    sk = getattr(settings, "RECAPTCHA_SECRET_KEY", None) or ""
-    return bool(sk.strip())
-
-
 def _signup_captcha_failure(provider: str, reason: str, message: str) -> Response:
     logger.warning("business_signup_captcha_rejected provider=%s reason=%s", provider, reason)
     unavailable_reasons = {
@@ -5975,16 +5969,10 @@ class RestaurantOwnerSignupView(APIView):
         if is_honeypot_filled(request.data):
             logger.warning("business_signup_honeypot_blocked ip_fp=%s", fingerprint(get_client_ip(request), "ip"))
             return Response({"success": True, "message": "Thanks. If your request can be processed, we will email you."})
-        turnstile_token = (request.data.get("cf-turnstile-response") or request.data.get("turnstile_token") or "").strip()
-        if turnstile_required():
-            valid, reason = verify_captcha_response("turnstile", turnstile_token, remoteip=get_client_ip(request))
-            if not valid:
-                return _signup_captcha_failure("turnstile", reason, "Please complete the security check.")
-        captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
-        if _recaptcha_required():
-            valid, reason = verify_captcha_response("recaptcha", captcha_token)
-            if not valid:
-                return _signup_captcha_failure("recaptcha", reason, "Please complete the \"I\'m not a robot\" check.")
+        turnstile_token = (request.data.get("cf-turnstile-response") or "").strip()
+        valid, reason = verify_captcha_response("turnstile", turnstile_token, remoteip=get_client_ip(request))
+        if not valid:
+            return _signup_captcha_failure("turnstile", reason, "Please complete the Turnstile security check.")
         serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -5996,16 +5984,19 @@ class RestaurantOwnerSignupView(APIView):
         try:
             signup_email = validate_recipient_email(signup_email)
         except Exception:
-            return Response({"success": False, "message": "Invalid email."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "errors": {"email": ["Invalid email."]}}, status=status.HTTP_400_BAD_REQUEST)
         allowed, reason = check_email_action("registration_verification", signup_email, request=request)
         if not allowed:
-            return Response({"success": False, "message": "Too many verification requests. Please try again later.", "reason": reason}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+            return Response(
+                {"success": False, "errors": {"email": ["Too many verification requests. Please try again later."]}, "reason": reason},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
 
         # Rate limit: do not send new code for same email within 60 seconds
         since = timezone.now() - timedelta(seconds=60)
         if PendingEmailVerification.objects.filter(email__iexact=signup_email, created_at__gte=since).exists():
             return Response(
-                {"success": False, "message": "Please wait a minute before requesting a new code. Check your email for the code we already sent."},
+                {"success": False, "errors": {"email": ["Please wait a minute before requesting a new code. Check your email for the code we already sent."]}},
                 status=status.HTTP_429_TOO_MANY_REQUESTS,
             )
 

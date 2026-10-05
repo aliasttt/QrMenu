@@ -1082,8 +1082,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "我确认以企业身份（B2B）使用。"
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "请完成\"我不是机器人\"的检查."
+msgid "Please complete the security check."
+msgstr "请完成安全验证。"
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "安全验证已过期或已使用，请重新完成。"
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "安全验证暂时不可用，请稍后重试。"
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"

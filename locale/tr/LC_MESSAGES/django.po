@@ -1167,8 +1167,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "Bir işletme olarak hareket ettiğimi onaylıyorum (B2B)."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "Lütfen \"Ben bir robot değilim\" kontrolü tamamlamak."
+msgid "Please complete the security check."
+msgstr "Lütfen güvenlik kontrolünü tamamlayın."
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "Güvenlik doğrulamasının süresi doldu veya doğrulama zaten kullanıldı. Lütfen yeniden tamamlayın."
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "Güvenlik doğrulaması geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"

@@ -1165,8 +1165,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "Ik bevestig dat ik als bedrijf handel (B2B)."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "Alsjeblieft, vul de \"Ik ben geen robot\" cheque in."
+msgid "Please complete the security check."
+msgstr "Voltooi de beveiligingscontrole."
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "De beveiligingscontrole is verlopen of al gebruikt. Voltooi deze opnieuw."
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "De beveiligingscontrole is tijdelijk niet beschikbaar. Probeer het later opnieuw."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"

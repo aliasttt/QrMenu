@@ -1085,8 +1085,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "法人（B2B）として利用することを確認します。"
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "「ロボットではない」のチェックを完了してください。"
+msgid "Please complete the security check."
+msgstr "セキュリティ確認を完了してください。"
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "セキュリティ確認の有効期限が切れたか、すでに使用されています。もう一度完了してください。"
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "セキュリティ確認は一時的に利用できません。しばらくしてからもう一度お試しください。"
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"

@@ -3,9 +3,6 @@
 {% block title %}{% trans "Register" %} | {{ theme.brand_name }}{% endblock %}
 {% block meta %}
 {{ block.super }}
-{% if recaptcha_site_key %}
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-{% endif %}
 {% if turnstile_site_key %}
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {% endif %}
@@ -18,31 +15,34 @@
       <div id="step-form">
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Create your account" %}</h1>
         <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Start your 12-day free trial. No payment required." %}</p>
-        <form id="register-form" class="mt-6 space-y-4"
-          data-recaptcha-required="{{ recaptcha_required|yesno:'true,false' }}"
-          data-turnstile-required="{{ turnstile_required|yesno:'true,false' }}">
+        <form id="register-form" class="mt-6 space-y-4">
           {% csrf_token %}
-          <span id="captcha-prompt" class="hidden">{% blocktrans %}Please complete the "I'm not a robot" check.{% endblocktrans %}</span>
+          <span id="captcha-prompt" class="hidden">{% trans "Please complete the security check." %}</span>
+          <span id="captcha-expired" class="hidden">{% trans "Security verification expired or was already used. Please complete it again." %}</span>
+          <span id="captcha-unavailable" class="hidden">{% trans "Security verification is temporarily unavailable. Please try again later." %}</span>
           {% if signup_from_app %}<input type="hidden" name="source" value="app">{% endif %}
           {% include "partials/form_fields.html" with label=_("Restaurant name") name="restaurant_name" placeholder=_("Orange Bistro") %}
+          <p id="signup-error-restaurant_name" class="hidden text-sm text-red-600 dark:text-red-400" role="alert"></p>
           {% include "partials/form_fields.html" with label=_("Email") name="email" field_type="email" placeholder="owner@restaurant.com" %}
+          <p id="signup-error-email" class="hidden text-sm text-red-600 dark:text-red-400" role="alert"></p>
           {% include "partials/form_fields.html" with label=_("Phone") name="phone" placeholder="+49 123 456789" %}
+          <p id="signup-error-phone" class="hidden text-sm text-red-600 dark:text-red-400" role="alert"></p>
           {% include "partials/form_fields.html" with label=_("Password") name="password" field_type="password" placeholder="••••••••" %}
+          <p id="signup-error-password" class="hidden text-sm text-red-600 dark:text-red-400" role="alert"></p>
           <div class="flex items-start gap-2">
             <input type="checkbox" id="accept_terms" name="accept_terms" required class="rounded border-slate-300 mt-1">
             <label for="accept_terms" class="text-sm text-slate-600 dark:text-slate-400">{% trans "I accept the terms and conditions" %}</label>
           </div>
+          <p id="signup-error-accept_terms" class="hidden text-sm text-red-600 dark:text-red-400" role="alert"></p>
           <div class="flex items-start gap-2">
             <input type="checkbox" id="b2b_confirmation" name="b2b_confirmation" required class="rounded border-slate-300 mt-1">
             <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">{% trans "I confirm I am acting as a business (B2B)" %}</label>
           </div>
-          {% if recaptcha_site_key %}
-          <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-callback="signupRecaptchaVerified" id="recaptcha-el"></div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">{% blocktrans %}Please complete the "I'm not a robot" check.{% endblocktrans %}</p>
-          {% endif %}
+          <p id="signup-error-b2b_confirmation" class="hidden text-sm text-red-600 dark:text-red-400" role="alert"></p>
           {% if turnstile_site_key %}
-          <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-callback="signupTurnstileVerified" id="turnstile-el"></div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">{% blocktrans %}Please complete the "I'm not a robot" check.{% endblocktrans %}</p>
+          <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-callback="signupTurnstileVerified" data-expired-callback="signupTurnstileExpired" data-error-callback="signupTurnstileError" id="turnstile-el"></div>
+          {% else %}
+          <p class="text-sm text-red-600 dark:text-red-400" role="alert">{% trans "Security verification is temporarily unavailable. Please try again later." %}</p>
           {% endif %}
           <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
           <button type="submit" id="btn-submit" class="btn-primary w-full">{% trans "Continue" %}</button>
@@ -91,8 +91,12 @@
   const appReturnLink = document.getElementById("app-return-link");
   const signupFromApp = {{ signup_from_app|yesno:"true,false" }};
   const captchaPrompt = document.getElementById("captcha-prompt")?.textContent.trim() || "";
+  const captchaExpiredMessage = document.getElementById("captcha-expired")?.textContent.trim() || captchaPrompt;
+  const captchaUnavailableMessage = document.getElementById("captcha-unavailable")?.textContent.trim() || captchaPrompt;
   let appReturnAttempted = false;
   let pendingEmail = "";
+  let signupInFlight = false;
+  let turnstileToken = "";
 
   function getCsrf() {
     var input = document.querySelector('input[name="csrfmiddlewaretoken"]');
@@ -108,36 +112,86 @@
       delete errEl.dataset.errorCode;
     }
   }
-  window.signupRecaptchaVerified = clearCaptchaError;
-  window.signupTurnstileVerified = clearCaptchaError;
-
-  function signupCaptchaTokens(fd) {
-    return {
-      recaptcha: fd.get("g-recaptcha-response") || (typeof grecaptcha !== "undefined" ? grecaptcha.getResponse() : ""),
-      turnstile: fd.get("cf-turnstile-response") || (typeof turnstile !== "undefined" ? turnstile.getResponse() : ""),
-    };
-  }
+  window.signupTurnstileVerified = function(token) {
+    turnstileToken = token || "";
+    clearCaptchaError();
+  };
+  window.signupTurnstileExpired = function() {
+    turnstileToken = "";
+    errEl.dataset.errorCode = "captcha_expired";
+    errEl.textContent = captchaExpiredMessage;
+    errEl.classList.remove("hidden");
+  };
+  window.signupTurnstileError = function() {
+    turnstileToken = "";
+    errEl.dataset.errorCode = "captcha_provider_error";
+    errEl.textContent = captchaUnavailableMessage;
+    errEl.classList.remove("hidden");
+  };
 
   function resetSignupCaptcha() {
-    if (typeof grecaptcha !== "undefined" && document.getElementById("recaptcha-el")) {
-      try { grecaptcha.reset(); } catch (e) {}
-    }
+    turnstileToken = "";
     if (typeof turnstile !== "undefined" && document.getElementById("turnstile-el")) {
       try { turnstile.reset(); } catch (e) {}
     }
   }
 
+  const signupFields = ["restaurant_name", "email", "phone", "password", "accept_terms", "b2b_confirmation"];
+  function clearSignupFieldErrors() {
+    signupFields.forEach(function(name) {
+      const input = form.elements.namedItem(name);
+      const error = document.getElementById("signup-error-" + name);
+      if (input) input.removeAttribute("aria-invalid");
+      if (error) { error.textContent = ""; error.classList.add("hidden"); }
+    });
+  }
+  function showSignupFieldErrors(errors) {
+    let shown = 0;
+    signupFields.forEach(function(name) {
+      if (!Object.prototype.hasOwnProperty.call(errors, name)) return;
+      const input = form.elements.namedItem(name);
+      const error = document.getElementById("signup-error-" + name);
+      if (!error) return;
+      const value = errors[name];
+      error.textContent = Array.isArray(value) ? value.join(" ") : String(value);
+      error.classList.remove("hidden");
+      if (input) input.setAttribute("aria-invalid", "true");
+      shown += 1;
+    });
+    return shown;
+  }
+
+  form.addEventListener("invalid", function(e) {
+    const name = e.target && e.target.name;
+    const error = name && document.getElementById("signup-error-" + name);
+    if (!error) return;
+    error.textContent = e.target.validationMessage;
+    error.classList.remove("hidden");
+    e.target.setAttribute("aria-invalid", "true");
+  }, true);
+  form.addEventListener("input", function(e) {
+    const input = e.target;
+    const error = input && document.getElementById("signup-error-" + input.name);
+    if (error) { error.textContent = ""; error.classList.add("hidden"); input.removeAttribute("aria-invalid"); }
+  });
+  form.addEventListener("change", function(e) {
+    const input = e.target;
+    const error = input && document.getElementById("signup-error-" + input.name);
+    if (error && input.validity.valid) { error.textContent = ""; error.classList.add("hidden"); input.removeAttribute("aria-invalid"); }
+  });
+
   form.addEventListener("submit", function(e) {
     e.preventDefault();
+    if (signupInFlight) return;
     const fd = new FormData(form);
-    const captchaTokens = signupCaptchaTokens(fd);
-    if ((form.dataset.recaptchaRequired === "true" && !captchaTokens.recaptcha) ||
-        (form.dataset.turnstileRequired === "true" && !captchaTokens.turnstile)) {
+    const captchaToken = (fd.get("cf-turnstile-response") || turnstileToken || "").trim();
+    if (!captchaToken) {
       errEl.dataset.errorCode = "captcha_missing_token";
       errEl.textContent = captchaPrompt;
       errEl.classList.remove("hidden");
       return;
     }
+    clearSignupFieldErrors();
     errEl.classList.add("hidden");
     errEl.textContent = "";
     delete errEl.dataset.errorCode;
@@ -150,9 +204,9 @@
       accept_terms: fd.get("accept_terms") === "on",
       b2b_confirmation: fd.get("b2b_confirmation") === "on",
     };
-    if (form.dataset.recaptchaRequired === "true") body.captcha_token = captchaTokens.recaptcha;
-    if (form.dataset.turnstileRequired === "true") body.turnstile_token = captchaTokens.turnstile;
+    body["cf-turnstile-response"] = captchaToken;
 
+    signupInFlight = true;
     btn.disabled = true;
     btn.textContent = "Sending code…";
 
@@ -169,6 +223,7 @@
             if (verifyEmailDisplay) verifyEmailDisplay.textContent = data.email;
             if (stepForm) stepForm.classList.add("hidden");
             if (stepVerify) stepVerify.classList.remove("hidden");
+            signupInFlight = false;
             btn.disabled = false;
             btn.textContent = "Continue";
             return;
@@ -178,22 +233,24 @@
           return;
         }
         var msg = data.message || "Registration failed.";
-        if (data.errors) {
-          var parts = [];
-          for (var k in data.errors) parts.push(k + ": " + (Array.isArray(data.errors[k]) ? data.errors[k].join(" ") : data.errors[k]));
-          msg = parts.join("\n");
+        if ((data.code || "").indexOf("captcha_turnstile_") === 0) {
+          msg = data.code.indexOf("expired_or_duplicate") !== -1 ? captchaExpiredMessage : captchaPrompt;
+          if (/configuration_error|network_error|provider_/.test(data.code)) msg = captchaUnavailableMessage;
         }
-        errEl.textContent = msg;
+        var fieldErrorsShown = data.errors ? showSignupFieldErrors(data.errors) : 0;
+        errEl.textContent = fieldErrorsShown && Object.keys(data.errors).length === fieldErrorsShown ? "" : msg;
         errEl.dataset.errorCode = data.code || "";
-        errEl.classList.remove("hidden");
+        errEl.classList.toggle("hidden", !errEl.textContent);
+        signupInFlight = false;
         btn.disabled = false;
         btn.textContent = "Continue";
-        if ((data.code || "").indexOf("captcha_") === 0) resetSignupCaptcha();
+        resetSignupCaptcha();
       })
       .catch(function() {
         errEl.textContent = "Network error. Please try again.";
         errEl.dataset.errorCode = "network_error";
         errEl.classList.remove("hidden");
+        signupInFlight = false;
         btn.disabled = false;
         btn.textContent = "Continue";
         resetSignupCaptcha();

@@ -10,6 +10,8 @@ from .models import BusinessAdmin, PendingEmailVerification
 
 @override_settings(
     SECURE_SSL_REDIRECT=False,
+    TURNSTILE_SITE_KEY="turnstile-public-test",
+    TURNSTILE_SECRET_KEY="turnstile-secret-test",
     STORAGES={
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
@@ -25,6 +27,7 @@ class SignupAppReturnTests(TestCase):
             "password": "a-strong-test-password-41",
             "accept_terms": True,
             "b2b_confirmation": True,
+            "cf-turnstile-response": "turnstile-test-response",
         }
 
     def begin_signup(self, source=None):
@@ -33,7 +36,10 @@ class SignupAppReturnTests(TestCase):
             data["source"] = source
         if source == "app":
             data["return_url"] = "https://evil.example/"
-        with patch("business_menu.views._send_signup_verification_email", return_value=True):
+        with (
+            patch("business_menu.views.verify_captcha_response", return_value=(True, "verified")),
+            patch("business_menu.views._send_signup_verification_email", return_value=True),
+        ):
             response = self.client.post("/api/business-menu/signup/", data, format="json")
         return response, PendingEmailVerification.objects.get(email__iexact=self.signup_data["email"])
 

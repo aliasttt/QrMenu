@@ -1176,8 +1176,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "Επιβεβαιώνω ότι ενεργώ ως επιχείρηση (B2B)."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "Παρακαλώ συμπληρώστε το \"Δεν είμαι ρομπότ\" έλεγχος."
+msgid "Please complete the security check."
+msgstr "Παρακαλώ ολοκληρώστε τον έλεγχο ασφαλείας."
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "Η επαλήθευση ασφαλείας έληξε ή έχει ήδη χρησιμοποιηθεί. Παρακαλώ ολοκληρώστε την ξανά."
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "Η επαλήθευση ασφαλείας δεν είναι προσωρινά διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"

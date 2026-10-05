@@ -1152,8 +1152,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "Potvrzuji, že jednám jako podnikatel (B2B)."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "Vyplňte prosím šek \"Nejsem robot\"."
+msgid "Please complete the security check."
+msgstr "Dokončete prosím bezpečnostní kontrolu."
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "Bezpečnostní ověření vypršelo nebo již bylo použito. Dokončete ho prosím znovu."
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "Bezpečnostní ověření je dočasně nedostupné. Zkuste to prosím později."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"

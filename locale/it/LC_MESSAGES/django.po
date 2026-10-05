@@ -1164,8 +1164,14 @@ msgid "I confirm I am acting as a business (B2B)"
 msgstr "Confermo di agire come impresa (B2B)."
 
 #: .\templates\pages\auth\register.html:34
-msgid "Please complete the \"I'm not a robot\" check."
-msgstr "Si prega di completare il controllo \"Non sono un robot\"."
+msgid "Please complete the security check."
+msgstr "Completa il controllo di sicurezza."
+
+msgid "Security verification expired or was already used. Please complete it again."
+msgstr "La verifica di sicurezza è scaduta o è già stata utilizzata. Completala di nuovo."
+
+msgid "Security verification is temporarily unavailable. Please try again later."
+msgstr "La verifica di sicurezza è temporaneamente non disponibile. Riprova più tardi."
 
 #: .\templates\pages\auth\register.html:37
 msgid "Continue"
