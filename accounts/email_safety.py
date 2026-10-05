@@ -10,6 +10,8 @@ import hashlib
 import hmac
 import logging
 import re
+import time
+import uuid
 from dataclasses import dataclass
 
 import requests
@@ -224,37 +226,99 @@ def verify_captcha_response(provider: str, token: str, *, remoteip: str = "") ->
     url, secret = provider_config[provider]
     if not secret:
         return False, "configuration_error"
-    if not (token or "").strip():
+    token = (token or "").strip()
+    if not token:
         return False, "missing_token"
+    if len(token) > 2048:
+        return False, "invalid_token"
 
-    payload = {"secret": secret, "response": token.strip()}
+    payload = {"secret": secret, "response": token}
     if provider == "turnstile" and remoteip:
         payload["remoteip"] = remoteip
-    try:
-        response = requests.post(url, data=payload, timeout=8)
-    except requests.RequestException:
-        return False, "network_error"
-    if not response.ok:
-        return False, "provider_http_error"
-    try:
-        result = response.json()
-    except (ValueError, requests.exceptions.JSONDecodeError):
-        return False, "provider_invalid_response"
-    if not isinstance(result, dict):
-        return False, "provider_invalid_response"
-    if result.get("success") is True:
-        return True, "verified"
+    attempts = 2 if provider == "turnstile" else 1
+    if provider == "turnstile":
+        payload["idempotency_key"] = str(uuid.uuid4())
 
-    error_codes = set(result.get("error-codes") or [])
-    if error_codes & {"missing-input-secret", "invalid-input-secret"}:
-        return False, "configuration_error"
-    if "missing-input-response" in error_codes:
-        return False, "missing_token"
-    if "timeout-or-duplicate" in error_codes:
-        return False, "expired_or_duplicate"
-    if "invalid-input-response" in error_codes:
-        return False, "invalid_token"
-    return False, "rejected"
+    for attempt in range(1, attempts + 1):
+        started = time.monotonic()
+        try:
+            response = requests.post(url, data=payload, timeout=(3.05, 5), allow_redirects=False)
+        except requests.RequestException as exc:
+            exception_name = type(exc).__name__
+            if isinstance(exc, requests.Timeout):
+                reason = "provider_timeout"
+            elif isinstance(exc, requests.exceptions.ProxyError):
+                reason = "provider_proxy_error"
+            elif isinstance(exc, requests.exceptions.SSLError):
+                reason = "provider_tls_error"
+            elif isinstance(exc, requests.ConnectionError):
+                reason = "provider_connection_error"
+            else:
+                reason = "provider_request_error"
+        else:
+            duration_ms = round((time.monotonic() - started) * 1000)
+            content_type = response.headers.get("Content-Type", "")
+            try:
+                result = response.json()
+            except ValueError:
+                result = None
+            error_codes = {
+                str(code)[:64] for code in (result.get("error-codes") or [])
+            } if isinstance(result, dict) else set()
+            summary = {
+                "success": result.get("success") if isinstance(result, dict) else None,
+                "error_codes": sorted(error_codes),
+                "response_bytes": len(response.content),
+            }
+            if not response.ok:
+                logger.warning(
+                    "captcha_provider_http_error provider=%s destination=%s method=POST status=%s "
+                    "content_type=%s duration_ms=%s attempt=%s response=%s",
+                    provider, url, response.status_code, content_type, duration_ms, attempt, summary,
+                )
+                if error_codes & {"missing-input-secret", "invalid-input-secret", "bad-request"}:
+                    return False, "configuration_error"
+                if attempt < attempts and (response.status_code == 429 or response.status_code >= 500):
+                    continue
+                return False, "provider_http_error"
+            if not isinstance(result, dict):
+                logger.warning(
+                    "captcha_provider_invalid_response provider=%s destination=%s method=POST status=%s "
+                    "content_type=%s duration_ms=%s attempt=%s response=%s",
+                    provider, url, response.status_code, content_type, duration_ms, attempt, summary,
+                )
+                return False, "provider_invalid_response"
+            if result.get("success") is True:
+                return True, "verified"
+            logger.warning(
+                "captcha_provider_rejected provider=%s destination=%s method=POST status=%s "
+                "content_type=%s duration_ms=%s attempt=%s response=%s",
+                provider, url, response.status_code, content_type, duration_ms, attempt, summary,
+            )
+            if "internal-error" in error_codes and attempt < attempts:
+                continue
+            if error_codes & {"missing-input-secret", "invalid-input-secret", "bad-request"}:
+                return False, "configuration_error"
+            if "missing-input-response" in error_codes:
+                return False, "missing_token"
+            if "timeout-or-duplicate" in error_codes:
+                return False, "expired_or_duplicate"
+            if "invalid-input-response" in error_codes:
+                return False, "invalid_token"
+            if "internal-error" in error_codes:
+                return False, "provider_internal_error"
+            return False, "rejected"
+
+        duration_ms = round((time.monotonic() - started) * 1000)
+        logger.warning(
+            "captcha_provider_request_error provider=%s destination=%s method=POST duration_ms=%s "
+            "attempt=%s reason=%s exception=%s",
+            provider, url, duration_ms, attempt, reason, exception_name,
+        )
+        if attempt == attempts or reason not in {"provider_timeout", "provider_connection_error"}:
+            return False, reason
+
+    return False, "provider_request_error"
 
 
 def verify_turnstile(token: str, *, remoteip: str = "") -> bool:

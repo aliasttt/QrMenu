@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 
 import requests
@@ -79,7 +80,29 @@ class SignupTurnstileTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["code"], "captcha_turnstile_invalid_token")
+        self.assertEqual(response.json()["message"], "Please complete the security check.")
         verify.assert_called_once()
+
+    def test_provider_configuration_error_is_not_reported_as_user_omission(self):
+        with patch("business_menu.views.verify_captcha_response", return_value=(False, "configuration_error")):
+            response = self.client.post("/api/business-menu/signup/", self.signup, format="json")
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["code"], "captcha_turnstile_configuration_error")
+        self.assertEqual(
+            response.json()["message"],
+            "Security verification is temporarily unavailable. Please try again later.",
+        )
+
+    def test_expired_token_requests_a_fresh_security_check(self):
+        with patch("business_menu.views.verify_captcha_response", return_value=(False, "expired_or_duplicate")):
+            response = self.client.post("/api/business-menu/signup/", self.signup, format="json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["message"],
+            "Security verification expired or was already used. Please complete it again.",
+        )
 
     def test_field_error_is_distinct_and_retry_uses_a_fresh_turnstile_token(self):
         invalid_field_attempt = {**self.signup, "phone": "not-a-phone"}
@@ -101,17 +124,88 @@ class SignupTurnstileTests(TestCase):
             ["turnstile-response-test", "fresh-turnstile-response-test"],
         )
 
-    def test_provider_expiration_duplicate_configuration_and_network_errors_are_safe(self):
+
+@override_settings(TURNSTILE_SECRET_KEY="turnstile-secret-test")
+class TurnstileSiteverifyTests(SimpleTestCase):
+    token = "turnstile-response-test"
+
+    @staticmethod
+    def response(status_code, payload=None, content_type="application/json"):
+        response = requests.Response()
+        response.status_code = status_code
+        response.headers["Content-Type"] = content_type
+        response._content = json.dumps(payload).encode() if payload is not None else b"not-json"
+        return response
+
+    def verify(self):
         from accounts.email_safety import verify_captcha_response
 
-        with patch("accounts.email_safety.requests.post") as post:
-            self.assertEqual(verify_captcha_response("turnstile", ""), (False, "missing_token"))
+        return verify_captcha_response("turnstile", self.token, remoteip="127.0.0.1")
+
+    @patch("accounts.email_safety.requests.post")
+    def test_missing_token_does_not_call_provider(self, post):
+        from accounts.email_safety import verify_captcha_response
+
+        self.assertEqual(verify_captcha_response("turnstile", ""), (False, "missing_token"))
         post.assert_not_called()
-        duplicate = type("Response", (), {"ok": True, "json": lambda self: {"success": False, "error-codes": ["timeout-or-duplicate"]}})()
-        invalid_secret = type("Response", (), {"ok": True, "json": lambda self: {"success": False, "error-codes": ["invalid-input-secret"]}})()
-        with patch("accounts.email_safety.requests.post", return_value=duplicate):
-            self.assertEqual(verify_captcha_response("turnstile", "nonempty-test-value"), (False, "expired_or_duplicate"))
-        with patch("accounts.email_safety.requests.post", return_value=invalid_secret):
-            self.assertEqual(verify_captcha_response("turnstile", "nonempty-test-value"), (False, "configuration_error"))
-        with patch("accounts.email_safety.requests.post", side_effect=requests.Timeout):
-            self.assertEqual(verify_captcha_response("turnstile", "nonempty-test-value"), (False, "network_error"))
+
+    @patch("accounts.email_safety.requests.post")
+    def test_success(self, post):
+        post.return_value = self.response(200, {"success": True, "error-codes": []})
+
+        self.assertEqual(self.verify(), (True, "verified"))
+        self.assertEqual(post.call_args.kwargs["data"]["response"], self.token)
+        self.assertEqual(post.call_args.kwargs["data"]["remoteip"], "127.0.0.1")
+        self.assertEqual(post.call_args.kwargs["timeout"], (3.05, 5))
+        self.assertFalse(post.call_args.kwargs["allow_redirects"])
+
+    @patch("accounts.email_safety.requests.post")
+    def test_invalid_token(self, post):
+        post.return_value = self.response(200, {"success": False, "error-codes": ["invalid-input-response"]})
+
+        self.assertEqual(self.verify(), (False, "invalid_token"))
+
+    @patch("accounts.email_safety.requests.post")
+    def test_expired_or_duplicate_token(self, post):
+        post.return_value = self.response(200, {"success": False, "error-codes": ["timeout-or-duplicate"]})
+
+        self.assertEqual(self.verify(), (False, "expired_or_duplicate"))
+
+    @patch("accounts.email_safety.requests.post")
+    def test_http_error_retries_once_with_same_idempotency_key(self, post):
+        post.return_value = self.response(503, {"success": False, "error-codes": ["internal-error"]})
+
+        self.assertEqual(self.verify(), (False, "provider_http_error"))
+        self.assertEqual(post.call_count, 2)
+        self.assertEqual(
+            post.call_args_list[0].kwargs["data"]["idempotency_key"],
+            post.call_args_list[1].kwargs["data"]["idempotency_key"],
+        )
+
+    @patch("accounts.email_safety.requests.post")
+    def test_http_invalid_secret_is_configuration_error_and_logs_no_credentials(self, post):
+        post.return_value = self.response(400, {"success": False, "error-codes": ["invalid-input-secret"]})
+
+        with self.assertLogs("accounts.email_safety", level="WARNING") as logs:
+            self.assertEqual(self.verify(), (False, "configuration_error"))
+
+        output = " ".join(logs.output)
+        self.assertIn("status=400", output)
+        self.assertIn("invalid-input-secret", output)
+        self.assertNotIn(self.token, output)
+        self.assertNotIn("turnstile-secret-test", output)
+
+    @patch("accounts.email_safety.requests.post")
+    def test_non_json_response(self, post):
+        post.return_value = self.response(200, content_type="text/html")
+
+        self.assertEqual(self.verify(), (False, "provider_invalid_response"))
+
+    @patch("accounts.email_safety.requests.post", side_effect=requests.Timeout)
+    def test_timeout_retries_once_with_same_idempotency_key(self, post):
+        self.assertEqual(self.verify(), (False, "provider_timeout"))
+        self.assertEqual(post.call_count, 2)
+        self.assertEqual(
+            post.call_args_list[0].kwargs["data"]["idempotency_key"],
+            post.call_args_list[1].kwargs["data"]["idempotency_key"],
+        )

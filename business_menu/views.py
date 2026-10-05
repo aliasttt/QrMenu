@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.core.files.storage import default_storage
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django.contrib.auth import authenticate
 from datetime import UTC, datetime, timedelta
 from django.templatetags.static import static as static_url
@@ -143,12 +144,16 @@ def _get_client_ip(request) -> str:
     return (request.META.get("REMOTE_ADDR") or "")[:45]
 
 
-def _signup_captcha_failure(provider: str, reason: str, message: str) -> Response:
+def _signup_captcha_failure(provider: str, reason: str) -> Response:
     logger.warning("business_signup_captcha_rejected provider=%s reason=%s", provider, reason)
-    unavailable_reasons = {
-        "configuration_error", "network_error", "provider_http_error", "provider_invalid_response",
-    }
-    response_status = status.HTTP_503_SERVICE_UNAVAILABLE if reason in unavailable_reasons else status.HTTP_400_BAD_REQUEST
+    unavailable = reason == "configuration_error" or reason == "network_error" or reason.startswith("provider_")
+    response_status = status.HTTP_503_SERVICE_UNAVAILABLE if unavailable else status.HTTP_400_BAD_REQUEST
+    if unavailable:
+        message = _("Security verification is temporarily unavailable. Please try again later.")
+    elif reason == "expired_or_duplicate":
+        message = _("Security verification expired or was already used. Please complete it again.")
+    else:
+        message = _("Please complete the security check.")
     return Response(
         {"success": False, "code": f"captcha_{provider}_{reason}", "message": message},
         status=response_status,
@@ -5972,7 +5977,7 @@ class RestaurantOwnerSignupView(APIView):
         turnstile_token = (request.data.get("cf-turnstile-response") or "").strip()
         valid, reason = verify_captcha_response("turnstile", turnstile_token, remoteip=get_client_ip(request))
         if not valid:
-            return _signup_captcha_failure("turnstile", reason, "Please complete the Turnstile security check.")
+            return _signup_captcha_failure("turnstile", reason)
         serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
