@@ -17,7 +17,10 @@ def navigation_context(request):
 
 
 def theme(request):
+    from django.conf import settings
     return {
+        "app_android_url": settings.APP_ANDROID_URL,
+        "app_ios_url": settings.APP_IOS_URL,
         "theme": {
             "brand_name": "QRMenu Pro",
         }

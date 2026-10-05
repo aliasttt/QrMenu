@@ -327,11 +327,12 @@ GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL = (
 FIREBASE_CONFIG = {}
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "") or os.getenv("VAPID_PUBLIC_KEY", "")
 
-# App download (panel + public pages)
-QR_MENU_APK_DEFAULT_URL = os.environ.get("APP_ANDROID_QR_MENU", os.getenv("APP_ANDROID_QR_MENU", "https://example.com/app.apk"))
-MENU_PANEL_APK_DEFAULT_URL = QR_MENU_APK_DEFAULT_URL
-APP_ANDROID_URL = os.environ.get("APP_ANDROID_URL", os.getenv("APP_ANDROID_URL", QR_MENU_APK_DEFAULT_URL))
-APP_IOS_URL = os.environ.get("APP_IOS_URL", os.getenv("APP_IOS_URL", "https://apps.apple.com/app/id000000000"))
+# Canonical app listings, shared by every download link. Legacy environment
+# overrides are intentionally ignored so stale APK/placeholder URLs cannot return.
+APP_ANDROID_URL = "https://play.google.com/store/apps/details?id=com.menupanelcli&pli=1"
+APP_IOS_URL = "https://apps.apple.com/tr/app/mybonusqrmenu/id6757697259"
+QR_MENU_APK_DEFAULT_URL = APP_ANDROID_URL
+MENU_PANEL_APK_DEFAULT_URL = APP_ANDROID_URL
 
 # Security (from config.security)
 from config.security import get_security_settings

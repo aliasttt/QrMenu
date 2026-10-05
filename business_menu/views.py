@@ -5918,6 +5918,8 @@ class RestaurantOwnerSignupView(APIView):
 
     def post(self, request):
         import random
+        if request.data.get("source") == "app":
+            request.session["owner_signup_source"] = "app"
         client_ip = _get_client_ip(request)
         email = (request.data.get("email") or "").strip()
         code = (request.data.get("email_verification_code") or request.data.get("code") or "").strip()
@@ -5953,6 +5955,8 @@ class RestaurantOwnerSignupView(APIView):
             if not signup_from_app:
                 from django.contrib.auth import login as auth_login
                 auth_login(request, user)
+            request.session.pop("owner_signup_source", None)
+            request.session.pop("owner_signup_pending_id", None)
             response_data = {
                 "success": True,
                 "message": "Registration successful. Your 12-day free trial has started.",
@@ -6018,10 +6022,10 @@ class RestaurantOwnerSignupView(APIView):
             "country": validated_data.get("country", ""),
             "city": validated_data.get("city", ""),
             # This only selects post-registration navigation; it grants no access.
-            "return_to_app": request.data.get("source") == "app",
+            "return_to_app": request.session.get("owner_signup_source") == "app",
         }
         PendingEmailVerification.objects.filter(email__iexact=signup_email).delete()
-        PendingEmailVerification.objects.create(
+        pending = PendingEmailVerification.objects.create(
             email=signup_email,
             code=verification_code,
             signup_data=signup_data,
@@ -6032,6 +6036,8 @@ class RestaurantOwnerSignupView(APIView):
                 {"success": False, "message": "Failed to send verification email. Please try again or contact support."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
+        if signup_data["return_to_app"]:
+            request.session["owner_signup_pending_id"] = pending.pk
         return Response(
             {
                 "success": True,

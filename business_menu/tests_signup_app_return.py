@@ -1,8 +1,16 @@
 from urllib.parse import parse_qs, urlsplit
 from unittest.mock import patch
+from datetime import timedelta
+from html import unescape
+import os
+import runpy
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.db import IntegrityError
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from .models import BusinessAdmin, PendingEmailVerification
@@ -19,6 +27,7 @@ from .models import BusinessAdmin, PendingEmailVerification
 )
 class SignupAppReturnTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.client = APIClient()
         self.signup_data = {
             "restaurant_name": "Return Test Cafe",
@@ -102,6 +111,85 @@ class SignupAppReturnTests(TestCase):
         content = response.content.decode()
         self.assertNotIn('name="source" value="app"', content)
         self.assertNotIn("register-complete", content)
+
+    def test_store_links_are_exact_on_panel_landing_and_app_signup(self):
+        android = "https://play.google.com/store/apps/details?id=com.menupanelcli&pli=1"
+        ios = "https://apps.apple.com/tr/app/mybonusqrmenu/id6757697259"
+        self.assertEqual(settings.APP_ANDROID_URL, android)
+        self.assertEqual(settings.APP_IOS_URL, ios)
+        admin = BusinessAdmin.objects.create(name="Downloads", email="downloads@example.com", phone="+49305559999")
+        for path in (f"/panel/?admin_id={admin.pk}", "/", "/auth/register/?source=app"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                content = unescape(response.content.decode())
+                self.assertIn('href="' + ios + '"', content)
+                if path != "/":
+                    self.assertIn('href="' + android + '"', content)
+                self.assertNotIn("id000000000", content)
+                self.assertNotIn("example.com/app.apk", content)
+
+    def test_legacy_environment_cannot_restore_stale_store_links(self):
+        with patch.dict(os.environ, {
+            "APP_ANDROID_URL": "https://old.example/app.apk",
+            "APP_ANDROID_QR_MENU": "https://old.example/legacy.apk",
+            "APP_IOS_URL": "https://apps.apple.com/app/id000000000",
+        }):
+            loaded = runpy.run_path(str(settings.BASE_DIR / "config" / "settings.py"))
+        self.assertEqual(loaded["APP_ANDROID_URL"], settings.APP_ANDROID_URL)
+        self.assertEqual(loaded["APP_IOS_URL"], settings.APP_IOS_URL)
+        self.assertEqual(loaded["QR_MENU_APK_DEFAULT_URL"], settings.APP_ANDROID_URL)
+
+    def test_app_source_survives_captcha_failure_retry_refresh_and_language_change(self):
+        self.client.get("/auth/register/?source=app")
+        with patch("business_menu.views.verify_captcha_response", return_value=(False, "missing_token")):
+            failed = self.client.post("/api/business-menu/signup/", self.signup_data, format="json")
+        self.assertEqual(failed.status_code, 400)
+        self.assertNotIn("app_return_url", failed.json())
+        started, pending = self.begin_signup()  # Source recovered from the session.
+        self.assertEqual(started.status_code, 200)
+        self.assertTrue(pending.signup_data["return_to_app"])
+        switched = self.client.post("/i18n/setlang/", {"language": "de", "next": "/de/auth/register/"})
+        self.assertEqual(switched.status_code, 302)
+        page = self.client.get(switched.url)
+        self.assertTrue(page.context["signup_from_app"])
+        self.assertEqual(page.context["signup_pending_email"], pending.email)
+        self.assertContains(page, 'name="source" value="app"')
+        completed = self.complete_signup(pending)  # Verification POST has no source either.
+        self.assertEqual(completed.status_code, 201)
+        self.assertIn("app_return_url", completed.json())
+        self.assertNotIn("owner_signup_source", self.client.session)
+        self.assertNotIn("owner_signup_pending_id", self.client.session)
+        self.assertFalse(self.client.get("/auth/register/").context["signup_from_app"])
+
+    def test_expired_pending_does_not_resume_or_return_to_app(self):
+        _, pending = self.begin_signup("app")
+        pending.expires_at = timezone.now() - timedelta(seconds=1)
+        pending.save(update_fields=["expires_at"])
+        self.assertEqual(self.client.get("/auth/register/").context["signup_pending_email"], "")
+        result = self.complete_signup(pending)
+        self.assertEqual(result.status_code, 400)
+        self.assertNotIn("app_return_url", result.json())
+        self.assertFalse(User.objects.exists())
+
+    def test_account_creation_failure_rolls_back_and_never_returns_success(self):
+        _, pending = self.begin_signup("app")
+        with patch("business_menu.views.Restaurant.objects.create", side_effect=IntegrityError("creation failed")):
+            with self.assertRaises(IntegrityError):
+                self.complete_signup(pending)
+        self.assertFalse(User.objects.exists())
+        self.assertFalse(BusinessAdmin.objects.exists())
+        self.assertTrue(PendingEmailVerification.objects.filter(pk=pending.pk).exists())
+
+    def test_verification_cannot_change_web_signup_destination(self):
+        _, pending = self.begin_signup()
+        result = self.client.post("/api/business-menu/signup/", {
+            "email": pending.email, "email_verification_code": pending.code,
+            "source": "app", "return_url": "https://evil.example/",
+        }, format="json")
+        self.assertEqual(result.status_code, 201)
+        self.assertIn("panel_url", result.json())
+        self.assertNotIn("app_return_url", result.json())
 
     def test_app_success_copy_renders_in_all_sixteen_site_languages(self):
         expected = {

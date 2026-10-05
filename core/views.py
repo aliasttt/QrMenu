@@ -750,11 +750,20 @@ def forgot_password_view(request):
 
 def register_view(request):
     from django.conf import settings
-    signup_from_app = request.GET.get("source") == "app"
+    from business_menu.models import PendingEmailVerification
+    if request.GET.get("source") == "app":
+        request.session["owner_signup_source"] = "app"
+    signup_from_app = request.session.get("owner_signup_source") == "app"
+    pending = None
+    if signup_from_app and request.session.get("owner_signup_pending_id"):
+        pending = PendingEmailVerification.objects.filter(
+            pk=request.session["owner_signup_pending_id"], expires_at__gt=timezone.now(),
+        ).first()
     return render(request, "pages/auth/register.html", {
         "turnstile_site_key": getattr(settings, "TURNSTILE_SITE_KEY", "") or "",
         "signup_from_app": signup_from_app,
         "signup_return_query": "?source=app" if signup_from_app else "",
+        "signup_pending_email": pending.email if pending else "",
     })
 
 
@@ -777,7 +786,6 @@ def panel_dashboard(request):
             subscription_active = entitlement["state"] == "active" and entitlement["is_entitled"]
             plan_active = entitlement["is_entitled"]
             expires_at = parse_datetime(entitlement["current_period_end"]) if entitlement["current_period_end"] else None
-            from django.conf import settings
             from business_menu.stripe_views import connect_account_ready
             return render(
                 request,
@@ -794,12 +802,9 @@ def panel_dashboard(request):
                     "stripe_connected": connect_account_ready(admin),
                     "subscribe_url": f"/business-menu/subscribe/checkout/?admin_id={admin.id}",
                     "connect_stripe_url": "/business-menu/connect/",
-                    "app_android_url": getattr(settings, "APP_ANDROID_URL", "") or getattr(settings, "QR_MENU_APK_DEFAULT_URL", "https://example.com/app.apk"),
-                    "app_ios_url": getattr(settings, "APP_IOS_URL", "https://apps.apple.com/app/id000000000"),
                 },
             )
     # Fallback: show minimal dashboard without admin (e.g. link to login/register)
-    from django.conf import settings
     return render(
         request,
         "pages/panel/dashboard_simple.html",
@@ -815,8 +820,6 @@ def panel_dashboard(request):
             "stripe_connected": False,
             "subscribe_url": "",
             "connect_stripe_url": "",
-            "app_android_url": getattr(settings, "APP_ANDROID_URL", "") or getattr(settings, "QR_MENU_APK_DEFAULT_URL", ""),
-            "app_ios_url": getattr(settings, "APP_IOS_URL", "https://apps.apple.com/app/id000000000"),
         },
     )
 

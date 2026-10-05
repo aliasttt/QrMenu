@@ -71,11 +71,16 @@
         <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Your account is ready. Return to the app and sign in." %}</p>
         <a id="app-return-link" href="#" rel="noreferrer" class="btn-primary mt-6 block w-full text-center">{% trans "Return to app and sign in" %}</a>
         <p class="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">{% trans "If the app does not open, tap the return button or open the app and sign in." %}</p>
+        <div class="mt-4 flex justify-center gap-4">
+          <a href="{{ app_android_url }}" target="_blank" rel="noopener noreferrer" class="btn-secondary">Android / Google Play</a>
+          <a href="{{ app_ios_url }}" target="_blank" rel="noopener noreferrer" class="btn-secondary">iOS / App Store</a>
+        </div>
       </div>{% endif %}
       <p class="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">{% trans "Already have an account?" %} <a href="{% url 'login' %}" class="font-semibold text-primary-600 hover:underline">{% trans "Login" %}</a></p>
     </div>
   </div>
 </section>
+{{ signup_pending_email|json_script:"signup-pending-email" }}
 <script>
 (function() {
   const stepForm = document.getElementById("step-form");
@@ -94,7 +99,7 @@
   const captchaExpiredMessage = document.getElementById("captcha-expired")?.textContent.trim() || captchaPrompt;
   const captchaUnavailableMessage = document.getElementById("captcha-unavailable")?.textContent.trim() || captchaPrompt;
   let appReturnAttempted = false;
-  let pendingEmail = "";
+  let pendingEmail = JSON.parse(document.getElementById("signup-pending-email").textContent);
   let signupInFlight = false;
   let turnstileToken = "";
 
@@ -104,6 +109,11 @@
   }
 
   if (!form || !btn) return;
+  if (pendingEmail) {
+    verifyEmailDisplay.textContent = pendingEmail;
+    stepForm.classList.add("hidden");
+    stepVerify.classList.remove("hidden");
+  }
 
   function clearCaptchaError() {
     if ((errEl.dataset.errorCode || "").indexOf("captcha_") === 0) {
