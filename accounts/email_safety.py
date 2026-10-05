@@ -207,24 +207,63 @@ def turnstile_required() -> bool:
     return bool((getattr(settings, "TURNSTILE_SECRET_KEY", "") or "").strip())
 
 
-def verify_turnstile(token: str, *, remoteip: str = "") -> bool:
-    secret = (getattr(settings, "TURNSTILE_SECRET_KEY", "") or "").strip()
-    if not secret:
-        return True
-    token = (token or "").strip()
-    if not token:
-        return False
-    try:
-        response = requests.post(
+def verify_captcha_response(provider: str, token: str, *, remoteip: str = "") -> tuple[bool, str]:
+    """Verify a CAPTCHA token and return a safe, canonical failure reason."""
+    provider_config = {
+        "turnstile": (
             "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-            data={"secret": secret, "response": token, "remoteip": remoteip},
-            timeout=8,
-        )
-        data = response.json() if response.ok else {}
-        return data.get("success") is True
-    except Exception:
-        logger.warning("turnstile_validation_failed", exc_info=True)
-        return False
+            (getattr(settings, "TURNSTILE_SECRET_KEY", "") or "").strip(),
+        ),
+        "recaptcha": (
+            "https://www.google.com/recaptcha/api/siteverify",
+            (getattr(settings, "RECAPTCHA_SECRET_KEY", "") or "").strip(),
+        ),
+    }
+    if provider not in provider_config:
+        return False, "configuration_error"
+    url, secret = provider_config[provider]
+    if not secret:
+        return False, "configuration_error"
+    if not (token or "").strip():
+        return False, "missing_token"
+
+    payload = {"secret": secret, "response": token.strip()}
+    if provider == "turnstile" and remoteip:
+        payload["remoteip"] = remoteip
+    try:
+        response = requests.post(url, data=payload, timeout=8)
+    except requests.RequestException:
+        return False, "network_error"
+    if not response.ok:
+        return False, "provider_http_error"
+    try:
+        result = response.json()
+    except (ValueError, requests.exceptions.JSONDecodeError):
+        return False, "provider_invalid_response"
+    if not isinstance(result, dict):
+        return False, "provider_invalid_response"
+    if result.get("success") is True:
+        return True, "verified"
+
+    error_codes = set(result.get("error-codes") or [])
+    if error_codes & {"missing-input-secret", "invalid-input-secret"}:
+        return False, "configuration_error"
+    if "missing-input-response" in error_codes:
+        return False, "missing_token"
+    if "timeout-or-duplicate" in error_codes:
+        return False, "expired_or_duplicate"
+    if "invalid-input-response" in error_codes:
+        return False, "invalid_token"
+    return False, "rejected"
+
+
+def verify_turnstile(token: str, *, remoteip: str = "") -> bool:
+    if not turnstile_required():
+        return True
+    valid, reason = verify_captcha_response("turnstile", token, remoteip=remoteip)
+    if not valid:
+        logger.warning("turnstile_validation_failed reason=%s", reason)
+    return valid
 
 
 def csrf_origin_allowed(request) -> bool:

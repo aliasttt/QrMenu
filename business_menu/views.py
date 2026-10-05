@@ -68,7 +68,7 @@ from accounts.email_safety import (
     safe_send_mail,
     validate_recipient_email,
     turnstile_required,
-    verify_turnstile,
+    verify_captcha_response,
 )
 from django.contrib.auth.models import User
 from .auth_utils import (
@@ -143,28 +143,22 @@ def _get_client_ip(request) -> str:
     return (request.META.get("REMOTE_ADDR") or "")[:45]
 
 
-def _verify_recaptcha(token: str) -> bool:
-    """Verify reCAPTCHA v2 response token with Google. Returns True if valid."""
-    secret = getattr(settings, "RECAPTCHA_SECRET_KEY", None) or ""
-    if not secret or not (token or "").strip():
-        return False
-    try:
-        import requests
-        r = requests.post(
-            "https://www.google.com/recaptcha/api/siteverify",
-            data={"secret": secret, "response": token},
-            timeout=10,
-        )
-        data = r.json() if r.ok else {}
-        return data.get("success") is True
-    except Exception:
-        return False
-
-
 def _recaptcha_required() -> bool:
     """Whether reCAPTCHA verification is required (keys configured)."""
     sk = getattr(settings, "RECAPTCHA_SECRET_KEY", None) or ""
     return bool(sk.strip())
+
+
+def _signup_captcha_failure(provider: str, reason: str, message: str) -> Response:
+    logger.warning("business_signup_captcha_rejected provider=%s reason=%s", provider, reason)
+    unavailable_reasons = {
+        "configuration_error", "network_error", "provider_http_error", "provider_invalid_response",
+    }
+    response_status = status.HTTP_503_SERVICE_UNAVAILABLE if reason in unavailable_reasons else status.HTTP_400_BAD_REQUEST
+    return Response(
+        {"success": False, "code": f"captcha_{provider}_{reason}", "message": message},
+        status=response_status,
+    )
 
 
 def _send_signup_verification_email(email: str, code: str) -> bool:
@@ -5982,18 +5976,15 @@ class RestaurantOwnerSignupView(APIView):
             logger.warning("business_signup_honeypot_blocked ip_fp=%s", fingerprint(get_client_ip(request), "ip"))
             return Response({"success": True, "message": "Thanks. If your request can be processed, we will email you."})
         turnstile_token = (request.data.get("cf-turnstile-response") or request.data.get("turnstile_token") or "").strip()
-        if turnstile_required() and not verify_turnstile(turnstile_token, remoteip=get_client_ip(request)):
-            return Response(
-                {"success": False, "message": "Please complete the security check."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if turnstile_required():
+            valid, reason = verify_captcha_response("turnstile", turnstile_token, remoteip=get_client_ip(request))
+            if not valid:
+                return _signup_captcha_failure("turnstile", reason, "Please complete the security check.")
         captcha_token = (request.data.get("captcha_token") or request.data.get("g_recaptcha_response") or "").strip()
         if _recaptcha_required():
-            if not _verify_recaptcha(captcha_token):
-                return Response(
-                    {"success": False, "message": "Please complete the \"I\'m not a robot\" check."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            valid, reason = verify_captcha_response("recaptcha", captcha_token)
+            if not valid:
+                return _signup_captcha_failure("recaptcha", reason, "Please complete the \"I\'m not a robot\" check.")
         serializer = RestaurantOwnerRegistrationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

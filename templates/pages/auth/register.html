@@ -6,6 +6,9 @@
 {% if recaptcha_site_key %}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endif %}
+{% if turnstile_site_key %}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,8 +18,11 @@
       <div id="step-form">
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{% trans "Create your account" %}</h1>
         <p class="mt-2 text-slate-600 dark:text-slate-400">{% trans "Start your 12-day free trial. No payment required." %}</p>
-        <form id="register-form" class="mt-6 space-y-4">
+        <form id="register-form" class="mt-6 space-y-4"
+          data-recaptcha-required="{{ recaptcha_required|yesno:'true,false' }}"
+          data-turnstile-required="{{ turnstile_required|yesno:'true,false' }}">
           {% csrf_token %}
+          <span id="captcha-prompt" class="hidden">{% blocktrans %}Please complete the "I'm not a robot" check.{% endblocktrans %}</span>
           {% if signup_from_app %}<input type="hidden" name="source" value="app">{% endif %}
           {% include "partials/form_fields.html" with label=_("Restaurant name") name="restaurant_name" placeholder=_("Orange Bistro") %}
           {% include "partials/form_fields.html" with label=_("Email") name="email" field_type="email" placeholder="owner@restaurant.com" %}
@@ -31,7 +37,11 @@
             <label for="b2b_confirmation" class="text-sm text-slate-600 dark:text-slate-400">{% trans "I confirm I am acting as a business (B2B)" %}</label>
           </div>
           {% if recaptcha_site_key %}
-          <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" id="recaptcha-el"></div>
+          <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-callback="signupRecaptchaVerified" id="recaptcha-el"></div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">{% blocktrans %}Please complete the "I'm not a robot" check.{% endblocktrans %}</p>
+          {% endif %}
+          {% if turnstile_site_key %}
+          <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-callback="signupTurnstileVerified" id="turnstile-el"></div>
           <p class="text-xs text-slate-500 dark:text-slate-400">{% blocktrans %}Please complete the "I'm not a robot" check.{% endblocktrans %}</p>
           {% endif %}
           <div id="form-errors" class="hidden text-sm text-red-600 dark:text-red-400"></div>
@@ -80,6 +90,7 @@
   const stepSuccess = document.getElementById("step-success");
   const appReturnLink = document.getElementById("app-return-link");
   const signupFromApp = {{ signup_from_app|yesno:"true,false" }};
+  const captchaPrompt = document.getElementById("captcha-prompt")?.textContent.trim() || "";
   let appReturnAttempted = false;
   let pendingEmail = "";
 
@@ -90,11 +101,46 @@
 
   if (!form || !btn) return;
 
+  function clearCaptchaError() {
+    if ((errEl.dataset.errorCode || "").indexOf("captcha_") === 0) {
+      errEl.textContent = "";
+      errEl.classList.add("hidden");
+      delete errEl.dataset.errorCode;
+    }
+  }
+  window.signupRecaptchaVerified = clearCaptchaError;
+  window.signupTurnstileVerified = clearCaptchaError;
+
+  function signupCaptchaTokens(fd) {
+    return {
+      recaptcha: fd.get("g-recaptcha-response") || (typeof grecaptcha !== "undefined" ? grecaptcha.getResponse() : ""),
+      turnstile: fd.get("cf-turnstile-response") || (typeof turnstile !== "undefined" ? turnstile.getResponse() : ""),
+    };
+  }
+
+  function resetSignupCaptcha() {
+    if (typeof grecaptcha !== "undefined" && document.getElementById("recaptcha-el")) {
+      try { grecaptcha.reset(); } catch (e) {}
+    }
+    if (typeof turnstile !== "undefined" && document.getElementById("turnstile-el")) {
+      try { turnstile.reset(); } catch (e) {}
+    }
+  }
+
   form.addEventListener("submit", function(e) {
     e.preventDefault();
+    const fd = new FormData(form);
+    const captchaTokens = signupCaptchaTokens(fd);
+    if ((form.dataset.recaptchaRequired === "true" && !captchaTokens.recaptcha) ||
+        (form.dataset.turnstileRequired === "true" && !captchaTokens.turnstile)) {
+      errEl.dataset.errorCode = "captcha_missing_token";
+      errEl.textContent = captchaPrompt;
+      errEl.classList.remove("hidden");
+      return;
+    }
     errEl.classList.add("hidden");
     errEl.textContent = "";
-    const fd = new FormData(form);
+    delete errEl.dataset.errorCode;
     const body = {
       restaurant_name: fd.get("restaurant_name") || "",
       email: fd.get("email") || "",
@@ -104,9 +150,8 @@
       accept_terms: fd.get("accept_terms") === "on",
       b2b_confirmation: fd.get("b2b_confirmation") === "on",
     };
-    if (typeof grecaptcha !== "undefined" && document.getElementById("recaptcha-el")) {
-      body.captcha_token = grecaptcha.getResponse() || "";
-    }
+    if (form.dataset.recaptchaRequired === "true") body.captcha_token = captchaTokens.recaptcha;
+    if (form.dataset.turnstileRequired === "true") body.turnstile_token = captchaTokens.turnstile;
 
     btn.disabled = true;
     btn.textContent = "Sending code…";
@@ -139,20 +184,19 @@
           msg = parts.join("\n");
         }
         errEl.textContent = msg;
+        errEl.dataset.errorCode = data.code || "";
         errEl.classList.remove("hidden");
         btn.disabled = false;
         btn.textContent = "Continue";
-        if (msg && (msg.indexOf("robot") !== -1 || msg.indexOf("recaptcha") !== -1 || msg.indexOf("I'm not a robot") !== -1)) {
-          if (typeof grecaptcha !== "undefined" && document.getElementById("recaptcha-el")) {
-            try { grecaptcha.reset(); } catch (e) {}
-          }
-        }
+        if ((data.code || "").indexOf("captcha_") === 0) resetSignupCaptcha();
       })
       .catch(function() {
         errEl.textContent = "Network error. Please try again.";
+        errEl.dataset.errorCode = "network_error";
         errEl.classList.remove("hidden");
         btn.disabled = false;
         btn.textContent = "Continue";
+        resetSignupCaptcha();
       });
   });
 
