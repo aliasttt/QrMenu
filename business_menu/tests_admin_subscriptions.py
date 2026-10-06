@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from rest_framework.test import APIClient
 
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription, Restaurant
 from .subscription_services import (
@@ -201,6 +202,76 @@ class RestaurantSubscriptionAdminTests(TestCase):
         )
         self.assertEqual(forbidden.status_code, 403)
         self.assertEqual(forbidden.json()["code"], "permission_denied")
+
+    @override_settings(STRIPE_SECRET_KEY="sk_test", STRIPE_PUBLISHABLE_KEY="pk_test")
+    def test_manual_subscription_block_and_unblock_with_the_same_jwt_and_refresh(self):
+        apply_manual_subscription(
+            self.owner, event_id="manual-jwt-cycle", plan="manual_monthly",
+            expires_at=timezone.now() + timedelta(days=30),
+        )
+        app = APIClient()
+        login = app.post("/api/business-menu/login/", {"email": self.owner.email, "password": "pass"})
+        self.assertEqual(login.status_code, 200)
+        access = login.json()["access"]
+        refresh = login.json()["refresh"]
+        app.credentials(HTTP_AUTHORIZATION="Bearer " + access)
+        status_url = "/api/business-menu/admin/subscription/"
+        initial = app.get(status_url)
+        self.assertTrue(initial.json()["is_entitled"])
+        before = list(self.owner.provider_subscriptions.values())
+
+        self.client.force_login(self.superuser)
+        self.assertEqual(self.post_action("block", reason="Account review").status_code, 302)
+        self.owner.refresh_from_db()
+        self.owner_user.refresh_from_db()
+        self.restaurant.refresh_from_db()
+        self.assertTrue(self.owner.is_active)
+        self.assertTrue(self.owner_user.is_active)
+        self.assertTrue(self.restaurant.is_active)
+        self.assertEqual(list(self.owner.provider_subscriptions.values()), before)
+
+        for method in (app.get, app.post):
+            blocked = method(status_url)
+            self.assertEqual(blocked.status_code, 200)
+            self.assertEqual(blocked.json()["state"], "blocked")
+            self.assertFalse(blocked.json()["is_entitled"])
+            self.assertEqual(blocked.json()["entitlement_source"], "admin_block")
+            self.assertEqual(blocked.json()["decision_reason"], "administratively_blocked")
+            self.assertEqual(blocked.json()["access_block_reason"], "Account review")
+            self.assertEqual(blocked.json()["current_period_end"], initial.json()["current_period_end"])
+            self.assertFalse(blocked.json()["providers"][0]["is_entitled"])
+            self.assertIn("no-store", blocked["Cache-Control"])
+
+        gated_url = "/api/business-menu/api/create-connect-link/"
+        with patch("business_menu.stripe_views._create_connect_link", return_value="https://connect.example/link") as connect:
+            blocked = app.post(gated_url, {"admin_id": self.owner.pk})
+            self.assertEqual(blocked.status_code, 402)
+            self.assertEqual(blocked.json()["code"], "subscription_required")
+            connect.assert_not_called()
+
+            recovered = app.post("/api/business-menu/token/refresh/", {"refresh": refresh}, format="json")
+            self.assertEqual(recovered.status_code, 200)
+            self.assertIn("refresh", recovered.json())
+            app.credentials(HTTP_AUTHORIZATION="Bearer " + recovered.json()["access"])
+            self.assertFalse(app.get(status_url).json()["is_entitled"])
+
+            app.credentials(HTTP_AUTHORIZATION="Bearer " + access)
+            self.assertEqual(self.post_action("unblock").status_code, 302)
+            self.assertTrue(app.get(status_url).json()["is_entitled"])
+            self.assertEqual(app.post(gated_url, {"admin_id": self.owner.pk}).status_code, 200)
+            connect.assert_called_once()
+
+            self.assertEqual(self.post_action("block").status_code, 302)
+            manual = self.owner.provider_subscriptions.get(provider="manual")
+            manual.current_period_end = timezone.now() - timedelta(seconds=1)
+            manual.save(update_fields=["current_period_end"])
+            self.assertEqual(self.post_action("unblock").status_code, 302)
+            expired = app.get(status_url)
+            self.assertEqual(expired.status_code, 200)
+            self.assertEqual(expired.json()["state"], "expired")
+            self.assertFalse(expired.json()["is_entitled"])
+            self.assertEqual(app.post(gated_url, {"admin_id": self.owner.pk}).status_code, 402)
+            connect.assert_called_once()
 
     def test_custom_end_requires_a_future_date(self):
         self.client.force_login(self.superuser)

@@ -5,6 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.db import transaction
@@ -606,6 +607,7 @@ class LoginView(APIView):
         return self._login_response(request, admin, user, message="OTP verified successfully")
 
 
+@method_decorator(never_cache, name="dispatch")
 class AdminSubscriptionView(APIView):
     """
     GET /api/business-menu/admin/subscription/
@@ -615,30 +617,28 @@ class AdminSubscriptionView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
-    def _payload(self, request):
-        try:
-            admin = _get_business_admin_for_user(request.user, request=request)
-            if not admin:
-                return _empty_subscription_payload()
-            return BusinessMenuSubscriptionSerializer(admin).data
-        except Exception as exc:
-            logger.exception("Error resolving subscription payload: %s", exc)
-            return _empty_subscription_payload()
-
     def get(self, request):
-        admin = BusinessAdmin.objects.filter(auth_user=request.user).select_related("restaurant").first()
-        if admin and not admin.is_active:
+        try:
+            admin = BusinessAdmin.objects.filter(auth_user=request.user).select_related("restaurant").first()
+            if admin and not admin.is_active:
+                return Response(
+                    {"code": "account_inactive", "message": "This restaurant account is inactive."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            restaurant = getattr(admin, "restaurant", None) if admin else None
+            if restaurant and not restaurant.is_active:
+                return Response(
+                    {"code": "restaurant_inactive", "message": "This restaurant is inactive."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            payload = BusinessMenuSubscriptionSerializer(admin).data if admin else _empty_subscription_payload()
+        except Exception:
+            logger.exception("Error resolving subscription payload")
             return Response(
-                {"code": "account_inactive", "message": "This restaurant account is inactive."},
-                status=status.HTTP_403_FORBIDDEN,
+                {"code": "subscription_status_unavailable", "message": "Subscription status could not be verified. Please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
-        restaurant = getattr(admin, "restaurant", None) if admin else None
-        if restaurant and not restaurant.is_active:
-            return Response(
-                {"code": "restaurant_inactive", "message": "This restaurant is inactive."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        return Response(self._payload(request), status=status.HTTP_200_OK)
+        return Response(payload, status=status.HTTP_200_OK)
 
     def post(self, request):
         return self.get(request)

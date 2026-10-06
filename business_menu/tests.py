@@ -8,6 +8,7 @@ from django.core.management import call_command
 from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import PasswordResetCode
 from .models import BusinessAdmin, Courier, Customer, Order, Payment, Restaurant
@@ -217,6 +218,55 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
         response = self.client.get("/api/business-menu/admin/subscription/")
 
         self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data["code"], "not_authenticated")
+        self.assertIn("no-store", response["Cache-Control"])
+
+    def test_subscription_status_keeps_invalid_and_expired_jwt_as_401_without_logging_tokens(self):
+        token = RefreshToken.for_user(self.user).access_token
+        token.set_exp(lifetime=timedelta(seconds=-1))
+        for invalid in ("invalid.private.token", str(token)):
+            with self.subTest(expired=invalid != "invalid.private.token"):
+                self.client.credentials(HTTP_AUTHORIZATION="Bearer " + invalid)
+                with self.assertLogs("config.drf_exception_handler", level="WARNING") as logs:
+                    response = self.client.get("/api/business-menu/admin/subscription/")
+                self.assertEqual(response.status_code, 401)
+                self.assertEqual(response.data["code"], "token_not_valid")
+                self.assertIn("authorization_present=True bearer_header=True", " ".join(logs.output))
+                self.assertNotIn(invalid, " ".join(logs.output))
+
+    def test_inactive_auth_user_is_not_admitted_by_subscription_status(self):
+        token = RefreshToken.for_user(self.user).access_token
+        self.user.is_active = False
+        self.user.save(update_fields=["is_active"])
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + str(token))
+
+        response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data["code"], "user_inactive")
+
+    def test_invalid_refresh_keeps_401_for_project_refresh_routes(self):
+        for url in (
+            "/api/business-menu/token/refresh/",
+            "/api/business-menu/refresh/",
+            "/api/v1/token/refresh/",
+            "/api/accounts/token/refresh/",
+            "/api/v1/accounts/token/refresh/",
+        ):
+            with self.subTest(url=url):
+                response = self.client.post(url, {"refresh": "invalid.private.refresh"}, format="json")
+                self.assertEqual(response.status_code, 401)
+                self.assertEqual(response.data["code"], "token_not_valid")
+
+    def test_subscription_status_failure_is_temporary_not_a_successful_empty_status(self):
+        self.client.force_authenticate(user=self.user)
+        with patch("business_menu.serializers.resolve_subscription_entitlement", side_effect=RuntimeError("unavailable")):
+            response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.data["code"], "subscription_status_unavailable")
+        self.assertNotIn("is_entitled", response.data)
+        self.assertIn("no-store", response["Cache-Control"])
 
     def test_subscription_status_returns_current_entitlement(self):
         self.client.force_authenticate(user=self.user)

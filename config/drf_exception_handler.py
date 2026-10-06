@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 from typing import Any
+import logging
 
 from rest_framework.views import exception_handler
+from rest_framework_simplejwt.views import TokenRefreshView
+
+
+logger = logging.getLogger(__name__)
 
 
 def custom_exception_handler(exc: Exception, context: dict[str, Any]):
     """
-    Convert JWT auth failures to 403 (Forbidden) for mobile apps.
-
-    Background:
-    - DRF/SimpleJWT normally returns 401 for expired/invalid tokens.
-    - Some clients in this project treat ANY 403 as "force logout + go to login".
-    - Therefore, when a request includes a Bearer token (or hits token refresh),
-      we map 401 -> 403 to match the clients' expectations.
+    Preserve 401 for subscription status and refresh; keep legacy mapping elsewhere.
     """
     response = exception_handler(exc, context)
     if response is None:
@@ -35,6 +34,15 @@ def custom_exception_handler(exc: Exception, context: dict[str, Any]):
 
     is_bearer = auth_header.lower().startswith("bearer ")
     is_refresh_path = "token/refresh" in (path or "").lower()
+
+    view = context.get("view")
+    if type(view).__name__ == "AdminSubscriptionView" or isinstance(view, TokenRefreshView):
+        response.data.setdefault("code", exc.default_code)
+        logger.warning(
+            "subscription_auth_failure view=%s code=%s authorization_present=%s bearer_header=%s",
+            type(view).__name__, response.data["code"], bool(auth_header), is_bearer,
+        )
+        return response
 
     # Only remap when it's clearly an auth-token problem for app flows
     if is_bearer or is_refresh_path:

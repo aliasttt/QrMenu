@@ -80,12 +80,45 @@ python manage.py retry_google_play_acknowledgements --apply
 
 The authenticated app obtains the stable UUID from `GET` (or compatibility `POST`) `/api/business-menu/admin/subscription/`, field `app_account_token`. For a new Apple purchase pass it as StoreKit `appAccountToken`; for a new Google purchase pass it as BillingClient `obfuscatedAccountId`. Verify with `/admin/subscription/apple/verify/` or `/admin/subscription/google/verify/`; restore uses `/admin/subscription/restore/` with `provider` and the provider purchase token/JWS. Previously bound purchases may restore without adding a new ownership claim; previously unbound purchases require an app update and the account token.
 
-The mobile client must treat subscription status as account-scoped and server-authoritative:
+Call StoreKit `finish()`/`finishTransaction` only after `/api/business-menu/admin/subscription/apple/verify/` returns `200` and the verified subscription has been persisted. Keep the transaction pending for a retryable `503`; do not start another purchase to work around verification failure.
 
-- `200` from `/api/business-menu/admin/subscription/` is a fresh status; use `is_entitled`, `state`, `provider`, `entitlement_source`, and `current_period_end` together.
-- `401` means authentication is no longer valid. `403 account_inactive` and `403 restaurant_inactive` are definitive access revocations; clear any cached Active display. A transport error or `5xx` is temporary and must not present cached data as freshly verified.
-- Clear cached subscription data on logout or account change.
-- Call StoreKit `finish()`/`finishTransaction` only after `/api/business-menu/admin/subscription/apple/verify/` returns `200` and the verified subscription has been persisted. Keep the transaction pending for a retryable `503`; do not start another purchase to work around verification failure.
+## Service block and mobile subscription state
+
+`Block all service access` sets `BusinessAdmin.subscription_access_blocked`, its timestamp, actor, reason, and last admin-action UUID. It leaves `User.is_active`, `BusinessAdmin.is_active`, `Restaurant.is_active`, JWT validity, and financial/provider records unchanged. Unblock recalculates access from the remaining valid subscription/trial; it does not create or extend one.
+
+`GET /api/business-menu/admin/subscription/` (and compatibility POST) requires valid authentication but does not require an entitlement. It returns `Cache-Control: private, no-store` so HTTP caches cannot reuse a previous Active response. A service-blocked active account receives `200` with these fields, even while a paid provider/manual record still exists:
+
+```json
+{
+  "state": "blocked",
+  "is_entitled": false,
+  "access_blocked": true,
+  "entitlement_source": "admin_block",
+  "decision_reason": "administratively_blocked",
+  "access_block_reason": "Account review",
+  "message": "Access is blocked by an administrator."
+}
+```
+
+This is an excerpt; the response retains provider, expiry and provider-history fields. Every nested `providers[].is_entitled` is false while blocked. A future expiry or a provider row with `status=active` must not override top-level `is_entitled=false`. APIs with subscription enforcement keep returning `402 subscription_required` while access is blocked.
+
+No mobile application source is present in this web repository. The following handler/store changes and device acceptance test must be implemented in the app; backend tests do not verify the mobile UI.
+
+| Response from subscription status | Required handler/store behavior |
+| --- | --- |
+| `200`, `state=blocked`, `is_entitled=false` | Atomically replace the entire cached subscription for the current account; immediately replace Active with Blocked and show the supplied message/reason. Keep service features disabled. |
+| `200`, `is_entitled=false`, `state=none/expired` | Replace cached Active with the new state; keep service features disabled. |
+| `200`, entitled active/trial | Replace the account's cached state and mark it freshly verified. |
+| `401 not_authenticated` or `401 token_not_valid` | Use the existing refresh flow below, once, then retry status with the new Bearer access token. Never turn a 401 into a subscription result. |
+| `401 user_inactive` or `401 user_not_found` | Clear the session and private subscription cache; show sign-in/account-unavailable. |
+| `403 account_inactive` or `403 restaurant_inactive` | Clear cached Active and disable features; show the inactive-account/restaurant message. Do not retry refresh for these codes. |
+| Transport failure, timeout or `5xx` (including `503 subscription_status_unavailable`) | Set freshness to unverified and show "Current subscription status could not be verified". Cached history must not be displayed as confirmed Active or enable features. |
+
+Refresh uses `POST /api/business-menu/token/refresh/` with JSON `{"refresh":"<stored-refresh-token>"}`. `/api/business-menu/refresh/` is its existing alias. Send the stored access token as `Authorization: Bearer <access>` on status requests. Persist both `access` and the rotated `refresh` from a successful refresh response. Share one in-flight refresh across concurrent 401s; exclude the refresh request from its own retry interceptor. If refresh fails or the single status retry still returns 401, clear tokens and all private subscription state and show sign-in. Auth failures retain 401 on status and project refresh routes; other legacy API routes retain their existing mapping.
+
+The store should keep freshness separately from the cached payload. Only a successful status response for the current account may set freshness to verified. Discard late responses after logout/account change and clear private state on either action. Display Active and enable features only from a verified response with `is_entitled=true` and `access_blocked=false`.
+
+Device acceptance: start with an active manual subscription, fetch status, perform Block all in the admin panel, and refresh status with the same valid JWT. Expect 200/blocked, no Active display and protected APIs still denied. Unblock with a valid entitlement should restore access; unblock after expiry should return 200/expired with `is_entitled=false`. Also test expired JWT -> successful refresh -> fresh blocked status, failed refresh -> sign-in with no private cache, both inactive 403 codes, and network/503 -> unverified display. This flow needs no Apple purchase.
 
 ## Not implemented in this phase
 
