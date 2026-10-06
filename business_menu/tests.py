@@ -229,6 +229,25 @@ class BusinessMenuSubscriptionEndpointTests(APITestCase):
             self.assertTrue(response.data["is_entitled"])
             self.assertFalse(response.data["purchasable_in_app"])
 
+    def test_subscription_status_rejects_inactive_business_account(self):
+        self.admin.is_active = False
+        self.admin.save(update_fields=["is_active"])
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data["code"], "account_inactive")
+
+    def test_subscription_status_rejects_inactive_restaurant(self):
+        Restaurant.objects.create(admin=self.admin, name="Inactive Restaurant", is_active=False)
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/api/business-menu/admin/subscription/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data["code"], "restaurant_inactive")
+
     def test_paid_without_period_is_not_entitled(self):
         self.admin.payment_status = "paid"
         self.admin.trial_ends_at = None

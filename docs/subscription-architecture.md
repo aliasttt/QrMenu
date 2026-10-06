@@ -80,6 +80,13 @@ python manage.py retry_google_play_acknowledgements --apply
 
 The authenticated app obtains the stable UUID from `GET` (or compatibility `POST`) `/api/business-menu/admin/subscription/`, field `app_account_token`. For a new Apple purchase pass it as StoreKit `appAccountToken`; for a new Google purchase pass it as BillingClient `obfuscatedAccountId`. Verify with `/admin/subscription/apple/verify/` or `/admin/subscription/google/verify/`; restore uses `/admin/subscription/restore/` with `provider` and the provider purchase token/JWS. Previously bound purchases may restore without adding a new ownership claim; previously unbound purchases require an app update and the account token.
 
+The mobile client must treat subscription status as account-scoped and server-authoritative:
+
+- `200` from `/api/business-menu/admin/subscription/` is a fresh status; use `is_entitled`, `state`, `provider`, `entitlement_source`, and `current_period_end` together.
+- `401` means authentication is no longer valid. `403 account_inactive` and `403 restaurant_inactive` are definitive access revocations; clear any cached Active display. A transport error or `5xx` is temporary and must not present cached data as freshly verified.
+- Clear cached subscription data on logout or account change.
+- Call StoreKit `finish()`/`finishTransaction` only after `/api/business-menu/admin/subscription/apple/verify/` returns `200` and the verified subscription has been persisted. Keep the transaction pending for a retryable `503`; do not start another purchase to work around verification failure.
+
 ## Not implemented in this phase
 
 - Stripe renewal, failure, cancellation, refund, and Customer Portal lifecycle

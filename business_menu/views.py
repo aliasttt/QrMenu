@@ -626,6 +626,18 @@ class AdminSubscriptionView(APIView):
             return _empty_subscription_payload()
 
     def get(self, request):
+        admin = BusinessAdmin.objects.filter(auth_user=request.user).select_related("restaurant").first()
+        if admin and not admin.is_active:
+            return Response(
+                {"code": "account_inactive", "message": "This restaurant account is inactive."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        restaurant = getattr(admin, "restaurant", None) if admin else None
+        if restaurant and not restaurant.is_active:
+            return Response(
+                {"code": "restaurant_inactive", "message": "This restaurant is inactive."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         return Response(self._payload(request), status=status.HTTP_200_OK)
 
     def post(self, request):
