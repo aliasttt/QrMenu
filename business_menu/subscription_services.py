@@ -4,6 +4,7 @@ import base64
 import calendar
 import hashlib
 import json
+import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone as dt_timezone
@@ -14,6 +15,8 @@ import requests
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.utils import timezone
+
+logger = logging.getLogger("business_menu.google_play")
 
 APPLE_PRODUCT_ID_TO_PLAN = {
     "de.preismenu.monthly": "monthly",
@@ -871,12 +874,18 @@ def _google_authorized_session():
 
 
 def _google_api_response(method: str, url: str, **kwargs):
+    started = time.monotonic()
+    # URLs contain purchase tokens; log only the fixed operation and status.
+    operation = "subscription_get" if method == "GET" else "subscription_acknowledge"
     try:
         response = _google_authorized_session().request(method, url, timeout=15, **kwargs)
     except SubscriptionConfigurationError:
+        logger.warning("google_play_api operation=%s outcome=configuration_error", operation)
         raise
     except Exception as exc:
+        logger.warning("google_play_api operation=%s outcome=request_failed duration_ms=%d", operation, int((time.monotonic() - started) * 1000))
         raise SubscriptionTemporaryError("Google Play API request failed") from exc
+    logger.info("google_play_api operation=%s http_status=%d duration_ms=%d", operation, response.status_code, int((time.monotonic() - started) * 1000))
     if response.status_code == 429 or response.status_code >= 500:
         raise SubscriptionTemporaryError("Google Play API is temporarily unavailable")
     if response.status_code >= 400:

@@ -8,13 +8,14 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from .models import BusinessAdmin, ProviderEvent, ProviderSubscription
 from .subscription_services import (
     GooglePlaySubscriptionResult,
+    SubscriptionConfigurationError,
     SubscriptionOwnershipError,
     SubscriptionRejectedError,
     SubscriptionTemporaryError,
@@ -23,6 +24,7 @@ from .subscription_services import (
     resolve_subscription_entitlement,
     verify_google_play_subscription,
     verify_google_pubsub_token,
+    _google_api_response,
 )
 
 
@@ -34,6 +36,37 @@ GOOGLE_SETTINGS = {
     "GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL": "push@example-project.iam.gserviceaccount.com",
     "ALLOW_TEST_SUBSCRIPTION_ENTITLEMENTS": False,
 }
+
+
+class GooglePlayDiagnosticTests(SimpleTestCase):
+    def test_api_logs_status_without_sensitive_url_body_or_exception(self):
+        sensitive = "private-purchase-token"
+        url = "https://androidpublisher.googleapis.com/tokens/" + sensitive
+        for code in (200, 403, 429, 503):
+            with self.subTest(code=code), patch(
+                "business_menu.subscription_services._google_authorized_session"
+            ) as session, self.assertLogs("business_menu.google_play", level="INFO") as logs:
+                session.return_value.request.return_value = SimpleNamespace(status_code=code)
+                if code == 200:
+                    _google_api_response("GET", url)
+                else:
+                    with self.assertRaises((SubscriptionRejectedError, SubscriptionTemporaryError)):
+                        _google_api_response("GET", url)
+            output = " ".join(logs.output)
+            self.assertIn(f"http_status={code}", output)
+            self.assertNotIn(sensitive, output)
+            self.assertNotIn(url, output)
+
+    def test_api_exception_logs_do_not_include_credentials_or_tokens(self):
+        for exception in (SubscriptionConfigurationError("private-key"), RuntimeError("private-key")):
+            with self.subTest(exception=type(exception)), patch(
+                "business_menu.subscription_services._google_authorized_session", side_effect=exception
+            ), self.assertLogs("business_menu.google_play", level="WARNING") as logs:
+                with self.assertRaises((SubscriptionConfigurationError, SubscriptionTemporaryError)):
+                    _google_api_response("GET", "https://example.test/private-token")
+            output = " ".join(logs.output)
+            self.assertNotIn("private-key", output)
+            self.assertNotIn("private-token", output)
 
 
 def make_admin(index=1):

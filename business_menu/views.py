@@ -48,6 +48,7 @@ from business_menu.reservation_services import (
 import qrcode
 
 logger = logging.getLogger(__name__)
+google_play_logger = logging.getLogger("business_menu.google_play")
 
 from accounts.twilio_utils import (
     send_otp,
@@ -741,6 +742,7 @@ class AdminSubscriptionVerifyView(APIView):
             )
 
         if self.provider == "google":
+            google_play_logger.info("google_play_verify source=verify outcome=received")
             purchase_token = str(
                 request.data.get("purchase_token") or request.data.get("purchaseToken") or ""
             ).strip()
@@ -753,12 +755,13 @@ class AdminSubscriptionVerifyView(APIView):
                 result = verify_google_play_subscription(purchase_token)
                 _subscription, applied, outcome = apply_google_play_subscription(admin, result)
             except SubscriptionVerificationError as exc:
+                google_play_logger.warning("google_play_verify source=verify outcome=rejected code=%s http_status=%d", exc.code, exc.status_code)
                 return Response(
                     {"code": getattr(exc, "code", "subscription_verification_failed"), "message": str(exc)},
                     status=getattr(exc, "status_code", status.HTTP_422_UNPROCESSABLE_ENTITY),
                 )
             except Exception:
-                logger.exception("Unexpected error verifying Google Play subscription")
+                google_play_logger.error("google_play_verify source=verify outcome=unexpected_error")
                 return Response(
                     {"code": "google_verification_unexpected_error", "message": "Temporary verification error."},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -805,6 +808,7 @@ class AdminSubscriptionRestoreView(APIView):
             request.data.get("purchase_token") or request.data.get("purchaseToken") or ""
         ).strip()
         if provider == "google" or purchase_token:
+            google_play_logger.info("google_play_verify source=restore outcome=received")
             if not admin:
                 return Response(
                     {"code": "business_admin_not_found", "message": "Business account not found."},

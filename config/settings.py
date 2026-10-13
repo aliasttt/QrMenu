@@ -323,6 +323,18 @@ GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL = (
     os.environ.get("GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL", "") or ""
 ).strip()
 
+# Only fixed Google billing diagnostic fields reach this dedicated logger.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"google_play_console": {"class": "logging.StreamHandler"}},
+    "loggers": {
+        "business_menu.google_play": {
+            "handlers": ["google_play_console"], "level": "INFO", "propagate": False,
+        },
+    },
+}
+
 # Firebase (optional)
 FIREBASE_CONFIG = {}
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "") or os.getenv("VAPID_PUBLIC_KEY", "")
