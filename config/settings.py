@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     "config",  # for management commands (e.g. migrate_from_source_db)
 ]
 
-SIMPLE_JWT_ENABLE_BLACKLIST_APP = _env_bool("SIMPLE_JWT_ENABLE_BLACKLIST_APP", default=False)
+SIMPLE_JWT_ENABLE_BLACKLIST_APP = True
 if SIMPLE_JWT_ENABLE_BLACKLIST_APP:
     INSTALLED_APPS += ["rest_framework_simplejwt.token_blacklist"]
 
@@ -223,6 +223,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    "TOKEN_REFRESH_SERIALIZER": "business_menu.account_deletion.ActiveUserTokenRefreshSerializer",
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
     "ROTATE_REFRESH_TOKENS": True,

@@ -1,6 +1,7 @@
 from django.urls import path
 from django.shortcuts import redirect
 from . import customer_auth as _ca
+from .account_deletion import AdminAccountView
 from .views import (
     SendOTPView,
     LoginView,
@@ -89,6 +90,7 @@ def redirect_to_service_agreement(request):
     return redirect('/service-agreement/')
 
 urlpatterns = [
+    path('admin/account/', AdminAccountView.as_view(), name='admin_account'),
     # Restaurant owner signup (web) – starts 12-day trial
     path('signup/', RestaurantOwnerSignupView.as_view(), name='restaurant_owner_signup'),
     # Legacy register redirect

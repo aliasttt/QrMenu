@@ -1096,7 +1096,7 @@ class AdminSubscriptionNotificationView(APIView):
                     ProviderSubscription.objects.filter(provider="google", external_id=external_id)
                     .select_related("account")[:2]
                 )
-                if not purchase_token or len({item.account_id for item in candidates}) != 1:
+                if not purchase_token or len({item.account_id for item in candidates}) != 1 or any(item.account_id is None for item in candidates):
                     return Response(
                         {"success": True, "provider": "google", "processed": False, "detail": "unknown_purchase"},
                         status=status.HTTP_200_OK,
@@ -5357,6 +5357,11 @@ class ImageUploadView(APIView):
         
         # آپلود به Cloudinary
         upload_result = upload_image_to_cloudinary(image_file)
+
+        if upload_result['success']:
+            owner = _get_business_admin_for_user(request.user)
+            if owner:
+                CloudinaryImage.objects.filter(uuid=upload_result['uuid'], owner__isnull=True).update(owner=owner)
         
         if upload_result['success']:
             return Response({

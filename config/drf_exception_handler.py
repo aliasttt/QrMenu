@@ -36,6 +36,8 @@ def custom_exception_handler(exc: Exception, context: dict[str, Any]):
     is_refresh_path = "token/refresh" in (path or "").lower()
 
     view = context.get("view")
+    if type(view).__name__ == "AdminAccountView":
+        return response
     if type(view).__name__ == "AdminSubscriptionView" or isinstance(view, TokenRefreshView):
         response.data.setdefault("code", exc.default_code)
         logger.warning(

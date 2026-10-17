@@ -167,7 +167,9 @@ class ProviderSubscription(models.Model):
 
     account = models.ForeignKey(
         BusinessAdmin,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="provider_subscriptions",
     )
     provider = models.CharField(max_length=16, choices=Provider.choices, db_index=True)
@@ -232,6 +234,23 @@ class ProviderEvent(models.Model):
 
     def __str__(self):
         return f"{self.provider}/{self.environment}:{self.event_type}"
+
+
+class RetainedFinancialRecord(models.Model):
+    """Accounting allowlist only; deliberately no account or restaurant relation."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    kind = models.CharField(max_length=16)
+    data = models.JSONField()
+    retained_at = models.DateTimeField(auto_now_add=True)
+
+
+class AccountMediaDeletion(models.Model):
+    """Durable media cleanup queue, also retried by purge_account_media."""
+
+    backend = models.CharField(max_length=16)
+    name = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class SignupByIP(models.Model):
@@ -422,6 +441,10 @@ class CloudinaryImage(models.Model):
     """
     مدل برای ذخیره اطلاعات تصاویر در Cloudinary با UUID
     """
+    owner = models.ForeignKey(
+        BusinessAdmin, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="uploaded_images",
+    )
     uuid = models.UUIDField(
         unique=True, 
         db_index=True, 

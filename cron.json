@@ -1,6 +1,9 @@
 {
   "jobs": [
     {
+      "command": "35 * * * * python manage.py purge_account_media"
+    },
+    {
       "command": "15 * * * * python manage.py retry_google_play_acknowledgements --apply --limit 100"
     }
   ]
