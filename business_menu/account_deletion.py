@@ -6,11 +6,14 @@ import re
 from urllib.parse import unquote, urlsplit
 
 from django.conf import settings
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sessions.models import Session
 from django.core.files.storage import default_storage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
+from django.db.models.deletion import Collector
 from django.db.models import FileField, Q
 from django.utils import timezone
 from rest_framework import permissions
@@ -178,7 +181,18 @@ class AdminAccountView(APIView):
                 AccountMediaDeletion.objects.get_or_create(backend="cloudinary", name=image.cloudinary_public_id)
                 image.delete()
             # ProviderSubscription uses SET_NULL: preserve refund evidence and immutable purchase claims.
-            admin.delete()
-            user.delete()
+            collector = Collector(using=user._state.db)
+            collector.collect([admin])
+            collector.collect([user])
+            targets = [(model, [obj.pk for obj in objects]) for model, objects in collector.data.items()]
+            targets.extend((query.model, query.values_list("pk", flat=True)) for query in collector.fast_deletes)
+            for model, identifiers in targets:
+                if model._meta.auto_created:
+                    continue
+                LogEntry.objects.filter(
+                    content_type=ContentType.objects.get_for_model(model),
+                    object_id__in=[str(value) for value in identifiers],
+                ).delete()
+            collector.delete()
             transaction.on_commit(purge_account_media)
         return Response(status=204)

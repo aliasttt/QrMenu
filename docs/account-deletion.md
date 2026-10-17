@@ -12,6 +12,8 @@ Deletion runs in one database transaction. It blacklists all recorded refresh
 tokens, erases their stored token bodies, removes database sessions, pending
 business signup verifications, the BusinessAdmin, Restaurant and cascaded
 operational data, and the User and its related profiles/reset codes/activity.
+Admin history for erased objects is removed too, including copies made by other
+administrators; unrelated history is preserved.
 Every refresh route also checks that its User still exists and is active under
 a row lock. This closes the legacy/untracked and rotated-token gap in SimpleJWT
 5.3.1. Passwords, access tokens and refresh tokens are never logged by deletion.

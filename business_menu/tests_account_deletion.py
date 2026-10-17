@@ -3,6 +3,8 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.contrib.admin.models import ADDITION, LogEntry
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sessions.models import Session
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -97,6 +99,15 @@ class AccountDeletionTests(APITestCase):
             response = self.client.post(path, {"refresh": str(self.refresh)}, format="json")
             self.assertEqual(response.status_code, 200, response.content)
             self.assertIn("access", response.data)
+
+    def test_admin_history_cannot_retain_erased_personal_details(self):
+        operator = User.objects.create_user("operator", password="OperatorPass123!")
+        courier = Courier.objects.create(restaurant=self.restaurant, name="Private Courier", phone="private")
+        for target in (self.user, self.admin, self.restaurant, courier):
+            LogEntry.objects.create(user=operator, content_type=ContentType.objects.get_for_model(target), object_id=str(target.pk), object_repr="Private email and phone", action_flag=ADDITION, change_message="Private history")
+        unrelated = LogEntry.objects.create(user=operator, content_type=ContentType.objects.get_for_model(operator), object_id=str(operator.pk), object_repr="Preserve unrelated history", action_flag=ADDITION)
+        self.assertEqual(self.delete().status_code, 204)
+        self.assertEqual(list(LogEntry.objects.values_list("pk", flat=True)), [unrelated.pk])
 
     def test_cloudinary_ownership_cleanup_preserves_other_restaurant(self):
         other_user = User.objects.create_user("other_owner", password="OtherPass123!")
